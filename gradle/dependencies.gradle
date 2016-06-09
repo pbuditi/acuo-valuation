@@ -1,0 +1,29 @@
+ext.versions = [
+		slf4j: '1.7.21',		
+		guava: '19.0',
+		logback: '1.1.7'
+	]
+	
+dependencies {		
+	compile (
+		"org.slf4j:slf4j-api:${versions.slf4j}",			
+		"org.slf4j:jul-to-slf4j:${versions.slf4j}",
+		"org.apache.commons:commons-lang3:3.4",
+		"commons-lang:commons-lang:2.6",
+		"com.google.guava:guava:${versions.guava}"
+	)
+	testCompile (
+		"org.codehaus.groovy:groovy-all:[2,3)",
+		"junit:junit:4.12",
+    	"org.mockito:mockito-core:2.0.54-beta",
+    	//"info.solidsoft.mockito:mockito-java8:2.0.0-beta.2",
+    	"org.assertj:assertj-core:3.4.1",
+		"org.spockframework:spock-core:0.7-groovy-2.0"
+	)
+	runtime (
+		"ch.qos.logback:logback-classic:${versions.logback}",
+		"ch.qos.logback:logback-access:${versions.logback}",
+		"org.slf4j:log4j-over-slf4j:${versions.slf4j}",
+		"org.slf4j:jcl-over-slf4j:${versions.slf4j}"
+	)       
+}
