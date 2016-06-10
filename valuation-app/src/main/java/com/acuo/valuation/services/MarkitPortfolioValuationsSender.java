@@ -1,22 +1,23 @@
 package com.acuo.valuation.services;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import okhttp3.FormBody;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MarkitPortfolioValuationsSender {
+
+	private static final Logger logger = LoggerFactory.getLogger(MarkitPortfolioValuationsSender.class);
 
 	private static final String STILL_PROCESSING_KEY = "Markit upload still processing.";
 	private static final int ONE_MINUTE = 1000 * 60; // in milliseconds
@@ -31,71 +32,61 @@ public class MarkitPortfolioValuationsSender {
 	}
 
 	public String uploadFile(File uploadFile) throws Exception {
-		HttpPost post = new HttpPost(url);
+		OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
 
-		FileBody fileBody = new FileBody(uploadFile, ContentType.DEFAULT_BINARY, uploadFile.getName());
-		StringBody userBody = new StringBody(user, ContentType.MULTIPART_FORM_DATA);
-		StringBody passwordBody = new StringBody(password, ContentType.MULTIPART_FORM_DATA);
+		RequestBody file = RequestBody.create(MediaType.parse("multipart/form-data; charset=utf-8"), uploadFile);
+		RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("username", user)
+				.addFormDataPart("password", password)
+				.addPart(MultipartBody.Part.createFormData("theFile", "theFile", file)).build();
+		Request request = new Request.Builder().url(url).post(body).build();
 
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-		builder.addPart(uploadFile.getName(), fileBody);
-		builder.addPart("username", userBody);
-		builder.addPart("password", passwordBody);
-		HttpEntity entity = builder.build();
+		Response response = client.newCall(request).execute();
+		if (!response.isSuccessful())
+			throw new IOException("Unexpected code " + response);
 
-		post.setEntity(entity);
-		try {
-			HttpClient client = HttpClientBuilder.create().build();
-			HttpResponse response = client.execute(post);
-			return EntityUtils.toString(response.getEntity());
-		} finally {
-			post.releaseConnection();
-		}
+		return response.body().string();
 	}
 
 	public void fetchUploadReport(String reportKey) throws Exception {
 		String report = null;
-		StringBody userBody = new StringBody(user, ContentType.MULTIPART_FORM_DATA);
-		StringBody passwordBody = new StringBody(password, ContentType.MULTIPART_FORM_DATA);
-		StringBody reportKeyBody = new StringBody(reportKey, ContentType.MULTIPART_FORM_DATA);
 
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-		builder.addPart("username", userBody);
-		builder.addPart("password", passwordBody);
-		builder.addPart("key", reportKeyBody);
-		HttpEntity entity = builder.build();
+		OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
+
+		RequestBody body = new FormBody.Builder().add("username", user).add("password", password).add("key", reportKey)
+				.add("version", "2").build();
+
+		Request request = new Request.Builder().url(url).post(body).build();
 
 		while (report == null) {
-
-			HttpPost method = new HttpPost(url);
-			method.setEntity(entity);
-
-			HttpClient client = HttpClientBuilder.create().build();
-			HttpResponse response = client.execute(method);
-			String result = EntityUtils.toString(response.getEntity());
+			Response response = client.newCall(request).execute();
+			if (!response.isSuccessful())
+				throw new IOException("Unexpected code " + response);
+			String result = response.body().string();
 			if (result.startsWith(STILL_PROCESSING_KEY)) {
 				Thread.sleep(ONE_MINUTE); // wait before polling again
 			} else {
 				report = result;
 			}
 		}
-		// Now have the report as a string - handle it (here we just print to
-		// stdout)
 		System.out.println(report);
 	}
 
-	public static void main(String args[]) throws Exception {
-		// Arguments are filenames of trade files to upload
-		MarkitPortfolioValuationsSender mps = new MarkitPortfolioValuationsSender("https://pv.markit.com/upload",
-				"acuosamedayupload", "***REMOVED***");
-		List<String> uploadKeys = new ArrayList<String>(args.length);
-		for (String tradeFile : args) {
-			uploadKeys.add(mps.uploadFile(new File(tradeFile)));
-		}
-		for (String key : uploadKeys) {
-			mps.fetchUploadReport(key);
+	class LoggingInterceptor implements Interceptor {
+		@Override
+		public Response intercept(Interceptor.Chain chain) throws IOException {
+			Request request = chain.request();
+
+			long t1 = System.nanoTime();
+			logger.info(String.format("Sending request %s on %s%n%s", request.url(), chain.connection(),
+					request.headers()));
+
+			Response response = chain.proceed(request);
+
+			long t2 = System.nanoTime();
+			logger.info(String.format("Received response for %s in %.1fms%n%s", response.request().url(),
+					(t2 - t1) / 1e6d, response.headers()));
+
+			return response;
 		}
 	}
 }

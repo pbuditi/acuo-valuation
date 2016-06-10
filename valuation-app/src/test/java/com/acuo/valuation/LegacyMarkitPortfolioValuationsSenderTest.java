@@ -5,9 +5,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.acuo.valuation.services.MarkitPortfolioValuationsSender;
+import com.acuo.valuation.services.LegacyMarkitPortfolioValuationsSender;
 
-public class MarkitPortfolioValuationsSenderTest {
+public class LegacyMarkitPortfolioValuationsSenderTest {
 
 	@Rule
 	public ResourceFile res = new ResourceFile("/test-markit-upload.xml");
@@ -20,9 +20,11 @@ public class MarkitPortfolioValuationsSenderTest {
 
 	@Test
 	public void testUploadFile() throws Exception {
-		MarkitPortfolioValuationsSender mps = new MarkitPortfolioValuationsSender("https://pv.markit.com/upload",
-				"acuosamedayupload", "***REMOVED***");
+		LegacyMarkitPortfolioValuationsSender mps = new LegacyMarkitPortfolioValuationsSender(
+				"https://pv.markit.com/upload", "acuosamedayupload", "***REMOVED***");
 		String key = mps.uploadFile(res.getFile());
-		mps.fetchUploadReport(key);
+		System.out.println("key:" + key);
+		// mps.fetchUploadReport("77503263");
 	}
+
 }

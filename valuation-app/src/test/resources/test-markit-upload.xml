@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <presentvalue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<valuationdate>2006-07-17</valuationdate>
+	<valuationdate>2016-06-10</valuationdate>
 	<valuationcurrency>USD</valuationcurrency>
 	<data>
 		<cds>
@@ -11,8 +11,8 @@
 				<id>US163893AA87</id>
 				<idtype>ISIN</idtype>
 			</bond>
-			<tradedate>2009-04-15</tradedate>
-			<settledate>2009-01-28</settledate>
+			<tradedate>2013-04-15</tradedate>
+			<settledate>2013-01-28</settledate>
 			<maturity>2017-03-20</maturity>
 			<spread>0.05</spread>
 			<frequency>3M</frequency>
@@ -24,8 +24,8 @@
 			<book>ACUO CDS</book>
 			<red>179BHC</red>
 			<tier>SNRFOR</tier>
-			<tradedate>2009-04-15</tradedate>
-			<settledate>2009-01-28</settledate>
+			<tradedate>2013-04-15</tradedate>
+			<settledate>2013-01-28</settledate>
 			<maturity>2017-03-20</maturity>
 			<spread>0.05</spread>
 			<frequency>3M</frequency>
@@ -36,8 +36,8 @@
 			<tradeid>Ex_Basic_RED9</tradeid>
 			<book>ACUO CDS</book>
 			<red>179BHCAC0</red>
-			<tradedate>2009-04-15</tradedate>
-			<settledate>2009-01-28</settledate>
+			<tradedate>2013-04-15</tradedate>
+			<settledate>2013-01-28</settledate>
 			<maturity>2017-03-20</maturity>
 			<spread>0.05</spread>
 			<frequency>3M</frequency>
@@ -46,7 +46,7 @@
 		</cds>
 		<irswap>
 			<tradeid>IRS_VANILLA</tradeid>
-			<tradedate>2007-02-14</tradedate>
+			<tradedate>2013-02-14</tradedate>
 			<book>SWAPS</book>
 			<leg>
 				<id>1</id>
@@ -57,9 +57,9 @@
 				<notional>10000000.00</notional>
 				<notionalxg>NEITHER</notionalxg>
 				<paydates>
-					<startdate>2007-02-16</startdate>
+					<startdate>2013-02-16</startdate>
 					<freq>3M</freq>
-					<enddate>2010-02-16</enddate>
+					<enddate>2017-02-16</enddate>
 					<rollcode>MODFOLL</rollcode>
 					<adjust>true</adjust>
 					<eom>false</eom>
@@ -79,9 +79,9 @@
 				<notional>-10000000.00</notional>
 				<notionalxg>NEITHER</notionalxg>
 				<paydates>
-					<startdate>2007-02-16</startdate>
+					<startdate>2013-02-16</startdate>
 					<freq>3M</freq>
-					<enddate>2010-02-16</enddate>
+					<enddate>2017-02-16</enddate>
 					<rollcode>MODFOLL</rollcode>
 					<adjust>true</adjust>
 					<eom>false</eom>

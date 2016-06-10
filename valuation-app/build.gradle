@@ -30,6 +30,8 @@ dependencies {
     compile (        
         "org.apache.httpcomponents:httpclient:${versions.httpclient}",
         "org.apache.httpcomponents:httpmime:${versions.httpclient}",
+        "commons-httpclient:commons-httpclient:3.1",
+        "com.squareup.okhttp3:okhttp:3.3.1",
         
         "org.eclipse.persistence:eclipselink:${versions.eclipselink}",
         

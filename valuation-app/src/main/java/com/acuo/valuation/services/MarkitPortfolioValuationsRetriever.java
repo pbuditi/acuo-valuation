@@ -1,43 +1,32 @@
 package com.acuo.valuation.services;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MarkitPortfolioValuationsRetriever {
+
+	private static final Logger logger = LoggerFactory.getLogger(MarkitPortfolioValuationsSender.class);
 
 	public MarkitPortfolioValuationsRetriever(String url, String user, String password, String theDate)
 			throws Exception {
 
-		StringBody userBody = new StringBody(user, ContentType.MULTIPART_FORM_DATA);
-		StringBody passwordBody = new StringBody(password, ContentType.MULTIPART_FORM_DATA);
-		StringBody theDateBody = new StringBody(theDate, ContentType.MULTIPART_FORM_DATA);
-		StringBody formatBody = new StringBody("xml", ContentType.MULTIPART_FORM_DATA);
+		OkHttpClient client = new OkHttpClient.Builder().build();
 
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-		builder.addPart("username", userBody);
-		builder.addPart("password", passwordBody);
-		builder.addPart("asof", theDateBody);
-		builder.addPart("format", formatBody);
-		HttpEntity entity = builder.build();
+		RequestBody body = new FormBody.Builder().add("username", user).add("password", password).add("asof", theDate)
+				.add("format", "xml").build();
 
-		HttpPost method = new HttpPost(url);
-		method.setEntity(entity);
-		HttpClient client = HttpClientBuilder.create().build();
-		try {
-			HttpResponse response = client.execute(method);
-			System.out.println(EntityUtils.toString(response.getEntity()));
-		} finally {
-			method.releaseConnection();
-		}
+		Request request = new Request.Builder().url(url).post(body).build();
+
+		Response response = client.newCall(request).execute();
+
+		logger.info(response.body().string());
+
 	}
 
 	public static void main(String args[]) throws Exception {
