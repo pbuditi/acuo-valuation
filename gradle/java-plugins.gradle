@@ -41,6 +41,10 @@ publishing {
 						artifact javadocJar {
 								classifier "javadoc"
 						}
+						
+						artifact testJar {
+								classifier "tests"
+						}
 				}
 		}
 }

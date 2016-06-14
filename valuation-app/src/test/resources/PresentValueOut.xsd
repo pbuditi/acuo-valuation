@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<!--
+		The output of a Present Value calculation process is either: * an
+		error message, as a single line of text or * XML, containing a series
+		of data <value> tags describing the outcome of each calculation. Each
+		of the <value> tag will have either: the results of the calculation,
+		or a specific error message describing why a given set of input data
+		could not have a PV calculated for it.
+	-->
+	<!--
+		Versioning information. This segment can be used to determine, on an
+		automated basis, whether a change has occurred. Current File Revision
+		Number ( non-sequential ) : $Rev$ File Last Updated at :
+		$LastChangedDate$
+	-->
+	<xs:element name="data">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="header" type="header"/>
+				<xs:element name="value" type="value" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		The results of a the calculation. We return identifier information,
+		plus the present value, the curve we used to calculate this number,
+		and the assumed recovery rate we used in the calculation, and the
+		results of the accrued interest calculation. The final field is
+		'status', which will have value 'OK' if the calculation was
+		successful, or a descriptive error message if it was not.
+	-->
+	<!--cds results-->
+	<xs:complexType name="header">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="version" type="xs:string"/>
+			<xs:element name="date" type="xs:date"/>
+			<xs:element name="valuationdate" type="xs:date"/>
+			<xs:element name="valuationccy" type="xs:string"/>
+			<xs:element name="numtradessuccessful" type="xs:integer" minOccurs="0"/>
+			<xs:element name="numtradesfailed" type="xs:integer" minOccurs="0"/>
+			<xs:element name="totalnumtrades" type="xs:integer" minOccurs="0"/>
+			<xs:element name="valuationscomplete" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="value">
+		<xs:sequence>
+			<xs:element name="TradeId" type="xs:string" />
+			<xs:element name="ClientInternalTradeId" type="xs:string" minOccurs="0"/>
+			<xs:element name="Account" type="xs:string" minOccurs="0" />
+			<xs:element name="Book" type="xs:string" />
+			<xs:element name="LegId" type="xs:decimal" minOccurs="0" />
+			<xs:element name="LegType" type="legType" minOccurs="0" />
+			<xs:element name="Notional" type="xs:decimal" minOccurs="0" />
+			<xs:element name="LocalCcy" type="xs:string" minOccurs="0" />
+			<xs:element name="ValuationCcy" type="xs:string"
+				minOccurs="0" />
+			<xs:group ref="valueCommon" minOccurs="0" />
+			<xs:element name="Shock" minOccurs="0"
+				maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ShockId" type="xs:string"
+							minOccurs="1" maxOccurs="1" />
+						<xs:element name="ShockDescription"
+							type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="PVLocalDelta"
+							type="xs:decimal" minOccurs="0" />
+						<xs:group ref="valueCommon" minOccurs="0" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="PnLExplainReport" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="RealizedPnL" type="xs:decimal"
+							minOccurs="0" />
+						<xs:element name="PnlAttribution"
+							type="ExplainAmount" minOccurs="0" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ValuationDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:group name="valueCommon">
+		<xs:sequence>
+			<xs:element name="Status" type="xs:string" minOccurs="0"/>
+			<xs:element name="IndexInitial" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="IndexFinal" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread6M" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread1Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread2Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread3Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread4Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread5Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread7Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread10Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread15Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread20Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spread30Y" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Recovery" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="ParSpread" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PVLocal" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PresentValue" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Accrued" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PV01" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Credit01" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="ParRate" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Spot" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Forward" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Volatility" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PVDelta" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PVGamma" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PVTheta" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PVVega" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Cash" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="CleanPVLocal" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="CleanPV" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="AccruedValCcy" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="DirtyPrice" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="CleanPrice" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PriceAccrued" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PV01Local" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="CPRAssumption" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="AttachBC" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="DetachBC" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Portfolio01" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PortfolioEL" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="ContingentPV" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PortfolioSpread" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="TrancheEL" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="IndexSpread" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="TheoreticalSpread" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="ModelDelta" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="RealisedDelta" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Correlation01" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="WeightedPortfolioSpread" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="FeePV" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="FeePVLocal" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Rating" type="xs:string" minOccurs="0"/>
+			<xs:element name="BuiltFrom" type="xs:string" minOccurs="0"/>
+			<xs:element name="DirtyPriceBid" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="DirtyPriceAsk" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="CleanPriceAsk" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="CleanPriceBid" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="RealisedVol" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="FairVol" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="BEVol" minOccurs="0" type="xs:decimal"/>
+			<xs:element name="DataRating" type="xs:int" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="EvbSource" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="EvbService" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="EvbWindow" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="EvbAsof" type="xs:date" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="ErrorMessage" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="CashPosition" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Upfront" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Inflation01" minOccurs="0" type="xs:decimal"/>
+			<xs:element name="PVRho1" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PVRho" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="FutureValueLocal" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="FAS157Rating" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="PVCcy1" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="ConstantCredit01" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Depth" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Factor" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="BusinessDaysPassed" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="BusinessDaysRemaining" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="AccruedDividends" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="CouponLeg" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="InstrumentCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="InstrumentType" type="xs:string" minOccurs="0"/>
+			<xs:element name="TradeDataSource" type="xs:string" minOccurs="0"/>
+			<xs:element name="RecommendedUpdate" type="xs:string" minOccurs="0"/>
+			<xs:element name="RefCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="Fund" type="xs:string" minOccurs="0"/>
+			<xs:element name="Counterparty" type="xs:string" minOccurs="0"/>
+			<xs:element name="AdditionalColumns" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Name" type="xs:string" minOccurs="1"
+									maxOccurs="1"/>
+						<xs:choice maxOccurs="unbounded">
+							<xs:element name="Value" type="decimalvalue"/>
+							<xs:element name="String_Value" type="stringvalue"/>
+							<xs:element name="Date_Value" type="datevalue"/>
+							<xs:element name="Map" type="map-type"/>
+							<xs:element name="Underlying" type="underlying-type"/>
+						</xs:choice>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Notes" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Note" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Type" type="xs:string"/>
+									<xs:element name="Text" type="xs:string"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+
+	<xs:simpleType name="legType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Fee"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="underlying-type">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="Value" type="decimalvalue" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="String_Value" type="stringvalue" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="Date_Value" type="datevalue" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="Map" type="map-type"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="datevalue">
+		<xs:simpleContent>
+			<xs:extension base="xs:date">
+				<xs:attribute name="index" type="xs:integer" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="stringvalue">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="index" type="xs:integer" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="decimalvalue">
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="index" type="xs:integer" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="map-type">
+    <xs:sequence>
+      <xs:element type="EntryType" name="Entry" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+	</xs:complexType>
+
+ <xs:complexType name="EntryType">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+				<xs:attribute type="xs:string" name="key"/>
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+	<xs:complexType name="ExplainAmount">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Amount" type="xs:decimal"/>
+			<xs:element name="Sensitivity" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="FactorChange" type="xs:decimal" minOccurs="0"/>
+			<xs:element name="Factor" type="Factor" minOccurs="0"/>
+			<xs:element name="ExplainAmount" type="ExplainAmount" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Factor">
+		<xs:sequence>
+			<xs:element name="FactorDescription" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Amount" type="xs:decimal" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+</xs:schema>

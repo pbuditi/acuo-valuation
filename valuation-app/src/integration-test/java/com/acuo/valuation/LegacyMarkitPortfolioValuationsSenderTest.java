@@ -2,11 +2,14 @@ package com.acuo.valuation;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.services.LegacyMarkitPortfolioValuationsSender;
 
+@Ignore
 public class LegacyMarkitPortfolioValuationsSenderTest {
 
 	@Rule
@@ -23,8 +26,7 @@ public class LegacyMarkitPortfolioValuationsSenderTest {
 		LegacyMarkitPortfolioValuationsSender mps = new LegacyMarkitPortfolioValuationsSender(
 				"https://pv.markit.com/upload", "acuosamedayupload", "***REMOVED***");
 		String key = mps.uploadFile(res.getFile());
-		System.out.println("key:" + key);
-		// mps.fetchUploadReport("77503263");
+		mps.fetchUploadReport(key);
 	}
 
 }

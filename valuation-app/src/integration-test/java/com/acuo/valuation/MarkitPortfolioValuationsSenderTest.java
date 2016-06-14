@@ -2,11 +2,14 @@ package com.acuo.valuation;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.services.MarkitPortfolioValuationsSender;
 
+@Ignore
 public class MarkitPortfolioValuationsSenderTest {
 
 	@Rule

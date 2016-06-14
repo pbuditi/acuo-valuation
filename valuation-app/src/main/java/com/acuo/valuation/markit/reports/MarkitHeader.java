@@ -14,6 +14,7 @@ public class MarkitHeader implements Header {
 	private Integer totalTrades;
 	private Boolean valuationsComplete;
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -22,6 +23,7 @@ public class MarkitHeader implements Header {
 		this.name = name;
 	}
 
+	@Override
 	public String getVersion() {
 		return version;
 	}
@@ -30,6 +32,7 @@ public class MarkitHeader implements Header {
 		this.version = version;
 	}
 
+	@Override
 	public Date getDate() {
 		return date;
 	}
@@ -38,6 +41,7 @@ public class MarkitHeader implements Header {
 		this.date = date;
 	}
 
+	@Override
 	public Date getValuationDate() {
 		return valuationDate;
 	}
@@ -46,6 +50,7 @@ public class MarkitHeader implements Header {
 		this.valuationDate = valuationDate;
 	}
 
+	@Override
 	public String getValuationCurrency() {
 		return valuationCurrency;
 	}
@@ -54,6 +59,7 @@ public class MarkitHeader implements Header {
 		this.valuationCurrency = valuationCurrency;
 	}
 
+	@Override
 	public Integer getSuccessfulTrades() {
 		return successfulTrades;
 	}
@@ -62,6 +68,7 @@ public class MarkitHeader implements Header {
 		this.successfulTrades = successfulTrades;
 	}
 
+	@Override
 	public Integer getFailedTrades() {
 		return failedTrades;
 	}
@@ -70,6 +77,7 @@ public class MarkitHeader implements Header {
 		this.failedTrades = failedTrades;
 	}
 
+	@Override
 	public Integer getTotalTrades() {
 		return totalTrades;
 	}
@@ -78,6 +86,7 @@ public class MarkitHeader implements Header {
 		this.totalTrades = totalTrades;
 	}
 
+	@Override
 	public Boolean getValuationsComplete() {
 		return valuationsComplete;
 	}

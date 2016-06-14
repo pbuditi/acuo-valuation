@@ -3,7 +3,8 @@ apply from: "$rootDir/gradle/dependencies.gradle"
 apply from: "$rootDir/gradle/integration-test.gradle"
 
 ext.versions += [	
-	httpclient: '4.5.2',
+	common: '1.0.0-SNAPSHOT',
+	httpclient: '3.1',
 	eclipselink: '2.6.3',
 	guice: '4.0',
 	jackson: '2.7.4',
@@ -28,9 +29,9 @@ distributions {
 
 dependencies {
     compile (        
-        "org.apache.httpcomponents:httpclient:${versions.httpclient}",
-        "org.apache.httpcomponents:httpmime:${versions.httpclient}",
-        "commons-httpclient:commons-httpclient:3.1",
+    	"com.acuo.collateral:common:${versions.common}",
+    	
+        "commons-httpclient:commons-httpclient:${versions.httpclient}",
         "com.squareup.okhttp3:okhttp:3.3.1",
         
         "org.eclipse.persistence:eclipselink:${versions.eclipselink}",
@@ -53,6 +54,9 @@ dependencies {
     )
 
     testCompile (        
-        "com.jayway.jsonpath:json-path-assert:2.2.0"
+        "com.jayway.jsonpath:json-path-assert:2.2.0",
+        "com.acuo.collateral:common:${versions.common}:tests",
+        "org.xmlunit:xmlunit-core:2.2.0",
+        "org.xmlunit:xmlunit-matchers:2.2.0"
     )
 }
