@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <header>
+        <name>Trade Valuations</name>
+        <version>3.1</version>
+        <date>2016-06-14</date>
+        <valuationdate>2016-06-10</valuationdate>
+        <valuationccy>USD</valuationccy>
+        <numtradessuccessful>1</numtradessuccessful>
+        <numtradesfailed>3</numtradesfailed>
+        <totalnumtrades>4</totalnumtrades>
+        <valuationscomplete>true</valuationscomplete>
+    </header>
+    <value>
+        <TradeId>IRS_VANILLA</TradeId>
+        <Book>SWAPS</Book>
+        <LegId>1</LegId>
+        <Notional>10000000</Notional>
+        <LocalCcy>USD</LocalCcy>
+        <ValuationCcy>USD</ValuationCcy>
+        <Status>Successful</Status>
+        <PVLocal>411705.2092167556</PVLocal>
+        <PresentValue>411705.2092167556</PresentValue>
+        <Accrued>36666.66666666707</Accrued>
+        <PV01>18.1328015539329</PV01>
+        <ParRate>0.0072282473235</ParRate>
+        <CleanPVLocal>375038.5425500885</CleanPVLocal>
+        <CleanPV>375038.5425500885</CleanPV>
+        <AccruedValCcy>36666.66666666707</AccruedValCcy>
+        <DirtyPrice>4.1170520921676</DirtyPrice>
+        <CleanPrice>3.7503854255009</CleanPrice>
+        <PriceAccrued>0.3666666666667</PriceAccrued>
+        <PV01Local>18.1328015539329</PV01Local>
+        <FAS157Rating>2</FAS157Rating>
+        <InstrumentCode>BIL_SWAP_06</InstrumentCode>
+        <InstrumentType>Vanilla interest rate swap</InstrumentType>
+    </value>
+    <value>
+        <TradeId>IRS_VANILLA</TradeId>
+        <Book>SWAPS</Book>
+        <LegId>2</LegId>
+        <Notional>-10000000</Notional>
+        <LocalCcy>USD</LocalCcy>
+        <ValuationCcy>USD</ValuationCcy>
+        <Status>Successful</Status>
+        <PVLocal>-54107.40139278014</PVLocal>
+        <PresentValue>-54107.40139278014</PresentValue>
+        <Accrued>-4347.916666667117</Accrued>
+        <PV01>507.3358545236406</PV01>
+        <CleanPVLocal>-49759.48472611303</CleanPVLocal>
+        <CleanPV>-49759.48472611303</CleanPV>
+        <AccruedValCcy>-4347.916666667117</AccruedValCcy>
+        <DirtyPrice>0.5410740139278</DirtyPrice>
+        <CleanPrice>0.4975948472611</CleanPrice>
+        <PriceAccrued>0.0434791666667</PriceAccrued>
+        <PV01Local>507.3358545236406</PV01Local>
+        <FAS157Rating>2</FAS157Rating>
+        <InstrumentCode>BIL_SWAP_06</InstrumentCode>
+        <InstrumentType>Vanilla interest rate swap</InstrumentType>
+    </value>
+    <value>
+        <TradeId>Ex_Basic_ISIN</TradeId>
+        <Book>ACUO CDS</Book>
+        <Notional>-1000000</Notional>
+        <LocalCcy>USD</LocalCcy>
+        <Status>Failed</Status>
+        <ErrorMessage>Entity settled on 21Apr09 no longer valid.</ErrorMessage>
+        <InstrumentCode>BIL_CRED_03</InstrumentCode>
+        <InstrumentType>CDS - single name unfunded</InstrumentType>
+    </value>
+    <value>
+        <TradeId>Ex_Basic_RED9</TradeId>
+        <Book>ACUO CDS</Book>
+        <Notional>-1000000</Notional>
+        <LocalCcy>USD</LocalCcy>
+        <Status>Failed</Status>
+        <ErrorMessage>Entity settled on 21Apr09 no longer valid.</ErrorMessage>
+        <InstrumentCode>BIL_CRED_03</InstrumentCode>
+        <InstrumentType>CDS - single name unfunded</InstrumentType>
+    </value>
+    <value>
+        <TradeId>Ex_Basic_Tier</TradeId>
+        <Book>ACUO CDS</Book>
+        <Notional>-1000000</Notional>
+        <LocalCcy>USD</LocalCcy>
+        <Status>Failed</Status>
+        <ErrorMessage>Entity settled on 21Apr09 no longer valid.</ErrorMessage>
+        <InstrumentCode>BIL_CRED_03</InstrumentCode>
+        <InstrumentType>CDS - single name unfunded</InstrumentType>
+    </value>
+</data>

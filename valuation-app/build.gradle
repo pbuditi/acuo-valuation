@@ -4,57 +4,20 @@ apply from: "$rootDir/gradle/integration-test.gradle"
 
 ext.versions += [	
 	common: '1.0.0-SNAPSHOT',
-	httpclient: '3.1',
+	okhttp: '3.3.1',
 	eclipselink: '2.6.3',
 	guice: '4.0',
-	jackson: '2.7.4',
-	resteasy: '3.0.16.Final'	
 ]
-
-apply plugin: 'application'
-
-mainClassName = 'com.acuo.valuation.ResteasyMain'
-applicationDefaultJvmArgs = [ "-Dacuo.config.appid=${config.appId}",
-                              "-Dacuo.config.env=${config.env}"]
-
-distributions {
-    main {
-        contents {
-            from('src/main/webapp') {
-                into 'webapp'
-            }
-        }
-    }
-}
 
 dependencies {
     compile (        
-    	"com.acuo.collateral:common:${versions.common}",
-    	
-        "commons-httpclient:commons-httpclient:${versions.httpclient}",
-        "com.squareup.okhttp3:okhttp:3.3.1",
-        
-        "org.eclipse.persistence:eclipselink:${versions.eclipselink}",
-        
         "com.google.inject:guice:${versions.guice}",
-		"com.google.inject.extensions:guice-servlet:${versions.guice}",
-        "com.google.inject.extensions:guice-persist:${versions.guice}",		
-		"com.google.inject.extensions:guice-assistedinject:${versions.guice}",
-		
-		"com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${versions.jackson}",
-        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
-        
-		"org.jboss.resteasy:resteasy-jaxrs:${versions.resteasy}",
-		"org.jboss.resteasy:resteasy-guice:${versions.resteasy}",
-		"org.jboss.resteasy:resteasy-jackson2-provider:${versions.resteasy}",
-		
-		"com.smokejumperit.guice:core:1.1",
-		"io.jsonwebtoken:jjwt:0.6.0",
-        "org.mindrot:jbcrypt:0.3m"
+    	"com.acuo.collateral:common:${versions.common}",
+        "com.squareup.okhttp3:okhttp:${versions.okhttp}",
+        "org.eclipse.persistence:eclipselink:${versions.eclipselink}",
     )
 
     testCompile (        
-        "com.jayway.jsonpath:json-path-assert:2.2.0",
         "com.acuo.collateral:common:${versions.common}:tests",
         "org.xmlunit:xmlunit-core:2.2.0",
         "org.xmlunit:xmlunit-matchers:2.2.0"

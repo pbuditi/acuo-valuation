@@ -1,7 +1,11 @@
-package com.acuo.valuation.markit.reports;
+package com.acuo.valuation.reports.markit;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.acuo.valuation.reports.Header;
+import com.acuo.valuation.reports.Report;
+import com.acuo.valuation.reports.Value;
 
 public class MarkitReport implements Report {
 

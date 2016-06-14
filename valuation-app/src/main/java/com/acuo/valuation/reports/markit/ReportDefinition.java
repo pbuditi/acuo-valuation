@@ -1,4 +1,4 @@
-package com.acuo.valuation.markit.reports;
+package com.acuo.valuation.reports.markit;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,7 +14,10 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 import com.acuo.common.marshal.jaxb.DateAdapter;
 import com.acuo.common.marshal.jaxb.DecimalAdapter;
-import com.acuo.valuation.markit.reports.MarkitReport.MarkitReportBuilder;
+import com.acuo.valuation.reports.Header;
+import com.acuo.valuation.reports.Report;
+import com.acuo.valuation.reports.Value;
+import com.acuo.valuation.reports.markit.MarkitReport.MarkitReportBuilder;
 
 @XmlRootElement(name = "data")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -68,9 +71,13 @@ public class ReportDefinition {
 		@XmlPath("Book/text()")
 		String book;
 
-		@XmlPath("PortfolioValuationsLocal/text()")
+		@XmlPath("PVLocal/text()")
 		@XmlJavaTypeAdapter(DecimalAdapter.class)
 		Double pvLocal;
+
+		@XmlPath("PortfolioValuationsLocal/text()")
+		@XmlJavaTypeAdapter(DecimalAdapter.class)
+		Double portfolioValuationsLocal;
 
 		@XmlPath("PresentValue/text()")
 		@XmlJavaTypeAdapter(DecimalAdapter.class)
@@ -96,6 +103,52 @@ public class ReportDefinition {
 		@XmlPath("Notional/text()")
 		@XmlJavaTypeAdapter(DecimalAdapter.class)
 		Double notional;
+
+		@XmlPath("ValuationCcy/text()")
+		String valuationCcy;
+
+		@XmlPath("PV01/text()")
+		@XmlJavaTypeAdapter(DecimalAdapter.class)
+		Double pv01;
+
+		@XmlPath("CleanPVLocal/text()")
+		@XmlJavaTypeAdapter(DecimalAdapter.class)
+		Double cleanPVLocal;
+
+		@XmlPath("CleanPV/text()")
+		@XmlJavaTypeAdapter(DecimalAdapter.class)
+		Double cleanPV;
+
+		@XmlPath("AccruedValCcy/text()")
+		String accruedValCcy;
+
+		@XmlPath("DirtyPrice/text()")
+		@XmlJavaTypeAdapter(DecimalAdapter.class)
+		Double dirtyPrice;
+
+		@XmlPath("CleanPrice/text()")
+		@XmlJavaTypeAdapter(DecimalAdapter.class)
+		Double cleanPrice;
+
+		@XmlPath("PriceAccrued/text()")
+		@XmlJavaTypeAdapter(DecimalAdapter.class)
+		Double priceAccrued;
+
+		@XmlPath("PV01Local/text()")
+		@XmlJavaTypeAdapter(DecimalAdapter.class)
+		Double pv01Local;
+
+		@XmlPath("FAS157Rating/text()")
+		String fas157Rating;
+
+		@XmlPath("InstrumentCode/text()")
+		String instrumentCode;
+
+		@XmlPath("InstrumentType/text()")
+		String instrumentType;
+
+		@XmlPath("ErrorMessage/text()")
+		String errorMessage;
 	}
 
 	@XmlElement(name = "value")
@@ -148,8 +201,23 @@ public class ReportDefinition {
 			value.parRate = v.getParRate();
 			value.pv = v.getPv();
 			value.pvLocal = v.getPvLocal();
+			value.portfolioValuationsLocal = v.getPortfolioValuationsLocal();
 			value.status = v.getStatus();
 			value.tradeId = v.getTradeId();
+
+			value.valuationCcy = v.getValuationCcy();
+			value.pv01 = v.getPv01();
+			value.cleanPVLocal = v.getCleanPVLocal();
+			value.cleanPV = v.getCleanPV();
+			value.accruedValCcy = v.getAccruedValCcy();
+			value.dirtyPrice = v.getDirtyPrice();
+			value.cleanPrice = v.getCleanPrice();
+			value.priceAccrued = v.getPriceAccrued();
+			value.pv01Local = v.getPv01Local();
+			value.fas157Rating = v.getFas157Rating();
+			value.instrumentCode = v.getInstrumentCode();
+			value.instrumentType = v.getInstrumentType();
+			value.errorMessage = v.getErrorMessage();
 
 			definition.values.add(value);
 		}
@@ -184,6 +252,7 @@ public class ReportDefinition {
 		value.setTradeId(v.tradeId);
 		value.setBook(v.book);
 		value.setPvLocal(v.pvLocal);
+		value.setPortfolioValuationsLocal(v.portfolioValuationsLocal);
 		value.setPv(v.pv);
 		value.setAccrued(v.accrued);
 		value.setParRate(v.parRate);
@@ -191,6 +260,21 @@ public class ReportDefinition {
 		value.setStatus(v.status);
 		value.setLegId(v.legId);
 		value.setNotional(v.notional);
+
+		value.setValuationCcy(v.valuationCcy);
+		value.setPv01(v.pv01);
+		value.setCleanPVLocal(v.cleanPVLocal);
+		value.setCleanPV(v.cleanPV);
+		value.setAccruedValCcy(v.accruedValCcy);
+		value.setDirtyPrice(v.dirtyPrice);
+		value.setCleanPrice(v.cleanPrice);
+		value.setPriceAccrued(v.priceAccrued);
+		value.setPv01Local(v.pv01Local);
+		value.setFas157Rating(v.fas157Rating);
+		value.setInstrumentCode(v.instrumentCode);
+		value.setInstrumentType(v.instrumentType);
+		value.setErrorMessage(v.errorMessage);
+
 		return value;
 	}
 }

@@ -1,4 +1,4 @@
-package com.acuo.valuation;
+package com.acuo.valuation.services.markit;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,13 +7,15 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.services.LegacyMarkitPortfolioValuationsSender;
 
 @Ignore
-public class LegacyMarkitPortfolioValuationsSenderTest {
+public class PortfolioValuationsSenderTest {
 
 	@Rule
 	public ResourceFile res = new ResourceFile("/test-markit-upload.xml");
+
+	private MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig("https://pv.markit.com/upload",
+			"acuosamedayupload", "***REMOVED***");
 
 	@Test
 	public void testResourceFileExist() throws Exception {
@@ -23,10 +25,8 @@ public class LegacyMarkitPortfolioValuationsSenderTest {
 
 	@Test
 	public void testUploadFile() throws Exception {
-		LegacyMarkitPortfolioValuationsSender mps = new LegacyMarkitPortfolioValuationsSender(
-				"https://pv.markit.com/upload", "acuosamedayupload", "***REMOVED***");
+		PortfolioValuationsSender mps = new PortfolioValuationsSender(markitEndPointConfig);
 		String key = mps.uploadFile(res.getFile());
 		mps.fetchUploadReport(key);
 	}
-
 }
