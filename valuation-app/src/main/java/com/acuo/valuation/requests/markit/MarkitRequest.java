@@ -11,13 +11,13 @@ public class MarkitRequest implements Request {
 	private final String valuationCurrency;
 	private final RequestData data;
 
-	private MarkitRequest(RequestDefinition definition) {
+	private MarkitRequest(RequestInput definition) {
 		this.valuationDate = definition.valuationDate;
 		this.valuationCurrency = definition.valuationCurrency;
 		this.data = MarkitRequestData.of(definition.data);
 	}
 
-	public static Request of(RequestDefinition definition) {
+	public static Request of(RequestInput definition) {
 		return new MarkitRequest(definition);
 	}
 

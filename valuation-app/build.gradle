@@ -11,6 +11,7 @@ ext.versions += [
 
 dependencies {
     compile (        
+        "org.codehaus.groovy:groovy-all:2.4.7",
         "com.google.inject:guice:${versions.guice}",
     	"com.acuo.collateral:common:${versions.common}",
         "com.squareup.okhttp3:okhttp:${versions.okhttp}",
