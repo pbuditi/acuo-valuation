@@ -2,16 +2,11 @@ package com.acuo.valuation.requests.markit;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.requests.Request;
 
 public class RequestParser {
-
-	private static final Logger log = LoggerFactory.getLogger(RequestParser.class);
 
 	private final Marshaller marshaller;
 
