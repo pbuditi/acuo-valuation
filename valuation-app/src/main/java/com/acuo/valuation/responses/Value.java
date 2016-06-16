@@ -1,4 +1,4 @@
-package com.acuo.valuation.reports;
+package com.acuo.valuation.responses;
 
 public interface Value {
 

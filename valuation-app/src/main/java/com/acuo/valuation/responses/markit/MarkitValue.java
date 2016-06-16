@@ -1,6 +1,6 @@
-package com.acuo.valuation.reports.markit;
+package com.acuo.valuation.responses.markit;
 
-import com.acuo.valuation.reports.Value;
+import com.acuo.valuation.responses.Value;
 
 public class MarkitValue implements Value {
 

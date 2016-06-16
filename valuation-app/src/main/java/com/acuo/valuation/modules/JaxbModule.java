@@ -8,7 +8,8 @@ import com.acuo.common.marshal.jaxb.JaxbContextFactory;
 import com.acuo.common.marshal.jaxb.JaxbMarshaller;
 import com.acuo.common.marshal.jaxb.JaxbTypes;
 import com.acuo.common.marshal.jaxb.MoxyJaxbContextFactory;
-import com.acuo.valuation.reports.markit.ReportDefinition;
+import com.acuo.valuation.requests.markit.RequestDefinition;
+import com.acuo.valuation.responses.markit.ResponseDefinition;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
@@ -23,7 +24,7 @@ public class JaxbModule extends AbstractModule {
 	@Provides
 	@JaxbTypes
 	List<Class<?>> types() {
-		return Arrays.asList(new Class<?>[] { ReportDefinition.class });
+		return Arrays.asList(new Class<?>[] { ResponseDefinition.class, RequestDefinition.class });
 	}
 
 }

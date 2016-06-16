@@ -2,48 +2,7 @@
 <presentvalue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<valuationdate>2016-06-10</valuationdate>
 	<valuationcurrency>USD</valuationcurrency>
-	<data>
-		<cds>
-			<tradeid>Ex_Basic_ISIN</tradeid>
-			<book>ACUO CDS</book>
-			<red>179BHC</red>
-			<bond>
-				<id>US163893AA87</id>
-				<idtype>ISIN</idtype>
-			</bond>
-			<tradedate>2013-04-15</tradedate>
-			<settledate>2013-01-28</settledate>
-			<maturity>2017-03-20</maturity>
-			<spread>0.05</spread>
-			<frequency>3M</frequency>
-			<daycount>A360</daycount>
-			<position>-1000000.00</position>
-		</cds>
-		<cds>
-			<tradeid>Ex_Basic_Tier</tradeid>
-			<book>ACUO CDS</book>
-			<red>179BHC</red>
-			<tier>SNRFOR</tier>
-			<tradedate>2013-04-15</tradedate>
-			<settledate>2013-01-28</settledate>
-			<maturity>2017-03-20</maturity>
-			<spread>0.05</spread>
-			<frequency>3M</frequency>
-			<daycount>A360</daycount>
-			<position>-1000000.00</position>
-		</cds>
-		<cds>
-			<tradeid>Ex_Basic_RED9</tradeid>
-			<book>ACUO CDS</book>
-			<red>179BHCAC0</red>
-			<tradedate>2013-04-15</tradedate>
-			<settledate>2013-01-28</settledate>
-			<maturity>2017-03-20</maturity>
-			<spread>0.05</spread>
-			<frequency>3M</frequency>
-			<daycount>A360</daycount>
-			<position>-1000000.00</position>
-		</cds>
+	<data>		
 		<irswap>
 			<tradeid>IRS_VANILLA</tradeid>
 			<tradedate>2013-02-14</tradedate>

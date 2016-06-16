@@ -1,8 +1,8 @@
-package com.acuo.valuation.reports;
+package com.acuo.valuation.responses;
 
 import java.util.List;
 
-public interface Report {
+public interface Response {
 
 	public Header header();
 

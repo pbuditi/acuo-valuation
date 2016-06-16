@@ -15,6 +15,7 @@ dependencies {
     	"com.acuo.collateral:common:${versions.common}",
         "com.squareup.okhttp3:okhttp:${versions.okhttp}",
         "org.eclipse.persistence:eclipselink:${versions.eclipselink}",
+        "com.sun.xml.bind:jaxb-xjc:2.2.11"
     )
 
     testCompile (        

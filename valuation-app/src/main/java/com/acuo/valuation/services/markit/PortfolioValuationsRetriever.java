@@ -5,14 +5,13 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.acuo.valuation.reports.Report;
-import com.acuo.valuation.reports.markit.ReportParser;
+import com.acuo.valuation.responses.Response;
+import com.acuo.valuation.responses.markit.ResponseParser;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class PortfolioValuationsRetriever {
 
@@ -21,10 +20,10 @@ public class PortfolioValuationsRetriever {
 	private static final Logger LOG = LoggerFactory.getLogger(PortfolioValuationsRetriever.class);
 
 	private MarkitEndPointConfig markitEndPointConfig;
-	private ReportParser parser;
+	private ResponseParser parser;
 
 	@Inject
-	public PortfolioValuationsRetriever(MarkitEndPointConfig markitEndPointConfig, ReportParser parser) {
+	public PortfolioValuationsRetriever(MarkitEndPointConfig markitEndPointConfig, ResponseParser parser) {
 		this.markitEndPointConfig = markitEndPointConfig;
 		this.parser = parser;
 	}
@@ -34,12 +33,13 @@ public class PortfolioValuationsRetriever {
 	 * 
 	 * @param asOfDate,
 	 *            date in DDMONYY or YYYY-MM-DD format
+	 * @return response, parser from the markit report
 	 */
-	public Report retrieve(String asOfDate) {
+	public Response retrieve(String asOfDate) {
 		Request request = request(asOfDate);
 		try {
 			OkHttpClient client = new OkHttpClient.Builder().build();
-			Response response = client.newCall(request).execute();
+			okhttp3.Response response = client.newCall(request).execute();
 			String result = response.body().string();
 			if (LOG.isDebugEnabled())
 				LOG.debug(result);

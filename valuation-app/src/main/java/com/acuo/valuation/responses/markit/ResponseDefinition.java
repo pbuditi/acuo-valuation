@@ -1,4 +1,4 @@
-package com.acuo.valuation.reports.markit;
+package com.acuo.valuation.responses.markit;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,16 +14,16 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 import com.acuo.common.marshal.jaxb.DateAdapter;
 import com.acuo.common.marshal.jaxb.DecimalAdapter;
-import com.acuo.valuation.reports.Header;
-import com.acuo.valuation.reports.Report;
-import com.acuo.valuation.reports.Value;
-import com.acuo.valuation.reports.markit.MarkitReport.MarkitReportBuilder;
+import com.acuo.valuation.responses.Header;
+import com.acuo.valuation.responses.Response;
+import com.acuo.valuation.responses.Value;
+import com.acuo.valuation.responses.markit.MarkitResponse.MarkitResponseBuilder;
 
 @XmlRootElement(name = "data")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ReportDefinition {
+public class ResponseDefinition {
 
-	public ReportDefinition() {
+	public ResponseDefinition() {
 		header = new HeaderDefinition();
 		values = new ArrayList<>();
 	}
@@ -154,28 +154,28 @@ public class ReportDefinition {
 	@XmlElement(name = "value")
 	public final List<ValueDefinition> values;
 
-	public static ReportDefinition definition(Report report) {
-		return new ReportDefinitionBuilder(report).build();
+	public static ResponseDefinition definition(Response response) {
+		return new ResponseDefinitionBuilder(response).build();
 	}
 
-	public static class ReportDefinitionBuilder {
+	public static class ResponseDefinitionBuilder {
 
-		private final Report report;
+		private final Response response;
 
-		public ReportDefinitionBuilder(Report report) {
-			this.report = report;
+		public ResponseDefinitionBuilder(Response response) {
+			this.response = response;
 		}
 
-		public ReportDefinition build() {
-			ReportDefinition definition = new ReportDefinition();
+		public ResponseDefinition build() {
+			ResponseDefinition definition = new ResponseDefinition();
 			populateHeader(definition);
 			populateValues(definition);
 			return definition;
 		}
 
-		private void populateHeader(ReportDefinition definition) {
+		private void populateHeader(ResponseDefinition definition) {
 			HeaderDefinition header = definition.header;
-			Header h = report.header();
+			Header h = response.header();
 			header.date = h.getDate();
 			header.failedTrades = h.getFailedTrades();
 			header.name = h.getName();
@@ -187,12 +187,12 @@ public class ReportDefinition {
 			header.version = h.getVersion();
 		}
 
-		private void populateValues(ReportDefinition definition) {
-			report.values().stream().forEach(v -> populateValue(v, definition));
+		private void populateValues(ResponseDefinition definition) {
+			response.values().stream().forEach(v -> populateValue(v, definition));
 		}
 
-		private void populateValue(Value v, ReportDefinition definition) {
-			ValueDefinition value = new ReportDefinition.ValueDefinition();
+		private void populateValue(Value v, ResponseDefinition definition) {
+			ValueDefinition value = new ResponseDefinition.ValueDefinition();
 			value.accrued = v.getAccrued();
 			value.book = v.getBook();
 			value.legId = v.getLegId();
@@ -223,8 +223,8 @@ public class ReportDefinition {
 		}
 	}
 
-	public Report getReport() {
-		MarkitReportBuilder builder = new MarkitReportBuilder(header());
+	public Response response() {
+		MarkitResponseBuilder builder = new MarkitResponseBuilder(header());
 		addValues(builder);
 		return builder.build();
 	}
@@ -243,7 +243,7 @@ public class ReportDefinition {
 		return markitHeader;
 	}
 
-	private void addValues(MarkitReportBuilder builder) {
+	private void addValues(MarkitResponseBuilder builder) {
 		values.stream().map(valueDef -> value(valueDef)).forEach(value -> builder.addValue(value));
 	}
 

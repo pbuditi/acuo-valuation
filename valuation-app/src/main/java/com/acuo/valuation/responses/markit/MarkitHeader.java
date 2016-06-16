@@ -1,8 +1,8 @@
-package com.acuo.valuation.reports.markit;
+package com.acuo.valuation.responses.markit;
 
 import java.util.Date;
 
-import com.acuo.valuation.reports.Header;
+import com.acuo.valuation.responses.Header;
 
 public class MarkitHeader implements Header {
 
