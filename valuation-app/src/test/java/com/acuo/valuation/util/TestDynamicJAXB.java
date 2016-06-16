@@ -11,11 +11,13 @@ import javax.xml.bind.JAXBException;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import com.acuo.common.util.ResourceFile;
 
+@Ignore
 public class TestDynamicJAXB {
 
 	@Rule
