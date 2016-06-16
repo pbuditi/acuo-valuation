@@ -20,6 +20,7 @@ public interface RequestData {
 		return key.type().cast(values.get(key));
 	}
 
+	@SuppressWarnings("unchecked")
 	default public <T> List<T> values(Class<T> value) {
 		ArgChecker.notNull(value, "value");
 		return values.keySet().stream().filter(k -> k.type() == value).map(k -> (T) get(k))
