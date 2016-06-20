@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Swap Valuation</title>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+  <script type="text/javascript">
+  function jqsub() {
+  	var $f = $('#json');
+  	var $m = $('#message');
+  	var $d = $("textarea[name='data']").val();
+  	$.ajax({
+  		type: 'POST',
+  		url: $f.attr('action'),
+  		data: $d,
+  		contentType: 'application/json',
+  		success: function(msg) {
+  			var formResponse = eval(msg);
+  			var result = JSON.stringify(formResponse, null, 2);
+  			$m.addClass('success').fadeIn().text(result);
+  			$f.fadeOut();
+  			return false;  
+  		},
+  		error: function(msg) {
+  			alert('error'+msg);
+  			return false;
+  		}
+  	});
+  	return false;
+  }
+  </script>
+</head>
+<body>
+  <h2>Swap Valuation</h2>
+    
+  <textarea style="display:none" rows="50" cols="100" id="message"></textarea>
+  <form action="/acuo/api/swaps/value" method="post" id="json" onSubmit="return jqsub();">
+  	 <textarea name="data" form="json" rows="50" cols="100" wrap="off"></textarea>
+  	 <input type="submit" />          
+  </form>  
+  
+</body>
+</html>

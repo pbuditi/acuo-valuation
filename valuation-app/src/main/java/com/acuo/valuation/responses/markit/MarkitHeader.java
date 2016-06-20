@@ -100,7 +100,7 @@ public class MarkitHeader implements Header {
 	@Override
 	public String toString() {
 		return "MarkitHeader [name=" + name + ", version=" + version + ", date=" + date + ", valuationDate="
-				+ valuationDate + ", valuationCurrency=" + valuationCurrency + ", successfulTrades=" + successfulTrades
+				+ valuationDate + ", valuationcurrency=" + valuationCurrency + ", successfulTrades=" + successfulTrades
 				+ ", failedTrades=" + failedTrades + ", totalTrades=" + totalTrades + ", valuationsComplete="
 				+ valuationsComplete + "]";
 	}

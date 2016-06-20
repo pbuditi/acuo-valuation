@@ -22,7 +22,7 @@ import com.acuo.valuation.responses.Response;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ JaxbModule.class })
-public class ResponseDefinitionTest {
+public class ResponseParsingTest {
 
 	@Rule
 	public ResourceFile sample = new ResourceFile("/responses/markit-sample.xml");

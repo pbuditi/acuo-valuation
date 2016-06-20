@@ -2,11 +2,21 @@ apply from: "$rootDir/gradle/java-plugins.gradle"
 apply from: "$rootDir/gradle/dependencies.gradle"
 apply from: "$rootDir/gradle/integration-test.gradle"
 
+repositories {
+	mavenCentral()
+	maven {
+		name 'htmleasy'
+		url 'http://htmleasy-maven.googlecode.com/svn/trunk/'
+	}
+}
+
 ext.versions += [	
 	common: '1.0.0-SNAPSHOT',
 	okhttp: '3.3.1',
 	eclipselink: '2.6.3',
 	guice: '4.0',
+	resteasy: '3.0.16.Final',
+	jackson: '2.7.4'
 ]
 
 dependencies {
@@ -16,7 +26,20 @@ dependencies {
     	"com.acuo.collateral:common:${versions.common}",
         "com.squareup.okhttp3:okhttp:${versions.okhttp}",
         "org.eclipse.persistence:eclipselink:${versions.eclipselink}",
-        "com.sun.xml.bind:jaxb-xjc:2.2.11"
+        "com.sun.xml.bind:jaxb-xjc:2.2.11",
+		
+		"org.jboss.resteasy:resteasy-jaxrs:${versions.resteasy}",
+		"org.jboss.resteasy:resteasy-guice:${versions.resteasy}",
+		"org.jboss.resteasy:resteasy-html:${versions.resteasy}",
+		"org.jboss.resteasy:resteasy-jackson2-provider:${versions.resteasy}",
+		
+		"com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${versions.jackson}",
+		"com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
+		
+		"com.smokejumperit.guice:core:1.1",
+		
+		"org.apache.velocity:velocity:1.7"
+		
     )
 
     testCompile (        

@@ -1,0 +1,54 @@
+{
+  "presentvalue": {    
+    "valuationdate": "2016-06-10",
+    "valuationcurrency": "USD",
+    "data": {
+      "irswap": {
+        "tradeid": "IRS_VANILLA",
+        "tradedate": "2013-02-14",
+        "book": "SWAPS",
+        "leg": [
+          {
+            "id": "1",
+            "currency": "USD",
+            "rate": "0.055",
+            "type": "FIXED",
+            "daycount": "30360",
+            "notional": "10000000",
+            "notionalxg": "NEITHER",
+            "paydates": {
+              "startdate": "2013-02-16",
+              "freq": "3M",
+              "enddate": "2017-02-16",
+              "rollcode": "MODFOLL",
+              "adjust": "true",
+              "eom": "false"
+            }
+          },
+          {
+            "id": "2",
+            "currency": "USD",
+            "fixing": {
+              "name": "USD-LIBOR-BBA",
+              "term": "3M",
+              "arrears": "false"
+            },
+            "spread": "0",
+            "type": "FLOAT",
+            "daycount": "A360",
+            "notional": "-10000000",
+            "notionalxg": "NEITHER",
+            "paydates": {
+              "startdate": "2013-02-16",
+              "freq": "3M",
+              "enddate": "2017-02-16",
+              "rollcode": "MODFOLL",
+              "adjust": "true",
+              "eom": "false"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
