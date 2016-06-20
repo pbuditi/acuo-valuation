@@ -28,7 +28,7 @@ public class SwapValuationResource {
 	@Path("/")
 	public String hello() {
 		StringWriter writer = new StringWriter();
-		velocityEngine.mergeTemplate("velocity/simple.vm", "UTF-8", new VelocityContext(), writer);
+		velocityEngine.mergeTemplate("velocity/swaps.vm", "UTF-8", new VelocityContext(), writer);
 		return writer.toString();
 	}
 

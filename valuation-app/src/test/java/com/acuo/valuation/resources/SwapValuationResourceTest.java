@@ -17,10 +17,17 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.valuation.modules.ResourcesModule;
 import com.acuo.valuation.web.MOXyCustomJsonProvider;
+import com.google.inject.Inject;
 
+@RunWith(GuiceJUnitRunner.class)
+@GuiceModules({ ResourcesModule.class })
 public class SwapValuationResourceTest {
 
 	@Rule
@@ -28,11 +35,24 @@ public class SwapValuationResourceTest {
 
 	Dispatcher dispatcher;
 
+	@Inject
+	SwapValuationResource resource;
+
 	@Before
 	public void setup() {
-		SwapValuationResource resource = new SwapValuationResource();
 		dispatcher = createDispatcher();
 		dispatcher.getRegistry().addSingletonResource(resource);
+	}
+
+	@Test
+	public void testWelcomPage() throws URISyntaxException {
+		MockHttpRequest request = MockHttpRequest.get("/swaps");
+		MockHttpResponse response = new MockHttpResponse();
+
+		dispatcher.invoke(request, response);
+
+		assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+		assertThat(response.getContentAsString()).isNotNull();
 	}
 
 	@Test

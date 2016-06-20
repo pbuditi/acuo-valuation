@@ -21,13 +21,13 @@ public class ResourcesModule extends AbstractModule {
 
 	@Provides
 	public VelocityEngine getEngine() {
-		Properties p = new Properties();
 		try {
+			Properties p = new Properties();
 			p.load(getClass().getResourceAsStream("/velocity.properties"));
+			VelocityEngine engine = new VelocityEngine(p);
+			return engine;
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e.getMessage(), e);
 		}
-		VelocityEngine engine = new VelocityEngine(p);
-		return engine;
 	}
 }
