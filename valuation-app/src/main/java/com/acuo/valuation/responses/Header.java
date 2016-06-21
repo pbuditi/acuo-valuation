@@ -1,6 +1,6 @@
 package com.acuo.valuation.responses;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public interface Header {
 
@@ -8,9 +8,9 @@ public interface Header {
 
 	String getVersion();
 
-	Date getDate();
+	LocalDate getDate();
 
-	Date getValuationDate();
+	LocalDate getValuationDate();
 
 	String getValuationCurrency();
 

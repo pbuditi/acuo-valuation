@@ -8,9 +8,9 @@ import com.acuo.common.marshal.jaxb.JaxbContextFactory;
 import com.acuo.common.marshal.jaxb.JaxbMarshaller;
 import com.acuo.common.marshal.jaxb.JaxbTypes;
 import com.acuo.common.marshal.jaxb.MoxyJaxbContextFactory;
-import com.acuo.valuation.requests.markit.RequestInput;
-import com.acuo.valuation.requests.markit.swap.IrSwapInput;
-import com.acuo.valuation.responses.markit.ResponseDefinition;
+import com.acuo.valuation.markit.requests.RequestInput;
+import com.acuo.valuation.markit.requests.swap.IrSwapInput;
+import com.acuo.valuation.markit.responses.ResponseInput;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
@@ -25,7 +25,7 @@ public class JaxbModule extends AbstractModule {
 	@Provides
 	@JaxbTypes
 	List<Class<?>> types() {
-		return Arrays.asList(new Class<?>[] { ResponseDefinition.class, RequestInput.class, IrSwapInput.class });
+		return Arrays.asList(new Class<?>[] { ResponseInput.class, RequestInput.class, IrSwapInput.class });
 	}
 
 }

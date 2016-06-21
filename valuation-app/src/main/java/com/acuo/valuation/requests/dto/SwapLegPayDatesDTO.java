@@ -2,6 +2,9 @@ package com.acuo.valuation.requests.dto;
 
 import java.time.LocalDate;
 
+import lombok.Data;
+
+@Data
 public class SwapLegPayDatesDTO {
 
 	private LocalDate startDate;
