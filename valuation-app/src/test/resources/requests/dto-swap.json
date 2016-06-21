@@ -1,0 +1,46 @@
+{    
+    "book": "SWAPS",
+    "legs": [
+        {
+            "currency": "USD",
+            "daycount": "30360",
+            "id": "1",
+            "notional": "10000000",
+            "notionalxg": "NEITHER",
+            "paydates": {
+                "adjust": "true",
+                "enddate": "2017-02-16",
+                "eom": "false",
+                "freq": "3M",
+                "rollcode": "MODFOLL",
+                "startdate": "2013-02-16"
+            },
+            "rate": "0.055",
+            "type": "FIXED"
+        },
+        {
+            "currency": "USD",
+            "daycount": "A360",
+            "fixing": {
+                "arrears": "false",
+                "name": "USD-LIBOR-BBA",
+                "term": "3M"
+            },
+            "id": "2",
+            "notional": "-10000000",
+            "notionalxg": "NEITHER",
+            "paydates": {
+                "adjust": "true",
+                "enddate": "2017-02-16",
+                "eom": "false",
+                "freq": "3M",
+                "rollcode": "MODFOLL",
+                "startdate": "2013-02-16"
+            },
+            "spread": "0",
+            "type": "FLOAT"
+        }
+    ],
+    "tradeDate": "2013-02-14",
+    "tradeId": "IRS_VANILLA"    
+}

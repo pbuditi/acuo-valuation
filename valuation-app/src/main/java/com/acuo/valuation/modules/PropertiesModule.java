@@ -2,7 +2,7 @@ package com.acuo.valuation.modules;
 
 import javax.inject.Inject;
 
-import com.acuo.valuation.Configuration;
+import com.acuo.common.app.Configuration;
 import com.acuo.valuation.PropertiesHelper;
 import com.google.inject.AbstractModule;
 

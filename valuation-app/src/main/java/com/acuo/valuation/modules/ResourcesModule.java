@@ -9,9 +9,6 @@ import com.acuo.valuation.resources.SwapValuationResource;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-/**
- * Created by aurel.avramescu on 14/06/2014.
- */
 public class ResourcesModule extends AbstractModule {
 
 	@Override

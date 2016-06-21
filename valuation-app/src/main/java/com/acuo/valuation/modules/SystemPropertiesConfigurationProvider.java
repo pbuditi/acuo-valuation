@@ -5,9 +5,9 @@ import static com.acuo.valuation.PropertiesHelper.ACUO_CONFIG_ENV;
 
 import javax.inject.Provider;
 
-import com.acuo.valuation.AppId;
-import com.acuo.valuation.Configuration;
-import com.acuo.valuation.Environment;
+import com.acuo.common.app.AppId;
+import com.acuo.common.app.Configuration;
+import com.acuo.common.app.Environment;
 
 public class SystemPropertiesConfigurationProvider implements Provider<Configuration> {
 

@@ -16,6 +16,8 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 
+import com.acuo.common.marshal.jaxb.MarshallingEventHandler;
+
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -34,16 +36,19 @@ public class MOXyCustomJsonProvider extends MOXyJsonProvider {
 	@Override
 	protected void preReadFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, String> httpHeaders, Unmarshaller unmarshaller) throws JAXBException {
+		unmarshaller.setEventHandler(new MarshallingEventHandler());
 		unmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "$");
-		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+
 	}
 
 	@Override
 	protected void preWriteTo(Object object, Class<?> type, Type genericType, Annotation[] annotations,
 			MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, Marshaller marshaller)
 					throws JAXBException {
+		marshaller.setEventHandler(new MarshallingEventHandler());
 		marshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "$");
-		marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
+		marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 	}
 
 }

@@ -2,6 +2,7 @@ package com.acuo.valuation.resources;
 
 import java.io.StringWriter;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,16 +13,23 @@ import javax.ws.rs.core.MediaType;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import com.acuo.valuation.requests.markit.RequestInput;
-import com.google.inject.Inject;
+import com.acuo.valuation.requests.dto.SwapDTO;
+import com.acuo.valuation.services.PricingService;
+import com.acuo.valuation.services.Result;
 
 @Path("/swaps")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SwapValuationResource {
 
+	private final VelocityEngine velocityEngine;
+	private final PricingService pricingService;
+
 	@Inject
-	private VelocityEngine velocityEngine;
+	public SwapValuationResource(VelocityEngine velocityEngine, PricingService pricingService) {
+		this.velocityEngine = velocityEngine;
+		this.pricingService = pricingService;
+	}
 
 	@GET
 	@Produces({ MediaType.TEXT_HTML })
@@ -36,10 +44,12 @@ public class SwapValuationResource {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/value")
-	public RequestInput price(RequestInput input) throws Exception {
+	public Result price(SwapDTO swap) throws Exception {
 
-		System.out.println("Trade ID = " + input);
+		System.out.println(swap);
 
-		return input;
+		Result result = pricingService.price(swap);
+
+		return result;
 	}
 }
