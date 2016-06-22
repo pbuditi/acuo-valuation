@@ -2,14 +2,13 @@ package com.acuo.valuation.markit.services;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.acuo.valuation.markit.reports.Report;
+import com.acuo.valuation.reports.Report;
 import com.acuo.valuation.markit.reports.ReportParser;
 import com.acuo.valuation.requests.dto.SwapDTO;
 import com.acuo.valuation.utils.LoggingInterceptor;
@@ -22,7 +21,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class PortfolioValuationsSender {
+public class PortfolioValuationsSender implements Sender {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PortfolioValuationsSender.class);
 
@@ -38,13 +37,12 @@ public class PortfolioValuationsSender {
 		this.reportParser = reportParser;
 	}
 
-	public LocalDate send(SwapDTO swap) {
+	public Report send(SwapDTO swap) {
 		File uploadFile = generateFile(swap);
 		try {
 			String key = uploadFile(uploadFile);
 			String result = fetchUploadReport(key);
-			Report report = reportParser.parse(result);
-			return report.valuationDate();
+			return reportParser.parse(result);
 		} catch (Exception e) {
 			LOG.error("error uploading file for {} to markit pv service", swap, e);
 		}
@@ -52,7 +50,6 @@ public class PortfolioValuationsSender {
 	}
 
 	private File generateFile(SwapDTO swap) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -19,7 +19,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class PortfolioValuationsRetriever {
+public class PortfolioValuationsRetriever implements Retriever {
 
 	private static final String ERROR_MSG = "Error occurred while retrieving markit results for the date {}";
 
@@ -38,7 +38,7 @@ public class PortfolioValuationsRetriever {
 		Response results = retrieve(valuationDate.format(DateTimeFormatter.ofPattern("YYYY-MM-DD")));
 		Value result = results.values().stream().filter(v -> tradeId.equals(v.getTradeId())).reduce(thereCanBeOnlyOne())
 				.get();
-		return new SwapResult(result);
+		return new SwapResult(result.getPv());
 	}
 
 	/**

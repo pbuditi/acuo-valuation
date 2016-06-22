@@ -10,8 +10,8 @@ public class SwapResult implements Result {
 
 	private final Double pv;
 
-	public SwapResult(Value value) {
-		this.pv = value.getPv();
+	public SwapResult(Double pv) {
+		this.pv = pv;
 	}
 
 }

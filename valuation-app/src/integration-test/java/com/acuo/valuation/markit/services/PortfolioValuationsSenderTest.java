@@ -3,6 +3,7 @@ package com.acuo.valuation.markit.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -10,6 +11,7 @@ import org.mockito.Mock;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.markit.reports.ReportParser;
 
+@Ignore
 public class PortfolioValuationsSenderTest {
 
 	@Rule

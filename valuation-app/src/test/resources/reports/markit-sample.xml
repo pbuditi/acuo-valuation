@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <header>
+        <name>Valuations Upload Report</name>
+        <version>2.2</version>
+        <date>2016-06-22</date>
+    </header>
+    <report>
+        <tradeid>IRS_VANILLA</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade IRS_VANILLA : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>IRS_VANILLA</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade IRS_VANILLA</report>
+    </report>
+    <report>
+        <type>AUDIT</type>
+        <report>Processed 1/1 trades successfully</report>
+    </report>
+</data>

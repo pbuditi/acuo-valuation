@@ -24,11 +24,11 @@ import com.acuo.valuation.responses.Value;
 public class ResponseInput {
 
 	public ResponseInput() {
-		header = new HeaderInput();
+		header = new ResponseHeader();
 		values = new ArrayList<>();
 	}
 
-	static class HeaderInput {
+	static class ResponseHeader {
 
 		@XmlPath("name/text()")
 		String name;
@@ -61,9 +61,9 @@ public class ResponseInput {
 	}
 
 	@XmlElement(name = "header", required = true)
-	public final HeaderInput header;
+	public final ResponseHeader header;
 
-	static class ValueInput {
+	static class ResponseValue {
 
 		@XmlPath("TradeId/text()")
 		String tradeId;
@@ -152,7 +152,7 @@ public class ResponseInput {
 	}
 
 	@XmlElement(name = "value")
-	public final List<ValueInput> values;
+	public final List<ResponseValue> values;
 
 	public static ResponseInput definition(Response response) {
 		return new ResponseDefinitionBuilder(response).build();
@@ -174,7 +174,7 @@ public class ResponseInput {
 		}
 
 		private void populateHeader(ResponseInput definition) {
-			HeaderInput header = definition.header;
+			ResponseHeader header = definition.header;
 			Header h = response.header();
 			header.date = h.getDate();
 			header.failedTrades = h.getFailedTrades();
@@ -192,7 +192,7 @@ public class ResponseInput {
 		}
 
 		private void populateValue(Value v, ResponseInput definition) {
-			ValueInput value = new ResponseInput.ValueInput();
+			ResponseValue value = new ResponseValue();
 			value.accrued = v.getAccrued();
 			value.book = v.getBook();
 			value.legId = v.getLegId();
@@ -247,7 +247,7 @@ public class ResponseInput {
 		values.stream().map(valueDef -> value(valueDef)).forEach(value -> builder.addValue(value));
 	}
 
-	private MarkitValue value(ValueInput v) {
+	private MarkitValue value(ResponseValue v) {
 		MarkitValue value = new MarkitValue();
 		value.setTradeId(v.tradeId);
 		value.setBook(v.book);

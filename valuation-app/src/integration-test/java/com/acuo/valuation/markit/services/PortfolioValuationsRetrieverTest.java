@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -15,6 +16,7 @@ import com.acuo.valuation.markit.services.PortfolioValuationsRetriever;
 import com.acuo.valuation.modules.JaxbModule;
 import com.acuo.valuation.responses.Response;
 
+@Ignore
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ JaxbModule.class })
 public class PortfolioValuationsRetrieverTest {
