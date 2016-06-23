@@ -12,6 +12,14 @@ sourceSets {
     }
 }
 
+plugins.withType(org.gradle.plugins.ide.idea.IdeaPlugin) {
+    idea {
+        module {
+            testSourceDirs += file('src/integration-test/java')
+        }
+    }
+}
+
 task integrationTest(type: Test) {
     description = 'Runs the integration tests.'
     group = 'verification'

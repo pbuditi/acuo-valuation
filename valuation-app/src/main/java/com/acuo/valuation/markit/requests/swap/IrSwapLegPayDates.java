@@ -1,15 +1,21 @@
 package com.acuo.valuation.markit.requests.swap;
 
+import lombok.Setter;
+
+import java.time.LocalDate;
 import java.util.Date;
 
+@Setter
 class IrSwapLegPayDates {
 
-	private final Date startDate;
-	private final String frequency;
-	private final Date enddate;
-	private final String rollCode;
-	private final boolean adjust;
-	private final boolean eom;
+	private LocalDate startDate;
+	private String frequency;
+	private LocalDate enddate;
+	private String rollCode;
+	private boolean adjust;
+	private boolean eom;
+
+	public IrSwapLegPayDates() {}
 
 	public IrSwapLegPayDates(IrSwapLegPayDatesInput input) {
 		startDate = input.startDate;
@@ -20,7 +26,7 @@ class IrSwapLegPayDates {
 		eom = input.eom;
 	}
 
-	public Date startDate() {
+	public LocalDate startDate() {
 		return startDate;
 	}
 
@@ -28,7 +34,7 @@ class IrSwapLegPayDates {
 		return frequency;
 	}
 
-	public Date enddate() {
+	public LocalDate enddate() {
 		return enddate;
 	}
 

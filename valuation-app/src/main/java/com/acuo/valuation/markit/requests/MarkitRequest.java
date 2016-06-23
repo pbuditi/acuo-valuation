@@ -1,5 +1,6 @@
 package com.acuo.valuation.markit.requests;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.acuo.valuation.requests.Request;
@@ -7,7 +8,7 @@ import com.acuo.valuation.requests.RequestData;
 
 public class MarkitRequest implements Request {
 
-	private final Date valuationDate;
+	private final LocalDate valuationDate;
 	private final String valuationCurrency;
 	private final RequestData data;
 
@@ -22,7 +23,7 @@ public class MarkitRequest implements Request {
 	}
 
 	@Override
-	public Date getValuationDate() {
+	public LocalDate getValuationDate() {
 		return valuationDate;
 	}
 

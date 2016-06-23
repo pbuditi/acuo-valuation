@@ -1,9 +1,9 @@
 package com.acuo.valuation.services;
 
-import com.acuo.valuation.requests.dto.SwapDTO;
+import com.acuo.valuation.markit.requests.swap.IrSwap;
 
 public interface PricingService {
 
-	Result price(SwapDTO swap);
+	Result price(IrSwap swap);
 
 }

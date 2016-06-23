@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
-import com.acuo.common.marshal.jaxb.DecimalAdapter;
+import com.acuo.common.marshal.DecimalAdapter;
 
 public class IrSwapLegInput {
 

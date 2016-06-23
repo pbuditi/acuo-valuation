@@ -1,17 +1,22 @@
 package com.acuo.valuation.markit.requests.swap;
 
-class IrSwapLeg {
+import lombok.Setter;
 
-	private final int id;
-	private final String currency;
-	private final IrSwapLegFixing fixing;
-	private final Double spread;
-	private final Double rate;
-	private final String type;
-	private final String daycount;
-	private final Double notional;
-	private final String notionalxg;
-	private final IrSwapLegPayDates dates;
+@Setter
+public class IrSwapLeg {
+
+	private int id;
+	private String currency;
+	private IrSwapLegFixing fixing;
+	private Double spread;
+	private Double rate;
+	private String type;
+	private String daycount;
+	private Double notional;
+	private String notionalxg;
+	private IrSwapLegPayDates dates;
+
+	public IrSwapLeg() { }
 
 	public IrSwapLeg(IrSwapLegInput input) {
 		id = input.id;

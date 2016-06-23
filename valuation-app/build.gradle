@@ -1,5 +1,5 @@
 plugins {
-	id 'io.franzbecker.gradle-lombok' version '1.6'
+    id 'io.franzbecker.gradle-lombok' version '1.6'
 }
 
 apply from: "$rootDir/gradle/java-plugins.gradle"
@@ -7,49 +7,52 @@ apply from: "$rootDir/gradle/dependencies.gradle"
 apply from: "$rootDir/gradle/integration-test.gradle"
 
 repositories {
-	mavenCentral()
-	maven {
-		name 'htmleasy'
-		url 'http://htmleasy-maven.googlecode.com/svn/trunk/'
-	}
+    mavenCentral()
+    maven {
+        name 'htmleasy'
+        url 'http://htmleasy-maven.googlecode.com/svn/trunk/'
+    }
 }
 
-ext.versions += [	
-	common: '1.0.0-SNAPSHOT',
-	okhttp: '3.3.1',
-	eclipselink: '2.6.3',
-	guice: '4.0',
-	resteasy: '3.0.16.Final',
-	jackson: '2.7.4'
+ext.versions += [
+        common     : '1.0.0-SNAPSHOT',
+        okhttp     : '3.3.1',
+        eclipselink: '2.6.3',
+        guice      : '4.0',
+        resteasy   : '3.0.16.Final',
+        jackson    : '2.7.4'
 ]
 
 dependencies {
-    compile (        
-        "org.codehaus.groovy:groovy-all:2.4.7",
-        "com.google.inject:guice:${versions.guice}",
-    	"com.acuo.collateral:common:${versions.common}",
-        "com.squareup.okhttp3:okhttp:${versions.okhttp}",
-        "org.eclipse.persistence:eclipselink:${versions.eclipselink}",
-        "com.sun.xml.bind:jaxb-xjc:2.2.11",
-		
-		"org.jboss.resteasy:resteasy-jaxrs:${versions.resteasy}",
-		"org.jboss.resteasy:resteasy-guice:${versions.resteasy}",
-		"org.jboss.resteasy:resteasy-html:${versions.resteasy}",
-		"org.jboss.resteasy:resteasy-jackson2-provider:${versions.resteasy}",
-		
-		"com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${versions.jackson}",
-		"com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
-		
-		"com.smokejumperit.guice:core:1.1",
-		
-		"org.apache.velocity:velocity:1.7"		
+    compile(
+            "org.codehaus.groovy:groovy-all:2.4.7",
+            "com.google.inject:guice:${versions.guice}",
+            "com.acuo.collateral:common:${versions.common}",
+            "com.squareup.okhttp3:okhttp:${versions.okhttp}",
+            "org.eclipse.persistence:eclipselink:${versions.eclipselink}",
+            "com.sun.xml.bind:jaxb-xjc:2.2.11",
+
+            "org.jboss.resteasy:resteasy-jaxrs:${versions.resteasy}",
+            "org.jboss.resteasy:resteasy-guice:${versions.resteasy}",
+            "org.jboss.resteasy:resteasy-html:${versions.resteasy}",
+            "org.jboss.resteasy:resteasy-jackson2-provider:${versions.resteasy}",
+
+            "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${versions.jackson}",
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
+
+            "com.smokejumperit.guice:core:1.1",
+
+            "org.apache.velocity:velocity:1.7",
+
+            "org.modelmapper:modelmapper:0.7.5"
     )
 
-    testCompile (        
-        "com.acuo.collateral:common:${versions.common}:tests",
-        "org.xmlunit:xmlunit-core:2.2.0",
-        "org.xmlunit:xmlunit-matchers:2.2.0",
-		"net.javacrumbs.json-unit:json-unit:1.12.1",
-		"net.javacrumbs.json-unit:json-unit-fluent:1.12.1"
+    testCompile(
+            "com.acuo.collateral:common:${versions.common}:tests",
+            "com.squareup.okhttp3:mockwebserver:${versions.okhttp}",
+            "org.xmlunit:xmlunit-core:2.2.0",
+            "org.xmlunit:xmlunit-matchers:2.2.0",
+            "net.javacrumbs.json-unit:json-unit:1.12.1",
+            "net.javacrumbs.json-unit:json-unit-fluent:1.12.1"
     )
 }

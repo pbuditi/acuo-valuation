@@ -1,16 +1,14 @@
 package com.acuo.valuation.markit.requests.swap;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.acuo.common.marshal.LocalDateAdapter;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.eclipse.persistence.oxm.annotations.XmlPath;
-
-import com.acuo.common.marshal.jaxb.DateAdapter;
+import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class IrSwapInput {
 
@@ -29,8 +27,8 @@ public class IrSwapInput {
 	public String tradeId;
 
 	@XmlPath("tradedate/text()")
-	@XmlJavaTypeAdapter(DateAdapter.class)
-	public Date tradeDate;
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
+	public LocalDate tradeDate;
 
 	@XmlPath("book/text()")
 	public String book;

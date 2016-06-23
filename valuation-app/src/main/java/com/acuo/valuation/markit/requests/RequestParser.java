@@ -1,6 +1,7 @@
 package com.acuo.valuation.markit.requests;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.util.ArgChecker;
@@ -11,7 +12,7 @@ public class RequestParser {
 	private final Marshaller marshaller;
 
 	@Inject
-	public RequestParser(Marshaller marshaller) {
+	public RequestParser(@Named("xml") Marshaller marshaller) {
 		this.marshaller = marshaller;
 	}
 

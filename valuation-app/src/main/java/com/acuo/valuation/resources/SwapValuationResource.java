@@ -10,12 +10,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.acuo.valuation.markit.requests.swap.IrSwap;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import com.acuo.valuation.requests.dto.SwapDTO;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.Result;
+import org.modelmapper.ModelMapper;
 
 @Path("/swaps")
 @Produces(MediaType.APPLICATION_JSON)
@@ -44,9 +46,11 @@ public class SwapValuationResource {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/value")
-	public Result price(SwapDTO swap) throws Exception {
+	public Result price(SwapDTO swapDTO) throws Exception {
 
-		System.out.println(swap);
+		ModelMapper modelMapper = new ModelMapper();
+
+		IrSwap swap = modelMapper.map(swapDTO, IrSwap.class);
 
 		Result result = pricingService.price(swap);
 

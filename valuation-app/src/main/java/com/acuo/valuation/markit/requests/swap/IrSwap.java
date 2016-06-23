@@ -1,16 +1,21 @@
 package com.acuo.valuation.markit.requests.swap;
 
-import java.util.Date;
+import lombok.Setter;
+
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Setter
 public class IrSwap {
 
-	private final String tradeId;
-	private final Date tradeDate;
-	private final String book;
-	private final Set<IrSwapLeg> legs;
+	private String tradeId;
+	private LocalDate tradeDate;
+	private String book;
+	private Set<IrSwapLeg> legs;
+
+	public IrSwap() { }
 
 	public IrSwap(IrSwapInput input) {
 		tradeId = input.tradeId;
@@ -23,7 +28,7 @@ public class IrSwap {
 		return tradeId;
 	}
 
-	public Date tradeDate() {
+	public LocalDate tradeDate() {
 		return tradeDate;
 	}
 

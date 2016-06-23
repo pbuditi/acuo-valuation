@@ -1,10 +1,11 @@
 package com.acuo.valuation.requests;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public interface Request {
 
-	Date getValuationDate();
+	LocalDate getValuationDate();
 
 	String getValuationCurrency();
 

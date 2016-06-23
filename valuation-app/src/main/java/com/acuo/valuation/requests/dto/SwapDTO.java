@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.acuo.common.marshal.jaxb.LocalDateAdapter;
+import com.acuo.common.marshal.LocalDateAdapter;
 
 import lombok.Data;
 

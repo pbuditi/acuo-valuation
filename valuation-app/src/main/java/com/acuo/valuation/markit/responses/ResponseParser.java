@@ -1,6 +1,7 @@
 package com.acuo.valuation.markit.responses;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.util.ArgChecker;
@@ -11,7 +12,7 @@ public class ResponseParser {
 	private final Marshaller marshaller;
 
 	@Inject
-	public ResponseParser(Marshaller marshaller) {
+	public ResponseParser(@Named("xml") Marshaller marshaller) {
 		this.marshaller = marshaller;
 	}
 

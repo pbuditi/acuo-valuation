@@ -1,10 +1,15 @@
 package com.acuo.valuation.markit.requests.swap;
 
+import lombok.Setter;
+
+@Setter
 class IrSwapLegFixing {
 
-	private final String name;
-	private final String term;
-	private final boolean arrears;
+	private String name;
+	private String term;
+	private boolean arrears;
+
+	public IrSwapLegFixing() {}
 
 	public IrSwapLegFixing(IrSwapLegFixingInput input) {
 		name = input.name;

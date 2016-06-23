@@ -16,7 +16,7 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 
-import com.acuo.common.marshal.jaxb.MarshallingEventHandler;
+import com.acuo.common.marshal.MarshallingEventHandler;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)

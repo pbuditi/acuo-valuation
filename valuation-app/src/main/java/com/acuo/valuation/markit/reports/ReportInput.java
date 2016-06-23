@@ -1,6 +1,6 @@
 package com.acuo.valuation.markit.reports;
 
-import com.acuo.common.marshal.jaxb.LocalDateAdapter;
+import com.acuo.common.marshal.LocalDateAdapter;
 import com.acuo.valuation.reports.Report;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 

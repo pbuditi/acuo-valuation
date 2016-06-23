@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.acuo.valuation.markit.requests.swap.IrSwap;
 import com.acuo.valuation.reports.Report;
 import com.acuo.valuation.requests.dto.SwapDTO;
 import com.acuo.valuation.services.PricingService;
@@ -21,8 +22,8 @@ public class MarkitPricingService implements PricingService {
 	}
 
 	@Override
-	public Result price(SwapDTO swap) {
-		String tradeId = swap.getTradeId();
+	public Result price(IrSwap swap) {
+		String tradeId = swap.tradeId();
 
 		Report report = sender.send(swap);
 

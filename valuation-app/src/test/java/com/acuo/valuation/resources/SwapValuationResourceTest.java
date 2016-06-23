@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
+import com.acuo.valuation.markit.requests.swap.IrSwap;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
@@ -54,7 +55,7 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
 		public MockServiceModule() {
 			MockitoAnnotations.initMocks(this);
 
-			when(pricingService.price(any(SwapDTO.class))).thenReturn(result);
+			when(pricingService.price(any(IrSwap.class))).thenReturn(result);
 			when(result.toString()).thenReturn("Result");
 		}
 

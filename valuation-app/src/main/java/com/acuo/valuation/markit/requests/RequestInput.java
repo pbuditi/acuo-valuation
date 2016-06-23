@@ -1,17 +1,16 @@
 package com.acuo.valuation.markit.requests;
 
-import java.util.Date;
+import com.acuo.common.marshal.LocalDateAdapter;
+import com.acuo.valuation.requests.Request;
+import com.acuo.valuation.requests.RequestData;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.eclipse.persistence.oxm.annotations.XmlPath;
-
-import com.acuo.common.marshal.jaxb.DateAdapter;
-import com.acuo.valuation.requests.Request;
+import java.time.LocalDate;
 
 @XmlRootElement(name = "presentvalue")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -20,10 +19,14 @@ public class RequestInput {
 	public RequestInput() {
 	}
 
+	public RequestInput(LocalDate valuationDate, String valuationCurrency, RequestData data) {
+		this.valuationDate = valuationDate;
+		this.valuationCurrency = valuationCurrency;
+		this.data = new RequestDataInput(data);
+	}
+
 	private RequestInput(Request request) {
-		this.valuationDate = request.getValuationDate();
-		this.valuationCurrency = request.getValuationCurrency();
-		this.data = new RequestDataInput(request.getData());
+		this(request.getValuationDate(),request.getValuationCurrency(),request.getData());
 	}
 
 	public static RequestInput definition(Request request) {
@@ -35,8 +38,8 @@ public class RequestInput {
 	}
 
 	@XmlPath("valuationdate/text()")
-	@XmlJavaTypeAdapter(DateAdapter.class)
-	Date valuationDate;
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
+	LocalDate valuationDate;
 
 	@XmlPath("valuationcurrency/text()")
 	String valuationCurrency;

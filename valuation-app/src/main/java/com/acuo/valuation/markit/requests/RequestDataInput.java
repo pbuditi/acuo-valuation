@@ -1,5 +1,6 @@
 package com.acuo.valuation.markit.requests;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import com.acuo.valuation.requests.RequestData;
 public class RequestDataInput {
 
 	public RequestDataInput() {
+		swaps = new ArrayList<>();
 	}
 
 	RequestDataInput(RequestData data) {

@@ -1,12 +1,10 @@
 package com.acuo.valuation.markit.requests.swap;
 
-import java.util.Date;
-
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
+import com.acuo.common.marshal.LocalDateAdapter;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
-import com.acuo.common.marshal.jaxb.DateAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.LocalDate;
 
 public class IrSwapLegPayDatesInput {
 
@@ -24,15 +22,15 @@ public class IrSwapLegPayDatesInput {
 	}
 
 	@XmlPath("startdate/text()")
-	@XmlJavaTypeAdapter(DateAdapter.class)
-	public Date startDate;
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
+	public LocalDate startDate;
 
 	@XmlPath("freq/text()")
 	public String frequency;
 
 	@XmlPath("enddate/text()")
-	@XmlJavaTypeAdapter(DateAdapter.class)
-	public Date enddate;
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
+	public LocalDate enddate;
 
 	@XmlPath("rollcode/text()")
 	public String rollCode;

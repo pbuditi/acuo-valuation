@@ -12,8 +12,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
-import com.acuo.common.marshal.jaxb.DecimalAdapter;
-import com.acuo.common.marshal.jaxb.LocalDateAdapter;
+import com.acuo.common.marshal.DecimalAdapter;
+import com.acuo.common.marshal.LocalDateAdapter;
 import com.acuo.valuation.markit.responses.MarkitResponse.MarkitResponseBuilder;
 import com.acuo.valuation.responses.Header;
 import com.acuo.valuation.responses.Response;

@@ -1,5 +1,6 @@
 package com.acuo.valuation.markit.services;
 
+import com.acuo.valuation.markit.requests.swap.IrSwap;
 import com.acuo.valuation.reports.Report;
 import com.acuo.valuation.requests.dto.SwapDTO;
 import com.acuo.valuation.services.Result;
@@ -35,7 +36,7 @@ public class MarkitPricingServiceTest {
 
     @Test
     public void testPriceSwapWithErrorReport() {
-        when(sender.send(any(SwapDTO.class))).thenReturn(reportError());
+        when(sender.send(any(IrSwap.class))).thenReturn(reportError());
 
         Result result = service.price(swap());
 
@@ -44,7 +45,7 @@ public class MarkitPricingServiceTest {
 
     @Test
     public void testPriceSwapWithNoErrorReport() {
-        when(sender.send(any(SwapDTO.class))).thenReturn(report());
+        when(sender.send(any(IrSwap.class))).thenReturn(report());
         when(retriever.retrieve(any(LocalDate.class), any(String.class))).thenReturn(new SwapResult(1.0d));
 
         Result result = service.price(swap());
@@ -57,8 +58,8 @@ public class MarkitPricingServiceTest {
         assertThat(swapResult).is(pvEqualToOne);
     }
 
-    private SwapDTO swap() {
-        SwapDTO swapDTO = new SwapDTO();
+    private IrSwap swap() {
+        IrSwap swapDTO = new IrSwap();
         swapDTO.setTradeId("trade-id");
         return swapDTO;
     }

@@ -3,6 +3,8 @@ package com.acuo.valuation.markit.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import com.acuo.valuation.markit.requests.RequestParser;
+import com.acuo.valuation.reports.Report;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,7 +14,7 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.markit.reports.ReportParser;
 
 @Ignore
-public class PortfolioValuationsSenderTest {
+public class PortfolioValuationsSenderIntegrationTest {
 
 	@Rule
 	public ResourceFile res = new ResourceFile("/it-requests/markit-sample.xml");
@@ -21,7 +23,10 @@ public class PortfolioValuationsSenderTest {
 	public ResourceFile test = new ResourceFile("/it-requests/test.xml");
 
 	private MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig("https://pv.markit.com/upload",
-			"acuosamedayupload", "***REMOVED***");
+			"acuosamedayupload", "***REMOVED***", 1l);
+
+	@Mock
+	RequestParser requestParser;
 
 	@Mock
 	ReportParser parser;
@@ -34,11 +39,9 @@ public class PortfolioValuationsSenderTest {
 
 	@Test
 	public void testUploadFile() throws Exception {
-		PortfolioValuationsSender mps = new PortfolioValuationsSender(markitEndPointConfig, parser);
-		String key = mps.uploadFile(res.getFile());
-		String report = mps.fetchUploadReport(key);
+		PortfolioValuationsSender mps = new PortfolioValuationsSender(markitEndPointConfig, requestParser, parser);
 
-		System.out.println(report);
+		Report report = mps.send(res.getContent());
 
 		assertThat(report).isNotNull();
 	}
