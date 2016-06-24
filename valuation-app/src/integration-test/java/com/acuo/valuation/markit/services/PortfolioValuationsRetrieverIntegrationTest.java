@@ -4,7 +4,10 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.valuation.markit.responses.ResponseParser;
 import com.acuo.valuation.modules.JaxbModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.responses.Response;
+import com.acuo.valuation.services.ClientEndPoint;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,18 +18,23 @@ import static org.junit.Assert.assertNotNull;
 
 @Ignore
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({ JaxbModule.class })
+@GuiceModules({ServicesModule.class, JaxbModule.class })
 public class PortfolioValuationsRetrieverIntegrationTest {
 
-	private MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig("https://pv.markit.com/upload",
-			"acuosamedayupload", "***REMOVED***", 1l);
+	@Inject
+	ClientEndPoint clientEndPoint;
 
 	@Inject
 	ResponseParser parser;
 
+	@Before
+	public void setUp() {
+
+	}
+
 	@Test
 	public void testRetrieve() throws Exception {
-		PortfolioValuationsRetriever retriever = new PortfolioValuationsRetriever(markitEndPointConfig, parser);
+		PortfolioValuationsRetriever retriever = new PortfolioValuationsRetriever(clientEndPoint, parser);
 		Response response = retriever.retrieve("2016-06-10");
 		assertNotNull(response);
 	}

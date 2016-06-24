@@ -14,6 +14,6 @@ public class SwapLegDTO {
 	private String daycount;
 	private Double notional;
 	private String notionalxg;
-	private SwapLegPayDatesDTO payDates;
+	private SwapLegPayDatesDTO paydates;
 
 }

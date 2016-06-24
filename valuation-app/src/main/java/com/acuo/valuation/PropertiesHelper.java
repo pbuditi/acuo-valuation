@@ -21,12 +21,16 @@ public class PropertiesHelper {
 	public static final String ACUO_VALUATION_APP_DIR = "acuo.webapp.dir";
 	public static final String ACUO_VALUATION_APP_CTX_PATH = "acuo.webapp.context.path";
 	public static final String ACUO_VALUATION_APP_REST_MAPPING_PREFIX = "acuo.webapp.rest.servlet.mapping.prefix";
+	public static final String ACUO_VALUATION_MARKIT_HOST = "acuo.markit.host";
+	public static final String ACUO_VALUATION_MARKIT_USERNAME = "acuo.markit.username";
+	public static final String ACUO_VALUATION_MARKIT_PASSWORD = "acuo.markit.password";
+	public static final String ACUO_VALUATION_MARKIT_RETRY_DELAY = "acuo.markit.retry.delay";
+
 
 	private final Configuration configuration;
 
 	private PropertiesHelper(Configuration configuration) {
 		this.configuration = configuration;
-		configuration.getAppId();
 	}
 
 	public static PropertiesHelper of(Configuration configuration) {

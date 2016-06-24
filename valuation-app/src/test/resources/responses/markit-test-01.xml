@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+	<header>
+		<name>Trade Valuations</name>
+		<version>3.0</version>
+		<date>2016-06-10</date>
+		<valuationdate>2016-06-10</valuationdate>
+		<valuationccy>USD</valuationccy>
+		<numtradessuccessful>1</numtradessuccessful>
+		<numtradesfailed>0</numtradesfailed>
+		<totalnumtrades>1</totalnumtrades>
+		<valuationscomplete>true</valuationscomplete>
+	</header>
+	<value>
+		<TradeId>IRS_VANILLA</TradeId>
+		<Book>Test</Book>
+		<LegId>1</LegId>
+		<PortfolioValuationsLocal>225512.73724505748</PortfolioValuationsLocal>
+		<PresentValue>225512.73724505748</PresentValue>
+		<Accrued>6945.75</Accrued>
+		<ParRate>0.0533241580961</ParRate>
+	</value>
+	<value>
+		<TradeId>IRS_VANILLA</TradeId>
+		<Book>Test</Book>
+		<LegId>2</LegId>
+		<PortfolioValuationsLocal>-235651.12391798265</PortfolioValuationsLocal>
+		<PresentValue>-235651.12391798265</PresentValue>
+		<Accrued>-6124.999999999999</Accrued>
+	</value>
+	<value>
+		<TradeId>IRS_VANILLA</TradeId>
+		<Book>Test</Book>
+		<PresentValue>-10139.12391798265</PresentValue>
+	</value>
+</data>

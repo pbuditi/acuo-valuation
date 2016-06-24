@@ -17,7 +17,7 @@ import com.acuo.common.marshal.LocalDateAdapter;
 import com.acuo.valuation.markit.responses.MarkitResponse.MarkitResponseBuilder;
 import com.acuo.valuation.responses.Header;
 import com.acuo.valuation.responses.Response;
-import com.acuo.valuation.responses.Value;
+import com.acuo.valuation.results.Value;
 
 @XmlRootElement(name = "data")
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -1,9 +1,10 @@
 package com.acuo.valuation.services;
 
 import com.acuo.valuation.markit.requests.swap.IrSwap;
+import com.acuo.valuation.results.Result;
 
 public interface PricingService {
 
-	Result price(IrSwap swap);
+	<T extends Result> T price(IrSwap swap);
 
 }

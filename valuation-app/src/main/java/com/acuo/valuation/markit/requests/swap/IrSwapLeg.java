@@ -14,7 +14,7 @@ public class IrSwapLeg {
 	private String daycount;
 	private Double notional;
 	private String notionalxg;
-	private IrSwapLegPayDates dates;
+	private IrSwapLegPayDates paydates;
 
 	public IrSwapLeg() { }
 
@@ -28,7 +28,7 @@ public class IrSwapLeg {
 		daycount = input.daycount;
 		notional = input.notional;
 		notionalxg = input.notionalxg;
-		dates = new IrSwapLegPayDates(input.payDates);
+		paydates = new IrSwapLegPayDates(input.payDates);
 	}
 
 	public int id() {
@@ -68,6 +68,6 @@ public class IrSwapLeg {
 	}
 
 	public IrSwapLegPayDates payDates() {
-		return dates;
+		return paydates;
 	}
 }

@@ -1,12 +1,13 @@
 package com.acuo.valuation.markit.services;
 
 import com.acuo.common.util.ArgChecker;
+import com.acuo.valuation.services.EndPointConfig;
 import lombok.ToString;
 
 import java.util.concurrent.TimeUnit;
 
 @ToString
-public class MarkitEndPointConfig {
+public class MarkitEndPointConfig implements EndPointConfig {
 
 	private final String url;
 	private final String username;
@@ -23,18 +24,22 @@ public class MarkitEndPointConfig {
 		this.retryDelayInMilliseconds = TimeUnit.MINUTES.toMillis(retryDelayInMinute);
 	}
 
+	@Override
 	public String url() {
 		return url;
 	}
 
+	@Override
 	public String username() {
 		return username;
 	}
 
+	@Override
 	public String password() {
 		return password;
 	}
 
+	@Override
 	public Long retryDelayInMilliseconds() { return retryDelayInMilliseconds; }
 
 }

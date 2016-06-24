@@ -6,12 +6,9 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.modules.JaxbModule;
 import com.acuo.valuation.reports.Report;
 import com.google.inject.Inject;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.xmlunit.diff.DefaultNodeMatcher;
-import org.xmlunit.diff.ElementSelectors;
 import org.xmlunit.matchers.EvaluateXPathMatcher;
 import org.xmlunit.matchers.HasXPathMatcher;
 
@@ -22,14 +19,13 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ JaxbModule.class })
 public class ReportParsingTest {
 
 	@Rule
-	public ResourceFile sample = new ResourceFile("/reports/markit-sample.xml");
+	public ResourceFile sample = new ResourceFile("/reports/markit-test-01.xml");
 
 	@Inject
 	ReportParser parser;

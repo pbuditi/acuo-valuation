@@ -1,9 +1,11 @@
 package com.acuo.valuation.markit.services;
 
 import com.acuo.valuation.markit.requests.swap.IrSwap;
+import com.acuo.valuation.markit.responses.MarkitValue;
 import com.acuo.valuation.reports.Report;
-import com.acuo.valuation.requests.dto.SwapDTO;
-import com.acuo.valuation.services.Result;
+import com.acuo.valuation.results.ErrorResult;
+import com.acuo.valuation.results.SwapResult;
+import com.acuo.valuation.results.Result;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +48,9 @@ public class MarkitPricingServiceTest {
     @Test
     public void testPriceSwapWithNoErrorReport() {
         when(sender.send(any(IrSwap.class))).thenReturn(report());
-        when(retriever.retrieve(any(LocalDate.class), any(String.class))).thenReturn(new SwapResult(1.0d));
+        MarkitValue markitValue = new MarkitValue();
+        markitValue.setPv(1.0d);
+        when(retriever.retrieve(any(LocalDate.class), any(String.class))).thenReturn(new SwapResult(markitValue));
 
         Result result = service.price(swap());
 

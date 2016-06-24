@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.acuo.valuation.responses.Header;
 import com.acuo.valuation.responses.Response;
-import com.acuo.valuation.responses.Value;
+import com.acuo.valuation.results.Value;
 
 public class MarkitResponse implements Response {
 

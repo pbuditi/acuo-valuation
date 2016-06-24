@@ -19,14 +19,13 @@ import org.modelmapper.ModelMapper;
 import javax.inject.Named;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ JaxbModule.class })
 public class MapperTest {
 
     @Rule
-    public ResourceFile swapDTOResource = new ResourceFile("/requests/dto-swap.json");
+    public ResourceFile swapDTOResource = new ResourceFile("/requests/dto-swap-test-01.json");
 
     @Inject
     @Named("json")

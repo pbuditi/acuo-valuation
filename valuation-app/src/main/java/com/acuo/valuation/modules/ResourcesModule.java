@@ -8,12 +8,14 @@ import org.apache.velocity.app.VelocityEngine;
 import com.acuo.valuation.resources.SwapValuationResource;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import org.modelmapper.ModelMapper;
 
 public class ResourcesModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
 		bind(SwapValuationResource.class);
+		bind(ModelMapper.class);
 	}
 
 	@Provides

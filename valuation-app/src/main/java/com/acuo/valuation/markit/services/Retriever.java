@@ -1,6 +1,6 @@
 package com.acuo.valuation.markit.services;
 
-import com.acuo.valuation.services.Result;
+import com.acuo.valuation.results.Result;
 
 import java.time.LocalDate;
 
