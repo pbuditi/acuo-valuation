@@ -22,7 +22,7 @@ public class ConfigurationModule extends AbstractModule {
 			}
 		});
 		install(injector.getInstance(PropertiesModule.class));
-		install(injector.getInstance(MarkitModule.class));
+		bind(EndPointConfig.class).toProvider(EndPointConfigProvider.class);
 	}
 
 	static class PropertiesModule extends AbstractModule {
@@ -35,33 +35,6 @@ public class ConfigurationModule extends AbstractModule {
 			PropertiesHelper helper = PropertiesHelper.of(configuration);
 			install(new com.smokejumperit.guice.properties.PropertiesModule(helper.getDefaultProperties(),
 					helper.getOverrides()));
-		}
-
-	}
-
-	static class MarkitModule extends AbstractModule {
-
-		@Inject
-		@Named(PropertiesHelper.ACUO_VALUATION_MARKIT_HOST)
-		private String markitHost;
-
-		@Inject
-		@Named(PropertiesHelper.ACUO_VALUATION_MARKIT_USERNAME)
-		private String markitUsername;
-
-		@Inject
-		@Named(PropertiesHelper.ACUO_VALUATION_MARKIT_PASSWORD)
-		private String markitPassword;
-
-		@Inject
-		@Named(PropertiesHelper.ACUO_VALUATION_MARKIT_RETRY_DELAY)
-		private Long markitRetryDelay;
-
-		@Override
-		protected void configure() {
-			MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(markitHost,
-					markitUsername, markitPassword, markitRetryDelay);
-			bind(EndPointConfig.class).toInstance(markitEndPointConfig);
 		}
 	}
 }
