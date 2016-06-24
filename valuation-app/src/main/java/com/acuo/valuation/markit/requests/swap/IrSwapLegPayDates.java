@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Setter
-class IrSwapLegPayDates {
+public class IrSwapLegPayDates {
 
 	private LocalDate startDate;
 	private String frequency;
