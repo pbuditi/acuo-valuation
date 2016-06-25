@@ -8,7 +8,6 @@ import com.acuo.valuation.markit.requests.RequestParser;
 import com.acuo.valuation.markit.requests.swap.IrSwap;
 import com.acuo.valuation.markit.requests.swap.IrSwapInput;
 import com.acuo.valuation.modules.JaxbModule;
-import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.reports.Report;
 import com.acuo.valuation.util.SwapHelper;
 import com.acuo.valuation.utils.LoggingInterceptor;
@@ -24,7 +23,6 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;

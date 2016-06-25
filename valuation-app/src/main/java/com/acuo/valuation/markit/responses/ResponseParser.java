@@ -1,11 +1,11 @@
 package com.acuo.valuation.markit.responses;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.responses.Response;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 public class ResponseParser {
 

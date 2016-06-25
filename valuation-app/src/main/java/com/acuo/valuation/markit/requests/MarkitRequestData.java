@@ -1,9 +1,9 @@
 package com.acuo.valuation.markit.requests;
 
-import static com.acuo.valuation.markit.requests.Key.key;
-
 import com.acuo.valuation.markit.requests.swap.IrSwap;
 import com.acuo.valuation.requests.RequestData;
+
+import static com.acuo.valuation.markit.requests.Key.key;
 
 public class MarkitRequestData implements RequestData {
 

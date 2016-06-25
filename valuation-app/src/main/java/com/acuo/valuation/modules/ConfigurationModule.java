@@ -2,14 +2,12 @@ package com.acuo.valuation.modules;
 
 import com.acuo.common.app.Configuration;
 import com.acuo.valuation.PropertiesHelper;
-import com.acuo.valuation.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.services.EndPointConfig;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 public class ConfigurationModule extends AbstractModule {
 

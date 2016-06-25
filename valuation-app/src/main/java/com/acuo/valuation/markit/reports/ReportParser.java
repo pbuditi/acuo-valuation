@@ -1,11 +1,11 @@
 package com.acuo.valuation.markit.reports;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.reports.Report;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 public class ReportParser {
 

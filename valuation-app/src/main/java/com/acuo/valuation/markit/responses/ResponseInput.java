@@ -1,23 +1,21 @@
 package com.acuo.valuation.markit.responses;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.eclipse.persistence.oxm.annotations.XmlPath;
-
 import com.acuo.common.marshal.DecimalAdapter;
 import com.acuo.common.marshal.LocalDateAdapter;
 import com.acuo.valuation.markit.responses.MarkitResponse.MarkitResponseBuilder;
 import com.acuo.valuation.responses.Header;
 import com.acuo.valuation.responses.Response;
 import com.acuo.valuation.results.Value;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @XmlRootElement(name = "data")
 @XmlAccessorType(XmlAccessType.FIELD)

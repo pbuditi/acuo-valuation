@@ -1,10 +1,9 @@
 package com.acuo.valuation.markit.requests;
 
-import java.time.LocalDate;
-import java.util.Date;
-
 import com.acuo.valuation.requests.Request;
 import com.acuo.valuation.requests.RequestData;
+
+import java.time.LocalDate;
 
 public class MarkitRequest implements Request {
 

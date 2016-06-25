@@ -1,11 +1,11 @@
 package com.acuo.valuation.markit.responses;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.acuo.valuation.responses.Header;
 import com.acuo.valuation.responses.Response;
 import com.acuo.valuation.results.Value;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MarkitResponse implements Response {
 

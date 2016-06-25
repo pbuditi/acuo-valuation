@@ -1,14 +1,14 @@
 package com.acuo.valuation;
 
-import static java.util.Arrays.asList;
-
-import java.util.Collection;
-
 import com.acuo.common.app.ResteasyConfig;
 import com.acuo.common.app.ResteasyMain;
 import com.acuo.valuation.modules.*;
 import com.acuo.valuation.web.MOXyCustomJsonProvider;
 import com.google.inject.Module;
+
+import java.util.Collection;
+
+import static java.util.Arrays.asList;
 
 public class ValuationApp extends ResteasyMain {
 

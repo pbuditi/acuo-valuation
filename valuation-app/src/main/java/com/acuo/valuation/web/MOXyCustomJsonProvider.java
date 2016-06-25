@@ -1,7 +1,9 @@
 package com.acuo.valuation.web;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import com.acuo.common.marshal.MarshallingEventHandler;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -11,12 +13,8 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
-
-import com.acuo.common.marshal.MarshallingEventHandler;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)

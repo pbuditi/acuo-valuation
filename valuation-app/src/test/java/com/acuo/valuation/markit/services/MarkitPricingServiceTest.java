@@ -4,8 +4,8 @@ import com.acuo.valuation.markit.requests.swap.IrSwap;
 import com.acuo.valuation.markit.responses.MarkitValue;
 import com.acuo.valuation.reports.Report;
 import com.acuo.valuation.results.ErrorResult;
-import com.acuo.valuation.results.SwapResult;
 import com.acuo.valuation.results.Result;
+import com.acuo.valuation.results.SwapResult;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 

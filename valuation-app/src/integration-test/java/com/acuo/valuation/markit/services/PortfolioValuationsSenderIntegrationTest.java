@@ -1,9 +1,8 @@
 package com.acuo.valuation.markit.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.ResourceFile;
+import com.acuo.valuation.markit.reports.ReportParser;
 import com.acuo.valuation.markit.requests.RequestParser;
 import com.acuo.valuation.modules.JaxbModule;
 import com.acuo.valuation.modules.ServicesModule;
@@ -13,12 +12,11 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-
-import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.markit.reports.ReportParser;
 
 import javax.inject.Inject;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Ignore
 @RunWith(GuiceJUnitRunner.class)

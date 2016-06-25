@@ -3,7 +3,6 @@ package com.acuo.valuation.markit.requests.swap;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Setter
 public class IrSwapLegPayDates {

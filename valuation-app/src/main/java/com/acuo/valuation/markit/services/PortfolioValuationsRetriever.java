@@ -1,21 +1,19 @@
 package com.acuo.valuation.markit.services;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import com.acuo.valuation.markit.responses.ResponseParser;
+import com.acuo.valuation.responses.Response;
+import com.acuo.valuation.results.Result;
 import com.acuo.valuation.results.SwapResult;
+import com.acuo.valuation.results.Value;
 import com.acuo.valuation.services.ClientEndPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.acuo.valuation.markit.responses.ResponseParser;
-import com.acuo.valuation.responses.Response;
-import com.acuo.valuation.results.Value;
-import com.acuo.valuation.results.Result;
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PortfolioValuationsRetriever implements Retriever {
 

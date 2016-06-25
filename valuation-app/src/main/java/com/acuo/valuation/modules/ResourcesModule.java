@@ -1,14 +1,13 @@
 package com.acuo.valuation.modules;
 
-import java.io.IOException;
-import java.util.Properties;
-
-import org.apache.velocity.app.VelocityEngine;
-
 import com.acuo.valuation.resources.SwapValuationResource;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import org.apache.velocity.app.VelocityEngine;
 import org.modelmapper.ModelMapper;
+
+import java.io.IOException;
+import java.util.Properties;
 
 public class ResourcesModule extends AbstractModule {
 

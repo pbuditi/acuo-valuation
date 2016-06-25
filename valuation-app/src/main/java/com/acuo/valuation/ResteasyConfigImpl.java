@@ -1,19 +1,15 @@
 package com.acuo.valuation;
 
-import static com.acuo.valuation.PropertiesHelper.ACUO_VALUATION_APP_CTX_PATH;
-import static com.acuo.valuation.PropertiesHelper.ACUO_VALUATION_APP_HOST;
-import static com.acuo.valuation.PropertiesHelper.ACUO_VALUATION_APP_PORT;
-import static com.acuo.valuation.PropertiesHelper.ACUO_VALUATION_APP_REST_MAPPING_PREFIX;
+import com.acuo.common.app.ResteasyConfig;
+import com.acuo.common.http.server.HttpServerConnectorConfig;
+import com.acuo.common.http.server.HttpServerWrapperConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.acuo.common.app.ResteasyConfig;
-import com.acuo.common.http.server.HttpServerConnectorConfig;
-import com.acuo.common.http.server.HttpServerWrapperConfig;
+import static com.acuo.valuation.PropertiesHelper.*;
 
 public class ResteasyConfigImpl implements ResteasyConfig {
 

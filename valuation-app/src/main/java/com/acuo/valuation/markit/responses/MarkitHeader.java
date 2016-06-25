@@ -1,8 +1,8 @@
 package com.acuo.valuation.markit.responses;
 
-import java.time.LocalDate;
-
 import com.acuo.valuation.responses.Header;
+
+import java.time.LocalDate;
 
 public class MarkitHeader implements Header {
 

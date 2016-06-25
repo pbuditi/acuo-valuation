@@ -1,13 +1,11 @@
 package com.acuo.valuation.requests.dto;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.acuo.common.marshal.LocalDateAdapter;
+import lombok.Data;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import com.acuo.common.marshal.LocalDateAdapter;
-
-import lombok.Data;
+import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class SwapDTO {

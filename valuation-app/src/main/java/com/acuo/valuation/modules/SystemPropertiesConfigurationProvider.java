@@ -1,13 +1,13 @@
 package com.acuo.valuation.modules;
 
-import static com.acuo.valuation.PropertiesHelper.ACUO_CONFIG_APPID;
-import static com.acuo.valuation.PropertiesHelper.ACUO_CONFIG_ENV;
-
-import javax.inject.Provider;
-
 import com.acuo.common.app.AppId;
 import com.acuo.common.app.Configuration;
 import com.acuo.common.app.Environment;
+
+import javax.inject.Provider;
+
+import static com.acuo.valuation.PropertiesHelper.ACUO_CONFIG_APPID;
+import static com.acuo.valuation.PropertiesHelper.ACUO_CONFIG_ENV;
 
 public class SystemPropertiesConfigurationProvider implements Provider<Configuration> {
 

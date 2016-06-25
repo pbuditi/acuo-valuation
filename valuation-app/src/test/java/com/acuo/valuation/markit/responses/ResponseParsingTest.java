@@ -1,25 +1,23 @@
 package com.acuo.valuation.markit.responses;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
-
-import javax.inject.Inject;
-
+import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
+import com.acuo.common.util.ResourceFile;
+import com.acuo.valuation.modules.JaxbModule;
+import com.acuo.valuation.responses.Response;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.ElementSelectors;
 
-import com.acuo.common.util.GuiceJUnitRunner;
-import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
-import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.markit.responses.ResponseParser;
-import com.acuo.valuation.modules.JaxbModule;
-import com.acuo.valuation.responses.Response;
+import javax.inject.Inject;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ JaxbModule.class })

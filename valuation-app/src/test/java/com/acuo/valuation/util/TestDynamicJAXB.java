@@ -1,13 +1,6 @@
 package com.acuo.valuation.util;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-
+import com.acuo.common.util.ResourceFile;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -15,7 +8,12 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.acuo.common.util.ResourceFile;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
 
 @Ignore
 public class TestDynamicJAXB {

@@ -1,12 +1,9 @@
 package com.acuo.valuation.resources;
 
 import com.acuo.valuation.markit.requests.swap.IrSwap;
-import com.acuo.valuation.markit.requests.swap.IrSwapLeg;
 import com.acuo.valuation.markit.requests.swap.IrSwapLegPayDates;
-import com.acuo.valuation.markit.requests.swap.IrSwapLegPayDatesInput;
 import com.acuo.valuation.requests.dto.SwapDTO;
 import com.acuo.valuation.requests.dto.SwapLegPayDatesDTO;
-import com.acuo.valuation.results.Result;
 import com.acuo.valuation.results.SwapResult;
 import com.acuo.valuation.results.dto.SwapResultDTO;
 import com.acuo.valuation.services.PricingService;

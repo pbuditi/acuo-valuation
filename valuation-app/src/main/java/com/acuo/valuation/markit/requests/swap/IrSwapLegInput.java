@@ -1,11 +1,10 @@
 package com.acuo.valuation.markit.requests.swap;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
+import com.acuo.common.marshal.DecimalAdapter;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
-import com.acuo.common.marshal.DecimalAdapter;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 public class IrSwapLegInput {
 

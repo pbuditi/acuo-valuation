@@ -1,13 +1,13 @@
 package com.acuo.valuation;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import com.acuo.common.app.AppId;
 import com.acuo.common.app.Configuration;
 import com.acuo.common.app.Environment;
 import com.acuo.common.util.ArgChecker;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class PropertiesHelper {
 

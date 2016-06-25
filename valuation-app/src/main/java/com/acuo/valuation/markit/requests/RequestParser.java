@@ -1,11 +1,11 @@
 package com.acuo.valuation.markit.requests;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.requests.Request;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 public class RequestParser {
 
