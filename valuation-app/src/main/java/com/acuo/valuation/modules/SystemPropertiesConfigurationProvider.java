@@ -11,11 +11,11 @@ import static com.acuo.valuation.PropertiesHelper.ACUO_CONFIG_ENV;
 
 public class SystemPropertiesConfigurationProvider implements Provider<Configuration> {
 
-	@Override
-	public Configuration get() {
-		String id = System.getProperty(ACUO_CONFIG_APPID);
-		String env = System.getProperty(ACUO_CONFIG_ENV);
-		AppId appId = AppId.of(id);
-		return Configuration.builder(appId).with(Environment.lookup(env)).build();
-	}
+    @Override
+    public Configuration get() {
+        String id = System.getProperty(ACUO_CONFIG_APPID);
+        String env = System.getProperty(ACUO_CONFIG_ENV);
+        AppId appId = AppId.of(id);
+        return Configuration.builder(appId).with(Environment.lookup(env)).build();
+    }
 }

@@ -18,25 +18,25 @@ import static org.junit.Assert.assertNotNull;
 
 @Ignore
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({ServicesModule.class, JaxbModule.class })
+@GuiceModules({ServicesModule.class, JaxbModule.class})
 public class PortfolioValuationsRetrieverIntegrationTest {
 
-	@Inject
-	ClientEndPoint clientEndPoint;
+    @Inject
+    ClientEndPoint clientEndPoint;
 
-	@Inject
-	ResponseParser parser;
+    @Inject
+    ResponseParser parser;
 
-	@Before
-	public void setUp() {
+    @Before
+    public void setUp() {
 
-	}
+    }
 
-	@Test
-	public void testRetrieve() throws Exception {
-		PortfolioValuationsRetriever retriever = new PortfolioValuationsRetriever(clientEndPoint, parser);
-		Response response = retriever.retrieve("2016-06-10");
-		assertNotNull(response);
-	}
+    @Test
+    public void testRetrieve() throws Exception {
+        PortfolioValuationsRetriever retriever = new PortfolioValuationsRetriever(clientEndPoint, parser);
+        Response response = retriever.retrieve("2016-06-10");
+        assertNotNull(response);
+    }
 
 }

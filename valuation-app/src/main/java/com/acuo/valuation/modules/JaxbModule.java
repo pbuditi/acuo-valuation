@@ -21,18 +21,20 @@ import java.util.List;
 
 public class JaxbModule extends AbstractModule {
 
-	@Override
-	protected void configure() {
-		bind(JaxbContextFactory.class).to(MoxyJaxbContextFactory.class);
-		bind(JsonContextFactory.class).to(MoxyJsonContextFactory.class);
-		bind(Marshaller.class).annotatedWith(Names.named("xml")).to(new TypeLiteral<MarshallerExecutor<JaxbContextFactory>>(){});
-		bind(Marshaller.class).annotatedWith(Names.named("json")).to(new TypeLiteral<MarshallerExecutor<JsonContextFactory>>(){});
-	}
+    @Override
+    protected void configure() {
+        bind(JaxbContextFactory.class).to(MoxyJaxbContextFactory.class);
+        bind(JsonContextFactory.class).to(MoxyJsonContextFactory.class);
+        bind(Marshaller.class).annotatedWith(Names.named("xml")).to(new TypeLiteral<MarshallerExecutor<JaxbContextFactory>>() {
+        });
+        bind(Marshaller.class).annotatedWith(Names.named("json")).to(new TypeLiteral<MarshallerExecutor<JsonContextFactory>>() {
+        });
+    }
 
-	@Provides
-	@MarshallerTypes
-	List<Class<?>> types() {
-		return Arrays.asList(new Class<?>[] { ResponseInput.class, RequestInput.class, ReportInput.class, IrSwapInput.class });
-	}
+    @Provides
+    @MarshallerTypes
+    List<Class<?>> types() {
+        return Arrays.asList(new Class<?>[]{ResponseInput.class, RequestInput.class, ReportInput.class, IrSwapInput.class});
+    }
 
 }

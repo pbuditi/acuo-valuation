@@ -9,13 +9,13 @@ import java.time.LocalDate;
 @Data
 public class SwapLegPayDatesDTO {
 
-	@XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-	private LocalDate startdate;
-	private String freq;
-	@XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-	private LocalDate enddate;
-	private String rollcode;
-	private boolean adjust;
-	private boolean eom;
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate startdate;
+    private String freq;
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate enddate;
+    private String rollcode;
+    private boolean adjust;
+    private boolean eom;
 
 }

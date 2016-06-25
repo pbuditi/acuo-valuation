@@ -11,21 +11,21 @@ import java.util.Properties;
 
 public class ResourcesModule extends AbstractModule {
 
-	@Override
-	protected void configure() {
-		bind(SwapValuationResource.class);
-		bind(ModelMapper.class);
-	}
+    @Override
+    protected void configure() {
+        bind(SwapValuationResource.class);
+        bind(ModelMapper.class);
+    }
 
-	@Provides
-	public VelocityEngine getEngine() {
-		try {
-			Properties p = new Properties();
-			p.load(getClass().getResourceAsStream("/velocity.properties"));
-			VelocityEngine engine = new VelocityEngine(p);
-			return engine;
-		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
-	}
+    @Provides
+    public VelocityEngine getEngine() {
+        try {
+            Properties p = new Properties();
+            p.load(getClass().getResourceAsStream("/velocity.properties"));
+            VelocityEngine engine = new VelocityEngine(p);
+            return engine;
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 }

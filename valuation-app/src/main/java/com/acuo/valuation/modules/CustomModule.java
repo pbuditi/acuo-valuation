@@ -6,12 +6,12 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 public class CustomModule extends SimpleModule {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public CustomModule() {
+    public CustomModule() {
 
-		addSerializer(TypedString.class, new ToStringSerializer(TypedString.class));
+        addSerializer(TypedString.class, new ToStringSerializer(TypedString.class));
 
-	}
+    }
 
 }

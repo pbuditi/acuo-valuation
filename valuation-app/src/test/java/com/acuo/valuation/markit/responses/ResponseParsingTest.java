@@ -20,38 +20,38 @@ import static org.junit.Assert.fail;
 import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({ JaxbModule.class })
+@GuiceModules({JaxbModule.class})
 public class ResponseParsingTest {
 
-	@Rule
-	public ResourceFile sample = new ResourceFile("/responses/markit-sample.xml");
+    @Rule
+    public ResourceFile sample = new ResourceFile("/responses/markit-sample.xml");
 
-	@Rule
-	public ResourceFile valuationOn20160610 = new ResourceFile("/responses/markit-20160610.xml");
+    @Rule
+    public ResourceFile valuationOn20160610 = new ResourceFile("/responses/markit-20160610.xml");
 
-	@Inject
-	ResponseParser parser;
+    @Inject
+    ResponseParser parser;
 
-	@Test
-	public void testResourceFilesExist() throws Exception {
-		assertTrue(sample.getContent().length() > 0);
-		assertTrue(valuationOn20160610.getContent().length() > 0);
-	}
+    @Test
+    public void testResourceFilesExist() throws Exception {
+        assertTrue(sample.getContent().length() > 0);
+        assertTrue(valuationOn20160610.getContent().length() > 0);
+    }
 
-	@Test
-	public void testBothWayParsing() {
-		asList(sample, valuationOn20160610).stream().forEach(r -> run(r));
-	}
+    @Test
+    public void testBothWayParsing() {
+        asList(sample, valuationOn20160610).stream().forEach(r -> run(r));
+    }
 
-	public void run(ResourceFile res) {
-		try {
-			Response response = parser.parse(res.getContent());
-			String xml = parser.parse(response);
+    public void run(ResourceFile res) {
+        try {
+            Response response = parser.parse(res.getContent());
+            String xml = parser.parse(response);
 
-			assertThat(xml, isSimilarTo(res.getContent()).ignoreWhitespace()
-					.withNodeMatcher(new DefaultNodeMatcher(ElementSelectors.byName)).throwComparisonFailure());
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-	}
+            assertThat(xml, isSimilarTo(res.getContent()).ignoreWhitespace()
+                    .withNodeMatcher(new DefaultNodeMatcher(ElementSelectors.byName)).throwComparisonFailure());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }

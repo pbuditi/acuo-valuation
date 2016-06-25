@@ -4,21 +4,21 @@ import java.time.LocalDate;
 
 public interface Header {
 
-	String getName();
+    String getName();
 
-	String getVersion();
+    String getVersion();
 
-	LocalDate getDate();
+    LocalDate getDate();
 
-	LocalDate getValuationDate();
+    LocalDate getValuationDate();
 
-	String getValuationCurrency();
+    String getValuationCurrency();
 
-	Integer getSuccessfulTrades();
+    Integer getSuccessfulTrades();
 
-	Integer getFailedTrades();
+    Integer getFailedTrades();
 
-	Integer getTotalTrades();
+    Integer getTotalTrades();
 
-	Boolean getValuationsComplete();
+    Boolean getValuationsComplete();
 }

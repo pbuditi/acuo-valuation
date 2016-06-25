@@ -2,51 +2,51 @@ package com.acuo.valuation.results;
 
 public interface Value {
 
-	String getTradeId();
+    String getTradeId();
 
-	String getBook();
+    String getBook();
 
-	Double getPvLocal();
+    Double getPvLocal();
 
-	Double getPv();
+    Double getPv();
 
-	Double getAccrued();
+    Double getAccrued();
 
-	Double getParRate();
+    Double getParRate();
 
-	String getLocalCurrency();
+    String getLocalCurrency();
 
-	String getStatus();
+    String getStatus();
 
-	String getLegId();
+    String getLegId();
 
-	Double getNotional();
+    Double getNotional();
 
-	String getErrorMessage();
+    String getErrorMessage();
 
-	String getInstrumentType();
+    String getInstrumentType();
 
-	String getValuationCcy();
+    String getValuationCcy();
 
-	Double getPv01();
+    Double getPv01();
 
-	Double getCleanPVLocal();
+    Double getCleanPVLocal();
 
-	Double getCleanPV();
+    Double getCleanPV();
 
-	String getAccruedValCcy();
+    String getAccruedValCcy();
 
-	Double getDirtyPrice();
+    Double getDirtyPrice();
 
-	Double getCleanPrice();
+    Double getCleanPrice();
 
-	Double getPriceAccrued();
+    Double getPriceAccrued();
 
-	Double getPv01Local();
+    Double getPv01Local();
 
-	String getFas157Rating();
+    String getFas157Rating();
 
-	String getInstrumentCode();
+    String getInstrumentCode();
 
-	Double getPortfolioValuationsLocal();
+    Double getPortfolioValuationsLocal();
 }

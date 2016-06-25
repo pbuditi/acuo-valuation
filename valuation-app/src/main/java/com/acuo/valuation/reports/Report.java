@@ -10,55 +10,61 @@ import java.util.Map;
 
 public class Report {
 
-	private final String name;
-	private final String version;
-	private final LocalDate valuationDate;
-	private final Map<String, List<Item>> itemsPerTradeId;
+    private final String name;
+    private final String version;
+    private final LocalDate valuationDate;
+    private final Map<String, List<Item>> itemsPerTradeId;
 
-	private Report(ReportBuilder builder) {
-		this.name = builder.name;
-		this.version = builder.version;
-		this.valuationDate = builder.valuationDate;
-		this.itemsPerTradeId = builder.itemsPerTradeId;
-	}
+    private Report(ReportBuilder builder) {
+        this.name = builder.name;
+        this.version = builder.version;
+        this.valuationDate = builder.valuationDate;
+        this.itemsPerTradeId = builder.itemsPerTradeId;
+    }
 
-	public String name() { return name; }
-	public String version() { return version; }
-	public LocalDate valuationDate() {
-		return valuationDate;
-	}
+    public String name() {
+        return name;
+    }
 
-	public Map<String, List<Item>> itemsPerTradeId() {
-		return itemsPerTradeId;
-	}
+    public String version() {
+        return version;
+    }
 
-	@Data
-	public static class Item {
-		private final String type;
-		private final String message;
-	}
+    public LocalDate valuationDate() {
+        return valuationDate;
+    }
 
-	public static class ReportBuilder {
+    public Map<String, List<Item>> itemsPerTradeId() {
+        return itemsPerTradeId;
+    }
 
-		private final String name;
-		private final String version;
-		private final LocalDate valuationDate;
-		private Map<String, List<Item>> itemsPerTradeId = new HashMap<>();
+    @Data
+    public static class Item {
+        private final String type;
+        private final String message;
+    }
 
-		public ReportBuilder(String name, String version, LocalDate valuationDate) {
-			this.name = name;
-			this.version = version;
-			this.valuationDate = valuationDate;
-		}
+    public static class ReportBuilder {
 
-		public ReportBuilder add(String tradeId, String type, String message) {
-			itemsPerTradeId.computeIfAbsent(tradeId, k -> new LinkedList<Item>()).add(new Item(type, message));
-			return this;
-		}
+        private final String name;
+        private final String version;
+        private final LocalDate valuationDate;
+        private Map<String, List<Item>> itemsPerTradeId = new HashMap<>();
 
-		public Report build() {
-			return new Report(this);
-		}
-	}
+        public ReportBuilder(String name, String version, LocalDate valuationDate) {
+            this.name = name;
+            this.version = version;
+            this.valuationDate = valuationDate;
+        }
+
+        public ReportBuilder add(String tradeId, String type, String message) {
+            itemsPerTradeId.computeIfAbsent(tradeId, k -> new LinkedList<Item>()).add(new Item(type, message));
+            return this;
+        }
+
+        public Report build() {
+            return new Report(this);
+        }
+    }
 
 }

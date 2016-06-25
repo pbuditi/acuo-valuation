@@ -8,36 +8,36 @@ import java.time.LocalDate;
 
 public class IrSwapLegPayDatesInput {
 
-	public IrSwapLegPayDatesInput() {
+    public IrSwapLegPayDatesInput() {
 
-	}
+    }
 
-	public IrSwapLegPayDatesInput(IrSwapLegPayDates dates) {
-		startDate = dates.startDate();
-		frequency = dates.frequency();
-		enddate = dates.enddate();
-		rollCode = dates.rollCode();
-		adjust = dates.isAdjust();
-		eom = dates.isEom();
-	}
+    public IrSwapLegPayDatesInput(IrSwapLegPayDates dates) {
+        startDate = dates.startDate();
+        frequency = dates.frequency();
+        enddate = dates.enddate();
+        rollCode = dates.rollCode();
+        adjust = dates.isAdjust();
+        eom = dates.isEom();
+    }
 
-	@XmlPath("startdate/text()")
-	@XmlJavaTypeAdapter(LocalDateAdapter.class)
-	public LocalDate startDate;
+    @XmlPath("startdate/text()")
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
+    public LocalDate startDate;
 
-	@XmlPath("freq/text()")
-	public String frequency;
+    @XmlPath("freq/text()")
+    public String frequency;
 
-	@XmlPath("enddate/text()")
-	@XmlJavaTypeAdapter(LocalDateAdapter.class)
-	public LocalDate enddate;
+    @XmlPath("enddate/text()")
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
+    public LocalDate enddate;
 
-	@XmlPath("rollcode/text()")
-	public String rollCode;
+    @XmlPath("rollcode/text()")
+    public String rollCode;
 
-	@XmlPath("adjust/text()")
-	public boolean adjust;
+    @XmlPath("adjust/text()")
+    public boolean adjust;
 
-	@XmlPath("eom/text()")
-	public boolean eom;
+    @XmlPath("eom/text()")
+    public boolean eom;
 }

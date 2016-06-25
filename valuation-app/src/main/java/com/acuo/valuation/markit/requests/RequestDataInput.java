@@ -11,15 +11,15 @@ import java.util.stream.Collectors;
 
 public class RequestDataInput {
 
-	public RequestDataInput() {
-		swaps = new ArrayList<>();
-	}
+    public RequestDataInput() {
+        swaps = new ArrayList<>();
+    }
 
-	RequestDataInput(RequestData data) {
-		List<IrSwap> values = data.values(IrSwap.class);
-		swaps = values.stream().map(swap -> new IrSwapInput(swap)).collect(Collectors.toList());
-	}
+    RequestDataInput(RequestData data) {
+        List<IrSwap> values = data.values(IrSwap.class);
+        swaps = values.stream().map(swap -> new IrSwapInput(swap)).collect(Collectors.toList());
+    }
 
-	@XmlElement(name = "irswap")
-	public List<IrSwapInput> swaps;
+    @XmlElement(name = "irswap")
+    public List<IrSwapInput> swaps;
 }

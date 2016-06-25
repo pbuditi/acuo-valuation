@@ -5,6 +5,6 @@ import com.acuo.valuation.results.Result;
 
 public interface PricingService {
 
-	<T extends Result> T price(IrSwap swap);
+    <T extends Result> T price(IrSwap swap);
 
 }

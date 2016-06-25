@@ -7,12 +7,12 @@ import static com.acuo.valuation.markit.requests.Key.key;
 
 public class MarkitRequestData implements RequestData {
 
-	private MarkitRequestData(RequestDataInput definition) {
-		definition.swaps.stream().map(swap -> new IrSwap(swap))
-				.forEachOrdered(swap -> put(key(swap.tradeId(), IrSwap.class), swap));
-	}
+    private MarkitRequestData(RequestDataInput definition) {
+        definition.swaps.stream().map(swap -> new IrSwap(swap))
+                .forEachOrdered(swap -> put(key(swap.tradeId(), IrSwap.class), swap));
+    }
 
-	public static RequestData of(RequestDataInput definition) {
-		return new MarkitRequestData(definition);
-	}
+    public static RequestData of(RequestDataInput definition) {
+        return new MarkitRequestData(definition);
+    }
 }

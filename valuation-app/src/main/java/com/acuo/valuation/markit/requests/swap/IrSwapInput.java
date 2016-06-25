@@ -12,27 +12,27 @@ import java.util.stream.Collectors;
 
 public class IrSwapInput {
 
-	public IrSwapInput() {
-	}
+    public IrSwapInput() {
+    }
 
-	public IrSwapInput(IrSwap swap) {
-		tradeId = swap.tradeId();
-		tradeDate = swap.tradeDate();
-		book = swap.book();
-		legs = swap.legs().stream().map(leg -> new IrSwapLegInput(leg))
-				.collect(Collectors.toCollection(LinkedList::new));
-	}
+    public IrSwapInput(IrSwap swap) {
+        tradeId = swap.tradeId();
+        tradeDate = swap.tradeDate();
+        book = swap.book();
+        legs = swap.legs().stream().map(leg -> new IrSwapLegInput(leg))
+                .collect(Collectors.toCollection(LinkedList::new));
+    }
 
-	@XmlPath("tradeid/text()")
-	public String tradeId;
+    @XmlPath("tradeid/text()")
+    public String tradeId;
 
-	@XmlPath("tradedate/text()")
-	@XmlJavaTypeAdapter(LocalDateAdapter.class)
-	public LocalDate tradeDate;
+    @XmlPath("tradedate/text()")
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
+    public LocalDate tradeDate;
 
-	@XmlPath("book/text()")
-	public String book;
+    @XmlPath("book/text()")
+    public String book;
 
-	@XmlElement(name = "leg")
-	public List<IrSwapLegInput> legs;
+    @XmlElement(name = "leg")
+    public List<IrSwapLegInput> legs;
 }

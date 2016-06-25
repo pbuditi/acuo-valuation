@@ -38,7 +38,7 @@ public class MarkitClient implements ClientEndPoint {
             String result = null;
             while (result == null) {
                 String response = execute(call.getRequest());
-                if(call.getPredicate().test(response)) {
+                if (call.getPredicate().test(response)) {
                     Thread.sleep(config.retryDelayInMilliseconds());
                 } else {
                     result = response;
@@ -63,9 +63,6 @@ public class MarkitClient implements ClientEndPoint {
             throw new RuntimeException(ioe.getMessage(), ioe);
         }
     }
-
-
-
 
 
 }

@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ JaxbModule.class })
+@GuiceJUnitRunner.GuiceModules({JaxbModule.class})
 public class PortfolioValuationsSenderTest {
 
     private static final String STILL_PROCESSING_KEY = "Markit upload still processing.";
@@ -89,7 +89,8 @@ public class PortfolioValuationsSenderTest {
                         .contains("password=password")
                         .contains("key=key")
                         .contains("version=2");
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         });
         assertThat(r).isNotNull();
     }

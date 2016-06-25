@@ -57,8 +57,8 @@ public class MarkitClientTest {
         RecordedRequest r = server.takeRequest();
         String body = r.getBody().readUtf8();
         assertThat(body).contains("username")
-                        .contains("password")
-                        .contains(this.request.getContent());
+                .contains("password")
+                .contains(this.request.getContent());
     }
 
     @Test
@@ -68,9 +68,9 @@ public class MarkitClientTest {
         server.enqueue(new MockResponse().setBody(STILL_PROCESSING_KEY));
         server.enqueue(new MockResponse().setBody(report.getContent()));
 
-        String response = client.get().with("key","key")
-                                      .with("version","2")
-                                      .retryUntil(s -> s.startsWith(STILL_PROCESSING_KEY)).send();
+        String response = client.get().with("key", "key")
+                .with("version", "2")
+                .retryUntil(s -> s.startsWith(STILL_PROCESSING_KEY)).send();
 
         assertThat(response).isNotNull();
         IntStream.range(1, 3).forEach(i -> {
@@ -78,10 +78,11 @@ public class MarkitClientTest {
                 RecordedRequest request = server.takeRequest();
                 String body = request.getBody().readUtf8();
                 assertThat(body).contains("username=" + markitEndPointConfig.username())
-                    .contains("password=" + markitEndPointConfig.password())
-                    .contains("key=key")
-                    .contains("version=2");
-            } catch (InterruptedException e) {}
+                        .contains("password=" + markitEndPointConfig.password())
+                        .contains("key=key")
+                        .contains("version=2");
+            } catch (InterruptedException e) {
+            }
         });
     }
 
@@ -90,15 +91,15 @@ public class MarkitClientTest {
         server.enqueue(new MockResponse().setBody(response.getContent()));
 
         String asOfDate = "2016-06-10";
-        String response = client.get().with("asof",asOfDate).with("format","xml").send();
+        String response = client.get().with("asof", asOfDate).with("format", "xml").send();
 
         assertThat(response).isNotNull();
 
         RecordedRequest request = server.takeRequest();
         String body = request.getBody().readUtf8();
-        assertThat(body).contains("username="+markitEndPointConfig.username());
-        assertThat(body).contains("password="+markitEndPointConfig.password());
-        assertThat(body).contains("asof="+asOfDate);
+        assertThat(body).contains("username=" + markitEndPointConfig.username());
+        assertThat(body).contains("password=" + markitEndPointConfig.password());
+        assertThat(body).contains("asof=" + asOfDate);
         assertThat(body).contains("format=xml");
     }
 

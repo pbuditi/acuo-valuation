@@ -18,41 +18,41 @@ import static org.junit.Assert.assertNotNull;
 @Ignore
 public class TestDynamicJAXB {
 
-	@Rule
-	public ResourceFile sample = new ResourceFile("/requests/markit-sample.xml");
+    @Rule
+    public ResourceFile sample = new ResourceFile("/requests/markit-sample.xml");
 
-	@Rule
-	public ResourceFile schema = new ResourceFile("/requests/PresentValue.xsd");
+    @Rule
+    public ResourceFile schema = new ResourceFile("/requests/PresentValue.xsd");
 
-	@Test
-	public void verifyContext() throws Exception {
-		DynamicJAXBContext jaxbContext = createContext();
+    @Test
+    public void verifyContext() throws Exception {
+        DynamicJAXBContext jaxbContext = createContext();
 
-		assertNotNull(jaxbContext);
-	}
+        assertNotNull(jaxbContext);
+    }
 
-	@Test
-	public void verifyReadFromAdminServer() throws Exception {
-		DynamicJAXBContext jaxbContext = createContext();
+    @Test
+    public void verifyReadFromAdminServer() throws Exception {
+        DynamicJAXBContext jaxbContext = createContext();
 
-		DynamicEntity allLeagues = (DynamicEntity) jaxbContext.createUnmarshaller().unmarshal(sample.getInputStream());
+        DynamicEntity allLeagues = (DynamicEntity) jaxbContext.createUnmarshaller().unmarshal(sample.getInputStream());
 
-		assertNotNull(allLeagues);
-		List<DynamicEntity> leagues = allLeagues.<List<DynamicEntity>> get("league");
-		assertNotNull(leagues);
+        assertNotNull(allLeagues);
+        List<DynamicEntity> leagues = allLeagues.<List<DynamicEntity>>get("league");
+        assertNotNull(leagues);
 
-		for (DynamicEntity league : leagues) {
-			System.out.println("League(" + league.<String> get("id") + ", " + league.get("value") + ")");
-		}
-	}
+        for (DynamicEntity league : leagues) {
+            System.out.println("League(" + league.<String>get("id") + ", " + league.get("value") + ")");
+        }
+    }
 
-	private DynamicJAXBContext createContext() throws IOException, JAXBException {
-		InputStream in = schema.getInputStream();
-		try {
-			return DynamicJAXBContextFactory.createContextFromXSD(in, null, this.getClass().getClassLoader(), null);
-		} finally {
-			in.close();
-		}
+    private DynamicJAXBContext createContext() throws IOException, JAXBException {
+        InputStream in = schema.getInputStream();
+        try {
+            return DynamicJAXBContextFactory.createContextFromXSD(in, null, this.getClass().getClassLoader(), null);
+        } finally {
+            in.close();
+        }
 
-	}
+    }
 }

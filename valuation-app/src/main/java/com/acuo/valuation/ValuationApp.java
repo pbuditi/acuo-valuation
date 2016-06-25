@@ -12,22 +12,22 @@ import static java.util.Arrays.asList;
 
 public class ValuationApp extends ResteasyMain {
 
-	@Override
-	public Class<? extends ResteasyConfig> config() {
-		return ResteasyConfigImpl.class;
-	}
+    @Override
+    public Class<? extends ResteasyConfig> config() {
+        return ResteasyConfigImpl.class;
+    }
 
-	@Override
-	public Collection<Class<?>> providers() {
-		return asList(MOXyCustomJsonProvider.class);
-	}
+    @Override
+    public Collection<Class<?>> providers() {
+        return asList(MOXyCustomJsonProvider.class);
+    }
 
-	@Override
-	public Collection<Module> modules() {
-		return asList(new JaxbModule(), new ConfigurationModule(), new ParsersModule(), new ServicesModule(), new ResourcesModule());
-	}
+    @Override
+    public Collection<Module> modules() {
+        return asList(new JaxbModule(), new ConfigurationModule(), new ParsersModule(), new ServicesModule(), new ResourcesModule());
+    }
 
-	public static void main(String[] args) throws Exception {
-		new ValuationApp();
-	}
+    public static void main(String[] args) throws Exception {
+        new ValuationApp();
+    }
 }

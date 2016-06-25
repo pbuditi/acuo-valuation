@@ -19,35 +19,35 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({ JaxbModule.class })
+@GuiceModules({JaxbModule.class})
 public class ReportParsingTest {
 
-	@Rule
-	public ResourceFile sample = new ResourceFile("/reports/markit-test-01.xml");
+    @Rule
+    public ResourceFile sample = new ResourceFile("/reports/markit-test-01.xml");
 
-	@Inject
-	ReportParser parser;
+    @Inject
+    ReportParser parser;
 
-	@Test
-	public void testResourceFilesExist() throws Exception {
-		assertTrue(sample.getContent().length() > 0);
-	}
+    @Test
+    public void testResourceFilesExist() throws Exception {
+        assertTrue(sample.getContent().length() > 0);
+    }
 
-	@Test
-	public void testMarshalingXmlFromFiles() {
-		asList(sample).stream().forEach(r -> parseAndAssertXmlFiles(r));
-	}
+    @Test
+    public void testMarshalingXmlFromFiles() {
+        asList(sample).stream().forEach(r -> parseAndAssertXmlFiles(r));
+    }
 
-	private void parseAndAssertXmlFiles(ResourceFile res) {
-		try {
-			Report report = parser.parse(res.getContent());
-			String xml = parser.parse(report);
+    private void parseAndAssertXmlFiles(ResourceFile res) {
+        try {
+            Report report = parser.parse(res.getContent());
+            String xml = parser.parse(report);
 
-			assertThat(xml, is(notNullValue()));
-			assertThat(xml, HasXPathMatcher.hasXPath("/data/header"));
-			assertThat(xml, EvaluateXPathMatcher.hasXPath("/data/header/date/text()", equalTo("2016-06-22")));
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-	}
+            assertThat(xml, is(notNullValue()));
+            assertThat(xml, HasXPathMatcher.hasXPath("/data/header"));
+            assertThat(xml, EvaluateXPathMatcher.hasXPath("/data/header/date/text()", equalTo("2016-06-22")));
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }

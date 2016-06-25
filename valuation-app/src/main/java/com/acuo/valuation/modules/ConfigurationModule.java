@@ -11,28 +11,28 @@ import javax.inject.Inject;
 
 public class ConfigurationModule extends AbstractModule {
 
-	@Override
-	protected void configure() {
-		Injector injector = Guice.createInjector(new AbstractModule() {
-			@Override
-			protected void configure() {
-				bind(Configuration.class).toProvider(SystemPropertiesConfigurationProvider.class);
-			}
-		});
-		install(injector.getInstance(PropertiesModule.class));
-		bind(EndPointConfig.class).toProvider(EndPointConfigProvider.class);
-	}
+    @Override
+    protected void configure() {
+        Injector injector = Guice.createInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(Configuration.class).toProvider(SystemPropertiesConfigurationProvider.class);
+            }
+        });
+        install(injector.getInstance(PropertiesModule.class));
+        bind(EndPointConfig.class).toProvider(EndPointConfigProvider.class);
+    }
 
-	static class PropertiesModule extends AbstractModule {
+    static class PropertiesModule extends AbstractModule {
 
-		@Inject
-		private Configuration configuration;
+        @Inject
+        private Configuration configuration;
 
-		@Override
-		protected void configure() {
-			PropertiesHelper helper = PropertiesHelper.of(configuration);
-			install(new com.smokejumperit.guice.properties.PropertiesModule(helper.getDefaultProperties(),
-					helper.getOverrides()));
-		}
-	}
+        @Override
+        protected void configure() {
+            PropertiesHelper helper = PropertiesHelper.of(configuration);
+            install(new com.smokejumperit.guice.properties.PropertiesModule(helper.getDefaultProperties(),
+                    helper.getOverrides()));
+        }
+    }
 }

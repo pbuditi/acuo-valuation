@@ -22,41 +22,41 @@ import java.io.StringWriter;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SwapValuationResource {
 
-	private final PricingService pricingService;
-	private final VelocityEngine velocityEngine;
-	private final ModelMapper mapper;
+    private final PricingService pricingService;
+    private final VelocityEngine velocityEngine;
+    private final ModelMapper mapper;
 
-	PropertyMap<SwapLegPayDatesDTO, IrSwapLegPayDates> swapMap = new PropertyMap<SwapLegPayDatesDTO, IrSwapLegPayDates>() {
-		protected void configure() {
-			map().setFrequency(source.getFreq());
-		}
-	};
+    PropertyMap<SwapLegPayDatesDTO, IrSwapLegPayDates> swapMap = new PropertyMap<SwapLegPayDatesDTO, IrSwapLegPayDates>() {
+        protected void configure() {
+            map().setFrequency(source.getFreq());
+        }
+    };
 
-	@Inject
-	public SwapValuationResource(PricingService pricingService, VelocityEngine velocityEngine, ModelMapper mapper) {
-		this.velocityEngine = velocityEngine;
-		this.pricingService = pricingService;
-		this.mapper = mapper;
-	}
+    @Inject
+    public SwapValuationResource(PricingService pricingService, VelocityEngine velocityEngine, ModelMapper mapper) {
+        this.velocityEngine = velocityEngine;
+        this.pricingService = pricingService;
+        this.mapper = mapper;
+    }
 
-	@GET
-	@Produces({ MediaType.TEXT_HTML })
-	@Path("/")
-	public String hello() {
-		StringWriter writer = new StringWriter();
-		velocityEngine.mergeTemplate("velocity/swaps.vm", "UTF-8", new VelocityContext(), writer);
-		return writer.toString();
-	}
+    @GET
+    @Produces({MediaType.TEXT_HTML})
+    @Path("/")
+    public String hello() {
+        StringWriter writer = new StringWriter();
+        velocityEngine.mergeTemplate("velocity/swaps.vm", "UTF-8", new VelocityContext(), writer);
+        return writer.toString();
+    }
 
-	@POST
-	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_JSON })
-	@Path("/value")
-	public SwapResultDTO price(SwapDTO swapDTO) throws Exception {
-		mapper.addMappings(swapMap);
-		IrSwap swap = mapper.map(swapDTO, IrSwap.class);
-		SwapResult result = pricingService.price(swap);
-		SwapResultDTO resultDTO = mapper.map(result, SwapResultDTO.class);
-		return resultDTO;
-	}
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/value")
+    public SwapResultDTO price(SwapDTO swapDTO) throws Exception {
+        mapper.addMappings(swapMap);
+        IrSwap swap = mapper.map(swapDTO, IrSwap.class);
+        SwapResult result = pricingService.price(swap);
+        SwapResultDTO resultDTO = mapper.map(result, SwapResultDTO.class);
+        return resultDTO;
+    }
 }

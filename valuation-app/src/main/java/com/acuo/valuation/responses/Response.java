@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Response {
 
-	public Header header();
+    public Header header();
 
-	public List<Value> values();
+    public List<Value> values();
 }

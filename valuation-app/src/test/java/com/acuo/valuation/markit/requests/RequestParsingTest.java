@@ -27,62 +27,62 @@ import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 import static org.xmlunit.matchers.ValidationMatcher.valid;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({ JaxbModule.class })
+@GuiceModules({JaxbModule.class})
 public class RequestParsingTest {
 
-	@Rule
-	public ResourceFile sample = new ResourceFile("/requests/markit-sample.xml");
+    @Rule
+    public ResourceFile sample = new ResourceFile("/requests/markit-sample.xml");
 
-	@Rule
-	public ResourceFile schema = new ResourceFile("/requests/PresentValue.xsd");
+    @Rule
+    public ResourceFile schema = new ResourceFile("/requests/PresentValue.xsd");
 
-	@Inject
-	RequestParser parser;
+    @Inject
+    RequestParser parser;
 
-	@Test
-	public void testResourceFilesExist() throws Exception {
-		assertTrue(sample.getContent().length() > 0);
-	}
+    @Test
+    public void testResourceFilesExist() throws Exception {
+        assertTrue(sample.getContent().length() > 0);
+    }
 
-	@Test
-	public void testMarshalingXmlFromFiles() {
-		asList(sample).stream().forEach(r -> parseAndAssertXmlFiles(r));
-	}
+    @Test
+    public void testMarshalingXmlFromFiles() {
+        asList(sample).stream().forEach(r -> parseAndAssertXmlFiles(r));
+    }
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testMarshalingFromPojo() throws Exception {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testMarshalingFromPojo() throws Exception {
 
-		RequestDataInput requestDataInput = new RequestDataInput();
-		requestDataInput.swaps = new ArrayList<>();
-		requestDataInput.swaps.add(SwapHelper.irSwapInput());
+        RequestDataInput requestDataInput = new RequestDataInput();
+        requestDataInput.swaps = new ArrayList<>();
+        requestDataInput.swaps.add(SwapHelper.irSwapInput());
 
-		RequestInput requestInput = new RequestInput();
-		requestInput.valuationCurrency = "USD";
-		requestInput.valuationDate = new LocalDateAdapter().unmarshal("2016-06-16");
-		requestInput.data = requestDataInput;
+        RequestInput requestInput = new RequestInput();
+        requestInput.valuationCurrency = "USD";
+        requestInput.valuationDate = new LocalDateAdapter().unmarshal("2016-06-16");
+        requestInput.data = requestDataInput;
 
-		Request request = MarkitRequest.of(requestInput);
+        Request request = MarkitRequest.of(requestInput);
 
-		String xml = parser.parse(request);
-		assertThat(xml, is(notNullValue()));
-		assertThat(xml, valid(Input.fromStream(schema.getInputStream())));
-	}
+        String xml = parser.parse(request);
+        assertThat(xml, is(notNullValue()));
+        assertThat(xml, valid(Input.fromStream(schema.getInputStream())));
+    }
 
-	@SuppressWarnings("unchecked")
-	private void parseAndAssertXmlFiles(ResourceFile res) {
-		try {
-			Request request = parser.parse(res.getContent());
-			String xml = parser.parse(request);
+    @SuppressWarnings("unchecked")
+    private void parseAndAssertXmlFiles(ResourceFile res) {
+        try {
+            Request request = parser.parse(res.getContent());
+            String xml = parser.parse(request);
 
-			assertThat(xml, is(notNullValue()));
-			assertThat(xml, valid(Input.fromStream(schema.getInputStream())));
-			assertThat(xml, isSimilarTo(res.getContent()).ignoreWhitespace()
-					.withNodeMatcher(new DefaultNodeMatcher(ElementSelectors.byName)).throwComparisonFailure());
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-	}
+            assertThat(xml, is(notNullValue()));
+            assertThat(xml, valid(Input.fromStream(schema.getInputStream())));
+            assertThat(xml, isSimilarTo(res.getContent()).ignoreWhitespace()
+                    .withNodeMatcher(new DefaultNodeMatcher(ElementSelectors.byName)).throwComparisonFailure());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 
 
 }

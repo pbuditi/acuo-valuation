@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ JaxbModule.class })
+@GuiceJUnitRunner.GuiceModules({JaxbModule.class})
 public class PortfolioValuationsRetrieverTest {
 
     @Rule

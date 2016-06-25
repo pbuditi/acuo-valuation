@@ -9,22 +9,22 @@ import javax.inject.Named;
 
 public class ReportParser {
 
-	private final Marshaller marshaller;
+    private final Marshaller marshaller;
 
-	@Inject
-	public ReportParser(@Named("xml") Marshaller marshaller) {
-		this.marshaller = marshaller;
-	}
+    @Inject
+    public ReportParser(@Named("xml") Marshaller marshaller) {
+        this.marshaller = marshaller;
+    }
 
-	public Report parse(String xml) throws Exception {
-		ArgChecker.notNull(xml, "xml");
-		ReportInput definition = marshaller.unmarshal(xml, ReportInput.class);
-		return definition.report();
-	}
+    public Report parse(String xml) throws Exception {
+        ArgChecker.notNull(xml, "xml");
+        ReportInput definition = marshaller.unmarshal(xml, ReportInput.class);
+        return definition.report();
+    }
 
-	public String parse(Report report) throws Exception {
-		ArgChecker.notNull(report, "report");
-		ReportInput definition = ReportInput.definition(report);
-		return marshaller.marshal(definition);
-	}
+    public String parse(Report report) throws Exception {
+        ArgChecker.notNull(report, "report");
+        ReportInput definition = ReportInput.definition(report);
+        return marshaller.marshal(definition);
+    }
 }

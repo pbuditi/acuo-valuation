@@ -10,9 +10,9 @@ import java.util.List;
 @Data
 public class SwapDTO {
 
-	private String tradeId;
-	@XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-	private LocalDate tradeDate;
-	private String book;
-	private List<SwapLegDTO> legs;
+    private String tradeId;
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate tradeDate;
+    private String book;
+    private List<SwapLegDTO> legs;
 }

@@ -4,10 +4,10 @@ import java.time.LocalDate;
 
 public interface Request {
 
-	LocalDate getValuationDate();
+    LocalDate getValuationDate();
 
-	String getValuationCurrency();
+    String getValuationCurrency();
 
-	RequestData getData();
+    RequestData getData();
 
 }
