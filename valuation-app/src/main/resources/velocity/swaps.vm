@@ -8,6 +8,7 @@
   function jqsub() {
   	var $f = $('#json');
   	var $m = $('#message');
+  	$m.removeClass('ok').removeClass('error').text('');
   	var $d = $("textarea[name='data']").val();
   	$.ajax({
   		type: 'POST',
@@ -17,27 +18,120 @@
   		success: function(msg) {
   			var formResponse = eval(msg);
   			var result = JSON.stringify(formResponse, null, 2);
-  			$m.addClass('success').fadeIn().text(result);
-  			$f.fadeOut();
-  			return false;  
+  			$m.addClass('ok').text(result);
+  			return false;
   		},
   		error: function(msg) {
-  			alert('error'+msg);
+  			var formResponse = eval(msg);
+            var result = JSON.stringify(formResponse, null, 2);
+            $m.addClass('error').text(result);
   			return false;
   		}
   	});
   	return false;
   }
   </script>
+  <style type="text/css">
+  <style type="text/css">
+    .body {
+    	padding: 15px;
+    	overflow: hidden;
+    }
+    table {
+    	width: 100%;
+    }
+    body {
+    	margin: 0px;
+    	padding: 0px;
+    }
+    .cols {
+        width: 48%;
+        float: left;
+        text-align: center;
+    }
+
+    .cols a {
+        float: right;
+    }
+
+    .cols p {
+        width: 90%;
+        text-align: left;
+    }
+
+    .colmid {
+        width: 4%;
+        position: relative;
+        top: 180px;
+    }
+
+    .colmid input {
+        text-align: center;
+        width: 100%;
+    }
+
+    div > p {
+        margin-bottom: 0px;
+    }
+
+    .share {
+        font-size: 80%;
+        color: gray;
+        margin-top: 15px;
+        float: left;
+    }
+
+    .footer {
+        font-size: 80%;
+        color: gray;
+        margin-top: 15px;
+        float: left;
+        clear: left;
+    }
+
+    .textareacontainer {
+      position: relative;
+    }
+    .textareacontainer textarea {
+    	width: 98%;
+    	position: relative;
+    }
+    .error {
+    	background-color: #FF4444;
+    }
+
+    .ok {
+    	background-color: #33FF66;
+    }
+
+    .body > p {
+    	margin-bottom: 5px;
+    	padding-bottom: 5px;
+    	border-bottom: 1px solid #AAAAAA;
+    }
+  </style>
 </head>
 <body>
   <h2>Swap Valuation</h2>
-    
-  <textarea style="display:none" rows="50" cols="100" id="message"></textarea>
-  <form action="/acuo/api/swaps/value" method="post" id="json" onSubmit="return jqsub();">
-  	 <textarea name="data" form="json" rows="50" cols="100" wrap="off"></textarea>
-  	 <input type="submit" />          
-  </form>  
-  
+  <div>
+  	<div class="cols">
+  		<p>Request</p>
+  		<div class="textareacontainer">
+  			<textarea name="data" form="json" rows="30" cols="50" wrap="off"></textarea>
+  		</div>
+  	</div>
+  	<div class="cols colmid">
+  		<form action="/acuo/api/swaps/value" method="post" id="json" onSubmit="return jqsub();">
+  		    <input type="submit" />
+  		</form>
+  	</div>
+  	<div class="cols">
+  		<p>Result</p>
+  		<div class="textareacontainer">
+  			<textarea id="message" rows="30" cols="50" wrap="off"></textarea>
+  		</div>
+  	</div>
+  	<!--div class="footer">Thanks to <a href="http://www.kawa.net">Yusuke Kawasaki</a> for ObjTree.js library.</div-->
+  </div>
 </body>
 </html>
