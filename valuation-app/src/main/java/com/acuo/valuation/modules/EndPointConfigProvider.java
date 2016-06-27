@@ -3,12 +3,18 @@ package com.acuo.valuation.modules;
 import com.acuo.valuation.PropertiesHelper;
 import com.acuo.valuation.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.services.EndPointConfig;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
+@Singleton
 public class EndPointConfigProvider implements Provider<EndPointConfig> {
+
+    @Inject
+    PBEStringEncryptor encryptor;
 
     @Inject
     @Named(PropertiesHelper.ACUO_VALUATION_MARKIT_HOST)
@@ -29,7 +35,7 @@ public class EndPointConfigProvider implements Provider<EndPointConfig> {
     @Override
     public EndPointConfig get() {
         MarkitEndPointConfig config = new MarkitEndPointConfig(markitHost,
-                markitUsername, markitPassword, Long.parseLong(markitRetryDelay));
+                markitUsername, encryptor.decrypt(markitPassword), Long.parseLong(markitRetryDelay));
         return config;
     }
 }

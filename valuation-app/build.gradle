@@ -50,7 +50,8 @@ dependencies {
             "io.dropwizard.metrics:metrics-core:${versions.metrics}",
             "io.dropwizard.metrics:metrics-jvm:${versions.metrics}",
             "io.dropwizard.metrics:metrics-servlets:${versions.metrics}",
-            "com.palominolabs.metrics:metrics-guice:${versions.metricsguice}"
+            "com.palominolabs.metrics:metrics-guice:${versions.metricsguice}",
+            "org.jasypt:jasypt:1.9.2"
     )
 
     testCompile(
