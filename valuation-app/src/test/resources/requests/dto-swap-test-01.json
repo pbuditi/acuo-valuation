@@ -1,4 +1,6 @@
-{    
+{
+    "tradeId": "IRS_VANILLA",
+    "tradeDate": "2013-02-14",
     "book": "SWAPS",
     "legs": [
         {
@@ -40,7 +42,5 @@
             "spread": "0",
             "type": "FLOAT"
         }
-    ],
-    "tradeDate": "2013-02-14",
-    "tradeId": "IRS_VANILLA"    
+    ]
 }

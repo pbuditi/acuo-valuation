@@ -1,6 +1,5 @@
 package com.acuo.valuation.util;
 
-import com.acuo.common.util.ResourceFile;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -41,7 +40,7 @@ public class MockServer implements Runnable {
         }
     };
 
-    public MockServer() {
+    private MockServer() {
         this.mockWebServer = new MockWebServer();
         this.latch = new CountDownLatch(1);
         mockWebServer.setDispatcher(dispatcher);
@@ -52,9 +51,7 @@ public class MockServer implements Runnable {
         try {
             mockWebServer.start(8080);
             latch.await();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -73,9 +70,7 @@ public class MockServer implements Runnable {
         try {
             Path path = Paths.get(getClass().getResource(resourceName).toURI());
             return new String(Files.readAllBytes(path));
-        } catch (URISyntaxException e) {
-            return "";
-        } catch (IOException e) {
+        } catch (URISyntaxException | IOException e) {
             return "";
         }
     }

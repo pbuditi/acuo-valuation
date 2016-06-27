@@ -7,6 +7,7 @@ import com.acuo.valuation.requests.dto.SwapLegPayDatesDTO;
 import com.acuo.valuation.results.SwapResult;
 import com.acuo.valuation.results.dto.SwapResultDTO;
 import com.acuo.valuation.services.PricingService;
+import com.codahale.metrics.annotation.Timed;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.modelmapper.ModelMapper;
@@ -26,7 +27,7 @@ public class SwapValuationResource {
     private final VelocityEngine velocityEngine;
     private final ModelMapper mapper;
 
-    PropertyMap<SwapLegPayDatesDTO, IrSwapLegPayDates> swapMap = new PropertyMap<SwapLegPayDatesDTO, IrSwapLegPayDates>() {
+    private PropertyMap<SwapLegPayDatesDTO, IrSwapLegPayDates> swapMap = new PropertyMap<SwapLegPayDatesDTO, IrSwapLegPayDates>() {
         protected void configure() {
             map().setFrequency(source.getFreq());
         }
@@ -52,11 +53,11 @@ public class SwapValuationResource {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/value")
+    @Timed
     public SwapResultDTO price(SwapDTO swapDTO) throws Exception {
         mapper.addMappings(swapMap);
         IrSwap swap = mapper.map(swapDTO, IrSwap.class);
         SwapResult result = pricingService.price(swap);
-        SwapResultDTO resultDTO = mapper.map(result, SwapResultDTO.class);
-        return resultDTO;
+        return mapper.map(result, SwapResultDTO.class);
     }
 }
