@@ -40,7 +40,7 @@ public class MockServer implements Runnable {
         }
     };
 
-    private MockServer() {
+    MockServer() {
         this.mockWebServer = new MockWebServer();
         this.latch = new CountDownLatch(1);
         mockWebServer.setDispatcher(dispatcher);
