@@ -2,8 +2,8 @@ package com.acuo.valuation.markit.services;
 
 import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.services.ClientEndPoint;
+import com.acuo.valuation.services.OkHttpClient;
 import com.acuo.valuation.utils.LoggingInterceptor;
-import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MarkitClientTest {
+public class OkHttpClientTest {
 
     private static final String STILL_PROCESSING_KEY = "Markit upload still processing.";
 
@@ -31,7 +31,7 @@ public class MarkitClientTest {
     public ResourceFile response = new ResourceFile("/responses/markit-sample.xml");
 
     MarkitEndPointConfig markitEndPointConfig;
-    OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
+    okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
     MockWebServer server = new MockWebServer();
 
     ClientEndPoint client;
@@ -43,14 +43,18 @@ public class MarkitClientTest {
         String url = server.url("/").toString();
         markitEndPointConfig = new MarkitEndPointConfig(url, "username", "password", 0l);
 
-        client = new MarkitClient(httpClient, markitEndPointConfig);
+        client = new OkHttpClient(httpClient, markitEndPointConfig);
     }
 
     @Test
     public void testPostFile() throws IOException, InterruptedException {
         server.enqueue(new MockResponse().setBody("key"));
 
-        String response = client.post().with("theFile", this.request.getContent()).send();
+        String content = this.request.getContent();
+        String response = MarkitMultipartCall.of(client)
+                                                     .with("theFile", content)
+                                                     .create()
+                                                     .send();
 
         assertThat(response).isNotNull();
 
@@ -58,7 +62,7 @@ public class MarkitClientTest {
         String body = r.getBody().readUtf8();
         assertThat(body).contains("username")
                 .contains("password")
-                .contains(this.request.getContent());
+                .contains(content);
     }
 
     @Test
@@ -68,9 +72,12 @@ public class MarkitClientTest {
         server.enqueue(new MockResponse().setBody(STILL_PROCESSING_KEY));
         server.enqueue(new MockResponse().setBody(report.getContent()));
 
-        String response = client.get().with("key", "key")
-                .with("version", "2")
-                .retryUntil(s -> s.startsWith(STILL_PROCESSING_KEY)).send();
+        String response = MarkitFormCall.of(client)
+                                                    .with("key", "key")
+                                                    .with("version", "2")
+                                                    .retryWhile(s -> s.startsWith(STILL_PROCESSING_KEY))
+                                                    .create()
+                                                    .send();
 
         assertThat(response).isNotNull();
         IntStream.range(1, 3).forEach(i -> {
@@ -91,7 +98,11 @@ public class MarkitClientTest {
         server.enqueue(new MockResponse().setBody(response.getContent()));
 
         String asOfDate = "2016-06-10";
-        String response = client.get().with("asof", asOfDate).with("format", "xml").send();
+        String response = MarkitFormCall.of(client)
+                                                    .with("asof", asOfDate)
+                                                    .with("format", "xml")
+                                                    .create()
+                                                    .send();
 
         assertThat(response).isNotNull();
 

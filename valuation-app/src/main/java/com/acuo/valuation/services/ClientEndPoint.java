@@ -1,13 +1,14 @@
 package com.acuo.valuation.services;
 
-import com.acuo.valuation.markit.services.MarkitClientCall;
-import com.acuo.valuation.requests.RequestBuilder;
+import okhttp3.Request;
+
+import java.util.function.Predicate;
 
 public interface ClientEndPoint {
 
-    <T extends RequestBuilder<T>> T get();
+    EndPointConfig config();
 
-    <T extends RequestBuilder<T>> T post();
+    ClientCall call(Request request, Predicate<String> predicate);
 
-    String send(MarkitClientCall call);
+    String send(ClientCall call);
 }

@@ -1,8 +1,5 @@
-package com.acuo.valuation.markit.services;
+package com.acuo.valuation.services;
 
-import com.acuo.valuation.services.ClientEndPoint;
-import com.acuo.valuation.services.EndPointConfig;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.slf4j.Logger;
@@ -10,30 +7,33 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.function.Predicate;
 
-public class MarkitClient implements ClientEndPoint {
+public final class OkHttpClient implements ClientEndPoint {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MarkitClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OkHttpClient.class);
 
     private final EndPointConfig config;
-    private final OkHttpClient httpClient;
+    private final okhttp3.OkHttpClient httpClient;
 
     @Inject
-    public MarkitClient(OkHttpClient httpClient, EndPointConfig config) {
+    public OkHttpClient(okhttp3.OkHttpClient httpClient, EndPointConfig config) {
         this.config = config;
         this.httpClient = httpClient;
         LOG.info("Create Markit Http Client with {}", config.toString());
     }
 
-    public MarkitGetRequestBuilder get() {
-        return new MarkitGetRequestBuilder(this, config);
+    @Override
+    public EndPointConfig config() {
+        return config;
     }
 
-    public MarkitPostRequestBuilder post() {
-        return new MarkitPostRequestBuilder(this, config);
+    @Override
+    public ClientCall call(Request request, Predicate<String> predicate) {
+        return new OkHttpClientCall(this, request, predicate);
     }
 
-    public String send(MarkitClientCall call) {
+    public String send(ClientCall call) {
         try {
             String result = null;
             while (result == null) {
@@ -46,7 +46,7 @@ public class MarkitClient implements ClientEndPoint {
             }
             return result;
         } catch (Exception e) {
-            LOG.error("Failed to send the request, the error message {}", e.getMessage(), e);
+            LOG.error("Failed to create the request, the error message {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -59,10 +59,9 @@ public class MarkitClient implements ClientEndPoint {
             }
             return response.body().string();
         } catch (IOException ioe) {
-            LOG.error("Failed to send {}, the error message {}", request, ioe.getMessage(), ioe);
+            LOG.error("Failed to create {}, the error message {}", request, ioe.getMessage(), ioe);
             throw new RuntimeException(ioe.getMessage(), ioe);
         }
     }
-
 
 }

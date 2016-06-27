@@ -6,8 +6,8 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.markit.responses.ResponseParser;
 import com.acuo.valuation.modules.JaxbModule;
 import com.acuo.valuation.results.Result;
+import com.acuo.valuation.services.OkHttpClient;
 import com.acuo.valuation.utils.LoggingInterceptor;
-import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -39,10 +39,10 @@ public class PortfolioValuationsRetrieverTest {
     public void setUp() throws Exception {
         server.start();
 
-        OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
+        okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
         MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", 0l);
 
-        MarkitClient client = new MarkitClient(httpClient, markitEndPointConfig);
+        OkHttpClient client = new OkHttpClient(httpClient, markitEndPointConfig);
 
         retriever = new PortfolioValuationsRetriever(client, responseParser);
     }

@@ -1,18 +1,18 @@
-package com.acuo.valuation.requests;
+package com.acuo.valuation.services;
 
 import java.util.function.Predicate;
 
-public abstract class RequestBuilder<CHILD extends RequestBuilder<CHILD>> {
+public abstract class ClientCallBuilder<CHILD extends ClientCallBuilder<CHILD>> {
 
     protected Predicate<String> predicate = s -> false;
 
     public abstract CHILD with(String key, String value);
 
-    public CHILD retryUntil(Predicate<String> predicate) {
+    public CHILD retryWhile(Predicate<String> predicate) {
         this.predicate = predicate;
         return (CHILD) this;
     }
 
-    public abstract String send();
+    public abstract ClientCall create();
 
 }

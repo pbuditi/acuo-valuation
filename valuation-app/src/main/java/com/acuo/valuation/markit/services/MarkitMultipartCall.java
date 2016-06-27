@@ -1,6 +1,7 @@
 package com.acuo.valuation.markit.services;
 
-import com.acuo.valuation.requests.RequestBuilder;
+import com.acuo.valuation.services.ClientCall;
+import com.acuo.valuation.services.ClientCallBuilder;
 import com.acuo.valuation.services.ClientEndPoint;
 import com.acuo.valuation.services.EndPointConfig;
 import okhttp3.MediaType;
@@ -8,29 +9,32 @@ import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class MarkitPostRequestBuilder extends RequestBuilder<MarkitPostRequestBuilder> {
+public class MarkitMultipartCall extends ClientCallBuilder<MarkitMultipartCall> {
 
     private final ClientEndPoint client;
     private final EndPointConfig config;
     private MultipartBody.Builder builder;
 
-    public MarkitPostRequestBuilder(ClientEndPoint client, EndPointConfig config) {
+    private MarkitMultipartCall(ClientEndPoint client) {
         this.client = client;
-        this.config = config;
+        this.config = client.config();
         builder = new MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart("username", config.username())
                 .addFormDataPart("password", config.password());
     }
 
-    public MarkitPostRequestBuilder with(String key, String data) {
+    public static MarkitMultipartCall of(ClientEndPoint client) {
+        return new MarkitMultipartCall(client);
+    }
+
+    public MarkitMultipartCall with(String key, String data) {
         RequestBody body = RequestBody.create(MediaType.parse("multipart/form-data; charset=utf-8"), data);
         builder.addPart(MultipartBody.Part.createFormData(key, key, body));
         return this;
     }
 
-    public String send() {
+    public ClientCall create() {
         Request request = new Request.Builder().url(config.url()).post(builder.build()).build();
-        MarkitClientCall call = new MarkitClientCall(request, predicate);
-        return client.send(call);
+        return client.call(request, predicate);
     }
 }

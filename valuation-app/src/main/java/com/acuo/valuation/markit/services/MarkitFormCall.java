@@ -1,33 +1,37 @@
 package com.acuo.valuation.markit.services;
 
-import com.acuo.valuation.requests.RequestBuilder;
+import com.acuo.valuation.services.ClientCall;
+import com.acuo.valuation.services.ClientCallBuilder;
 import com.acuo.valuation.services.ClientEndPoint;
 import com.acuo.valuation.services.EndPointConfig;
 import okhttp3.FormBody;
 import okhttp3.Request;
 
-public class MarkitGetRequestBuilder extends RequestBuilder<MarkitGetRequestBuilder> {
+public class MarkitFormCall extends ClientCallBuilder<MarkitFormCall> {
 
     private final ClientEndPoint client;
     private final EndPointConfig config;
     private FormBody.Builder builder;
 
-    public MarkitGetRequestBuilder(ClientEndPoint client, EndPointConfig config) {
+    private MarkitFormCall(ClientEndPoint client) {
         this.client = client;
-        this.config = config;
+        this.config = client.config();
         builder = new FormBody.Builder()
                 .add("username", config.username())
                 .add("password", config.password());
     }
 
-    public MarkitGetRequestBuilder with(String key, String value) {
+    public static MarkitFormCall of(ClientEndPoint client) {
+        return new MarkitFormCall(client);
+    }
+
+    public MarkitFormCall with(String key, String value) {
         builder.add(key, value);
         return this;
     }
 
-    public String send() {
+    public ClientCall create() {
         Request request = new Request.Builder().url(config.url()).post(builder.build()).build();
-        MarkitClientCall call = new MarkitClientCall(request, predicate);
-        return client.send(call);
+        return client.call(request, predicate);
     }
 }

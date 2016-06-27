@@ -44,11 +44,17 @@ public class PortfolioValuationsSender implements Sender {
 
     public Report send(String file) {
         try {
-            String key = client.post().with("theFile", file).send();
-            String report = client.get().with("key", key)
-                    .with("version", "2")
-                    .retryUntil(s -> s.startsWith(STILL_PROCESSING_KEY))
-                    .send();
+            String key = MarkitMultipartCall.of(client)
+                                            .with("theFile", file)
+                                            .create()
+                                            .send();
+            String report = MarkitFormCall.of(client)
+                                          .with("key", key)
+                                          .with("version", "2")
+                                          .retryWhile(s -> s.startsWith(STILL_PROCESSING_KEY))
+                                          .create()
+                                          .send();
+            if (LOG.isDebugEnabled()) LOG.debug(report);
             return reportParser.parse(report);
         } catch (Exception e) {
             LOG.error("error uploading file for {} to markit pv service", file, e);
@@ -65,6 +71,5 @@ public class PortfolioValuationsSender implements Sender {
         RequestData data = MarkitRequestData.of(dataInput);
         RequestInput input = new RequestInput(valuationDate, valuationCurrency, data);
         return requestParser.parse(input.request());
-
     }
 }

@@ -44,7 +44,12 @@ public class PortfolioValuationsRetriever implements Retriever {
      */
     Response retrieve(String asOfDate) {
         try {
-            String result = client.get().with("asof", asOfDate).with("format", "xml").send();
+            String result = MarkitFormCall.of(client)
+                                          .with("asof", asOfDate)
+                                          .with("format", "xml")
+                                          .retryWhile(s -> s.contains("<valuationscomplete>false</valuationscomplete>"))
+                                          .create()
+                                          .send();
             if (LOG.isDebugEnabled()) LOG.debug(result);
             return parser.parse(result);
         } catch (Exception e) {

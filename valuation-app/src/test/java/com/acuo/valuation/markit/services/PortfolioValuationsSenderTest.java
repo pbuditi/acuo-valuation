@@ -9,9 +9,9 @@ import com.acuo.valuation.markit.requests.swap.IrSwap;
 import com.acuo.valuation.markit.requests.swap.IrSwapInput;
 import com.acuo.valuation.modules.JaxbModule;
 import com.acuo.valuation.reports.Report;
+import com.acuo.valuation.services.OkHttpClient;
 import com.acuo.valuation.util.SwapHelper;
 import com.acuo.valuation.utils.LoggingInterceptor;
-import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -54,10 +54,10 @@ public class PortfolioValuationsSenderTest {
     public void setUp() throws Exception {
         server.start();
 
-        OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
+        okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
         MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", 0l);
 
-        MarkitClient client = new MarkitClient(httpClient, markitEndPointConfig);
+        OkHttpClient client = new OkHttpClient(httpClient, markitEndPointConfig);
 
         sender = new PortfolioValuationsSender(client, requestParser, reportParser);
     }
