@@ -2,7 +2,7 @@ package com.acuo.valuation.services;
 
 import java.util.function.Predicate;
 
-public abstract class ClientCallBuilder<CHILD extends ClientCallBuilder<CHILD>> {
+public abstract class CallBuilder<CHILD extends CallBuilder<CHILD>> {
 
     protected Predicate<String> predicate = s -> false;
 
@@ -13,6 +13,6 @@ public abstract class ClientCallBuilder<CHILD extends ClientCallBuilder<CHILD>> 
         return (CHILD) this;
     }
 
-    public abstract ClientCall create();
+    public abstract Call create();
 
 }

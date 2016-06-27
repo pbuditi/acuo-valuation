@@ -4,7 +4,7 @@ import okhttp3.Request;
 
 import java.util.function.Predicate;
 
-public interface ClientCall {
+public interface Call {
 
     Request getRequest();
 

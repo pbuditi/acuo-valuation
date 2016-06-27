@@ -29,11 +29,11 @@ public final class OkHttpClient implements ClientEndPoint {
     }
 
     @Override
-    public ClientCall call(Request request, Predicate<String> predicate) {
-        return new OkHttpClientCall(this, request, predicate);
+    public Call call(Request request, Predicate<String> predicate) {
+        return new OkHttpCall(this, request, predicate);
     }
 
-    public String send(ClientCall call) {
+    public String send(Call call) {
         try {
             String result = null;
             while (result == null) {

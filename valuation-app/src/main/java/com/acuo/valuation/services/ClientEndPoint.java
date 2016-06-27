@@ -8,7 +8,7 @@ public interface ClientEndPoint {
 
     EndPointConfig config();
 
-    ClientCall call(Request request, Predicate<String> predicate);
+    Call call(Request request, Predicate<String> predicate);
 
-    String send(ClientCall call);
+    String send(Call call);
 }
