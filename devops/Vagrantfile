@@ -1,0 +1,46 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.network "forwarded_port", guest: 7474, host: 7474  
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
+  
+  #config.vm.synced_folder "./webapp/src/main/resources", "/data"
+
+  config.vm.define "vb", autostart: false do |vb_vm|
+    vb_vm.vm.provider "virtualbox" do |vb|
+      vb_vm.vm.box = "ubuntu/wily64"      
+      vb.name = "vagrant-acuo"
+      vb.gui = false
+      vb.customize ["modifyvm", :id, "--memory", "4096"]
+      vb.customize ["modifyvm", :id, "--cpus", "2"]
+      vb.customize ["modifyvm", :id, "--vram", 64]
+      vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
+    end
+  end
+
+  config.vm.define "aws", autostart: false do |aws_vm|    
+	#aws_vm.vm.box = "dummy"
+	# use dummy box    
+	aws_vm.vm.provider :aws do |aws, override|	  
+	  aws_vm.vm.box = "aws_dummy_box"
+      aws_vm.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
+      # override ssh user and private key
+      override.ssh.username = "ubuntu"    
+      override.ssh.private_key_path = "#{ENV['HOME']}/Documents/KeyPass/Keys/docker-ne04j.pem"
+
+      aws.access_key_id = ENV['AWS_ACCESS_KEY']
+      aws.secret_access_key = ENV['AWS_SECRET_KEY']    
+      aws.keypair_name = "vagrant-neo4j"
+      aws.instance_type = "t2.micro"
+      aws.region = "us-west-2"
+      aws.ami = "ami-9abea4fb"
+      aws.keypair_name = "docker-ne04j"
+      aws.security_groups = "docker-ne04j"
+    end
+  end
+  
+  config.vm.provision :docker
+  config.vm.provision :docker_compose, yml: ["/vagrant/docker-compose.yml"], rebuild: true, project_name: "acuo-collateral", run: "always"
+end

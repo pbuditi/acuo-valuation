@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.0'
+    }
+}
+
 allprojects {
 	repositories {
 		jcenter()
@@ -5,7 +15,7 @@ allprojects {
 		mavenCentral()		
     }	    
 	group = 'com.acuo.collateral'
-	version = '1.0'	
+	version = '1.0'
 }
 
 def loadConfiguration() {
@@ -25,4 +35,8 @@ configure (subprojects) {
 configurations.all {
     // check for updates every build
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14'
 }

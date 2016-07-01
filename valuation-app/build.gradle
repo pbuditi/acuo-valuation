@@ -9,8 +9,8 @@ apply from: "$rootDir/gradle/integration-test.gradle"
 repositories {
     mavenCentral()
     maven {
-        name 'htmleasy'
-        url 'http://htmleasy-maven.googlecode.com/svn/trunk/'
+        name 'opengamm'
+        url 'http://maven.opengamma.com/nexus/content/groups/public/'
     }
 }
 
@@ -51,7 +51,9 @@ dependencies {
             "io.dropwizard.metrics:metrics-jvm:${versions.metrics}",
             "io.dropwizard.metrics:metrics-servlets:${versions.metrics}",
             "com.palominolabs.metrics:metrics-guice:${versions.metricsguice}",
-            "org.jasypt:jasypt:1.9.2"
+            "org.jasypt:jasypt:1.9.2",
+
+            "com.opengamma.strata:strata-product:0.15.0"
     )
 
     testCompile(
@@ -63,3 +65,10 @@ dependencies {
             "net.javacrumbs.json-unit:json-unit-fluent:1.12.1"
     )
 }
+
+apply plugin: 'application'
+
+mainClassName = 'com.acuo.valuation.ValuationApp'
+applicationDefaultJvmArgs = ["-Dacuo.config.appid=${config.appId}",
+                             "-Dacuo.config.env=${config.env}",
+                             "-Dacuo.security.key=@cu02ol6"]

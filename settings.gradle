@@ -1,2 +1,3 @@
 rootProject.name = 'acuo-valuation'
 include 'valuation-app'
+include 'devops'

@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+ app:
+  build: ./build
+  image: valuation-app
+  ports:
+   - "0.0.0.0:9090:9090"
+  networks:
+   - acuo
+networks:
+ acuo:

@@ -1,0 +1,36 @@
+apply plugin:'base'
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+def name = project(":valuation-app").name
+def imageName = "${name}:${version}"
+def imagePort = 9090
+
+build.dependsOn("createDockerfile")
+
+task copyTar(type: Copy, dependsOn: ":${name}:distTar") {
+    from project(":${name}").collect { it.tasks.withType(Tar) }
+    into "$buildDir"
+}
+
+task createDockerfile(type: Dockerfile, dependsOn: copyTar) {
+    destFile = project.file("$buildDir/Dockerfile")
+    from 'java'
+    maintainer 'Hicham Medkouri "info@anaxo.io"'
+    addFile "${name}-${version}.tar", "/"
+    entryPoint "/${name}-${version}/bin/${name}"
+    exposePort imagePort
+    label version: "${version}"
+}
+
+task dockerBuildImage(type:Exec, dependsOn: createDockerfile) {
+    group = 'docker'
+    commandLine 'docker', 'build', '-t', imageName, "$buildDir"
+}
+
+task dockerPushImage(type:Exec, dependsOn: dockerBuildImage) {
+    group = 'docker'
+    commandLine 'docker', 'push', imageName
+}
