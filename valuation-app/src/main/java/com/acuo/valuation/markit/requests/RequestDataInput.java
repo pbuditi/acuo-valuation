@@ -1,7 +1,7 @@
 package com.acuo.valuation.markit.requests;
 
-import com.acuo.valuation.markit.requests.swap.IrSwap;
-import com.acuo.valuation.markit.requests.swap.IrSwapInput;
+import com.acuo.valuation.markit.product.swap.IrSwap;
+import com.acuo.valuation.markit.product.swap.IrSwapInput;
 import com.acuo.valuation.requests.RequestData;
 
 import javax.xml.bind.annotation.XmlElement;

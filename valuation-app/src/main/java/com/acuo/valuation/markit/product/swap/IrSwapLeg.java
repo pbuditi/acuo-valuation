@@ -1,4 +1,4 @@
-package com.acuo.valuation.markit.requests.swap;
+package com.acuo.valuation.markit.product.swap;
 
 import lombok.Setter;
 

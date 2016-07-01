@@ -9,7 +9,7 @@ import com.acuo.common.marshal.json.JsonContextFactory;
 import com.acuo.common.marshal.json.MoxyJsonContextFactory;
 import com.acuo.valuation.markit.reports.ReportInput;
 import com.acuo.valuation.markit.requests.RequestInput;
-import com.acuo.valuation.markit.requests.swap.IrSwapInput;
+import com.acuo.valuation.markit.product.swap.IrSwapInput;
 import com.acuo.valuation.markit.responses.ResponseInput;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;

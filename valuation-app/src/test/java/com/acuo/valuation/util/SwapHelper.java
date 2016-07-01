@@ -1,11 +1,10 @@
 package com.acuo.valuation.util;
 
 import com.acuo.common.marshal.LocalDateAdapter;
-import com.acuo.valuation.markit.requests.swap.IrSwapInput;
-import com.acuo.valuation.markit.requests.swap.IrSwapLegFixingInput;
-import com.acuo.valuation.markit.requests.swap.IrSwapLegInput;
-import com.acuo.valuation.markit.requests.swap.IrSwapLegPayDatesInput;
+import com.acuo.valuation.markit.product.swap.*;
+import com.acuo.valuation.reports.Report;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +19,12 @@ public class SwapHelper {
         input.legs = new ArrayList<>();
         input.legs.addAll(irSwapLegs());
         return input;
+    }
+
+    public static IrSwap swap() {
+        IrSwap swapDTO = new IrSwap();
+        swapDTO.setTradeId("trade-id");
+        return swapDTO;
     }
 
     private static List<IrSwapLegInput> irSwapLegs() throws Exception {

@@ -1,11 +1,13 @@
 package com.acuo.valuation.markit.services;
 
-import com.acuo.valuation.markit.requests.swap.IrSwap;
+import com.acuo.valuation.markit.product.swap.IrSwap;
 import com.acuo.valuation.markit.responses.MarkitValue;
 import com.acuo.valuation.reports.Report;
 import com.acuo.valuation.results.ErrorResult;
 import com.acuo.valuation.results.Result;
 import com.acuo.valuation.results.SwapResult;
+import com.acuo.valuation.util.ReportHelper;
+import com.acuo.valuation.util.SwapHelper;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,21 +40,21 @@ public class MarkitPricingServiceTest {
 
     @Test
     public void testPriceSwapWithErrorReport() {
-        when(sender.send(any(IrSwap.class))).thenReturn(reportError());
+        when(sender.send(any(IrSwap.class))).thenReturn(ReportHelper.reportError());
 
-        Result result = service.price(swap());
+        Result result = service.price(SwapHelper.swap());
 
         assertThat(result).isNotNull().isInstanceOf(ErrorResult.class);
     }
 
     @Test
     public void testPriceSwapWithNoErrorReport() {
-        when(sender.send(any(IrSwap.class))).thenReturn(report());
+        when(sender.send(any(IrSwap.class))).thenReturn(ReportHelper.report());
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
         when(retriever.retrieve(any(LocalDate.class), any(String.class))).thenReturn(new SwapResult(markitValue));
 
-        Result result = service.price(swap());
+        Result result = service.price(SwapHelper.swap());
 
         assertThat(result).isNotNull().isInstanceOf(SwapResult.class);
 
@@ -61,25 +63,4 @@ public class MarkitPricingServiceTest {
 
         assertThat(swapResult).is(pvEqualToOne);
     }
-
-    private IrSwap swap() {
-        IrSwap swapDTO = new IrSwap();
-        swapDTO.setTradeId("trade-id");
-        return swapDTO;
-    }
-
-    private Report report() {
-        Report.ReportBuilder reportBuilder = new Report.ReportBuilder("warning-report", "2.2", LocalDate.of(2016, 6, 10));
-        reportBuilder.add("trade-id", "WARNING", "warning message");
-        Report report = reportBuilder.build();
-        return report;
-    }
-
-    private Report reportError() {
-        Report.ReportBuilder reportBuilder = new Report.ReportBuilder("error-report", "2.2", LocalDate.of(2016, 6, 10));
-        reportBuilder.add("trade-id", "ERROR", "error message");
-        Report report = reportBuilder.build();
-        return report;
-    }
-
 }
