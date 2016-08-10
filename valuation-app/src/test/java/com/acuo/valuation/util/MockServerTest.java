@@ -1,10 +1,10 @@
 package com.acuo.valuation.util;
 
 import com.acuo.common.util.ResourceFile;
+import com.acuo.valuation.markit.services.MarkitClient;
+import com.acuo.valuation.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.markit.services.MarkitFormCall;
 import com.acuo.valuation.markit.services.MarkitMultipartCall;
-import com.acuo.valuation.services.OkHttpClient;
-import com.acuo.valuation.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.services.ClientEndPoint;
 import com.acuo.valuation.utils.LoggingInterceptor;
 import org.junit.After;
@@ -17,13 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MockServerTest {
 
     @Rule
-    public ResourceFile request = new ResourceFile("/requests/markit-sample.xml");
+    public ResourceFile request = new ResourceFile("/markit/requests/markit-sample.xml");
 
     @Rule
-    public ResourceFile report = new ResourceFile("/reports/markit-test-01.xml");
+    public ResourceFile report = new ResourceFile("/markit/reports/markit-test-01.xml");
 
     @Rule
-    public ResourceFile result = new ResourceFile("/responses/markit-test-01.xml");
+    public ResourceFile result = new ResourceFile("/markit/responses/markit-test-01.xml");
 
     MockServer server;
 
@@ -33,10 +33,10 @@ public class MockServerTest {
     public void setUp() throws Exception {
         server = new MockServer();
         new Thread(server).start();
-
-        MarkitEndPointConfig config = new MarkitEndPointConfig("http://localhost:8080/", "username", "password", 0l);
+        Thread.sleep(1000);
+        MarkitEndPointConfig config = new MarkitEndPointConfig("http://localhost:8080/", "username", "password", "0", "1");
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
-        client = new OkHttpClient(httpClient, config);
+        client = new MarkitClient(httpClient, config);
     }
 
     @Test

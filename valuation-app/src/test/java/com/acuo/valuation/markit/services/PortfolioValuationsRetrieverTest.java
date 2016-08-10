@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PortfolioValuationsRetrieverTest {
 
     @Rule
-    public ResourceFile response = new ResourceFile("/responses/markit-sample.xml");
+    public ResourceFile response = new ResourceFile("/markit/responses/markit-sample.xml");
 
     @Inject
     ResponseParser responseParser;
@@ -40,9 +40,9 @@ public class PortfolioValuationsRetrieverTest {
         server.start();
 
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
-        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", 0l);
+        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", "0", "1");
 
-        OkHttpClient client = new OkHttpClient(httpClient, markitEndPointConfig);
+        OkHttpClient client = new MarkitClient(httpClient, markitEndPointConfig);
 
         retriever = new PortfolioValuationsRetriever(client, responseParser);
     }

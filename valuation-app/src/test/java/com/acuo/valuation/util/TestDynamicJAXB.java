@@ -19,10 +19,10 @@ import static org.junit.Assert.assertNotNull;
 public class TestDynamicJAXB {
 
     @Rule
-    public ResourceFile sample = new ResourceFile("/requests/markit-sample.xml");
+    public ResourceFile sample = new ResourceFile("/markit/requests/markit-sample.xml");
 
     @Rule
-    public ResourceFile schema = new ResourceFile("/requests/PresentValue.xsd");
+    public ResourceFile schema = new ResourceFile("/markit/requests/PresentValue.xsd");
 
     @Test
     public void verifyContext() throws Exception {

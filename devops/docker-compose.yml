@@ -6,7 +6,4 @@ services:
   image: valuation-app
   ports:
    - "0.0.0.0:9090:9090"
-  networks:
-   - acuo
-networks:
- acuo:
+  network_mode: "host"

@@ -24,10 +24,10 @@ import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 public class ResponseParsingTest {
 
     @Rule
-    public ResourceFile sample = new ResourceFile("/responses/markit-sample.xml");
+    public ResourceFile sample = new ResourceFile("/markit/responses/markit-sample.xml");
 
     @Rule
-    public ResourceFile valuationOn20160610 = new ResourceFile("/responses/markit-20160610.xml");
+    public ResourceFile valuationOn20160610 = new ResourceFile("/markit/responses/markit-20160610.xml");
 
     @Inject
     ResponseParser parser;

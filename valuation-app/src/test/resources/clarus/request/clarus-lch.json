@@ -1,0 +1,13 @@
+{
+  "calcAddons": false,
+  "ccp": "LCH",
+  "houseClient": "Client",
+  "portfolioData": [
+    {
+      "data": "CobDate\tLchMatchedTradeRef\tTradeDate\tLchRegistrationDateTime\tMaturityDate\tCurrency\tNotionalAmount\tMatchingService\tExternalSourceRef\tProductType\tCompoundingTrade\tParty_A_SdMnemonic\tParty_A_MbrMnemonic\tParty_A_Account\tParty_A_SdTradeId\tParty_A_LegType\tParty_A_Rate\tParty_A_Spread\tParty_A_IndexName\tParty_A_FirstTenor\tParty_A_DayCountFraction\tParty_A_BusinessDayConvention\tParty_A_EffectiveDate\tParty_A_PmtFrequency\tParty_A_RollDate\tParty_A_FrontStubEndDate\tParty_A_BackStubStartDate\tParty_B_SdMnemonic\tParty_B_MbrMnemonic\tParty_B_Account\tParty_B_SdTradeId\tParty_B_LegType\tParty_B_Rate\tParty_B_Spread\tParty_B_IndexName\tParty_B_FirstTenor\tParty_B_DayCountFraction\tParty_B_BusinessDayConvention\tParty_B_EffectiveDate\tParty_B_ClientShortName\tParty_B_PmtFrequency\tParty_B_RollDate\tParty_B_FrontStubEndDate\tParty_B_BackStubStartDate\tTradeLevelNPV\tTradePV01\tNettingEligible\tEID\tLID\tNID\tStandardNettingKey\tBlendedNettingKey\tInfTradePV01\tParty_A_InflInterpMethod\tParty_A_InflLag\tParty_A_InflIndexLevelInitial\tParty_A_InflIndexLevelFinal\tParty_B_InflInterpMethod\tParty_B_InflLag\tParty_B_InflIndexLevelInitial\tParty_B_InflIndexLevelFinal\tXCCYPV01\tXCCYDiscountingCurr\n2016/02/02\tLCH00030202377\t2016/02/02\t2016/02/02 18:03:50\t2026/02/02\tAUD\t1150000000.00\tSEF1\t\tIRS\tN\tLCHLGB22XXX\tLCH\tH\tLCH00030202377\tFIX\t.0279\t\t\t\tACT/365.FIXED\tMODFOLLOWING\t2016/02/02\t6M\t2\t\t\t\t\t\t\tFLT\t0\t\tBBR-BBSW\t6M\tACT/365.FIXED\tMODFOLLOWING\t2016/02/02\t\t6M\t2\t\t\t-4594842.91\t974459.5100\tN\t\t\t294042\t294042_20160202_20160802_20160202_20160802_0.0279000000\t294042_20160202_20160802_20160202_20160802\t\t\t\t\t\t\t\t\t\t\t\n",
+      "dataFormat": "LCH",
+      "dataType": "SwapRegister"
+    }
+  ],
+  "reportingCcy": "USD"
+}

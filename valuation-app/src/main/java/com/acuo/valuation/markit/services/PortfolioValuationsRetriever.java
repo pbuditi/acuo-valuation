@@ -25,7 +25,7 @@ public class PortfolioValuationsRetriever implements Retriever {
     private final ResponseParser parser;
 
     @Inject
-    public PortfolioValuationsRetriever(ClientEndPoint client, ResponseParser parser) {
+    public PortfolioValuationsRetriever(ClientEndPoint<MarkitEndPointConfig> client, ResponseParser parser) {
         this.client = client;
         this.parser = parser;
     }

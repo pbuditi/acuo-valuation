@@ -7,24 +7,26 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-public final class OkHttpClient implements ClientEndPoint {
+public abstract class OkHttpClient<T extends EndPointConfig> implements ClientEndPoint<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(OkHttpClient.class);
 
-    private final EndPointConfig config;
+    private final T config;
     private final okhttp3.OkHttpClient httpClient;
 
     @Inject
-    public OkHttpClient(okhttp3.OkHttpClient httpClient, EndPointConfig config) {
+    public OkHttpClient(okhttp3.OkHttpClient httpClient, T config) {
         this.config = config;
-        this.httpClient = httpClient;
+        LOG.debug("OkHttpClient default connection timeout in ms:" + httpClient.connectTimeoutMillis());
+        this.httpClient = httpClient.newBuilder().connectTimeout(config.connectionTimeOut(), config.connectionTimeOutUnit()).build();
         LOG.info("Create Markit Http Client with {}", config.toString());
     }
 
     @Override
-    public EndPointConfig config() {
+    public T config() {
         return config;
     }
 
@@ -33,25 +35,7 @@ public final class OkHttpClient implements ClientEndPoint {
         return new OkHttpCall(this, request, predicate);
     }
 
-    public String send(Call call) {
-        try {
-            String result = null;
-            while (result == null) {
-                String response = execute(call.getRequest());
-                if (call.getPredicate().test(response)) {
-                    Thread.sleep(config.retryDelayInMilliseconds());
-                } else {
-                    result = response;
-                }
-            }
-            return result;
-        } catch (Exception e) {
-            LOG.error("Failed to create the request, the error message {}", e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
-    private String execute(Request request) {
+    protected String execute(Request request) {
         try {
             Response response = httpClient.newCall(request).execute();
             if (!response.isSuccessful()) {

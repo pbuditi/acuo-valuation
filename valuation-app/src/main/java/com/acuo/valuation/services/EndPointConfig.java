@@ -1,11 +1,10 @@
 package com.acuo.valuation.services;
 
+import java.util.concurrent.TimeUnit;
+
 public interface EndPointConfig {
-    String url();
 
-    String username();
+    int connectionTimeOut();
+    TimeUnit connectionTimeOutUnit();
 
-    String password();
-
-    Long retryDelayInMilliseconds();
 }

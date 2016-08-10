@@ -4,11 +4,12 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
+import com.acuo.valuation.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.JaxbModule;
 import com.acuo.valuation.modules.ResourcesModule;
 import com.acuo.valuation.modules.ServicesModule;
-import com.acuo.valuation.services.EndPointConfig;
 import com.acuo.valuation.web.MOXyCustomJsonProvider;
 import com.google.inject.AbstractModule;
 import okhttp3.mockwebserver.MockResponse;
@@ -33,17 +34,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({SwapValuationResourceTest.MockServiceModule.class, JaxbModule.class, ServicesModule.class, ResourcesModule.class})
+@GuiceModules({SwapValuationResourceTest.MockServiceModule.class, JaxbModule.class, EndPointModule.class, ServicesModule.class, ResourcesModule.class})
 public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Rule
-    public ResourceFile swap = new ResourceFile("/requests/dto-swap-test-01.json");
+    public ResourceFile swap = new ResourceFile("/markit/requests/dto-swap-test-01.json");
 
     @Rule
-    public ResourceFile report = new ResourceFile("/reports/markit-test-01.xml");
+    public ResourceFile report = new ResourceFile("/markit/reports/markit-test-01.xml");
 
     @Rule
-    public ResourceFile response = new ResourceFile("/responses/markit-test-01.xml");
+    public ResourceFile response = new ResourceFile("/markit/responses/markit-test-01.xml");
 
     private static MockWebServer server;
 
@@ -52,8 +53,10 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
         protected void configure() {
             server = new MockWebServer();
             MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(),
-                    "username", "password", 0l);
-            bind(EndPointConfig.class).toInstance(markitEndPointConfig);
+                    "username", "password", "0", "1");
+            ClarusEndPointConfig clarusEndPointConfig = new ClarusEndPointConfig("host", "key", "api", "1");
+            bind(MarkitEndPointConfig.class).toInstance(markitEndPointConfig);
+            bind(ClarusEndPointConfig.class).toInstance(clarusEndPointConfig);
         }
 
     }

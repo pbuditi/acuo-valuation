@@ -7,10 +7,12 @@ import com.acuo.common.marshal.jaxb.JaxbContextFactory;
 import com.acuo.common.marshal.jaxb.MoxyJaxbContextFactory;
 import com.acuo.common.marshal.json.JsonContextFactory;
 import com.acuo.common.marshal.json.MoxyJsonContextFactory;
+import com.acuo.valuation.markit.product.swap.IrSwapInput;
 import com.acuo.valuation.markit.reports.ReportInput;
 import com.acuo.valuation.markit.requests.RequestInput;
-import com.acuo.valuation.markit.product.swap.IrSwapInput;
 import com.acuo.valuation.markit.responses.ResponseInput;
+import com.acuo.valuation.web.JacksonObjectMapperProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
@@ -29,6 +31,7 @@ public class JaxbModule extends AbstractModule {
         });
         bind(Marshaller.class).annotatedWith(Names.named("json")).to(new TypeLiteral<MarshallerExecutor<JsonContextFactory>>() {
         });
+        bind(ObjectMapper.class).toProvider(JacksonObjectMapperProvider.class);
     }
 
     @Provides

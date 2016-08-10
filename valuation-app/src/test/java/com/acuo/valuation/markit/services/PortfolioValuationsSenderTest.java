@@ -3,10 +3,10 @@ package com.acuo.valuation.markit.services;
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.markit.reports.ReportParser;
-import com.acuo.valuation.markit.requests.RequestParser;
 import com.acuo.valuation.markit.product.swap.IrSwap;
 import com.acuo.valuation.markit.product.swap.IrSwapInput;
+import com.acuo.valuation.markit.reports.ReportParser;
+import com.acuo.valuation.markit.requests.RequestParser;
 import com.acuo.valuation.modules.JaxbModule;
 import com.acuo.valuation.reports.Report;
 import com.acuo.valuation.services.OkHttpClient;
@@ -34,7 +34,7 @@ public class PortfolioValuationsSenderTest {
     private static final String STILL_PROCESSING_KEY = "Markit upload still processing.";
 
     @Rule
-    public ResourceFile report = new ResourceFile("/reports/markit-test-01.xml");
+    public ResourceFile report = new ResourceFile("/markit/reports/markit-test-01.xml");
 
     @Inject
     RequestParser requestParser;
@@ -55,9 +55,9 @@ public class PortfolioValuationsSenderTest {
         server.start();
 
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
-        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", 0l);
+        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", "0", "1");
 
-        OkHttpClient client = new OkHttpClient(httpClient, markitEndPointConfig);
+        OkHttpClient client = new MarkitClient(httpClient, markitEndPointConfig);
 
         sender = new PortfolioValuationsSender(client, requestParser, reportParser);
     }

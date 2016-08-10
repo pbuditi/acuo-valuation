@@ -4,9 +4,9 @@ import okhttp3.Request;
 
 import java.util.function.Predicate;
 
-public interface ClientEndPoint {
+public interface ClientEndPoint<T> {
 
-    EndPointConfig config();
+    T config();
 
     Call call(Request request, Predicate<String> predicate);
 
