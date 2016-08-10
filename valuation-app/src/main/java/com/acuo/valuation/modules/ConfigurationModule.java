@@ -1,7 +1,7 @@
 package com.acuo.valuation.modules;
 
 import com.acuo.common.app.Configuration;
-import com.acuo.valuation.PropertiesHelper;
+import com.acuo.valuation.utils.PropertiesHelper;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
 import com.google.inject.AbstractModule;

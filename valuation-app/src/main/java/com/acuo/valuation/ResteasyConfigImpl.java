@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static com.acuo.valuation.PropertiesHelper.*;
+import static com.acuo.valuation.utils.PropertiesHelper.*;
 
 public class ResteasyConfigImpl implements ResteasyConfig {
 

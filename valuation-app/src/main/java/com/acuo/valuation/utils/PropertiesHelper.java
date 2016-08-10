@@ -1,4 +1,4 @@
-package com.acuo.valuation;
+package com.acuo.valuation.utils;
 
 import com.acuo.common.app.AppId;
 import com.acuo.common.app.Configuration;
