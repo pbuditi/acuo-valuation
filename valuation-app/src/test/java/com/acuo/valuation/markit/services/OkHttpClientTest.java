@@ -2,7 +2,6 @@ package com.acuo.valuation.markit.services;
 
 import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.services.ClientEndPoint;
-import com.acuo.valuation.services.OkHttpClient;
 import com.acuo.valuation.utils.LoggingInterceptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -22,13 +21,13 @@ public class OkHttpClientTest {
     private static final String STILL_PROCESSING_KEY = "Markit upload still processing.";
 
     @Rule
-    public ResourceFile request = new ResourceFile("/requests/markit-sample.xml");
+    public ResourceFile request = new ResourceFile("/markit/requests/markit-sample.xml");
 
     @Rule
-    public ResourceFile report = new ResourceFile("/reports/markit-test-01.xml");
+    public ResourceFile report = new ResourceFile("/markit/reports/markit-test-01.xml");
 
     @Rule
-    public ResourceFile response = new ResourceFile("/responses/markit-sample.xml");
+    public ResourceFile response = new ResourceFile("/markit/responses/markit-sample.xml");
 
     MarkitEndPointConfig markitEndPointConfig;
     okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
@@ -41,9 +40,9 @@ public class OkHttpClientTest {
         server.start();
 
         String url = server.url("/").toString();
-        markitEndPointConfig = new MarkitEndPointConfig(url, "username", "password", 0l);
+        markitEndPointConfig = new MarkitEndPointConfig(url, "username", "password", "0", "150");
 
-        client = new OkHttpClient(httpClient, markitEndPointConfig);
+        client = new MarkitClient(httpClient, markitEndPointConfig);
     }
 
     @Test
@@ -84,8 +83,8 @@ public class OkHttpClientTest {
             try {
                 RecordedRequest request = server.takeRequest();
                 String body = request.getBody().readUtf8();
-                assertThat(body).contains("username=" + markitEndPointConfig.username())
-                        .contains("password=" + markitEndPointConfig.password())
+                assertThat(body).contains("username=" + markitEndPointConfig.getUsername())
+                        .contains("password=" + markitEndPointConfig.getPassword())
                         .contains("key=key")
                         .contains("version=2");
             } catch (InterruptedException e) {
@@ -108,8 +107,8 @@ public class OkHttpClientTest {
 
         RecordedRequest request = server.takeRequest();
         String body = request.getBody().readUtf8();
-        assertThat(body).contains("username=" + markitEndPointConfig.username());
-        assertThat(body).contains("password=" + markitEndPointConfig.password());
+        assertThat(body).contains("username=" + markitEndPointConfig.getUsername());
+        assertThat(body).contains("password=" + markitEndPointConfig.getPassword());
         assertThat(body).contains("asof=" + asOfDate);
         assertThat(body).contains("format=xml");
     }

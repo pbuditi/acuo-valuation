@@ -4,6 +4,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.markit.reports.ReportParser;
 import com.acuo.valuation.markit.requests.RequestParser;
+import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.JaxbModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.reports.Report;
@@ -20,14 +21,11 @@ import static org.junit.Assert.assertTrue;
 
 @Ignore
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ServicesModule.class, JaxbModule.class})
+@GuiceJUnitRunner.GuiceModules({EndPointModule.class, ServicesModule.class, JaxbModule.class})
 public class PortfolioValuationsSenderIntegrationTest {
 
     @Rule
-    public ResourceFile res = new ResourceFile("/it-requests/markit-sample.xml");
-
-    @Rule
-    public ResourceFile test = new ResourceFile("/it-requests/test.xml");
+    public ResourceFile res = new ResourceFile("/markit/markit-sample.xml");
 
     @Inject
     ClientEndPoint clientEndPoint;

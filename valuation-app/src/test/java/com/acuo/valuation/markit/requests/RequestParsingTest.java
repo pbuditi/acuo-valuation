@@ -31,10 +31,10 @@ import static org.xmlunit.matchers.ValidationMatcher.valid;
 public class RequestParsingTest {
 
     @Rule
-    public ResourceFile sample = new ResourceFile("/requests/markit-sample.xml");
+    public ResourceFile sample = new ResourceFile("/markit/requests/markit-sample.xml");
 
     @Rule
-    public ResourceFile schema = new ResourceFile("/requests/PresentValue.xsd");
+    public ResourceFile schema = new ResourceFile("/markit/requests/PresentValue.xsd");
 
     @Inject
     RequestParser parser;

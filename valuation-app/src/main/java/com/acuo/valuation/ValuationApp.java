@@ -29,6 +29,7 @@ public class ValuationApp extends ResteasyMain {
                     new EncryptionModule(),
                     new ConfigurationModule(),
                     new ParsersModule(),
+                    new EndPointModule(),
                     new ServicesModule(),
                     new ResourcesModule(),
                     new HealthChecksModule());

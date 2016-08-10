@@ -53,7 +53,8 @@ dependencies {
             "com.palominolabs.metrics:metrics-guice:${versions.metricsguice}",
             "org.jasypt:jasypt:1.9.2",
 
-            "com.opengamma.strata:strata-product:0.15.0"
+            "com.opengamma.strata:strata-product:0.15.0",
+            "com.xebia:jackson-lombok:1.1"
     )
 
     testCompile(
@@ -71,4 +72,4 @@ apply plugin: 'application'
 mainClassName = 'com.acuo.valuation.ValuationApp'
 applicationDefaultJvmArgs = ["-Dacuo.config.appid=${config.appId}",
                              "-Dacuo.config.env=${config.env}",
-                             "-Dacuo.security.key=@cu02ol6"]
+                             "-Dacuo.security.key=${config.key}"]

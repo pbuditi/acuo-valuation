@@ -1,12 +1,12 @@
 package com.acuo.valuation.markit.services;
 
+import com.acuo.valuation.markit.product.swap.IrSwap;
+import com.acuo.valuation.markit.product.swap.IrSwapInput;
 import com.acuo.valuation.markit.reports.ReportParser;
 import com.acuo.valuation.markit.requests.MarkitRequestData;
 import com.acuo.valuation.markit.requests.RequestDataInput;
 import com.acuo.valuation.markit.requests.RequestInput;
 import com.acuo.valuation.markit.requests.RequestParser;
-import com.acuo.valuation.markit.product.swap.IrSwap;
-import com.acuo.valuation.markit.product.swap.IrSwapInput;
 import com.acuo.valuation.reports.Report;
 import com.acuo.valuation.requests.RequestData;
 import com.acuo.valuation.services.ClientEndPoint;
@@ -26,7 +26,7 @@ public class PortfolioValuationsSender implements Sender {
     private final ReportParser reportParser;
 
     @Inject
-    public PortfolioValuationsSender(ClientEndPoint client, RequestParser requestParser, ReportParser reportParser) {
+    public PortfolioValuationsSender(ClientEndPoint<MarkitEndPointConfig> client, RequestParser requestParser, ReportParser reportParser) {
         this.client = client;
         this.requestParser = requestParser;
         this.reportParser = reportParser;

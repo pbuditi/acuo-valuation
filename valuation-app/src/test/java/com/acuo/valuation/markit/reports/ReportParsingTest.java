@@ -23,7 +23,7 @@ import static org.junit.Assert.fail;
 public class ReportParsingTest {
 
     @Rule
-    public ResourceFile sample = new ResourceFile("/reports/markit-test-01.xml");
+    public ResourceFile sample = new ResourceFile("/markit/reports/markit-test-01.xml");
 
     @Inject
     ReportParser parser;

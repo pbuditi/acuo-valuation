@@ -12,8 +12,11 @@ allprojects {
 	repositories {
 		jcenter()
 		mavenLocal()
-		mavenCentral()		
-    }	    
+		mavenCentral()
+		maven {
+			url "http://192.168.1.70:8081/repository/maven-public/"
+		}
+	}
 	group = 'com.acuo.collateral'
 	version = '1.0'
 }

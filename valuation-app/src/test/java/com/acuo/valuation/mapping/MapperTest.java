@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MapperTest {
 
     @Rule
-    public ResourceFile swapDTOResource = new ResourceFile("/requests/dto-swap-test-01.json");
+    public ResourceFile swapDTOResource = new ResourceFile("/markit/requests/dto-swap-test-01.json");
 
     @Inject
     @Named("json")

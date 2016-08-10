@@ -3,6 +3,7 @@ package com.acuo.valuation.markit.services;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.valuation.markit.responses.ResponseParser;
+import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.JaxbModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.responses.Response;
@@ -18,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 
 @Ignore
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({ServicesModule.class, JaxbModule.class})
+@GuiceModules({EndPointModule.class, ServicesModule.class, JaxbModule.class})
 public class PortfolioValuationsRetrieverIntegrationTest {
 
     @Inject

@@ -1,0 +1,41 @@
+{
+  "messages": [],
+  "params": {
+    "calcAddons": "false",
+    "ccp": "CME",
+    "closeOnResult": "true",
+    "houseClient": "Client",
+    "marginType": "IM",
+    "orgId": "Acuo",
+    "portfolioData": "[CME:SwapRegister:charmapidata]",
+    "reportingCcy": "USD",
+    "userName": "apiuser:Acuo",
+    "valueDate": "2016-08-09"
+  },
+  "results": {
+    "Margin": {
+      "Account": 44868.64941161957,
+      "Change": 0.0,
+      "Margin": 44868.64941161957
+    },
+    "USD": {
+      "Account": 44868.64941161957,
+      "Change": 0.0,
+      "Margin": 44868.64941161957
+    }
+  },
+  "stats": {
+    "AvgMaturity": "17.16",
+    "CalcTime": "28",
+    "CurveSize": "3500",
+    "MTM/CPU/s": "4159",
+    "MTM/s": "4159",
+    "Memory%": "71",
+    "NumCPU": "1",
+    "NumMTM": "116",
+    "NumRequests": "1",
+    "NumTrades": "1",
+    "ResponseTime": "63",
+    "TaskTime": "48"
+  }
+}
