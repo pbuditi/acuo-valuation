@@ -1,6 +1,6 @@
 package com.acuo.valuation.util;
 
-import com.acuo.valuation.reports.Report;
+import com.acuo.valuation.protocol.reports.Report;
 
 import java.time.LocalDate;
 

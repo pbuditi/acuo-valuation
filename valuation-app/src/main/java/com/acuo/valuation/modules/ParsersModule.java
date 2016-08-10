@@ -1,8 +1,8 @@
 package com.acuo.valuation.modules;
 
-import com.acuo.valuation.markit.reports.ReportParser;
-import com.acuo.valuation.markit.requests.RequestParser;
-import com.acuo.valuation.markit.responses.ResponseParser;
+import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
+import com.acuo.valuation.providers.markit.protocol.requests.RequestParser;
+import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.google.inject.AbstractModule;
 
 public class ParsersModule extends AbstractModule {

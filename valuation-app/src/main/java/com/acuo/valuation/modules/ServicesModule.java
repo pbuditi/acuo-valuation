@@ -1,7 +1,7 @@
 package com.acuo.valuation.modules;
 
-import com.acuo.valuation.clarus.services.ClarusMarginCalcService;
-import com.acuo.valuation.markit.services.*;
+import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
+import com.acuo.valuation.providers.markit.services.*;
 import com.acuo.valuation.services.MarginCalcService;
 import com.acuo.valuation.services.PricingService;
 import com.google.inject.AbstractModule;

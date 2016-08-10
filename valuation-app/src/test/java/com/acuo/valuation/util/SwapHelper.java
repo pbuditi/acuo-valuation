@@ -1,10 +1,8 @@
 package com.acuo.valuation.util;
 
 import com.acuo.common.marshal.LocalDateAdapter;
-import com.acuo.valuation.markit.product.swap.*;
-import com.acuo.valuation.reports.Report;
+import com.acuo.valuation.providers.markit.product.swap.*;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
