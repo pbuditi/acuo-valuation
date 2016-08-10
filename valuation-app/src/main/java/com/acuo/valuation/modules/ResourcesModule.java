@@ -1,6 +1,6 @@
 package com.acuo.valuation.modules;
 
-import com.acuo.valuation.resources.SwapValuationResource;
+import com.acuo.valuation.web.resources.SwapValuationResource;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.apache.velocity.app.VelocityEngine;

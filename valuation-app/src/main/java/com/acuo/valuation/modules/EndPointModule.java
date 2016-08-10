@@ -1,9 +1,9 @@
 package com.acuo.valuation.modules;
 
-import com.acuo.valuation.clarus.services.ClarusClient;
-import com.acuo.valuation.clarus.services.ClarusEndPointConfig;
-import com.acuo.valuation.markit.services.MarkitClient;
-import com.acuo.valuation.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.providers.clarus.services.ClarusClient;
+import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
+import com.acuo.valuation.providers.markit.services.MarkitClient;
+import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.services.ClientEndPoint;
 import com.acuo.valuation.utils.LoggingInterceptor;
 import com.google.inject.AbstractModule;

@@ -1,6 +1,6 @@
 package com.acuo.valuation.module;
 
-import com.acuo.valuation.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.services.EndPointConfig;
 import com.google.inject.AbstractModule;
 import okhttp3.mockwebserver.MockWebServer;
