@@ -10,6 +10,7 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.Result;
 import com.acuo.valuation.services.MarginCalcService;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,6 +73,7 @@ public class ClarusMarginCalcServiceIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void marginCalcCmeCsv43() throws IOException {
         List<? extends Result> response = service.send(cmeCsv43.getContent(), DataFormat.CME, DataType.SwapRegister);
         System.out.println(response);

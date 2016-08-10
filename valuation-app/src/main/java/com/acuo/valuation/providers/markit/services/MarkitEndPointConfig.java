@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.concurrent.TimeUnit;
 
-import static com.acuo.valuation.PropertiesHelper.*;
+import static com.acuo.valuation.utils.PropertiesHelper.*;
 
 @Data
 public class MarkitEndPointConfig implements EndPointConfig {

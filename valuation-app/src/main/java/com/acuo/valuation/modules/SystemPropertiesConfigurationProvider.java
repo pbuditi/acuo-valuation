@@ -6,8 +6,8 @@ import com.acuo.common.app.Environment;
 
 import javax.inject.Provider;
 
-import static com.acuo.valuation.PropertiesHelper.ACUO_CONFIG_APPID;
-import static com.acuo.valuation.PropertiesHelper.ACUO_CONFIG_ENV;
+import static com.acuo.valuation.utils.PropertiesHelper.ACUO_CONFIG_APPID;
+import static com.acuo.valuation.utils.PropertiesHelper.ACUO_CONFIG_ENV;
 
 public class SystemPropertiesConfigurationProvider implements Provider<Configuration> {
 

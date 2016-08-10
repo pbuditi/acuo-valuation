@@ -1,7 +1,7 @@
 package com.acuo.valuation.providers.clarus.services;
 
 import com.acuo.common.util.ArgChecker;
-import com.acuo.valuation.PropertiesHelper;
+import com.acuo.valuation.utils.PropertiesHelper;
 import com.acuo.valuation.services.EndPointConfig;
 import lombok.Data;
 
