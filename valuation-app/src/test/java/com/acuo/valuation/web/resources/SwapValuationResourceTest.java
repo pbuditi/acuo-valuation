@@ -7,7 +7,7 @@ import com.acuo.common.util.WithResteasyFixtures;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.modules.EndPointModule;
-import com.acuo.valuation.modules.JaxbModule;
+import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ResourcesModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.web.MOXyCustomJsonProvider;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({SwapValuationResourceTest.MockServiceModule.class, JaxbModule.class, EndPointModule.class, ServicesModule.class, ResourcesModule.class})
+@GuiceModules({SwapValuationResourceTest.MockServiceModule.class, MappingModule.class, EndPointModule.class, ServicesModule.class, ResourcesModule.class})
 public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Rule
@@ -53,8 +53,8 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
         protected void configure() {
             server = new MockWebServer();
             MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(),
-                    "username", "password", "0", "1");
-            ClarusEndPointConfig clarusEndPointConfig = new ClarusEndPointConfig("host", "key", "api", "1");
+                    "username", "password", "0", "10000");
+            ClarusEndPointConfig clarusEndPointConfig = new ClarusEndPointConfig("host", "key", "api", "10000");
             bind(MarkitEndPointConfig.class).toInstance(markitEndPointConfig);
             bind(ClarusEndPointConfig.class).toInstance(clarusEndPointConfig);
         }

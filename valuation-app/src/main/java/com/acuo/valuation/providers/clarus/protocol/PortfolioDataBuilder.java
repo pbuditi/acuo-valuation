@@ -5,34 +5,33 @@ import com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
 
 public class PortfolioDataBuilder {
 
-    DataFormat format;
-    DataType type;
-    String data;
+    private DataFormat format;
+    private DataType type;
+    private String data;
 
     private PortfolioDataBuilder() {
     }
 
-    public static PortfolioDataBuilder create() {
+    static PortfolioDataBuilder create() {
         return new PortfolioDataBuilder();
     }
 
-    public PortfolioDataBuilder addData(String data) {
+    PortfolioDataBuilder addData(String data) {
         this.data = data;
         return this;
     }
 
-    public PortfolioDataBuilder addType(DataType type) {
+    PortfolioDataBuilder addType(DataType type) {
         this.type = type;
         return this;
     }
 
-    public PortfolioDataBuilder addFormat(DataFormat format) {
+    PortfolioDataBuilder addFormat(DataFormat format) {
         this.format = format;
         return this;
     }
 
-    public PortfolioData build() {
+    PortfolioData build() {
         return new PortfolioData(this.format, this.type, this.data);
-        //return pairs.stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 }

@@ -1,64 +1,80 @@
 package com.acuo.valuation.providers.clarus.protocol;
 
-import com.acuo.valuation.providers.clarus.protocol.Clarus.CalculationMethod;
+import com.acuo.valuation.providers.clarus.protocol.Clarus.DataFormat;
+import com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginMethodology;
-import com.acuo.valuation.providers.clarus.protocol.Clarus.ResultStats;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RequestBuilder {
 
-    private final LocalDate valueDate;
-    private final MarginMethodology ccp;
-    private String currency = "USD";
-    private List<PortfolioData> portfolios = new ArrayList<>();
-    private List<PortfolioData> whatIfs = new ArrayList<>();
-    private boolean failOnWarning = false;
-    private CalculationMethod calculationMethod = CalculationMethod.Optimised​;
-    private ResultStats resultStats = ResultStats.Default;
+    private static final Logger LOG = LoggerFactory.getLogger(RequestBuilder.class);
 
-    private RequestBuilder(LocalDate valueDate, MarginMethodology methodology) {
+    private final ObjectMapper objectMapper;
+
+    private String data;
+    private DataFormat format;
+    private DataType type;
+
+    private LocalDate valueDate = LocalDate.now();
+    private MarginMethodology marginMethodology;
+
+    private RequestBuilder(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    public static RequestBuilder create(ObjectMapper objectMapper) {
+        return new RequestBuilder(objectMapper);
+    }
+
+    public RequestBuilder addData(String data) {
+        this.data = data;
+        return this;
+    }
+
+    public RequestBuilder addType(DataType type) {
+        this.type = type;
+        return this;
+    }
+
+    public RequestBuilder addFormat(DataFormat format) {
+        this.format = format;
+        return this;
+    }
+
+    public RequestBuilder marginMethodology(MarginMethodology marginMethodology) {
+        this.marginMethodology = marginMethodology;
+        return this;
+    }
+
+    public RequestBuilder valueDate(LocalDate valueDate) {
         this.valueDate = valueDate;
-        this.ccp = methodology;
-    }
-
-    public static RequestBuilder create(LocalDate valueDate, MarginMethodology methodology) {
-        return new RequestBuilder(valueDate, methodology);
-    }
-
-    public RequestBuilder reportingCurrency(String currency) {
-        this.currency = currency;
         return this;
     }
 
-    public RequestBuilder failOnWarning(boolean failOnWarning) {
-        this.failOnWarning = failOnWarning;
-        return this;
+    public String build() {
+        PortfolioData portfolioData = PortfolioDataBuilder
+                .create()
+                .addData(data)
+                .addFormat(format)
+                .addType(type)
+                .build();
+        EnvelopeBuilder envelopeBuilder = EnvelopeBuilder
+                .create(objectMapper)
+                .marginMethodology(MarginMethodology.CME)
+                .portfolioData(portfolioData);
+        try {
+            String json = envelopeBuilder.asJson();
+            LOG.debug("request: {}", json);
+            return json;
+        } catch (JsonProcessingException e) {
+            LOG.error("error building request", e);
+            throw new RuntimeException(e);
+        }
     }
 
-    public RequestBuilder calculationMethod(CalculationMethod calculationMethod) {
-        this.calculationMethod = calculationMethod;
-        return this;
-    }
-
-    public RequestBuilder resultStats(ResultStats resultStats) {
-        this.resultStats = resultStats;
-        return this;
-    }
-
-    public RequestBuilder portfolioData(PortfolioData portfolioData) {
-        this.portfolios.add(portfolioData);
-        return this;
-    }
-
-    public RequestBuilder whatIfsData(PortfolioData whatIfsData) {
-        this.whatIfs.add(whatIfsData);
-        return this;
-    }
-
-    public Request build() {
-        return new Request(this.valueDate, this.ccp, this.portfolios, this.whatIfs, this.failOnWarning, this.calculationMethod, this.resultStats);
-    }
 }

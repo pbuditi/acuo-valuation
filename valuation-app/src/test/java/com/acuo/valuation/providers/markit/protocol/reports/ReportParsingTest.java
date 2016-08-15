@@ -3,7 +3,7 @@ package com.acuo.valuation.providers.markit.protocol.reports;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.modules.JaxbModule;
+import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.reports.Report;
 import com.google.inject.Inject;
 import org.junit.Rule;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({JaxbModule.class})
+@GuiceModules({MappingModule.class})
 public class ReportParsingTest {
 
     @Rule

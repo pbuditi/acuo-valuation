@@ -4,7 +4,7 @@ import com.acuo.common.marshal.LocalDateAdapter;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
-import com.acuo.valuation.modules.JaxbModule;
+import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.results.Result;
 import com.acuo.valuation.services.OkHttpClient;
 import com.acuo.valuation.utils.LoggingInterceptor;
@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({JaxbModule.class})
+@GuiceJUnitRunner.GuiceModules({MappingModule.class})
 public class PortfolioValuationsRetrieverTest {
 
     @Rule
@@ -40,7 +40,7 @@ public class PortfolioValuationsRetrieverTest {
         server.start();
 
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
-        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", "0", "1");
+        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", "0", "10000");
 
         OkHttpClient client = new MarkitClient(httpClient, markitEndPointConfig);
 

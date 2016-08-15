@@ -4,7 +4,7 @@ import com.acuo.common.marshal.LocalDateAdapter;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.modules.JaxbModule;
+import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.requests.Request;
 import com.acuo.valuation.util.SwapHelper;
 import com.google.inject.Inject;
@@ -27,7 +27,7 @@ import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 import static org.xmlunit.matchers.ValidationMatcher.valid;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({JaxbModule.class})
+@GuiceModules({MappingModule.class})
 public class RequestParsingTest {
 
     @Rule

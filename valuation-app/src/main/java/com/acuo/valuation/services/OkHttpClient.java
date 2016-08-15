@@ -21,7 +21,11 @@ public abstract class OkHttpClient<T extends EndPointConfig> implements ClientEn
     public OkHttpClient(okhttp3.OkHttpClient httpClient, T config) {
         this.config = config;
         LOG.debug("OkHttpClient default connection timeout in ms:" + httpClient.connectTimeoutMillis());
-        this.httpClient = httpClient.newBuilder().connectTimeout(config.connectionTimeOut(), config.connectionTimeOutUnit()).build();
+        this.httpClient = httpClient.newBuilder()
+                .connectTimeout(config.connectionTimeOut(), config.connectionTimeOutUnit())
+                .readTimeout(config.connectionTimeOut(), config.connectionTimeOutUnit())
+                .writeTimeout(config.connectionTimeOut(), config.connectionTimeOutUnit())
+                .build();
         LOG.info("Create Markit Http Client with {}", config.toString());
     }
 

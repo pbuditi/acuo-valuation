@@ -25,7 +25,7 @@ public class ValuationApp extends ResteasyMain {
 
     @Override
     public Collection<Module> modules() {
-        return asList(new JaxbModule(),
+        return asList(new MappingModule(),
                     new EncryptionModule(),
                     new ConfigurationModule(),
                     new ParsersModule(),

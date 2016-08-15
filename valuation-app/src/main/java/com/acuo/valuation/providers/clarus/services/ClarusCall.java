@@ -47,7 +47,6 @@ public class ClarusCall extends CallBuilder<ClarusCall> {
     @Override
     public Call create() {
         Request request = builder.build();
-        LOG.debug(bodyToString(request));
         return client.call(request, predicate);
     }
 

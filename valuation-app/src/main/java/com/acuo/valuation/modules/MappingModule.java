@@ -1,5 +1,7 @@
 package com.acuo.valuation.modules;
 
+import com.acuo.collateral.transform.services.DataMapper;
+import com.acuo.collateral.transform.services.TraceDataMapper;
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.marshal.MarshallerExecutor;
 import com.acuo.common.marshal.MarshallerTypes;
@@ -21,7 +23,7 @@ import com.google.inject.name.Names;
 import java.util.Arrays;
 import java.util.List;
 
-public class JaxbModule extends AbstractModule {
+public class MappingModule extends AbstractModule {
 
     @Override
     protected void configure() {
@@ -32,6 +34,7 @@ public class JaxbModule extends AbstractModule {
         bind(Marshaller.class).annotatedWith(Names.named("json")).to(new TypeLiteral<MarshallerExecutor<JsonContextFactory>>() {
         });
         bind(ObjectMapper.class).toProvider(JacksonObjectMapperProvider.class);
+        bind(DataMapper.class).to(TraceDataMapper.class);
     }
 
     @Provides
