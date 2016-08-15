@@ -51,4 +51,8 @@ public interface Clarus {
             this.key = key;
         }
     }
+
+    enum HouseClient {
+        House, Client;
+    }
 }

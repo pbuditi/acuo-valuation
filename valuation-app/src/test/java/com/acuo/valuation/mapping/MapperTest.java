@@ -5,7 +5,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.providers.markit.product.swap.IrSwap;
 import com.acuo.valuation.providers.markit.product.swap.IrSwapInput;
-import com.acuo.valuation.modules.JaxbModule;
+import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.requests.dto.SwapDTO;
 import com.acuo.valuation.util.SwapHelper;
 import com.google.inject.Inject;
@@ -21,7 +21,7 @@ import javax.inject.Named;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({JaxbModule.class})
+@GuiceJUnitRunner.GuiceModules({MappingModule.class})
 public class MapperTest {
 
     @Rule

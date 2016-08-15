@@ -7,7 +7,7 @@ import com.acuo.valuation.providers.markit.product.swap.IrSwap;
 import com.acuo.valuation.providers.markit.product.swap.IrSwapInput;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.providers.markit.protocol.requests.RequestParser;
-import com.acuo.valuation.modules.JaxbModule;
+import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.services.OkHttpClient;
 import com.acuo.valuation.util.SwapHelper;
@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({JaxbModule.class})
+@GuiceJUnitRunner.GuiceModules({MappingModule.class})
 public class PortfolioValuationsSenderTest {
 
     private static final String STILL_PROCESSING_KEY = "Markit upload still processing.";
@@ -55,7 +55,7 @@ public class PortfolioValuationsSenderTest {
         server.start();
 
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
-        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", "0", "1");
+        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", "0", "10000");
 
         OkHttpClient client = new MarkitClient(httpClient, markitEndPointConfig);
 

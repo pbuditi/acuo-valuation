@@ -3,7 +3,7 @@ package com.acuo.valuation.providers.markit.protocol.responses;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.modules.JaxbModule;
+import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.responses.Response;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import static org.junit.Assert.fail;
 import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({JaxbModule.class})
+@GuiceModules({MappingModule.class})
 public class ResponseParsingTest {
 
     @Rule
