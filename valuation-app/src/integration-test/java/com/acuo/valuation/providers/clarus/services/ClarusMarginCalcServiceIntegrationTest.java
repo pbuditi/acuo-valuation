@@ -11,10 +11,7 @@ import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.Result;
 import com.acuo.valuation.services.MarginCalcService;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
@@ -23,6 +20,9 @@ import java.util.List;
 
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataFormat;
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
+import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(GuiceJUnitRunner.class)
@@ -30,19 +30,10 @@ import static org.junit.Assert.assertTrue;
 public class ClarusMarginCalcServiceIntegrationTest {
 
     @Rule
-    public ResourceFile cme = new ResourceFile("/clarus/request/clarus-cme.json");
-
-    @Rule
-    public ResourceFile lch = new ResourceFile("/clarus/request/clarus-lch.json");
+    public ResourceFile cmeJsonResponse = new ResourceFile("/clarus/response/clarus-cme.json");
 
     @Rule
     public ResourceFile cmeCsv = new ResourceFile("/clarus/request/cme-1.csv");
-
-    @Rule
-    public ResourceFile cmeCsv43 = new ResourceFile("/clarus/request/cme-43.csv");
-
-    @Rule
-    public ResourceFile lchCsv = new ResourceFile("/clarus/request/clarus-lch.csv");
 
     @Inject
     MarginCalcService service;
@@ -55,17 +46,16 @@ public class ClarusMarginCalcServiceIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void testResourceFileExist() throws Exception {
-        assertTrue(cme.getContent().length() > 0);
-        assertTrue(cme.getFile().exists());
+        assertTrue(cmeJsonResponse.getContent().length() > 0);
+        assertTrue(cmeJsonResponse.getFile().exists());
     }
 
     @Test
-    @Ignore
     public void testWithMapper() throws IOException {
         List<IrSwap> trades = dataMapper.fromCmeFile(cmeCsv.getContent());
         List<? extends Result> response = service.send(trades, DataFormat.CME, DataType.SwapRegister);
-        System.out.println(response);
+        Assert.assertThat(response, isJson());
+        Assert.assertThat(response, jsonEquals(cmeJsonResponse.getContent()).when(IGNORING_EXTRA_FIELDS));
     }
 }
