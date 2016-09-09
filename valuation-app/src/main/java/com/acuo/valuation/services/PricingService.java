@@ -1,10 +1,12 @@
 package com.acuo.valuation.services;
 
-import com.acuo.valuation.providers.markit.product.swap.IrSwap;
-import com.acuo.valuation.protocol.results.Result;
+import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.valuation.protocol.results.PricingResults;
+
+import java.util.List;
 
 public interface PricingService {
 
-    <T extends Result> T price(IrSwap swap);
+    PricingResults price(List<SwapTrade> swap);
 
 }

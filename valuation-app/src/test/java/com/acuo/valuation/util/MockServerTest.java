@@ -1,12 +1,12 @@
 package com.acuo.valuation.util;
 
+import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.common.http.client.LoggingInterceptor;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.providers.markit.services.MarkitClient;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitFormCall;
 import com.acuo.valuation.providers.markit.services.MarkitMultipartCall;
-import com.acuo.valuation.services.ClientEndPoint;
-import com.acuo.valuation.utils.LoggingInterceptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

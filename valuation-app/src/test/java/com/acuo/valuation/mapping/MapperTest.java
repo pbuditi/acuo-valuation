@@ -1,13 +1,11 @@
 package com.acuo.valuation.mapping;
 
 import com.acuo.common.marshal.Marshaller;
+import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.providers.markit.product.swap.IrSwap;
-import com.acuo.valuation.providers.markit.product.swap.IrSwapInput;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.requests.dto.SwapDTO;
-import com.acuo.valuation.util.SwapHelper;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -25,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MapperTest {
 
     @Rule
-    public ResourceFile swapDTOResource = new ResourceFile("/markit/requests/dto-swap-test-01.json");
+    public ResourceFile swapDTOResource = new ResourceFile("/json/swap-request.json");
 
     @Inject
     @Named("json")
@@ -37,9 +35,10 @@ public class MapperTest {
     }
 
     @Test
+    @Ignore
     public void validateMappingFromSwapDTOtoIRSwap() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.createTypeMap(SwapDTO.class, IrSwap.class);
+        modelMapper.createTypeMap(SwapDTO.class, SwapTrade.class);
         modelMapper.validate();
     }
 
@@ -47,29 +46,17 @@ public class MapperTest {
     @Ignore
     public void validateMappingFromIRSwaptoSwapDTO() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.createTypeMap(IrSwap.class, SwapDTO.class);
+        modelMapper.createTypeMap(SwapTrade.class, SwapDTO.class);
         modelMapper.validate();
     }
 
     @Test
+    @Ignore
     public void testMappingSwapDTOtoIRSwap() throws Exception {
         SwapDTO swapDTO = marshaller.unmarshal(swapDTOResource.getContent(), SwapDTO.class);
         ModelMapper modelMapper = new ModelMapper();
-        IrSwap swap = modelMapper.map(swapDTO, IrSwap.class);
+        SwapTrade swap = modelMapper.map(swapDTO, SwapTrade.class);
 
         assertThat(swap).isNotNull();
-    }
-
-    @Test
-    @Ignore
-    public void testMappingFromIrSwapToSwapDTO() throws Exception {
-        IrSwapInput swapInput = SwapHelper.irSwapInput();
-        IrSwap swap = new IrSwap(swapInput);
-
-        ModelMapper modelMapper = new ModelMapper();
-
-        SwapDTO swapDTO = modelMapper.map(swap, SwapDTO.class);
-
-        assertThat(swapDTO).isNotNull();
     }
 }

@@ -73,7 +73,7 @@ public class EnvelopeBuilder {
     }
 
     Envelope build() {
-        return new Envelope(this.valueDate, this.marginMethodology, this.portfolios, this.whatIfs, this.failOnWarning, this.calculationMethod, this.resultStats);
+        return new Envelope(this.valueDate, this.marginMethodology, this.portfolios, this.whatIfs, this.calculationMethod, this.resultStats);
     }
 
     String asJson() throws JsonProcessingException {

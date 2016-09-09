@@ -1,11 +1,12 @@
 package com.acuo.valuation.providers.markit.services;
 
+import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.protocol.responses.Response;
-import com.acuo.valuation.protocol.results.Result;
-import com.acuo.valuation.protocol.results.SwapResult;
+import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.Value;
-import com.acuo.valuation.services.ClientEndPoint;
+import com.opengamma.strata.collect.result.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +31,15 @@ public class PortfolioValuationsRetriever implements Retriever {
         this.parser = parser;
     }
 
-    public Result retrieve(LocalDate valuationDate, String tradeId) {
+    @Override
+    public PricingResults retrieve(LocalDate valuationDate, List<String> tradeIds) {
+        return PricingResults.of(tradeIds.stream().map(id -> retrieve(valuationDate, id)).collect(Collectors.toList()));
+    }
+
+    private Result<MarkitValuation> retrieve(LocalDate valuationDate, String tradeId) {
         Response results = retrieve(valuationDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         List<Value> resultList = results.values().stream().filter(v -> tradeId.equals(v.getTradeId())).collect(Collectors.toList());
-        return new SwapResult(resultList.toArray(new Value[resultList.size()]));
+        return Result.success(new MarkitValuation(resultList.toArray(new Value[resultList.size()])));
     }
 
     /**
@@ -57,4 +63,5 @@ public class PortfolioValuationsRetriever implements Retriever {
             throw new RuntimeException(String.format(ERROR_MSG, asOfDate), e);
         }
     }
+
 }

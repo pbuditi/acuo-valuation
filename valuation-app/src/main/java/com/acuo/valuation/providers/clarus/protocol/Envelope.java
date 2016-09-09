@@ -16,7 +16,6 @@ public class Envelope {
     String reportingCcy = "USD";
     List<PortfolioData> portfolioData;
     List<PortfolioData> whatIfData;
-    boolean failOnWarning;
     CalculationMethod varCalcMethod;
     ResultStats resultStats;
 }

@@ -1,8 +1,8 @@
 package com.acuo.valuation.providers.clarus.services;
 
+import com.acuo.common.http.client.EndPointConfig;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.utils.PropertiesHelper;
-import com.acuo.valuation.services.EndPointConfig;
 import lombok.Data;
 
 import javax.inject.Inject;
@@ -26,6 +26,7 @@ public class ClarusEndPointConfig implements EndPointConfig {
         ArgChecker.notEmpty(host, "host");
         ArgChecker.notEmpty(key, "key");
         ArgChecker.notEmpty(secret, "secret");
+        ArgChecker.notEmpty(connectionTimeOutInMilli, "connectionTimeOutInMilli");
         this.host = host;
         this.key = key;
         this.secret = secret;

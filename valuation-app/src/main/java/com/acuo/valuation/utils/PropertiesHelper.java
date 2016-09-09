@@ -4,15 +4,13 @@ import com.acuo.common.app.AppId;
 import com.acuo.common.app.Configuration;
 import com.acuo.common.app.Environment;
 import com.acuo.common.util.ArgChecker;
+import com.acuo.common.util.BasePropertiesHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class PropertiesHelper {
-
-    private static final String DEFAULTS_PROPERTIES_TEMPLATE = "/%s.properties";
-    private static final String OVERRIDES_PROPERTIES_TEMPLATE = "/%s-%s.properties";
+public class PropertiesHelper extends BasePropertiesHelper {
 
     public static final String ACUO_CONFIG_APPID = "acuo.config.appid";
     public static final String ACUO_CONFIG_ENV = "acuo.config.env";
@@ -32,43 +30,12 @@ public class PropertiesHelper {
     public static final String ACUO_VALUATION_CLARUS_API_SECRET = "acuo.clarus.api.secret";
     public static final String ACUO_VALUATION_CLARUS_CONNECTION_TIMEOUT = "acuo.clarus.connection.timeout";
 
-    private final Configuration configuration;
-
     private PropertiesHelper(Configuration configuration) {
-        this.configuration = configuration;
+        super(configuration);
     }
 
     public static PropertiesHelper of(Configuration configuration) {
         ArgChecker.notNull(configuration, "configuration");
         return new PropertiesHelper(configuration);
-    }
-
-    public Properties getOverrides() {
-        return getPropertiesFrom(overrideFilePath());
-    }
-
-    public Properties getDefaultProperties() {
-        return getPropertiesFrom(defaultFilePath());
-    }
-
-    private String overrideFilePath() {
-        AppId appId = configuration.getAppId();
-        Environment environment = configuration.getEnvironment();
-        return String.format(OVERRIDES_PROPERTIES_TEMPLATE, appId.toString(), environment.toString());
-    }
-
-    private String defaultFilePath() {
-        AppId appId = configuration.getAppId();
-        return String.format(DEFAULTS_PROPERTIES_TEMPLATE, appId.toString());
-    }
-
-    private Properties getPropertiesFrom(String propertiesFilePath) {
-        final Properties properties = new Properties();
-        try (final InputStream stream = PropertiesHelper.class.getResourceAsStream(propertiesFilePath)) {
-            if (stream != null)
-                properties.load(stream);
-        } catch (IOException e) {
-        }
-        return properties;
     }
 }

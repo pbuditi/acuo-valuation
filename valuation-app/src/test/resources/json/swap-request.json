@@ -1,8 +1,11 @@
 {
-    "tradeId": "IRS_VANILLA",
-    "tradeDate": "2013-02-14",
-    "book": "SWAPS",
-    "legs": [
+    "info": {
+      "tradeId": "IRS_VANILLA",
+      "tradeDate": "2013-02-14",
+      "book": "SWAPS"
+    },
+    "product": {
+      "legs": [
         {
             "currency": "USD",
             "daycount": "30360",
@@ -42,5 +45,7 @@
             "spread": "0",
             "type": "FLOAT"
         }
-    ]
+      ]
+      },
+    "type": "SWAP"
 }

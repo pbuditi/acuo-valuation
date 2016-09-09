@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 @Data
-public class SwapResult implements Result {
+public class MarkitValuation {
 
     private final List<Value> values;
 
-    public SwapResult(Value... values) {
+    public MarkitValuation(Value... values) {
         this.values = Arrays.asList(values);
     }
 

@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.markit.services;
 
+import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
@@ -7,7 +8,6 @@ import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.responses.Response;
-import com.acuo.valuation.services.ClientEndPoint;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

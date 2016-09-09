@@ -1,13 +1,14 @@
 package com.acuo.valuation.providers.clarus.services;
 
-import com.acuo.collateral.transform.services.DataMapper;
-import com.acuo.common.model.IrSwap;
+import com.acuo.collateral.transform.Transformer;
+import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.common.http.client.LoggingInterceptor;
+import com.acuo.common.http.client.OkHttpClient;
+import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.valuation.modules.MappingModule;
-import com.acuo.valuation.protocol.results.Result;
-import com.acuo.valuation.services.ClientEndPoint;
-import com.acuo.valuation.utils.LoggingInterceptor;
+import com.acuo.valuation.protocol.results.MarginResults;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import okhttp3.mockwebserver.MockResponse;
@@ -19,15 +20,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Named;
 import java.io.IOException;
 import java.util.List;
 
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataFormat;
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static net.javacrumbs.jsonunit.JsonMatchers.*;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({MappingModule.class})
@@ -46,7 +48,8 @@ public class ClarusMarginCalcServiceTest {
     ObjectMapper objectMapper;
 
     @Inject
-    DataMapper dataMapper;
+    @Named("clarus")
+    Transformer<SwapTrade> transformer;
 
     MockWebServer server = new MockWebServer();
 
@@ -59,14 +62,14 @@ public class ClarusMarginCalcServiceTest {
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
         ClarusEndPointConfig config = new ClarusEndPointConfig(server.url("/").toString(), "key", "secret", "10000");
 
-        ClientEndPoint<ClarusEndPointConfig> clientEndPoint = new ClarusClient(httpClient, config);
+        ClientEndPoint<ClarusEndPointConfig> clientEndPoint = new OkHttpClient(httpClient, config);
 
-        service = new ClarusMarginCalcService(clientEndPoint, objectMapper, dataMapper);
+        service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer);
     }
 
     @Test
     public void testMakeRequest() throws IOException {
-        List<IrSwap> swaps = dataMapper.fromCmeFile(cmeCsv.getContent());
+        List<SwapTrade> swaps = transformer.deserialiseToList(cmeCsv.getContent());
         String request = service.makeRequest(swaps, DataFormat.CME, DataType.SwapRegister);
         assertThat(request).isNotNull();
         Assert.assertThat(request, isJson());
@@ -77,14 +80,14 @@ public class ClarusMarginCalcServiceTest {
     public void testMarginCalcOnCmePortfolioFromListOfSwaps() throws IOException, InterruptedException {
         server.enqueue(new MockResponse().setBody(response.getContent()));
 
-        List<IrSwap> swaps = dataMapper.fromCmeFile(cmeCsv.getContent());
+        List<SwapTrade> swaps = transformer.deserialiseToList(cmeCsv.getContent());
 
-        List<? extends Result> results = service.send(swaps, DataFormat.CME, DataType.SwapRegister);
+        MarginResults results = service.send(swaps, DataFormat.CME, DataType.SwapRegister);
 
         RecordedRequest r = server.takeRequest();
         String body = r.getBody().readUtf8();
         assertThat(results).isNotNull();
-        assertThat(results.size()).isEqualTo(2);
+        assertThat(results.getResults().size()).isEqualTo(2);
     }
 
 }

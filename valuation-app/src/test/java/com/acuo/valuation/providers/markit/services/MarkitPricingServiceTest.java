@@ -1,25 +1,45 @@
 package com.acuo.valuation.providers.markit.services;
 
-import com.acuo.valuation.providers.markit.product.swap.IrSwap;
+import com.acuo.collateral.transform.Transformer;
+import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.ResourceFile;
+import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.protocol.results.MarkitValuation;
+import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
-import com.acuo.valuation.protocol.results.ErrorResult;
-import com.acuo.valuation.protocol.results.Result;
-import com.acuo.valuation.protocol.results.SwapResult;
 import com.acuo.valuation.util.ReportHelper;
-import com.acuo.valuation.util.SwapHelper;
+import com.google.inject.Inject;
+import com.opengamma.strata.collect.result.Result;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.inject.Named;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+@RunWith(GuiceJUnitRunner.class)
+@GuiceJUnitRunner.GuiceModules({MappingModule.class})
 public class MarkitPricingServiceTest {
+
+    @Rule
+    public ResourceFile cmeCsv = new ResourceFile("/clarus/request/clarus-cme.csv");
+
+    @Inject
+    @Named("markit")
+    Transformer<SwapTrade> transformer;
 
     @Mock
     Sender sender;
@@ -29,37 +49,44 @@ public class MarkitPricingServiceTest {
 
     MarkitPricingService service;
 
+    List<SwapTrade> swaps;
+
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
 
         service = new MarkitPricingService(sender, retriever);
+
+        swaps = transformer.deserialiseToList(cmeCsv.getContent());
 
     }
 
     @Test
     public void testPriceSwapWithErrorReport() {
-        when(sender.send(any(IrSwap.class))).thenReturn(ReportHelper.reportError());
+        when(sender.send(any(List.class))).thenReturn(ReportHelper.reportError());
 
-        Result result = service.price(SwapHelper.swap());
+        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(PricingResults.of(Collections.EMPTY_LIST));
 
-        assertThat(result).isNotNull().isInstanceOf(ErrorResult.class);
+        PricingResults results = service.price(swaps);
+
+        assertThat(results).isNotNull();
     }
 
     @Test
     public void testPriceSwapWithNoErrorReport() {
-        when(sender.send(any(IrSwap.class))).thenReturn(ReportHelper.report());
+        when(sender.send(any(List.class))).thenReturn(ReportHelper.report());
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
-        when(retriever.retrieve(any(LocalDate.class), any(String.class))).thenReturn(new SwapResult(markitValue));
+        PricingResults expectedResults = PricingResults.of(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
+        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
-        Result result = service.price(SwapHelper.swap());
+        PricingResults results = service.price(swaps);
 
-        assertThat(result).isNotNull().isInstanceOf(SwapResult.class);
+        assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
 
-        SwapResult swapResult = (SwapResult) result;
-        Condition<SwapResult> pvEqualToOne = new Condition<SwapResult>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
+        Result<MarkitValuation> swapResult = results.getResults().get(0);
+        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
 
-        assertThat(swapResult).is(pvEqualToOne);
+        assertThat(swapResult.getValue()).is(pvEqualToOne);
     }
 }
