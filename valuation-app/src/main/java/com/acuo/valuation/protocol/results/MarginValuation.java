@@ -1,7 +1,7 @@
 package com.acuo.valuation.protocol.results;
 
 @lombok.Value
-public class MarginResult implements Result {
+public class MarginValuation {
 
     String name;
     Double account;

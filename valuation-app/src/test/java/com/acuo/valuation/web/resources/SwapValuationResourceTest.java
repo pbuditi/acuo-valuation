@@ -10,11 +10,13 @@ import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ResourcesModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.web.JacksonObjectMapperProvider;
 import com.acuo.valuation.web.MOXyCustomJsonProvider;
 import com.google.inject.AbstractModule;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.junit.AfterClass;
@@ -38,7 +40,10 @@ import static org.junit.Assert.assertEquals;
 public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Rule
-    public ResourceFile swap = new ResourceFile("/markit/requests/dto-swap-test-01.json");
+    public ResourceFile jsonRequest = new ResourceFile("/json/swap-request.json");
+
+    @Rule
+    public ResourceFile jsonResponse = new ResourceFile("/json/swap-response.json");
 
     @Rule
     public ResourceFile report = new ResourceFile("/markit/reports/markit-test-01.xml");
@@ -68,7 +73,7 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Before
     public void setup() throws IOException {
-        dispatcher = createDispatcher(MOXyCustomJsonProvider.class);
+        dispatcher = createDispatcher(JacksonObjectMapperProvider.class);
         dispatcher.getRegistry().addSingletonResource(resource);
     }
 
@@ -93,14 +98,14 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
         MockHttpResponse response = new MockHttpResponse();
 
         request.contentType(MediaType.APPLICATION_JSON);
-        request.content(swap.getInputStream());
+        request.content(jsonRequest.getInputStream());
 
         dispatcher.invoke(request, response);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         String actual = response.getContentAsString();
         assertThat(actual).isNotNull();
-        assertThatJson(actual).isEqualTo("{\"pv\":-20277.510590907827}");
+        assertThatJson(actual).isEqualTo(jsonResponse.getContent());
     }
 
     @AfterClass

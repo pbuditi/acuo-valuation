@@ -1,17 +1,22 @@
 package com.acuo.valuation.web;
 
+import com.acuo.valuation.jackson.StrataSerDer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.opengamma.strata.basics.currency.Currency;
 import com.xebia.jacksonlombok.JacksonLombokAnnotationIntrospector;
 
 import javax.inject.Provider;
+import javax.ws.rs.ext.ContextResolver;
 
-public class JacksonObjectMapperProvider implements Provider<ObjectMapper> {
+public class JacksonObjectMapperProvider implements Provider<ObjectMapper>, ContextResolver<ObjectMapper> {
 
     final ObjectMapper objectMapper;
 
@@ -39,15 +44,26 @@ public class JacksonObjectMapperProvider implements Provider<ObjectMapper> {
                 .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
                 .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
                 .setAnnotationIntrospector(new JacksonLombokAnnotationIntrospector())
-                //.registerModule(new JodaModule())
+                .registerModule(new JodaModule())
                 //.registerModule(new GuavaModule())
                 //.registerModule(new Jdk7Module())
                 .registerModule(new JavaTimeModule())
-                .registerModule(new Jdk8Module());
+                .registerModule(new Jdk8Module())
+                .registerModule(simpleModule());
+    }
+
+    private SimpleModule simpleModule() {
+        SimpleModule strataModule = new StrataSerDer().strataModule();
+        return strataModule;
     }
 
     @Override
     public ObjectMapper get() {
         return objectMapper;
+    }
+
+    @Override
+    public ObjectMapper getContext(Class<?> type) {
+        return get();
     }
 }

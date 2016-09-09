@@ -1,8 +1,8 @@
 package com.acuo.valuation.providers.markit.services;
 
-import com.acuo.valuation.services.Call;
-import com.acuo.valuation.services.CallBuilder;
-import com.acuo.valuation.services.ClientEndPoint;
+import com.acuo.common.http.client.Call;
+import com.acuo.common.http.client.CallBuilder;
+import com.acuo.common.http.client.ClientEndPoint;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;

@@ -1,6 +1,8 @@
 package com.acuo.valuation.protocol.requests.dto;
 
 import com.acuo.common.marshal.LocalDateAdapter;
+import com.opengamma.strata.basics.date.BusinessDayConvention;
+import com.opengamma.strata.basics.schedule.Frequency;
 import lombok.Data;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -11,10 +13,10 @@ public class SwapLegPayDatesDTO {
 
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate startdate;
-    private String freq;
+    private Frequency freq;
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate enddate;
-    private String rollcode;
+    private BusinessDayConvention rollcode;
     private boolean adjust;
     private boolean eom;
 

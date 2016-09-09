@@ -1,7 +1,7 @@
 package com.acuo.valuation.providers.markit.services;
 
-import com.acuo.valuation.services.Call;
-import com.acuo.valuation.services.OkHttpClient;
+import com.acuo.common.http.client.Call;
+import com.acuo.common.http.client.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +16,7 @@ public class MarkitClient extends OkHttpClient<MarkitEndPointConfig> {
         super(httpClient, config);
     }
 
+    @Override
     public String send(Call call) {
         try {
             String result = null;
@@ -33,5 +34,4 @@ public class MarkitClient extends OkHttpClient<MarkitEndPointConfig> {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-
 }

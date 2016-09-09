@@ -1,13 +1,13 @@
 package com.acuo.valuation.providers.markit.services;
 
+import com.acuo.common.http.client.LoggingInterceptor;
+import com.acuo.common.http.client.OkHttpClient;
 import com.acuo.common.marshal.LocalDateAdapter;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.modules.MappingModule;
-import com.acuo.valuation.protocol.results.Result;
-import com.acuo.valuation.services.OkHttpClient;
-import com.acuo.valuation.utils.LoggingInterceptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,11 +54,11 @@ public class PortfolioValuationsRetrieverTest {
         server.enqueue(new MockResponse().setBody(response.getContent()));
 
         LocalDate asOf = new LocalDateAdapter().unmarshal("2016-06-10");
-        Result result = retriever.retrieve(asOf, "Test_IRS");
+        PricingResults pricingResults = retriever.retrieve(asOf, Arrays.asList("Test_IRS"));
 
         RecordedRequest r = server.takeRequest();
         String body = r.getBody().readUtf8();
-        assertThat(result).isNotNull();
+        assertThat(pricingResults).isNotNull();
         assertThat(body).contains("username=username");
         assertThat(body).contains("password=password");
         assertThat(body).contains("asof=2016-06-10");

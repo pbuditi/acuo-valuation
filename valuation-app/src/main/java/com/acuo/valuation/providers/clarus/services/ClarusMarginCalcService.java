@@ -1,17 +1,22 @@
 package com.acuo.valuation.providers.clarus.services;
 
-import com.acuo.collateral.transform.services.DataMapper;
-import com.acuo.common.model.IrSwap;
-import com.acuo.valuation.protocol.results.MarginResult;
-import com.acuo.valuation.protocol.results.Result;
-import com.acuo.valuation.providers.clarus.protocol.*;
-import com.acuo.valuation.services.ClientEndPoint;
+import com.acuo.collateral.transform.Transformer;
+import com.acuo.collateral.transform.TransformerContext;
+import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.valuation.protocol.results.MarginValuation;
+import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.providers.clarus.protocol.RequestBuilder;
+import com.acuo.valuation.providers.clarus.protocol.Response;
 import com.acuo.valuation.services.MarginCalcService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opengamma.strata.collect.result.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,23 +24,22 @@ import java.util.stream.Collectors;
 
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.*;
 
+@Slf4j
 public class ClarusMarginCalcService implements MarginCalcService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ClarusMarginCalcService.class);
 
     private final ClientEndPoint clientEndPoint;
     private final ObjectMapper objectMapper;
-    private final DataMapper dataMapper;
+    private final Transformer<SwapTrade> transformer;
 
     @Inject
-    public ClarusMarginCalcService(ClientEndPoint<ClarusEndPointConfig> clientEndPoint, ObjectMapper objectMapper, DataMapper dataMapper) {
+    public ClarusMarginCalcService(ClientEndPoint<ClarusEndPointConfig> clientEndPoint, ObjectMapper objectMapper, @Named("clarus") Transformer<SwapTrade> dataMapper) {
         this.clientEndPoint = clientEndPoint;
         this.objectMapper = objectMapper;
-        this.dataMapper = dataMapper;
+        this.transformer = dataMapper;
     }
 
     @Override
-    public List<? extends Result> send(List<IrSwap> swaps, DataFormat format, DataType type) {
+    public MarginResults send(List<SwapTrade> swaps, DataFormat format, DataType type) {
         try {
             String request = makeRequest(swaps, format, type);
             String response = sendRequest(request);
@@ -46,8 +50,10 @@ public class ClarusMarginCalcService implements MarginCalcService {
         }
     }
 
-    String makeRequest(List<IrSwap> swaps, DataFormat format, DataType type) {
-        String data = dataMapper.toCmeFile(swaps,LocalDate.now());
+    String makeRequest(List<SwapTrade> swaps, DataFormat format, DataType type) {
+        TransformerContext context = new TransformerContext();
+        context.setValueDate(LocalDate.now());
+        String data = transformer.serialise(swaps,context);
         String request = RequestBuilder
                 .create(objectMapper)
                 .addData(data)
@@ -55,7 +61,7 @@ public class ClarusMarginCalcService implements MarginCalcService {
                 .addType(type)
                 .marginMethodology(MarginMethodology.CME)
                 .build();
-        LOG.debug(request);
+        log.debug(request);
         return request;
     }
 
@@ -64,16 +70,17 @@ public class ClarusMarginCalcService implements MarginCalcService {
                 .with("data", request)
                 .create()
                 .send();
-        LOG.debug(response);
+        log.debug(response);
         return response;
     }
 
-    List<MarginResult> makeResult(String response) throws IOException {
+    MarginResults makeResult(String response) throws IOException {
         Response res = objectMapper.readValue(response, Response.class);
-        return res.getResults().entrySet().stream().map(map -> new MarginResult(map.getKey(),
+        return MarginResults.of(res.getResults().entrySet().stream().map(map -> new MarginValuation(map.getKey(),
                 map.getValue().get("Account"),
                 map.getValue().get("Change"),
                 map.getValue().get("Margin")))
-                .collect(Collectors.toList());
+                .map(r -> Result.success(r))
+                .collect(Collectors.toList()));
     }
 }

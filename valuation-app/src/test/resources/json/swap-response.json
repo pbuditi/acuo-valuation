@@ -1,0 +1,25 @@
+{
+  "results" : [ {
+    "values" : [ {
+      "tradeId" : "IRS_VANILLA",
+      "book" : "Test",
+      "portfolioValuationsLocal" : 225512.73724505748,
+      "pv" : 225512.73724505748,
+      "accrued" : 6945.75,
+      "parRate" : 0.0533241580961,
+      "legId" : "1"
+    }, {
+      "tradeId" : "IRS_VANILLA",
+      "book" : "Test",
+      "portfolioValuationsLocal" : -235651.12391798265,
+      "pv" : -235651.12391798265,
+      "accrued" : -6124.999999999999,
+      "legId" : "2"
+    }, {
+      "tradeId" : "IRS_VANILLA",
+      "book" : "Test",
+      "pv" : -10139.12391798265
+    } ],
+    "pv" : -20277.510590907827
+  } ]
+}

@@ -1,8 +1,9 @@
 package com.acuo.valuation.providers.clarus.services;
 
-import com.acuo.valuation.services.Call;
-import com.acuo.valuation.services.CallBuilder;
-import com.acuo.valuation.services.ClientEndPoint;
+import com.acuo.common.http.client.Call;
+import com.acuo.common.http.client.CallBuilder;
+import com.acuo.common.http.client.ClientEndPoint;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -13,15 +14,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+@Slf4j
 public class ClarusCall extends CallBuilder<ClarusCall> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ClarusCall.class);
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private final ClientEndPoint<ClarusEndPointConfig> client;
     private final ClarusEndPointConfig config;
-    private Request.Builder builder;
+    private final Request.Builder builder;
 
     private ClarusCall(ClientEndPoint<ClarusEndPointConfig> client) {
         this.client = client;

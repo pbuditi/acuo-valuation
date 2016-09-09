@@ -1,8 +1,9 @@
 package com.acuo.valuation.providers.markit.services;
 
+import com.acuo.common.http.client.EndPointConfig;
 import com.acuo.common.util.ArgChecker;
-import com.acuo.valuation.services.EndPointConfig;
 import lombok.Data;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -20,22 +21,29 @@ public class MarkitEndPointConfig implements EndPointConfig {
     private final int connectionTimeOut;
     private final TimeUnit connectionTimeOutUnit;
 
-    //@Inject
-    //PBEStringEncryptor encryptor;
+    public MarkitEndPointConfig(@Named(ACUO_VALUATION_MARKIT_HOST) String url,
+                                @Named(ACUO_VALUATION_MARKIT_USERNAME) String username,
+                                @Named(ACUO_VALUATION_MARKIT_PASSWORD) String password,
+                                @Named(ACUO_VALUATION_MARKIT_RETRY_DELAY) String retryDelayInMinute,
+                                @Named(ACUO_VALUATION_MARKIT_CONNECTION_TIMEOUT) String connectionTimeOutInMilli) {
+        this(url, username, password, retryDelayInMinute, connectionTimeOutInMilli, null);
+    }
 
     @Inject
     public MarkitEndPointConfig(@Named(ACUO_VALUATION_MARKIT_HOST) String url,
                                 @Named(ACUO_VALUATION_MARKIT_USERNAME) String username,
                                 @Named(ACUO_VALUATION_MARKIT_PASSWORD) String password,
                                 @Named(ACUO_VALUATION_MARKIT_RETRY_DELAY) String retryDelayInMinute,
-                                @Named(ACUO_VALUATION_MARKIT_CONNECTION_TIMEOUT) String connectionTimeOutInMilli) {
+                                @Named(ACUO_VALUATION_MARKIT_CONNECTION_TIMEOUT) String connectionTimeOutInMilli,
+                                PBEStringEncryptor encryptor) {
         ArgChecker.notEmpty(url, "url");
         ArgChecker.notEmpty(username, "username");
         ArgChecker.notEmpty(password, "password");
         ArgChecker.notEmpty(password, "retryDelayInMinute");
+        ArgChecker.notEmpty(connectionTimeOutInMilli, "connectionTimeOutInMilli");
         this.url = url;
         this.username = username;
-        this.password = password;//encryptor.decrypt(password);
+        this.password = (encryptor == null) ? password : encryptor.decrypt(password);
         this.retryDelayInMilliseconds = TimeUnit.MINUTES.toMillis(Long.parseLong(retryDelayInMinute));
         this.connectionTimeOut = Integer.valueOf(connectionTimeOutInMilli);
         this.connectionTimeOutUnit = TimeUnit.MILLISECONDS;
