@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <header>
+        <name>Trade Valuations</name>
+        <version>3.1</version>
+        <date>2016-09-01</date>
+        <valuationdate>2016-08-30</valuationdate>
+        <valuationccy>USD</valuationccy>
+        <numtradessuccessful>0</numtradessuccessful>
+        <numtradesfailed>1</numtradesfailed>
+        <totalnumtrades>1</totalnumtrades>
+        <valuationscomplete>true</valuationscomplete>
+    </header>
+    <value>
+        <TradeId>US912796JE09_Bond</TradeId>
+        <Book>Bonds</Book>
+        <Notional>1000000</Notional>
+        <LocalCcy>USD</LocalCcy>
+        <ValuationCcy>USD</ValuationCcy>
+        <Status>Failed</Status>
+        <InstrumentCode>BIL_CRED_05</InstrumentCode>
+        <InstrumentType>Bond</InstrumentType>
+    </value>
+</data>

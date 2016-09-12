@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<presentvalue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <valuationdate>2016-09-06</valuationdate>
+    <valuationcurrency>USD</valuationcurrency>
+    <data>
+        <bond>
+            <tradeid>US912796JE09_Bond</tradeid>
+            <tradedate>2016-08-29</tradedate>
+            <book>Bonds</book>
+            <position>1000000.00</position>
+            <identifier>
+                <id>US912796JE09</id>
+                <idtype>ISIN</idtype>
+            </identifier>
+        </bond>
+    </data>
+</presentvalue>
