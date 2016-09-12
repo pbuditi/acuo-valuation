@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <header>
+        <name>Trade Valuations</name>
+        <version>3.1</version>
+        <date>2016-09-07</date>
+        <valuationdate>2016-09-06</valuationdate>
+        <valuationccy>USD</valuationccy>
+        <numtradessuccessful>1</numtradessuccessful>
+        <numtradesfailed>0</numtradesfailed>
+        <totalnumtrades>1</totalnumtrades>
+        <valuationscomplete>true</valuationscomplete>
+    </header>
+    <value>
+        <TradeId>US912796JE09_Bond</TradeId>
+        <Book>Bonds</Book>
+        <Notional>1000000</Notional>
+        <LocalCcy>USD</LocalCcy>
+        <ValuationCcy>USD</ValuationCcy>
+        <Status>Successful</Status>
+        <PVLocal>997864</PVLocal>
+        <PresentValue>997864</PresentValue>
+        <PV01>0.4808623351821</PV01>
+        <CleanPVLocal>997864</CleanPVLocal>
+        <CleanPV>997864</CleanPV>
+        <CleanPrice>99.7864</CleanPrice>
+        <PV01Local>0.4808623351821</PV01Local>
+        <EvbSource>Evaluated</EvbSource>
+        <EvbService>N1600</EvbService>
+        <EvbAsof>2016-09-06</EvbAsof>
+        <FAS157Rating>2</FAS157Rating>
+        <InstrumentCode>BIL_CRED_05</InstrumentCode>
+        <InstrumentType>Bond</InstrumentType>
+        <AdditionalColumns>
+            <Name>EvbAccruedInterest</Name>
+            <Value>0</Value>
+        </AdditionalColumns>
+    </value>
+</data>
