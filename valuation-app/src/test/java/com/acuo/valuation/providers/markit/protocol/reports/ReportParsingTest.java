@@ -23,19 +23,22 @@ import static org.junit.Assert.fail;
 public class ReportParsingTest {
 
     @Rule
-    public ResourceFile sample = new ResourceFile("/markit/reports/markit-test-01.xml");
+    public ResourceFile test01 = new ResourceFile("/markit/reports/markit-test-01.xml");
+
+    @Rule
+    public ResourceFile test02 = new ResourceFile("/markit/reports/markit-test-02.xml");
 
     @Inject
     ReportParser parser;
 
     @Test
     public void testResourceFilesExist() throws Exception {
-        assertTrue(sample.getContent().length() > 0);
+        assertTrue(test01.getContent().length() > 0);
     }
 
     @Test
     public void testMarshalingXmlFromFiles() {
-        asList(sample).stream().forEach(r -> parseAndAssertXmlFiles(r));
+        asList(test01, test02).stream().forEach(r -> parseAndAssertXmlFiles(r));
     }
 
     private void parseAndAssertXmlFiles(ResourceFile res) {
@@ -45,7 +48,7 @@ public class ReportParsingTest {
 
             assertThat(xml, is(notNullValue()));
             assertThat(xml, HasXPathMatcher.hasXPath("/data/header"));
-            assertThat(xml, EvaluateXPathMatcher.hasXPath("/data/header/date/text()", equalTo("2016-06-22")));
+            assertThat(xml, HasXPathMatcher.hasXPath("/data/header/date/text()"));
         } catch (Exception e) {
             fail(e.getMessage());
         }

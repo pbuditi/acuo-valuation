@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <header>
+        <name>Valuations Upload Report</name>
+        <version>2.2</version>
+        <date>2016-09-21</date>
+    </header>
+    <report>
+        <tradeid>tradeId</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade tradeId : IRSwap legs with all positions of the same sign.</report>
+    </report>
+    <report>
+        <tradeid>tradeId</tradeid>
+        <type>AUDIT</type>
+        <report>Updated trade tradeId</report>
+    </report>
+    <report>
+        <type>AUDIT</type>
+        <report>Processed 1/1 trades successfully</report>
+    </report>
+</data>

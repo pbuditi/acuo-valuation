@@ -10,26 +10,21 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.opengamma.strata.basics.currency.Currency;
 import com.xebia.jacksonlombok.JacksonLombokAnnotationIntrospector;
 
 import javax.inject.Provider;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class JacksonObjectMapperProvider implements Provider<ObjectMapper>, ContextResolver<ObjectMapper> {
 
     final ObjectMapper objectMapper;
 
     public JacksonObjectMapperProvider() {
-        /*objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new Jdk8Module());
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.registerModule(new CustomModule());
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        objectMapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
-        objectMapper.setAnnotationIntrospector(new JacksonLombokAnnotationIntrospector());*/
-
         objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 .configure(SerializationFeature.INDENT_OUTPUT, true)
