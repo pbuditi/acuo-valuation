@@ -43,7 +43,11 @@ public class PortfolioValuationsSenderTest {
 
     @Inject
     @Named("clarus")
-    Transformer<SwapTrade> transformer;
+    Transformer<SwapTrade> clarusTransformer;
+
+    @Inject
+    @Named("markit")
+    Transformer<SwapTrade> markitTransformer;
 
     @Inject
     @Named("xml")
@@ -64,9 +68,9 @@ public class PortfolioValuationsSenderTest {
 
         OkHttpClient client = new MarkitClient(httpClient, markitEndPointConfig);
 
-        sender = new PortfolioValuationsSender(client, reportParser, transformer);
+        sender = new PortfolioValuationsSender(client, reportParser, markitTransformer);
 
-        swaps = transformer.deserialiseToList(cmeCsv.getContent());
+        swaps = clarusTransformer.deserialiseToList(cmeCsv.getContent());
     }
 
     @Test
