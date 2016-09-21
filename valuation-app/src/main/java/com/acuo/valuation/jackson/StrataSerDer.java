@@ -1,6 +1,5 @@
 package com.acuo.valuation.jackson;
 
-import com.acuo.common.model.proxy.DayCountProxy;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +9,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.basics.date.DayCount;
 import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,8 +24,8 @@ public class StrataSerDer {
         strataModule = new SimpleModule();
         strataModule.addSerializer(new CurrencySerializer(Currency.class));
         strataModule.addDeserializer(Currency.class, new CurrencyDeserializer(Currency.class));
-        strataModule.addSerializer(new DayCountProxySerializer(DayCountProxy.class));
-        strataModule.addDeserializer(DayCountProxy.class, new DayCountProxyDeserializer(DayCountProxy.class));
+        strataModule.addSerializer(new DayCountProxySerializer(DayCount.class));
+        strataModule.addDeserializer(DayCount.class, new DayCountProxyDeserializer(DayCount.class));
         strataModule.addSerializer(new ResultSerializer(Result.class));
     }
 
@@ -61,26 +61,26 @@ public class StrataSerDer {
         }
     }
 
-    private static class DayCountProxySerializer extends StdSerializer<DayCountProxy> {
+    private static class DayCountProxySerializer extends StdSerializer<DayCount> {
 
-        private DayCountProxySerializer(Class<DayCountProxy> t) {
+        private DayCountProxySerializer(Class<DayCount> t) {
             super(t);
         }
 
         @Override
-        public void serialize(DayCountProxy value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        public void serialize(DayCount value, JsonGenerator gen, SerializerProvider provider) throws IOException {
             gen.writeString(value.getName());
         }
     }
 
-    private static class DayCountProxyDeserializer extends StdDeserializer<DayCountProxy> {
+    private static class DayCountProxyDeserializer extends StdDeserializer<DayCount> {
 
-        private DayCountProxyDeserializer(Class<DayCountProxy> t) {
+        private DayCountProxyDeserializer(Class<DayCount> t) {
             super(t);
         }
 
         @Override
-        public DayCountProxy deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public DayCount deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             return null;
         }
     }

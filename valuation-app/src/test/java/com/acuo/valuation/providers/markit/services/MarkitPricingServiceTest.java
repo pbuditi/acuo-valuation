@@ -38,8 +38,12 @@ public class MarkitPricingServiceTest {
     public ResourceFile cmeCsv = new ResourceFile("/clarus/request/clarus-cme.csv");
 
     @Inject
+    @Named("clarus")
+    Transformer<SwapTrade> clarusTransformer;
+
+    @Inject
     @Named("markit")
-    Transformer<SwapTrade> transformer;
+    Transformer<SwapTrade> markitTransformer;
 
     @Mock
     Sender sender;
@@ -57,7 +61,7 @@ public class MarkitPricingServiceTest {
 
         service = new MarkitPricingService(sender, retriever);
 
-        swaps = transformer.deserialiseToList(cmeCsv.getContent());
+        swaps = clarusTransformer.deserialiseToList(cmeCsv.getContent());
 
     }
 
