@@ -24,7 +24,7 @@ public class ReportInput {
 
     public Report report() {
         Report.ReportBuilder builder = new Report.ReportBuilder(header.name, header.version, header.date);
-        reports.stream().forEach(r -> builder.add(r.tradeID, r.type, r.message));
+        reports.stream().filter(r -> r.tradeID != null).forEach(r -> builder.add(r.tradeID, r.type, r.message));
         return builder.build();
     }
 
