@@ -1,51 +1,69 @@
 {
-    "info": {
-      "tradeId": "IRS_VANILLA",
-      "tradeDate": "2013-02-14",
-      "book": "SWAPS"
-    },
-    "product": {
-      "legs": [
-        {
-            "currency": "USD",
-            "daycount": "30360",
-            "id": "1",
-            "notional": "10000000",
-            "notionalxg": "NEITHER",
-            "paydates": {
-                "adjust": "true",
-                "enddate": "2017-02-16",
-                "eom": "false",
-                "freq": "3M",
-                "rollcode": "MODFOLL",
-                "startdate": "2013-02-16"
-            },
-            "rate": "0.055",
-            "type": "FIXED"
-        },
-        {
-            "currency": "USD",
-            "daycount": "A360",
-            "fixing": {
-                "arrears": "false",
-                "name": "USD-LIBOR-BBA",
-                "term": "3M"
-            },
-            "id": "2",
-            "notional": "-10000000",
-            "notionalxg": "NEITHER",
-            "paydates": {
-                "adjust": "true",
-                "enddate": "2017-02-16",
-                "eom": "false",
-                "freq": "3M",
-                "rollcode": "MODFOLL",
-                "startdate": "2013-02-16"
-            },
-            "spread": "0",
-            "type": "FLOAT"
+  "info" : {
+    "tradeId" : "tradeId",
+    "tradeDate" : "2016-09-21",
+    "clearedTradeId" : "123",
+    "clearedTradeDate" : "2016-09-21",
+    "book" : "Book",
+    "tradeStatus" : "CLEARED"
+  },
+  "product" : {
+    "legs" : [ {
+      "id" : 1,
+      "currency" : "USD",
+      "payReceive" : "PAY",
+      "type" : "FIXED",
+      "daycount" : "30/360 ISDA",
+      "notional" : 1.0E9,
+      "startDate" : {
+        "date" : "2016-09-21",
+        "adjustment" : {
+          "businessDayConvention" : "ModifiedFollowing"
         }
-      ]
       },
-    "type": "SWAP"
+      "maturityDate" : {
+        "date" : "2026-09-21",
+        "adjustment" : {
+          "businessDayConvention" : "ModifiedFollowing"
+        }
+      },
+      "paymentSchedule" : {
+        "adjustment" : {
+          "businessDayConvention" : "ModifiedFollowing"
+        },
+        "frequency" : "P3M"
+      }
+    }, {
+      "id" : 2,
+      "currency" : "USD",
+      "payReceive" : "RECEIVE",
+      "fixing" : {
+        "floatingRateName" : "USD-LIBOR",
+        "tenor" : "3M",
+        "fixingRelativeTo" : "PERIOD_START"
+      },
+      "type" : "FLOAT",
+      "daycount" : "Act/360",
+      "notional" : 1.0E9,
+      "startDate" : {
+        "date" : "2016-09-21",
+        "adjustment" : {
+          "businessDayConvention" : "ModifiedFollowing"
+        }
+      },
+      "maturityDate" : {
+        "date" : "2026-09-21",
+        "adjustment" : {
+          "businessDayConvention" : "ModifiedFollowing"
+        }
+      },
+      "paymentSchedule" : {
+        "adjustment" : {
+          "businessDayConvention" : "ModifiedFollowing"
+        },
+        "frequency" : "P3M"
+      }
+    } ]
+  },
+  "type" : "SWAP"
 }
