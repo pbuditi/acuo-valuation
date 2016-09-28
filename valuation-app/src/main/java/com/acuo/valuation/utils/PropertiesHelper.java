@@ -1,24 +1,22 @@
 package com.acuo.valuation.utils;
 
-import com.acuo.common.app.AppId;
 import com.acuo.common.app.Configuration;
-import com.acuo.common.app.Environment;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.common.util.BasePropertiesHelper;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class PropertiesHelper extends BasePropertiesHelper {
 
     public static final String ACUO_CONFIG_APPID = "acuo.config.appid";
     public static final String ACUO_CONFIG_ENV = "acuo.config.env";
+
+    public static final String ACUO_SECURITY_KEY = "acuo.security.key";
+
     public static final String ACUO_VALUATION_APP_HOST = "acuo.webapp.host";
     public static final String ACUO_VALUATION_APP_PORT = "acuo.webapp.port";
     public static final String ACUO_VALUATION_APP_DIR = "acuo.webapp.dir";
     public static final String ACUO_VALUATION_APP_CTX_PATH = "acuo.webapp.context.path";
     public static final String ACUO_VALUATION_APP_REST_MAPPING_PREFIX = "acuo.webapp.rest.servlet.mapping.prefix";
+
     public static final String ACUO_VALUATION_MARKIT_HOST = "acuo.markit.host";
     public static final String ACUO_VALUATION_MARKIT_USERNAME = "acuo.markit.username";
     public static final String ACUO_VALUATION_MARKIT_PASSWORD = "acuo.markit.password";
