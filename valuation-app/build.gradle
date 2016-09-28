@@ -27,8 +27,8 @@ ext.versions += [
         okhttp          : '3.3.1',
         eclipselink     : '2.6.3',
         guice           : '4.0',
-        resteasy        : '3.0.16.Final',
-        jackson         : '2.8.2',
+        resteasy        : '3.0.19.Final',
+        jackson         : '2.8.3',
         metrics         : '3.1.2',
         metricsguice    : '3.1.3'
 ]
