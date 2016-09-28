@@ -1,9 +1,9 @@
 package com.acuo.valuation.modules;
 
 import com.acuo.common.app.Configuration;
-import com.acuo.valuation.utils.PropertiesHelper;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.utils.PropertiesHelper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -21,6 +21,7 @@ public class ConfigurationModule extends AbstractModule {
             }
         });
         install(injector.getInstance(PropertiesModule.class));
+        bind(Configuration.class).toProvider(SystemPropertiesConfigurationProvider.class);
         bind(MarkitEndPointConfig.class);
         bind(ClarusEndPointConfig.class);
     }
