@@ -40,8 +40,6 @@ public class JacksonObjectMapperProvider implements Provider<ObjectMapper>, Cont
                 .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
                 .setAnnotationIntrospector(new JacksonLombokAnnotationIntrospector())
                 .registerModule(new JodaModule())
-                //.registerModule(new GuavaModule())
-                //.registerModule(new Jdk7Module())
                 .registerModule(new JavaTimeModule())
                 .registerModule(new Jdk8Module())
                 .registerModule(simpleModule());
