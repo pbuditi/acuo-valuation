@@ -2,14 +2,16 @@ package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.OkHttpClient;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
+@Slf4j
 public class MarkitClient extends OkHttpClient<MarkitEndPointConfig> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MarkitClient.class);
 
     @Inject
     public MarkitClient(okhttp3.OkHttpClient httpClient, MarkitEndPointConfig config) {
@@ -30,7 +32,7 @@ public class MarkitClient extends OkHttpClient<MarkitEndPointConfig> {
             }
             return result;
         } catch (Exception e) {
-            LOG.error("Failed to create the request, the error message {}", e.getMessage(), e);
+            log.error("Failed to create the request, the error message {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }
