@@ -5,16 +5,10 @@ import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.modules.ConfigurationModule;
-import com.acuo.valuation.modules.EndPointModule;
-import com.acuo.valuation.modules.MappingModule;
-import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.modules.*;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.services.MarginCalcService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
@@ -30,7 +24,11 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({MappingModule.class, EncryptionModule.class, ConfigurationModule.class, EndPointModule.class, ServicesModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
+                                MappingModule.class,
+                                EncryptionModule.class,
+                                EndPointModule.class,
+                                ServicesModule.class})
 public class ClarusMarginCalcServiceIntegrationTest {
 
     @Rule
@@ -43,7 +41,7 @@ public class ClarusMarginCalcServiceIntegrationTest {
     MarginCalcService service;
 
     @Inject
-    @Named("claurs")
+    @Named("clarus")
     Transformer<SwapTrade> transformer;
 
     @Before
@@ -57,6 +55,7 @@ public class ClarusMarginCalcServiceIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testWithMapper() throws IOException {
         List<SwapTrade> trades = transformer.deserialiseToList(cmeCsv.getContent());
         MarginResults response = service.send(trades, DataFormat.CME, DataType.SwapRegister);
