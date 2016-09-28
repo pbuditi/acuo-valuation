@@ -4,8 +4,6 @@ import com.acuo.common.app.ResteasyConfig;
 import com.acuo.common.app.ResteasyMain;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.valuation.modules.*;
-import com.acuo.valuation.web.JacksonObjectMapperProvider;
-import com.acuo.valuation.web.MOXyCustomJsonProvider;
 import com.acuo.valuation.web.ObjectMapperContextResolver;
 import com.google.inject.Module;
 
@@ -22,7 +20,7 @@ public class ValuationApp extends ResteasyMain {
 
     @Override
     public Collection<Class<?>> providers() {
-        return asList(ObjectMapperContextResolver.class/*MOXyCustomJsonProvider.class*/);
+        return asList(ObjectMapperContextResolver.class);
     }
 
     @Override

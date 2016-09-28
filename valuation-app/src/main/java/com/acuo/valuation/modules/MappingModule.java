@@ -34,7 +34,7 @@ public class MappingModule extends AbstractModule {
         });
         bind(Marshaller.class).annotatedWith(Names.named("json")).to(new TypeLiteral<MarshallerExecutor<JsonContextFactory>>() {
         });
-        //bind(ObjectMapper.class).toProvider(JacksonObjectMapperProvider.class);
+        bind(ObjectMapper.class).toProvider(JacksonObjectMapperProvider.class);
         ClarusTransformer<SwapTrade> clarusTransformer = new ClarusTransformer<>(new Mapper());
         bind(new TypeLiteral<Transformer<SwapTrade>>() {
         }).annotatedWith(Names.named("clarus")).toInstance(clarusTransformer);
