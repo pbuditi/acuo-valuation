@@ -1,7 +1,7 @@
 version: '2'
 
 services:
- app:
+ valuation:
   build: ./build
   image: valuation-app
   ports:
