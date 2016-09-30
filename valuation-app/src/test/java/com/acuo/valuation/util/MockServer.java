@@ -49,7 +49,7 @@ public class MockServer implements Runnable {
     @Override
     public void run() {
         try {
-            mockWebServer.start(8080);
+            mockWebServer.start();
             latch.await();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -64,6 +64,10 @@ public class MockServer implements Runnable {
         } finally {
             latch.countDown();
         }
+    }
+
+    public String geBasetUrl() {
+        return mockWebServer.url("/").toString();
     }
 
     private String file(String resourceName) {

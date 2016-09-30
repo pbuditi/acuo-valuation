@@ -1,6 +1,10 @@
 buildscript {
     repositories {
-        mavenCentral()
+		mavenLocal()
+		maven {
+			url "${nexusUrl}/repository/maven-public/"
+		}
+		mavenCentral()
         jcenter()
     }
     dependencies {
@@ -14,12 +18,12 @@ task wrapper(type: Wrapper) {
 
 allprojects {
 	repositories {
-		jcenter()
 		mavenLocal()
-		mavenCentral()
 		maven {
 			url "${nexusUrl}/repository/maven-public/"
 		}
+		jcenter()
+		mavenCentral()
 	}
 	group = 'com.acuo.collateral'
 	version = '0.0.1-SNAPSHOT'
@@ -37,4 +41,60 @@ configure (subprojects) {
 	loadConfiguration()
 	profile = profile //inject property into sub-project
 	config = config     
+}
+
+subprojects {
+	apply plugin: 'java'
+
+	// Disable the test report for the individual test task
+	test {
+		reports.html.enabled = false
+	}
+}
+
+task testReport(type: TestReport) {
+	destinationDir = file("$buildDir/reports/allTests")
+	// Include the results from the `test` task in all subprojects
+	reportOn subprojects*.test
+}
+
+apply plugin: 'jacoco'
+
+task codeCoverageReport(type: JacocoReport) {
+
+	// Gather execution data from all subprojects
+	// (change this if you e.g. want to calculate unit test/integration test coverage separately)
+	executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+	// Add all relevant sourcesets from the subprojects
+	subprojects.each {
+		sourceSets it.sourceSets.main
+	}
+
+	reports {
+		html.enabled true
+		html.destination "${buildDir}/reports/jacoco"
+		xml.enabled false
+		csv.enabled false
+	}
+
+	onlyIf = {
+		true
+	}
+
+	doFirst {
+		executionData = files(executionData.findAll {
+			it.exists()
+		})
+	}
+}
+
+// always run the tests before generating the report
+codeCoverageReport.dependsOn {
+	subprojects*.test
+}
+
+task build {
+	dependsOn tasks.codeCoverageReport
+	dependsOn tasks.testReport
 }
