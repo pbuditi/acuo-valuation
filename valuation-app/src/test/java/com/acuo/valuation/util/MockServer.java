@@ -1,5 +1,6 @@
 package com.acuo.valuation.util;
 
+import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -66,8 +67,8 @@ public class MockServer implements Runnable {
         }
     }
 
-    public String geBasetUrl() {
-        return mockWebServer.url("/").toString();
+    public HttpUrl getHttpUrl() {
+        return mockWebServer.url("/");
     }
 
     private String file(String resourceName) {

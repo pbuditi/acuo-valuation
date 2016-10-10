@@ -55,7 +55,7 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
         @Override
         protected void configure() {
             server = new MockWebServer();
-            MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(),
+            MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/"), "", "",
                     "username", "password", "0", "10000");
             ClarusEndPointConfig clarusEndPointConfig = new ClarusEndPointConfig("host", "key", "api", "10000");
             bind(MarkitEndPointConfig.class).toInstance(markitEndPointConfig);

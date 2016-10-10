@@ -63,8 +63,12 @@ public class PortfolioValuationsSenderTest {
     public void setUp() throws Exception {
         server.start();
 
-        okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
-        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/").toString(), "username", "password", "0", "10000");
+        okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient
+                                                     .Builder()
+                                                     .addInterceptor(new LoggingInterceptor())
+                                                     .build();
+        MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/"), "", "",
+                "username", "password", "0", "10000");
 
         OkHttpClient client = new MarkitClient(httpClient, markitEndPointConfig);
 
