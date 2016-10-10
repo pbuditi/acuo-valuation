@@ -4,17 +4,24 @@ import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
 import okhttp3.FormBody;
+import okhttp3.HttpUrl;
 import okhttp3.Request;
 
 public class MarkitFormCall extends CallBuilder<MarkitFormCall> {
 
     private final ClientEndPoint<MarkitEndPointConfig> client;
-    private final MarkitEndPointConfig config;
+    private final HttpUrl downloadUrl;
     private FormBody.Builder builder;
 
     private MarkitFormCall(ClientEndPoint<MarkitEndPointConfig> client) {
         this.client = client;
-        this.config = client.config();
+        MarkitEndPointConfig config = client.config();
+        this.downloadUrl = new HttpUrl.Builder()
+                .scheme(config.getScheme())
+                .host(config.getHost())
+                .port(config.getPort())
+                .addPathSegment(config.getDownloadPath())
+                .build();
         builder = new FormBody.Builder()
                 .add("username", config.getUsername())
                 .add("password", config.getPassword());
@@ -30,7 +37,7 @@ public class MarkitFormCall extends CallBuilder<MarkitFormCall> {
     }
 
     public Call create() {
-        Request request = new Request.Builder().url(config.getUrl()).post(builder.build()).build();
+        Request request = new Request.Builder().url(downloadUrl).post(builder.build()).build();
         return client.call(request, predicate);
     }
 }

@@ -3,20 +3,26 @@ package com.acuo.valuation.providers.markit.services;
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import okhttp3.*;
+
+import java.net.URI;
+import java.net.URL;
 
 public class MarkitMultipartCall extends CallBuilder<MarkitMultipartCall> {
 
     private final ClientEndPoint client;
-    private final MarkitEndPointConfig config;
     private MultipartBody.Builder builder;
+    private HttpUrl uploadUrl;
 
     private MarkitMultipartCall(ClientEndPoint<MarkitEndPointConfig> client) {
         this.client = client;
-        this.config = client.config();
+        MarkitEndPointConfig config = client.config();
+        this.uploadUrl = new HttpUrl.Builder()
+                .scheme(config.getScheme())
+                .host(config.getHost())
+                .port(config.getPort())
+                .addPathSegment(config.getUploadPath())
+                .build();
         builder = new MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart("username", config.getUsername())
                 .addFormDataPart("password", config.getPassword());
@@ -33,7 +39,7 @@ public class MarkitMultipartCall extends CallBuilder<MarkitMultipartCall> {
     }
 
     public Call create() {
-        Request request = new Request.Builder().url(config.getUrl()).post(builder.build()).build();
+        Request request = new Request.Builder().url(uploadUrl).post(builder.build()).build();
         return client.call(request, predicate);
     }
 }
