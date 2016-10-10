@@ -15,21 +15,21 @@ public class ResteasyConfigImpl implements ResteasyConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResteasyConfigImpl.class);
 
-    @Inject
-    @Named(ACUO_VALUATION_APP_PORT)
-    public Integer port;
+    private final Integer port;
+    private final String ipAddress;
+    private final String contextPath;
+    private final String mappingPrefix;
 
     @Inject
-    @Named(ACUO_VALUATION_APP_HOST)
-    public String ipAddress;
-
-    @Inject
-    @Named(ACUO_VALUATION_APP_CTX_PATH)
-    public String contextPath;
-
-    @Inject
-    @Named(ACUO_VALUATION_APP_REST_MAPPING_PREFIX)
-    public String mappingPrefix;
+    public ResteasyConfigImpl(@Named(ACUO_VALUATION_APP_PORT) Integer port,
+                              @Named(ACUO_VALUATION_APP_HOST) String ipAddress,
+                              @Named(ACUO_VALUATION_APP_CTX_PATH) String contextPath,
+                              @Named(ACUO_VALUATION_APP_REST_MAPPING_PREFIX) String mappingPrefix) {
+        this.port = port;
+        this.ipAddress = ipAddress;
+        this.contextPath = contextPath;
+        this.mappingPrefix = mappingPrefix;
+    }
 
     @Override
     public HttpServerWrapperConfig getConfig() {
