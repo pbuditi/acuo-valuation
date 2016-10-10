@@ -17,7 +17,11 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_VALUATION_APP_CTX_PATH = "acuo.webapp.context.path";
     public static final String ACUO_VALUATION_APP_REST_MAPPING_PREFIX = "acuo.webapp.rest.servlet.mapping.prefix";
 
+    public static final String ACUO_VALUATION_MARKIT_SCHEME = "acuo.markit.scheme";
     public static final String ACUO_VALUATION_MARKIT_HOST = "acuo.markit.host";
+    public static final String ACUO_VALUATION_MARKIT_PORT = "acuo.markit.port";
+    public static final String ACUO_VALUATION_MARKIT_UPLOAD_PATH = "acuo.markit.upload.path";
+    public static final String ACUO_VALUATION_MARKIT_DOWNLOAD_PATH = "acuo.markit.download.path";
     public static final String ACUO_VALUATION_MARKIT_USERNAME = "acuo.markit.username";
     public static final String ACUO_VALUATION_MARKIT_PASSWORD = "acuo.markit.password";
     public static final String ACUO_VALUATION_MARKIT_RETRY_DELAY = "acuo.markit.retry.delay";

@@ -34,7 +34,7 @@ public class MockServerTest {
         server = new MockServer();
         new Thread(server).start();
         Thread.sleep(1000);
-        MarkitEndPointConfig config = new MarkitEndPointConfig(server.geBasetUrl(), "username", "password", "0", "10000");
+        MarkitEndPointConfig config = new MarkitEndPointConfig(server.getHttpUrl(), "", "", "username", "password", "0", "10000");
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
         client = new MarkitClient(httpClient, config);
     }
