@@ -26,7 +26,7 @@ public class ConfigurationModule extends AbstractModule {
         bind(ClarusEndPointConfig.class);
     }
 
-    static class PropertiesModule extends AbstractModule {
+    public static class PropertiesModule extends AbstractModule {
 
         @Inject
         private Configuration configuration;
