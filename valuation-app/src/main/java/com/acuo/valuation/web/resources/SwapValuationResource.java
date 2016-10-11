@@ -1,9 +1,7 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.trade.SwapTrade;
-import com.acuo.valuation.protocol.requests.dto.SwapDTO;
 import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.protocol.results.dto.SwapResultDTO;
 import com.acuo.valuation.services.PricingService;
 import com.codahale.metrics.annotation.Timed;
 import org.apache.velocity.VelocityContext;
