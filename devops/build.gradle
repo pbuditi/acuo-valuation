@@ -2,7 +2,6 @@ apply plugin:'base'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 import com.bmuschko.gradle.docker.tasks.image.Dockerfile
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 def name = project(":valuation-app").name
 def imageName = "${name}:${version}"

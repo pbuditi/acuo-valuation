@@ -12,89 +12,12 @@ buildscript {
     }
 }
 
-task wrapper(type: Wrapper) {
-	gradleVersion = '3.1'
-}
+apply from: "$rootDir/gradle/root/gradle-wrapper.gradle"
+apply from: "$rootDir/gradle/root/idea-provided.gradle"
+apply from: "$rootDir/gradle/root/profiles-config.gradle"
+apply from: "$rootDir/gradle/root/test-reports.gradle"
 
 allprojects {
-	repositories {
-		mavenLocal()
-		maven {
-			url "${nexusUrl}/repository/maven-public/"
-		}
-		jcenter()
-		mavenCentral()
-	}
-	group = 'com.acuo.collateral'
+    group = 'com.acuo.collateral'
 	version = '0.0.1-SNAPSHOT'
-}
-
-def loadConfiguration() {
-	def profile = hasProperty('profile') ? profile : 'dev'
-	ext.profile = profile
-	def configFile = file('config.groovy')
-	def config = new ConfigSlurper(profile).parse(configFile.toURI().toURL())
-	ext.config = config
-}
-
-configure (subprojects) {
-	loadConfiguration()
-	profile = profile //inject property into sub-project
-	config = config     
-}
-
-subprojects {
-	apply plugin: 'java'
-
-	// Disable the test report for the individual test task
-	test {
-		reports.html.enabled = false
-	}
-}
-
-task testReport(type: TestReport) {
-	destinationDir = file("$buildDir/reports/allTests")
-	// Include the results from the `test` task in all subprojects
-	reportOn subprojects*.test
-}
-
-apply plugin: 'jacoco'
-
-task codeCoverageReport(type: JacocoReport) {
-
-	// Gather execution data from all subprojects
-	// (change this if you e.g. want to calculate unit test/integration test coverage separately)
-	executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
-	// Add all relevant sourcesets from the subprojects
-	subprojects.each {
-		sourceSets it.sourceSets.main
-	}
-
-	reports {
-		html.enabled true
-		html.destination "${buildDir}/reports/jacoco"
-		xml.enabled false
-		csv.enabled false
-	}
-
-	onlyIf = {
-		true
-	}
-
-	doFirst {
-		executionData = files(executionData.findAll {
-			it.exists()
-		})
-	}
-}
-
-// always run the tests before generating the report
-codeCoverageReport.dependsOn {
-	subprojects*.test
-}
-
-task build {
-	dependsOn tasks.codeCoverageReport
-	dependsOn tasks.testReport
 }
