@@ -2,26 +2,11 @@ plugins {
     id 'io.franzbecker.gradle-lombok' version '1.6'
 }
 
-apply from: "$rootDir/gradle/java-plugins.gradle"
-apply from: "$rootDir/gradle/dependencies.gradle"
-apply from: "$rootDir/gradle/integration-test.gradle"
-apply from: "$rootDir/gradle/deployment.gradle"
-apply from: "$rootDir/gradle/sonarqube.gradle"
-apply from: "$rootDir/gradle/test-reports.gradle"
-
-repositories {
-    jcenter()
-    mavenLocal()
-    mavenCentral()
-    maven {
-        url "${nexusUrl}/repository/maven-public/"
-    }
-}
-
-configurations.all {
-    // check for updates every build
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
+apply from: "$rootDir/gradle/projects/java-plugins.gradle"
+apply from: "$rootDir/gradle/projects/dependencies.gradle"
+apply from: "$rootDir/gradle/projects/integration-test.gradle"
+apply from: "$rootDir/gradle/projects/deployment.gradle"
+apply from: "$rootDir/gradle/projects/sonarqube.gradle"
 
 ext.versions += [
         common          : '0.0.1-SNAPSHOT',
