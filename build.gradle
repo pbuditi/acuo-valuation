@@ -2,7 +2,7 @@ buildscript {
     repositories {
 		mavenLocal()
 		maven {
-			url "https://nexus.acuo.com/repository/maven-public/"
+			url "${nexusUrl}/repository/maven-public/"
 		}
 		mavenCentral()
         jcenter()
