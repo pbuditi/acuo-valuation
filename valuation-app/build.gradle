@@ -73,3 +73,14 @@ mainClassName = 'com.acuo.valuation.ValuationApp'
 applicationDefaultJvmArgs = ["-Dacuo.config.appid=${config.appId}",
                              "-Dacuo.config.env=${config.env}",
                              "-Dacuo.security.key=${config.key}"]
+
+
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+
+compileJava {
+    options.encoding = "UTF-8"
+}
