@@ -1,12 +1,8 @@
-plugins {
-    id 'io.franzbecker.gradle-lombok' version '1.6'
-}
-
-apply from: "$rootDir/gradle/projects/java-plugins.gradle"
-apply from: "$rootDir/gradle/projects/dependencies.gradle"
-apply from: "$rootDir/gradle/projects/integration-test.gradle"
-apply from: "$rootDir/gradle/projects/deployment.gradle"
-apply from: "$rootDir/gradle/projects/sonarqube.gradle"
+apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/projects/java-plugins.gradle"
+apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/projects/dependencies.gradle"
+apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/projects/integration-test.gradle"
+//apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/projects/deployment.gradle"
+apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/projects/sonarqube.gradle"
 
 ext.versions += [
         common          : '0.2.1',

@@ -1,34 +1,9 @@
-buildscript {
-    repositories {
-		mavenLocal()
-		maven {
-			url "${nexusUrl}/repository/maven-public/"
-		}
-		mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:3.0.0'
-	}
-}
-
-apply from: "$rootDir/gradle/root/gradle-wrapper.gradle"
-apply from: "$rootDir/gradle/root/idea-provided.gradle"
-apply from: "$rootDir/gradle/root/profiles-config.gradle"
-apply from: "$rootDir/gradle/root/test-reports.gradle"
+apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/develop/root/buildscript.gradle"
+apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/root/gradle-wrapper.gradle"
+apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/root/profiles-config.gradle"
+//apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/root/test-reports.gradle"
 
 allprojects {
     group = 'com.acuo.collateral'
 	version = '0.0.1-SNAPSHOT'
-}
-
-
-tasks.withType(Javadoc) {
-	options.addStringOption('Xdoclint:none', '-quiet')
-	options.addStringOption('encoding', 'UTF-8')
-	options.addStringOption('charSet', 'UTF-8')
-}
-
-compileJava {
-	options.encoding = "UTF-8"
 }
