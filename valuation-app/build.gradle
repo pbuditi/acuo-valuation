@@ -10,7 +10,7 @@ apply from: "$rootDir/gradle/projects/sonarqube.gradle"
 
 ext.versions += [
         common          : '0.2.1',
-        mapping         : '0.0.1-SNAPSHOT',
+        mapping         : '0.1.1',
         okhttp          : '3.3.1',
         eclipselink     : '2.6.3',
         guice           : '4.0',
