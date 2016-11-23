@@ -3,21 +3,22 @@ package com.acuo.valuation.providers.markit.services;
 import com.acuo.valuation.protocol.results.SwapResults;
 import com.acuo.valuation.services.SwapService;
 import com.google.inject.Provider;
+import org.neo4j.ogm.session.Session;
 
 import javax.inject.Inject;
 
 public class MarkitSwapService implements SwapService{
 
-    //private final Sender sender;
-   // private final Retriever retriever;
+    private final Sender sender;
+    private final Retriever retriever;
 
-//    @Inject
-//    public MarkitSwapService(Sender sender, Retriever retriever) {
-//        this.sender = sender;
-//        this.retriever = retriever;
-//    }
+    @Inject
+    public MarkitSwapService(Sender sender, Retriever retriever) {
+        this.sender = sender;
+        this.retriever = retriever;
+    }
 
-    //private final Provider<Session> sessionProvider;
+    private Provider<Session> sessionProvider;
 
     @Override
     public SwapResults getPv(int swapId)
