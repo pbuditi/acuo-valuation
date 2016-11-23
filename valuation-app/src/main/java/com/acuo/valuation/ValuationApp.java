@@ -36,6 +36,7 @@ public class ValuationApp extends ResteasyMain {
     }
 
     public static void main(String[] args) throws Exception {
-        new ValuationApp();
+        ValuationApp valuationApp = new ValuationApp();
+        valuationApp.startAsync();
     }
 }
