@@ -1,8 +1,11 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.valuation.protocol.results.SwapResults;
 import com.acuo.valuation.services.PricingService;
+import com.acuo.valuation.services.SwapService;
 import com.codahale.metrics.annotation.Timed;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -22,12 +25,14 @@ public class SwapValuationResource {
     private final PricingService pricingService;
     private final VelocityEngine velocityEngine;
     private final ModelMapper mapper;
+    private final SwapService swapService;
 
     @Inject
-    public SwapValuationResource(PricingService pricingService, VelocityEngine velocityEngine, ModelMapper mapper) {
+    public SwapValuationResource(PricingService pricingService, VelocityEngine velocityEngine, ModelMapper mapper, SwapService swapService) {
         this.velocityEngine = velocityEngine;
         this.pricingService = pricingService;
         this.mapper = mapper;
+        this.swapService = swapService;
     }
 
     @GET
@@ -46,6 +51,17 @@ public class SwapValuationResource {
     @Timed
     public PricingResults price(SwapTrade swapTrade) throws Exception {
         PricingResults result = pricingService.price(Arrays.asList(swapTrade));
+        return result;
+    }
+
+    @GET
+    //@Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/pv")
+    @Timed
+    public SwapResults getPv() throws Exception
+    {
+        SwapResults result = swapService.getPv(1);
         return result;
     }
 }
