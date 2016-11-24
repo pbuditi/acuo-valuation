@@ -32,6 +32,12 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_VALUATION_CLARUS_API_SECRET = "acuo.clarus.api.secret";
     public static final String ACUO_VALUATION_CLARUS_CONNECTION_TIMEOUT = "acuo.clarus.connection.timeout";
 
+    public static final String NEO4J_OGM_URL = "neo4j.ogm.url";
+    public static final String NEO4J_OGM_USERNAME = "neo4j.ogm.username";
+    public static final String NEO4J_OGM_PASSWORD = "neo4j.ogm.password";
+    public static final String NEO4J_OGM_DRIVER = "neo4j.ogm.driver";
+    public static final String NEO4J_OGM_PACKAGES = "neo4j.ogm.packages";
+
     private PropertiesHelper(Configuration configuration) {
         super(configuration);
     }

@@ -3,6 +3,7 @@ package com.acuo.valuation;
 import com.acuo.common.app.ResteasyConfig;
 import com.acuo.common.app.ResteasyMain;
 import com.acuo.common.security.EncryptionModule;
+import com.acuo.persistence.Neo4jPersistModule;
 import com.acuo.valuation.modules.*;
 import com.acuo.valuation.web.ObjectMapperContextResolver;
 import com.google.inject.Module;
@@ -32,7 +33,8 @@ public class ValuationApp extends ResteasyMain {
                     new EndPointModule(),
                     new ServicesModule(),
                     new ResourcesModule(),
-                    new HealthChecksModule());
+                    new HealthChecksModule(),
+                    new Neo4jPersistModule());
     }
 
     public static void main(String[] args) throws Exception {
