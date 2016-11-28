@@ -8,6 +8,7 @@ import com.acuo.common.model.trade.TradeInfo;
 import com.acuo.entity.Client;
 import com.acuo.persistence.Neo4jPersistService;
 import com.acuo.valuation.protocol.reports.Report;
+import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.protocol.results.SwapResults;
 import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.utils.SwapTradeBuilder;
@@ -42,59 +43,73 @@ public class MarkitSwapService implements SwapService {
 
 
     @Override
-    public SwapResults getPv(String swapId)
+    public PricingResults getPv(String swapId)
     {
-        SwapTrade swapTrade = new SwapTrade();
-        Swap swap = new Swap();
-        swapTrade.setProduct(swap);
-        swapTrade.setType(ProductType.SWAP);
-        TradeInfo tradeInfo = new TradeInfo();
-        swapTrade.setInfo(tradeInfo);
-        tradeInfo.setTradeId(swapId);
+        try
+        {
+            SwapTrade swapTrade = new SwapTrade();
+            Swap swap = new Swap();
+            swapTrade.setProduct(swap);
+            swapTrade.setType(ProductType.SWAP);
+
+            String query = "match (i:IRS {id:\"" + swapId + "\"}) return i.clearingDate as clearingDate, i.id as id";
+            Result result = sessionProvider.get().query(query, Collections.emptyMap());
+            if(result.iterator().hasNext())
+            {
+                for(Map<String, Object> entry : result.queryResults())
+                    swapTrade.setInfo(SwapTradeBuilder.buildTradeInfo(entry));
+            }
+
 
 //        String query = "MATCH (n:IRS {id:\"" + swapId + "\"}) RETURN n.payFreqPay AS payFreqPay, n.notional AS notional, n.payFreqReceive as payFreqReceive, n.maturity as maturity, n.markToMarketT as markToMarketT, n.clearingDate as clearingDate,\n" +
 //                "n.indexTenor as indexTenor, n.index as index, n.markToMarketTm1 as markToMarketTm1, n.legPay as legPay, n.fixedRate as fixedRate, n.currency as currency, n.id as id, n.resetFreq as resetFreq, n.nextCouponPaymentDate as nextCouponPaymentDate";
-        String query = "match (i:IRS {id:\"irsvt2\"})-[r:RECEIVES |PAYS]->(l:Leg) return l.notional as notional, l.resetFrequency as resetFrequency, l.payStart as payStart, l.indexTenor as indexTenor, l.index as index, l.paymentFrequency as paymentFrequency,\n" +
-                "l.type as type, l.rollConvention as rollConvention, l.nextCouponPaymentDate as nextCouponPaymentDate, l.payEnd as payEnd, l.refCalendar as refCalendar";
-        log.debug("query:" + query);
-        Result result = sessionProvider.get().query(query, Collections.emptyMap());
-        if(result.iterator().hasNext())
-        {
-            for(Map<String, Object> entry : result.queryResults())
+            query = "match (i:IRS {id:\"" + swapId + "\"})-[r:RECEIVES |PAYS]->(l:Leg) return l.notional as notional, l.resetFrequency as resetFrequency, l.payStart as payStart, l.indexTenor as indexTenor, l.index as index, l.paymentFrequency as paymentFrequency,\n" +
+                    "l.type as type, l.rollConvention as rollConvention, l.nextCouponPaymentDate as nextCouponPaymentDate, l.payEnd as payEnd, l.refCalendar as refCalendar";
+            log.debug("query:" + query);
+            result = sessionProvider.get().query(query, Collections.emptyMap());
+            if(result.iterator().hasNext())
             {
-                Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(entry);
-                swap.addLeg(leg);
+                for(Map<String, Object> entry : result.queryResults())
+                {
+                    Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(entry);
+                    swap.addLeg(leg);
+                }
             }
+
+            log.debug("swapTrade:" + swapTrade);
+
+
+
+            //load swap object based on swapId
+
+            List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
+            swapTrades.add(swapTrade);
+
+            Report report = sender.send(swapTrades);
+
+            Predicate<? super String> errorReport = (Predicate<String>) tradeId -> {
+                List<Report.Item> items = report.itemsPerTradeId().get(tradeId);
+                if (items.stream().anyMatch(item -> "ERROR".equals(item.getType()))) {
+                    return false;
+                }
+                return true;
+            };
+
+            List<String> tradeIds = swapTrades
+                    .stream()
+                    .map(swapItem -> swapItem.getInfo().getTradeId())
+                    .filter(errorReport)
+                    .collect(Collectors.toList());
+
+            //get the response,parse and return
+            return retriever.retrieve(report.valuationDate(), tradeIds);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
 
-        log.debug("swapTrade:" + swapTrade);
+        return null;
 
-
-
-//        //load swap object based on swapId
-//
-//        List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
-//        swapTrades.add(swapTrade);
-//
-//        Report report = sender.send(swapTrades);
-//
-//        Predicate<? super String> errorReport = (Predicate<String>) tradeId -> {
-//            List<Report.Item> items = report.itemsPerTradeId().get(tradeId);
-//            if (items.stream().anyMatch(item -> "ERROR".equals(item.getType()))) {
-//                return false;
-//            }
-//            return true;
-//        };
-//
-//        List<String> tradeIds = swapTrades
-//                .stream()
-//                .map(swap -> swap.getInfo().getTradeId())
-//                .filter(errorReport)
-//                .collect(Collectors.toList());
-//
-//        //get the response,parse and return
-//        //return retriever.retrieve(report.valuationDate(), tradeIds);
-
-        return new SwapResults();
     }
 }
