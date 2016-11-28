@@ -42,6 +42,8 @@ public class PortfolioValuationsRetriever implements Retriever {
         return Result.success(new MarkitValuation(resultList.toArray(new Value[resultList.size()])));
     }
 
+
+
     /**
      * Retrieve the results for a given valuation date
      *
