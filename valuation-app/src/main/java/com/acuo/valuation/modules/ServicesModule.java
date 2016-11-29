@@ -5,7 +5,6 @@ import com.acuo.valuation.providers.markit.services.*;
 import com.acuo.valuation.services.MarginCalcService;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
-import com.acuo.persistence.Neo4jPersistModule;
 import com.google.inject.AbstractModule;
 
 public class ServicesModule extends AbstractModule {
