@@ -21,4 +21,12 @@ public class ReportHelper {
         Report report = reportBuilder.build();
         return report;
     }
+
+    public static Report reportForSwap() {
+        Report.ReportBuilder reportBuilder = new Report.ReportBuilder("warning-report", "2.2", LocalDate.of(2016, 6, 10));
+        reportBuilder.add("irsvt1", "WARNING", "warning message");
+        Report report = reportBuilder.build();
+        return report;
+    }
+
 }
