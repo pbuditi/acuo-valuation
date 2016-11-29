@@ -23,16 +23,13 @@ public class MarkitSwapService implements SwapService {
 
     private final Sender sender;
     private final Retriever retriever;
-
-    //    @Inject
-//    protected Provider<Session> sessionProvider;
-    @Inject
-    Neo4jPersistService sessionProvider;
+    private final Neo4jPersistService sessionProvider;
 
     @Inject
-    public MarkitSwapService(Sender sender, Retriever retriever) {
+    public MarkitSwapService(Sender sender, Retriever retriever, Neo4jPersistService sessionProvider) {
         this.sender = sender;
         this.retriever = retriever;
+        this.sessionProvider = sessionProvider;
     }
 
 
