@@ -3,7 +3,6 @@ package com.acuo.valuation.providers.markit.services;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.core.Neo4jPersistModule;
 import com.acuo.persist.core.Neo4jPersistService;
-import com.acuo.persistence.Neo4jIntegrationTestModule;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.results.MarkitValuation;
@@ -29,7 +28,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, Neo4jPersistModule.class, Neo4jIntegrationTestModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, Neo4jPersistModule.class})
 public class MarkitSwapServiceTest {
 
     @Mock
