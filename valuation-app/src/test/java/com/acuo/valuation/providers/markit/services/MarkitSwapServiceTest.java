@@ -5,6 +5,7 @@ import com.acuo.persist.core.Neo4jPersistModule;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.modules.Neo4jIntegrationTestModule;
 import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
@@ -47,12 +48,13 @@ public class MarkitSwapServiceTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
 
-        service = new MarkitSwapService(sender, retriever, session);
+        service = new MarkitSwapService(sender,retriever,session);
 
     }
 
     @Test
     public void testPriceSwapWithNoErrorReport() {
+;
         when(sender.send(any(List.class))).thenReturn(ReportHelper.reportForSwap());
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
