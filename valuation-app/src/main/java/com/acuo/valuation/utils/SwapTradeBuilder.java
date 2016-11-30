@@ -9,6 +9,7 @@ import com.opengamma.strata.basics.index.FloatingRateName;
 import com.opengamma.strata.basics.schedule.Frequency;
 import com.opengamma.strata.basics.schedule.RollConvention;
 import com.acuo.common.model.AdjustableDate;
+import lombok.extern.slf4j.Slf4j;
 import org.neo4j.cypher.internal.frontend.v2_3.ast.functions.E;
 import org.neo4j.cypher.internal.frontend.v2_3.ast.functions.Str;
 import org.neo4j.ogm.model.Result;
@@ -22,6 +23,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 
+@Slf4j
 public class SwapTradeBuilder {
 
     public static SwapTrade buildIRS(Map<String, Object> entry)
@@ -62,15 +64,7 @@ public class SwapTradeBuilder {
         if(entry.get("type") != null)
             leg.setType((String)entry.get("type"));
 
-        //failure at this time
-        try {
-            if(entry.get("rollConvention") != null)
-                leg.setRollConvention(RollConvention.of((String)entry.get("rollConvention")));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+
 
 
 
@@ -93,7 +87,8 @@ public class SwapTradeBuilder {
             if(entry.get("paymentFrequency") != null)
             {
                 AdjustableSchedule adjustableSchedule = new AdjustableSchedule();
-                adjustableSchedule.setFrequency(Frequency.parse((String)entry.get("paymentFrequency")));
+                log.debug("paymentFrequency:" + (String)entry.get("paymentFrequency"));
+                adjustableSchedule.setFrequency(parseFrequency((String)entry.get("paymentFrequency")));
                 leg.setPaymentSchedule(adjustableSchedule);
             }
         }
@@ -132,6 +127,25 @@ public class SwapTradeBuilder {
         {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public static Frequency parseFrequency(String s)
+    {
+        if(s == null)
+            return null;
+
+        if(s.contains("M"))
+            return Frequency.ofMonths(Integer.parseInt(s.substring(0, s.length()-1)));
+
+        if(s.contains("T"))
+            return Frequency.ofYears(Integer.parseInt(s.substring(0, s.length()-1)));
+
+        if(s.contains("W"))
+            return Frequency.ofWeeks(Integer.parseInt(s.substring(0, s.length()-1)));
+
+        if (s.contains("D"))
+            return Frequency.ofDays(Integer.parseInt(s.substring(0, s.length()-1)));
         return null;
     }
 }
