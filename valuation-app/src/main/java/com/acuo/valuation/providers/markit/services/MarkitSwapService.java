@@ -4,6 +4,8 @@ import com.acuo.common.model.product.Swap;
 import com.acuo.common.model.trade.ProductType;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Leg;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.SwapService;
@@ -38,6 +40,9 @@ public class MarkitSwapService implements SwapService {
     {
         try
         {
+            Iterable<IRS> irss = sessionProvider.get().loadAll(IRS.class,1);
+            for(IRS irs: irss)
+                log.debug(irs.toString());
             SwapTrade swapTrade = new SwapTrade();
             Swap swap = new Swap();
             swapTrade.setProduct(swap);
