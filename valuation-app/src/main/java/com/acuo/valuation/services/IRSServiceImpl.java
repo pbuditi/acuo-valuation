@@ -49,6 +49,13 @@ public class IRSServiceImpl implements IRSService {
                 handleFRARow(row);
             }
 
+            sheet = workbook.getSheetAt(2);
+            for(int i = 1; i < sheet.getLastRowNum(); i++)
+            {
+                Row row = sheet.getRow(i);
+                handleOISRow(row);
+            }
+
 
         }
         catch (Exception e)
@@ -112,6 +119,31 @@ public class IRSServiceImpl implements IRSService {
         }
         else
             sessionProvider.get().save(fra, 2);
+    }
+
+    public void handleOISRow(Row row)
+    {
+        IRS irs = parser.buildOIS(row);
+        Iterable<IRS> list = sessionProvider.get().query(IRS.class, "MATCH (n:IRS {id:\"" + irs.getIrsId() + "\"}) RETURN n", Collections.emptyMap());
+        if(list.iterator().hasNext())
+        {
+            //update case
+            IRS existed = sessionProvider.get().load(IRS.class, list.iterator().next().getId(), 2 );
+            existed.setClearingDate(irs.getClearingDate());
+            existed.setMaturity(irs.getMaturity());
+
+            if(existed.getPayLegs() != null)
+                for(Leg leg :existed.getPayLegs())
+                    sessionProvider.get().delete(leg);
+            if(existed.getReceiveLegs() != null)
+                for(Leg leg :existed.getReceiveLegs())
+                    sessionProvider.get().delete(leg);
+            existed.setPayLegs(irs.getPayLegs());
+            existed.setReceiveLegs(irs.getReceiveLegs());
+            sessionProvider.get().save(existed, 2);
+        }
+        else
+            sessionProvider.get().save(irs, 2);
     }
 
 }
