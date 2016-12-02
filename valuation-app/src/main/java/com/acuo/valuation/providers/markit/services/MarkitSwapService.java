@@ -40,9 +40,6 @@ public class MarkitSwapService implements SwapService {
     {
         try
         {
-            Iterable<IRS> irss = sessionProvider.get().loadAll(IRS.class,1);
-            for(IRS irs: irss)
-                log.debug(irs.toString());
             SwapTrade swapTrade = new SwapTrade();
             Swap swap = new Swap();
             swapTrade.setProduct(swap);
