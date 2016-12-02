@@ -1,5 +1,6 @@
 package com.acuo.valuation.util;
 
+import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.valuation.utils.SwapExcelParser;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,17 @@ public class SwapExcelParserTest {
         Sheet sheet = workbook.getSheetAt(0);
         Row row = sheet.getRow(1);
 
-       IRS irs  = parser.parserIRS(row);
+       IRS irs  = parser.buildIRS(row);
         log.debug(irs.toString());
+    }
+
+    @Test
+    public void tesParserFRA()
+    {
+        Sheet sheet = workbook.getSheetAt(1);
+        Row row = sheet.getRow(1);
+
+        FRA fra = parser.buildFRA(row);
+        log.debug(fra.toString());
     }
 }
