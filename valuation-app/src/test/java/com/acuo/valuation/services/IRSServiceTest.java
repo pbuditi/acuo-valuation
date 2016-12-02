@@ -27,16 +27,19 @@ public class IRSServiceTest {
     @Inject
     Neo4jPersistService session;
 
+    FileInputStream fis;
+
     @Before
-    public void setup()
+    public void setup() throws FileNotFoundException
     {
         service = new IRSServiceImpl(session);
+        fis = new FileInputStream("src/test/resources/excel/NewExposures.xlsx");
     }
 
     @Test
     public void testHandleIRSRowS() throws FileNotFoundException, IOException
     {
-        FileInputStream fis = new FileInputStream("src/test/resources/excel/Exposures.xlsx");
+
         Workbook workbook = new XSSFWorkbook(fis);
         Sheet sheet = workbook.getSheetAt(0);
         Row row = sheet.getRow(1);
@@ -47,11 +50,21 @@ public class IRSServiceTest {
     @Test
     public void testHandleFRARowS() throws FileNotFoundException, IOException
     {
-        FileInputStream fis = new FileInputStream("src/test/resources/excel/Exposures.xlsx");
         Workbook workbook = new XSSFWorkbook(fis);
         Sheet sheet = workbook.getSheetAt(1);
         Row row = sheet.getRow(1);
         service.handleFRARow(row);
 
     }
+
+    @Test
+    public void testHandleOIS() throws FileNotFoundException, IOException
+    {
+        Workbook workbook = new XSSFWorkbook(fis);
+        Sheet sheet = workbook.getSheetAt(2);
+        Row row = sheet.getRow(1);
+        service.handleOISRow(row);
+
+    }
+
 }
