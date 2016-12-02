@@ -2,6 +2,7 @@ package com.acuo.valuation.utils;
 
 import com.acuo.common.model.product.Swap;
 import com.acuo.persist.entity.Account;
+import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import java.util.Set;
 @Slf4j
 public class SwapExcelParser {
 
-    public IRS parserIRS(Row row)
+    public IRS buildIRS(Row row)
     {
         IRS irs = null;
         try
@@ -96,5 +97,66 @@ public class SwapExcelParser {
     }
 
 
+    public FRA buildFRA(Row row)
+    {
+        FRA fra = new FRA();
+
+        try {
+
+            Account account = new Account();
+            account.setAccountId(row.getCell(1).getStringCellValue());
+            fra.setAccount(account);
+
+            fra.setFraId(row.getCell(3).getStringCellValue());
+            fra.setCurrency(row.getCell(4).getStringCellValue());
+            fra.setMaturity(row.getCell(6).getDateCellValue());
+            fra.setClearingDate(row.getCell(7).getDateCellValue());
+
+            Leg leg1 = buildFraLeg(row, 15);
+
+            String leg1Relationship = row.getCell(24).getStringCellValue();
+
+            Set<Leg> payLegs = new HashSet<Leg>();
+            Set<Leg> receiveLegs = new HashSet<Leg>();
+
+            fra.setPayLegs(payLegs);
+            fra.setReceiveLegs(receiveLegs);
+
+            if(leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+                receiveLegs.add(leg1);
+            else
+                payLegs.add(leg1);
+
+
+
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return fra;
+    }
+
+    private Leg buildFraLeg(Row row, int startIndex)
+    {
+        Leg leg = new Leg();
+        leg.setType(getStringValue(row.getCell(startIndex)));
+        leg.setCurrency(getStringValue(row.getCell(startIndex + 1)));
+        leg.setDayCount(getStringValue(row.getCell(startIndex + 2)));
+        leg.setIndex(getStringValue(row.getCell(startIndex+ 3)));
+        leg.setIndexTenor(getStringValue(row.getCell(startIndex + 4)));
+        if(row.getCell(startIndex + 5) != null)
+            leg.setPayStart(row.getCell(startIndex + 5).getDateCellValue());
+        if (row.getCell(startIndex + 6) != null)
+            leg.setPayEnd(row.getCell(startIndex + 6).getDateCellValue());
+        if(row.getCell(startIndex + 7) != null)
+            leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 7)).replace(",", "")));
+        if(row.getCell(startIndex + 8) != null && row.getCell(startIndex + 8).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
+            leg.setFixedRate(row.getCell(startIndex + 8).getNumericCellValue());
+        else
+        if(row.getCell(startIndex + 8) != null && row.getCell(startIndex + 8).getCellStyle().equals(Cell.CELL_TYPE_STRING))
+            leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 8).getStringCellValue())));
+        return leg;
+    }
 
 }
