@@ -22,7 +22,7 @@ public class SwapExcelParserTest {
     @Before
     public void setUp() throws Exception
     {
-        FileInputStream fis = new FileInputStream("src/test/resources/excel/Exposures.xlsx");
+        FileInputStream fis = new FileInputStream("src/test/resources/excel/NewExposures.xlsx");
         workbook = new XSSFWorkbook(fis);
 
     }
@@ -45,5 +45,15 @@ public class SwapExcelParserTest {
 
         FRA fra = parser.buildFRA(row);
         log.debug(fra.toString());
+    }
+
+    @Test
+    public void testParserOIS()
+    {
+        Sheet sheet = workbook.getSheetAt(2);
+        Row row = sheet.getRow(1);
+
+        IRS irs = parser.buildOIS(row);
+        log.debug(irs.toString());
     }
 }
