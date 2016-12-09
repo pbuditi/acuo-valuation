@@ -22,9 +22,9 @@ public class ReportHelper {
         return report;
     }
 
-    public static Report reportForSwap() {
+    public static Report reportForSwap(String tradeId) {
         Report.ReportBuilder reportBuilder = new Report.ReportBuilder("warning-report", "2.2", LocalDate.of(2016, 6, 10));
-        reportBuilder.add("irsvt1", "WARNING", "warning message");
+        reportBuilder.add(tradeId, "WARNING", "warning message");
         Report report = reportBuilder.build();
         return report;
     }

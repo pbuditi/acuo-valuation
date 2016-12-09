@@ -1,19 +1,22 @@
 package com.acuo.valuation.providers.markit.services;
 
+import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.Neo4jPersistModule;
 import com.acuo.persist.core.Neo4jPersistService;
-import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.*;
 
 import com.acuo.valuation.modules.ConfigurationTestModule;
-import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
+import com.acuo.valuation.services.IRSService;
 import com.acuo.valuation.util.ReportHelper;
 import com.opengamma.strata.collect.result.Result;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -30,7 +33,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, Neo4jPersistModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, EncryptionModule.class, Neo4jPersistModule.class, EndPointModule.class, ServicesModule.class})
 public class MarkitSwapServiceTest {
 
     @Mock
@@ -42,6 +45,12 @@ public class MarkitSwapServiceTest {
     @Inject
     Neo4jPersistService session;
 
+    @Inject
+    IRSService irsService;
+
+    @Rule
+    public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
+
     MarkitSwapService service;
 
     @Before
@@ -50,18 +59,19 @@ public class MarkitSwapServiceTest {
 
         service = new MarkitSwapService(sender,retriever,session);
 
+        irsService.uploadIRS(oneIRS.getInputStream());
+
     }
 
     @Test
     public void testPriceSwapWithNoErrorReport() {
-;
-        when(sender.send(any(List.class))).thenReturn(ReportHelper.reportForSwap());
+        when(sender.send(any(List.class))).thenReturn(ReportHelper.reportForSwap("455123"));
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
         PricingResults expectedResults = PricingResults.of(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
-        PricingResults results = service.getPv("irsvt1");
+        PricingResults results = service.getPv("455123");
 
         assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
 
