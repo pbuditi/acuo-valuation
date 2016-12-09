@@ -1,13 +1,11 @@
 package com.acuo.valuation.utils;
 
-import com.acuo.common.model.product.Swap;
 import com.acuo.persist.entity.Account;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 
 import java.util.HashSet;
@@ -34,7 +32,7 @@ public class SwapExcelParser {
 
 
 
-            log.debug(irs.getIrsId());
+            log.debug("loading irs id {} ", irs.getIrsId());
 
             Leg leg1 = buildLeg(row, 15);
             Leg leg2 = buildLeg(row, 28);
