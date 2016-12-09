@@ -5,6 +5,7 @@ import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -20,6 +21,7 @@ import java.io.IOException;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, Neo4jPersistModule.class})
+@Slf4j
 public class IRSServiceTest {
 
     IRSServiceImpl service;
@@ -40,6 +42,7 @@ public class IRSServiceTest {
         Workbook workbook = new XSSFWorkbook(fis);
         Sheet sheet = workbook.getSheetAt(0);
         Row row = sheet.getRow(1);
+        log.debug("service {} row {}", service, row);
         service.handleIRSRow(row);
     }
 
