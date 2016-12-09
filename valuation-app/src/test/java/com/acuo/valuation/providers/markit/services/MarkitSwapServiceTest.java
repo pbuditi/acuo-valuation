@@ -3,8 +3,8 @@ package com.acuo.valuation.providers.markit.services;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.persist.core.Neo4jPersistModule;
 import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.valuation.modules.*;
 
 import com.acuo.valuation.modules.ConfigurationTestModule;

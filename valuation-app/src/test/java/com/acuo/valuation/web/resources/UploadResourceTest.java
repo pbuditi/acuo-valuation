@@ -4,7 +4,7 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
-import com.acuo.persist.core.Neo4jPersistModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.valuation.modules.*;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
 import org.jboss.resteasy.core.Dispatcher;
