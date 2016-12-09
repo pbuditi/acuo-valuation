@@ -30,36 +30,29 @@ public class IRSServiceTest {
     FileInputStream fis;
 
     @Before
-    public void setup() throws FileNotFoundException
-    {
+    public void setup() throws FileNotFoundException {
         service = new IRSServiceImpl(session);
         fis = new FileInputStream("src/test/resources/excel/NewExposures.xlsx");
     }
 
     @Test
-    public void testHandleIRSRowS() throws FileNotFoundException, IOException
-    {
-
+    public void testHandleIRSRowS() throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook(fis);
         Sheet sheet = workbook.getSheetAt(0);
         Row row = sheet.getRow(1);
         service.handleIRSRow(row);
-
     }
 
     @Test
-    public void testHandleFRARowS() throws FileNotFoundException, IOException
-    {
+    public void testHandleFRARowS() throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook(fis);
         Sheet sheet = workbook.getSheetAt(1);
         Row row = sheet.getRow(1);
         service.handleFRARow(row);
-
     }
 
     @Test
-    public void testHandleOIS() throws FileNotFoundException, IOException
-    {
+    public void testHandleOIS() throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook(fis);
         Sheet sheet = workbook.getSheetAt(2);
         Row row = sheet.getRow(1);
