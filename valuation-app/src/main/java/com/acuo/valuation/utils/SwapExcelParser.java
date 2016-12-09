@@ -233,8 +233,11 @@ public class SwapExcelParser {
             leg.setPayStart(row.getCell(startIndex + 8).getDateCellValue());
         if (row.getCell(startIndex + 9) != null)
             leg.setPayEnd(row.getCell(startIndex + 9).getDateCellValue());
-        if(row.getCell(startIndex + 10) != null)
+        if(row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_STRING))
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 10)).replace(",", "")));
+        else
+        if(row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
+            leg.setNotional(row.getCell(startIndex + 10).getNumericCellValue());
         if(row.getCell(startIndex + 11) != null && row.getCell(startIndex + 11).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
             leg.setFixedRate(row.getCell(startIndex + 11).getNumericCellValue());
         else
