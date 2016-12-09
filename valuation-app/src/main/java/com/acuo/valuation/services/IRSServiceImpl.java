@@ -65,9 +65,11 @@ public class IRSServiceImpl implements IRSService {
             log.debug("updating irs {} ", existed);
             existed.setClearingDate(irs.getClearingDate());
             existed.setMaturity(irs.getMaturity());
-
+            log.debug("pay legs {} ", existed.getPayLegs() );
             for (Leg leg : existed.getPayLegs())
                 sessionProvider.get().delete(leg);
+
+            log.debug("receive legs {} ", existed.getReceiveLegs() );
             for (Leg leg : existed.getReceiveLegs())
                 sessionProvider.get().delete(leg);
             existed.setPayLegs(irs.getPayLegs());
