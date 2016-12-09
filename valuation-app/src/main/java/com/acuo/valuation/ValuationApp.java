@@ -3,7 +3,7 @@ package com.acuo.valuation;
 import com.acuo.common.app.ResteasyConfig;
 import com.acuo.common.app.ResteasyMain;
 import com.acuo.common.security.EncryptionModule;
-import com.acuo.persist.core.Neo4jPersistModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.valuation.modules.*;
 import com.acuo.valuation.web.ObjectMapperContextResolver;
 import com.google.inject.Module;

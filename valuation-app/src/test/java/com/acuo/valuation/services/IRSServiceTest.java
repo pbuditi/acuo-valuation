@@ -1,8 +1,8 @@
 package com.acuo.valuation.services;
 
 import com.acuo.common.util.GuiceJUnitRunner;
-import com.acuo.persist.core.Neo4jPersistModule;
 import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
 import org.apache.poi.ss.usermodel.Row;

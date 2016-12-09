@@ -4,7 +4,7 @@ import com.acuo.common.model.product.SwapHelper;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
-import com.acuo.persist.core.Neo4jPersistModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.valuation.modules.*;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
