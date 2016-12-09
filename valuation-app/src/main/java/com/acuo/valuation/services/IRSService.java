@@ -1,8 +1,8 @@
 package com.acuo.valuation.services;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 public interface IRSService {
 
-    boolean uploadIRS(FileInputStream fis);
+    boolean uploadIRS(InputStream fis);
 }
