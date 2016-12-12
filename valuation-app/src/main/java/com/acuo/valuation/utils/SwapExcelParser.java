@@ -7,12 +7,17 @@ import com.acuo.persist.entity.Leg;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.neo4j.cypher.internal.frontend.v2_3.ast.functions.Str;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
 public class SwapExcelParser {
+
+    public static String TRADE_TYPE_CLEARD = "Cleared";
+
+    public static String TRADE_TYPE_BILATERAL = "Bilateral";
 
     public IRS buildIRS(Row row)
     {
@@ -29,7 +34,7 @@ public class SwapExcelParser {
             irs.setClearingDate(row.getCell(7).getDateCellValue());
 
             irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
-
+            irs.setTradeType(TRADE_TYPE_CLEARD);
 
 
             log.debug("loading irs id {} ", irs.getIrsId());
@@ -115,6 +120,7 @@ public class SwapExcelParser {
             fra.setCurrency(row.getCell(4).getStringCellValue());
             fra.setMaturity(row.getCell(6).getDateCellValue());
             fra.setClearingDate(row.getCell(7).getDateCellValue());
+            fra.setTradeType(TRADE_TYPE_CLEARD);
 
             Leg leg1 = buildFraLeg(row, 16);
 
@@ -181,7 +187,7 @@ public class SwapExcelParser {
             irs.setClearingDate(row.getCell(7).getDateCellValue());
 
             irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
-
+            irs.setTradeType(TRADE_TYPE_CLEARD);
 
 
             log.debug(irs.getIrsId());
@@ -244,6 +250,59 @@ public class SwapExcelParser {
         if(row.getCell(startIndex + 11) != null && row.getCell(startIndex + 11).getCellStyle().equals(Cell.CELL_TYPE_STRING))
             leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 11).getStringCellValue())));
         return leg;
+    }
+
+
+    public IRS buildIRSBilateral(Row row)
+    {
+        IRS irs = null;
+        try
+        {
+            irs = new IRS();
+
+            Account account = new Account();
+            account.setAccountId(row.getCell(1).getStringCellValue());
+            irs.setAccount(account);
+
+            irs.setMaturity(row.getCell(6).getDateCellValue());
+            irs.setClearingDate(row.getCell(7).getDateCellValue());
+
+            irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
+            irs.setTradeType(TRADE_TYPE_BILATERAL);
+
+
+            log.debug("loading irs Bilateral id {} ", irs.getIrsId());
+
+            Leg leg1 = buildLeg(row, 11);
+            Leg leg2 = buildLeg(row, 24);
+
+            String leg1Relationship = row.getCell(37).getStringCellValue();
+            String leg2Relationship = row.getCell(38).getStringCellValue();
+
+
+            Set<Leg> payLegs = new HashSet<Leg>();
+            Set<Leg> receiveLegs = new HashSet<Leg>();
+
+            irs.setPayLegs(payLegs);
+            irs.setReceiveLegs(receiveLegs);
+
+            if(leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+                receiveLegs.add(leg1);
+            else
+                payLegs.add(leg1);
+
+            if(leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
+                receiveLegs.add(leg2);
+            else
+                payLegs.add(leg2);
+
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return irs;
     }
 
 }

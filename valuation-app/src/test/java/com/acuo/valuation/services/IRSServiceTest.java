@@ -63,4 +63,15 @@ public class IRSServiceTest {
 
     }
 
+    @Test
+    public void testHandleIRSBilateral() throws FileNotFoundException, IOException {
+        Workbook workbook = new XSSFWorkbook(fis);
+        Sheet sheet = workbook.getSheetAt(3);
+        Row row = sheet.getRow(1);
+        service.handleIRSBilateralRow(row);
+
+    }
+
+
+
 }
