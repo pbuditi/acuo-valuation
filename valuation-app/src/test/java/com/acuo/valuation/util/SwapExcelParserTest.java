@@ -28,7 +28,7 @@ public class SwapExcelParserTest {
     }
 
     @Test
-    public void tesParserIRS()
+    public void tesParserIRSCleared()
     {
         Sheet sheet = workbook.getSheetAt(0);
         Row row = sheet.getRow(1);
@@ -38,7 +38,7 @@ public class SwapExcelParserTest {
     }
 
     @Test
-    public void tesParserFRA()
+    public void tesParserFRACleared()
     {
         Sheet sheet = workbook.getSheetAt(1);
         Row row = sheet.getRow(1);
@@ -48,12 +48,22 @@ public class SwapExcelParserTest {
     }
 
     @Test
-    public void testParserOIS()
+    public void testParserOISCleared()
     {
         Sheet sheet = workbook.getSheetAt(2);
         Row row = sheet.getRow(1);
 
         IRS irs = parser.buildOIS(row);
+        log.debug(irs.toString());
+    }
+
+    @Test
+    public void tesParserIRSBilateral()
+    {
+        Sheet sheet = workbook.getSheetAt(3);
+        Row row = sheet.getRow(1);
+
+        IRS irs = parser.buildIRSBilateral(row);
         log.debug(irs.toString());
     }
 }
