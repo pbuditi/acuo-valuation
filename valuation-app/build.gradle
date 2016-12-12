@@ -50,6 +50,7 @@ dependencies {
             "org.jboss.resteasy:resteasy-guice:${versions.resteasy}",
             "org.jboss.resteasy:resteasy-html:${versions.resteasy}",
             "org.jboss.resteasy:resteasy-jackson2-provider:${versions.resteasy}",
+            "org.jboss.resteasy:resteasy-multipart-provider:${versions.resteasy}",
 
             "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${versions.jackson}",
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
