@@ -49,6 +49,12 @@ public class IRSServiceImpl implements IRSService {
                 handleOISRow(row);
             }
 
+            sheet = workbook.getSheetAt(3);
+            for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                handleIRSBilateralRow(row);
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,6 +71,8 @@ public class IRSServiceImpl implements IRSService {
             log.debug("updating irs {} ", existed);
             existed.setClearingDate(irs.getClearingDate());
             existed.setMaturity(irs.getMaturity());
+            existed.setTradeType(irs.getTradeType());
+
             log.debug("pay legs {} ", existed.getPayLegs() );
             for (Leg leg : existed.getPayLegs())
                 sessionProvider.get().delete(leg);
@@ -91,6 +99,7 @@ public class IRSServiceImpl implements IRSService {
             existed.setClearingDate(fra.getClearingDate());
             existed.setMaturity(fra.getMaturity());
             existed.setCurrency(fra.getCurrency());
+            existed.setTradeType(fra.getTradeType());
 
             if (fra.getPayLegs().size() > 0) {
                 for (Leg leg : existed.getPayLegs())
@@ -118,6 +127,7 @@ public class IRSServiceImpl implements IRSService {
             log.debug("updating OIS {} ", existed);
             existed.setClearingDate(irs.getClearingDate());
             existed.setMaturity(irs.getMaturity());
+            existed.setTradeType(irs.getTradeType());
 
             if (existed.getPayLegs() != null)
                 for (Leg leg : existed.getPayLegs())
@@ -130,6 +140,31 @@ public class IRSServiceImpl implements IRSService {
             sessionProvider.get().save(existed, 2);
         } else {
             log.debug("save ois {} into the DB", irs);
+            sessionProvider.get().save(irs, 2);
+        }
+    }
+
+    public void handleIRSBilateralRow(Row row) {
+        IRS irs = parser.buildIRSBilateral(row);
+        Iterable<IRS> list = sessionProvider.get().query(IRS.class, "MATCH (n:IRS {id:\"" + irs.getIrsId() + "\"}) RETURN n", Collections.emptyMap());
+        if (list.iterator().hasNext()) {
+            IRS existed = sessionProvider.get().load(IRS.class, list.iterator().next().getId(), 2);
+            log.debug("updating irs {} ", existed);
+            existed.setClearingDate(irs.getClearingDate());
+            existed.setMaturity(irs.getMaturity());
+            existed.setTradeType(irs.getTradeType());
+            log.debug("pay legs {} ", existed.getPayLegs() );
+            for (Leg leg : existed.getPayLegs())
+                sessionProvider.get().delete(leg);
+
+            log.debug("receive legs {} ", existed.getReceiveLegs() );
+            for (Leg leg : existed.getReceiveLegs())
+                sessionProvider.get().delete(leg);
+            existed.setPayLegs(irs.getPayLegs());
+            existed.setReceiveLegs(irs.getReceiveLegs());
+            sessionProvider.get().save(existed, 2);
+        } else {
+            log.debug("save irs {} into the DB", irs);
             sessionProvider.get().save(irs, 2);
         }
     }
