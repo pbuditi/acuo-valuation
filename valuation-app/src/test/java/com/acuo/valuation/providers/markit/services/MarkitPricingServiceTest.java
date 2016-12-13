@@ -140,7 +140,7 @@ public class MarkitPricingServiceTest {
         MarkitValue markitValue = new MarkitValue();
 
         markitValue.setTradeId("ndft2");
-        markitValue.setPv(5.97);
+        markitValue.setPv(5.98);
 
         MarkitValuation markitValuation = new MarkitValuation(markitValue);
 
