@@ -5,7 +5,7 @@ apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/ja
 
 ext.versions += [
         persist         : '0.1.0-SNAPSHOT',
-        common          : '0.2.1',
+        common          : '0.2.4',
         mapping         : '0.1.1',
         neo4j           : '3.0.6',
         neo4jOgm        : '2.0.5',
@@ -25,7 +25,7 @@ configurations {
 
 dependencies {
     compile("com.acuo.collateral:acuo-persist:${versions.persist}") { changing = true }
-    compile("com.acuo.collateral:common:${versions.common}") { changing = true }
+    compile("com.acuo.collateral:acuo-common:${versions.common}") { changing = true }
     compile("com.acuo.collateral:mapping:${versions.mapping}") { changing = true }
     compile(
             "org.neo4j:neo4j:${versions.neo4j}",
@@ -73,7 +73,7 @@ dependencies {
 
     testCompile(
             "com.acuo.collateral:acuo-persist:${versions.persist}:tests",
-            "com.acuo.collateral:common:${versions.common}:tests",
+            "com.acuo.collateral:acuo-common:${versions.common}:tests",
             "org.neo4j.test:neo4j-harness:${versions.neo4j}",
             "org.neo4j:neo4j-ogm-test:${versions.neo4jOgm}",
             "com.squareup.okhttp3:mockwebserver:${versions.okhttp}",

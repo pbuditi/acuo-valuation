@@ -8,7 +8,7 @@ import javax.ws.rs.FormParam;
 @Data
 public class UploadForm {
 
-    @FormParam("myFile")
+    @FormParam("file")
     @PartType("application/octet-stream")
     private byte[] file;
 
