@@ -12,7 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +36,30 @@ public class PortfolioValuationsRetriever implements Retriever {
 
     @Override
     public PricingResults retrieve(LocalDate valuationDate, List<String> tradeIds) {
-        return PricingResults.of(tradeIds.stream().map(id -> retrieve(valuationDate, id)).collect(Collectors.toList()));
+        //return PricingResults.of(tradeIds.stream().map(id -> retrieve(valuationDate, id)).collect(Collectors.toList()));
+        Response results = retrieve(valuationDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        List<Value> values = new ArrayList<Value>();
+        for(Value value : results.values())
+        {
+            for(String tradeId : tradeIds)
+            {
+                if(value.getTradeId().equals(tradeId))
+                {
+                    values.add(value);
+                    break;
+                }
+            }
+        }
+        Result<MarkitValuation> result = Result.success(new MarkitValuation(values.toArray(new Value[values.size()])));
+        List<Result<MarkitValuation>> resultList = new ArrayList<>();
+        resultList.add(result);
+
+        PricingResults pricingResults = PricingResults.of(resultList);
+        pricingResults.setDate(LocalDateToDate(results.header().getDate()));
+        pricingResults.setCurrency(results.header().getValuationCurrency());
+
+        return  pricingResults;
+
     }
 
     private Result<MarkitValuation> retrieve(LocalDate valuationDate, String tradeId) {
@@ -64,6 +90,12 @@ public class PortfolioValuationsRetriever implements Retriever {
             LOG.error(ERROR_MSG, asOfDate, e);
             throw new RuntimeException(String.format(ERROR_MSG, asOfDate), e);
         }
+    }
+
+    public static Date LocalDateToDate(LocalDate localDate)
+    {
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        return Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
     }
 
 }
