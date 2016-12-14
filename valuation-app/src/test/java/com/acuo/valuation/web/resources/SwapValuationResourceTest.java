@@ -5,6 +5,7 @@ import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
 import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.valuation.modules.*;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
@@ -32,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({ConfigurationTestModule.class, SwapValuationResourceTest.MockServiceModule.class, Neo4jPersistModule.class, MappingModule.class, EndPointModule.class, ServicesModule.class, ResourcesModule.class})
+@GuiceModules({ConfigurationTestModule.class, SwapValuationResourceTest.MockServiceModule.class, Neo4jPersistModule.class, MappingModule.class, EndPointModule.class, RepositoryModule.class, ServicesModule.class, ResourcesModule.class})
 public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Rule

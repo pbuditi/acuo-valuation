@@ -7,6 +7,7 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -39,7 +40,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, EncryptionModule.class, Neo4jPersistModule.class, EndPointModule.class, ServicesModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, EncryptionModule.class, Neo4jPersistModule.class, RepositoryModule.class, EndPointModule.class, ServicesModule.class})
 
 public class MarkitPricingServiceTest {
 
