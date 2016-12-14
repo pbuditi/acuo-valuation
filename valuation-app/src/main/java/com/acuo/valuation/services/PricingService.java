@@ -9,6 +9,4 @@ public interface PricingService {
 
     PricingResults price(List<SwapTrade> swap);
 
-    boolean savePv(PricingResults pricingResults);
-
 }

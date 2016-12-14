@@ -22,13 +22,11 @@ public class MarkitPricingService implements PricingService {
 
     private final Sender sender;
     private final Retriever retriever;
-    protected final Neo4jPersistService sessionProvider;
 
     @Inject
-    public MarkitPricingService(Sender sender, Retriever retriever, Neo4jPersistService sessionProvider) {
+    public MarkitPricingService(Sender sender, Retriever retriever) {
         this.sender = sender;
         this.retriever = retriever;
-        this.sessionProvider = sessionProvider;
     }
 
     @Override
@@ -52,126 +50,4 @@ public class MarkitPricingService implements PricingService {
 
         return retriever.retrieve(report.valuationDate(), tradeIds);
     }
-
-    @Override
-    public boolean savePv(PricingResults pricingResults)
-    {
-
-
-//        Collection<Trade> trades = sessionProvider.get().loadAll(Trade.class, 3);
-//
-//        for(Trade trade : trades)
-//            log.debug(trade.toString());
-
-        Date date = pricingResults.getDate();
-
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(date);
-
-        calendar.set(Calendar.HOUR, 8);
-
-        date = calendar.getTime();
-
-        String currency = pricingResults.getCurrency();
-
-        log.debug("savePv start :" + pricingResults.getDate());
-
-        Iterator<Result<MarkitValuation>>  iterator = pricingResults.getResults().iterator();
-        while(iterator.hasNext())
-        {
-
-            Result<MarkitValuation> result = iterator.next();
-            log.debug(result.toString());
-            for(Value value : result.getValue().getValues())
-            {
-                String tradeId = value.getTradeId();
-                Double pv = value.getPv();
-
-                log.debug("tradeId:" + tradeId);
-
-                Iterable<Trade> trades = sessionProvider.get().query(Trade.class, "match (i:Trade {id:\"" + tradeId + "\"}) return i", Collections.emptyMap());
-
-                Trade trade = trades.iterator().next();
-
-                trade = sessionProvider.get().load(Trade.class, trade.getId(), 2);
-
-                log.debug(trade.toString());
-
-                Set<Valuation> valuations = trade.getValuations();
-
-                boolean found = false;
-                for(Valuation valuation : valuations)
-                {
-                    log.debug("date in valuation : " + valuation.getDate());
-                    if(valuation.getDate().getYear() == date.getYear() && valuation.getDate().getMonth() == date.getMonth() && valuation.getDate().getDay() == date.getDay())
-                    {
-                        log.debug("existing valuation");
-                        //existing date, add or replace the value
-                        Set<com.acuo.persist.entity.Value>  existedValues = valuation.getValues();
-                        for(com.acuo.persist.entity.Value existedValue : existedValues)
-                        {
-                            if(existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit"))
-                                sessionProvider.get().delete(existedValue);
-                        }
-
-                        com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
-
-                        newValue.setSource("Markit");
-                        newValue.setCurrency(currency);
-                        newValue.setPv(value.getPv());
-
-                        existedValues = valuation.getValues();
-                        existedValues.add(newValue);
-
-                        valuation.setValues(existedValues);
-
-                        sessionProvider.get().save(valuation, 2);
-
-                        found = true;
-                        break;
-
-
-                    }
-
-                }
-
-                if(!found)
-                {
-                    //new valutaion
-
-                    Valuation valuation = new Valuation();
-
-                    valuation.setDate(calendar.getTime());
-                    log.debug("new valuation:" + valuation.getDate());
-
-                    com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
-
-                    newValue.setSource("Markit");
-                    newValue.setCurrency(currency);
-                    newValue.setPv(value.getPv());
-
-                    Set<com.acuo.persist.entity.Value> values = new HashSet<com.acuo.persist.entity.Value>();
-
-                    values.add(newValue);
-
-                    valuation.setValues(values);
-
-                    trade.getValuations().add(valuation);
-
-
-                    sessionProvider.get().save(trade, 2);
-
-
-                }
-
-
-            }
-
-        }
-
-
-        return true;
-    }
-
 }
