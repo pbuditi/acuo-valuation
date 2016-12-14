@@ -1,13 +1,10 @@
 package com.acuo.valuation.providers.acuo;
 
-import com.acuo.common.model.product.Swap;
-import com.acuo.common.model.trade.ProductType;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.Valuation;
-import com.acuo.persist.services.IRSService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
@@ -18,10 +15,10 @@ import com.acuo.valuation.utils.SwapTradeBuilder;
 import com.google.common.collect.ImmutableList;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
-import org.neo4j.ogm.model.Result;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 @Slf4j
@@ -95,10 +92,7 @@ public class Neo4jSwapService implements SwapService {
                             newValue.setCurrency(currency);
                             newValue.setPv(value.getPv());
 
-                            existedValues = valuation.getValues();
-                            existedValues.add(newValue);
-
-                            valuation.setValues(existedValues);
+                            valuation.getValues().add(newValue);
 
                             sessionProvider.get().save(valuation, 2);
 
@@ -114,6 +108,7 @@ public class Neo4jSwapService implements SwapService {
                     Valuation valuation = new Valuation();
 
                     valuation.setDate(date);
+
                     log.debug("new valuation:" + valuation.getDate());
 
                     com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
@@ -128,7 +123,15 @@ public class Neo4jSwapService implements SwapService {
 
                     valuation.setValues(values);
 
-                    trade.getValuations().add(valuation);
+                    if(trade.getValuations() != null)
+                        trade.getValuations().add(valuation);
+                    else
+                    {
+                        Set<Valuation> valuationSet = new HashSet<Valuation>();
+                        trade.setValuations(valuationSet);
+
+                    }
+
 
 
                     sessionProvider.get().save(trade, 2);
@@ -146,5 +149,10 @@ public class Neo4jSwapService implements SwapService {
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
         swapTrades.add(swapTrade);
         return swapTrades;
+    }
+
+    public static LocalDate toLocalDate(Date date)
+    {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }

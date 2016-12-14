@@ -1,5 +1,6 @@
 package com.acuo.valuation.utils;
 
+import com.acuo.common.model.AdjustableDate;
 import com.acuo.common.model.AdjustableSchedule;
 import com.acuo.common.model.product.Swap;
 import com.acuo.common.model.trade.ProductType;
@@ -11,14 +12,8 @@ import com.acuo.persist.entity.Trade;
 import com.opengamma.strata.basics.date.Tenor;
 import com.opengamma.strata.basics.index.FloatingRateName;
 import com.opengamma.strata.basics.schedule.Frequency;
-import com.opengamma.strata.basics.schedule.RollConvention;
-import com.acuo.common.model.AdjustableDate;
 import lombok.extern.slf4j.Slf4j;
-import org.neo4j.cypher.internal.frontend.v2_3.ast.functions.E;
-import org.neo4j.cypher.internal.frontend.v2_3.ast.functions.Str;
-import org.neo4j.ogm.model.Result;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -158,7 +153,7 @@ public class SwapTradeBuilder {
                 leg.setPaymentSchedule(adjustableSchedule);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
 
 
@@ -184,7 +179,7 @@ public class SwapTradeBuilder {
             LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
             return localDateTime.toLocalDate();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return null;
     }
