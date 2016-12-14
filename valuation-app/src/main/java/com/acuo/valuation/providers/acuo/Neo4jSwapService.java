@@ -12,10 +12,14 @@ import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.utils.SwapTradeBuilder;
+import com.opengamma.strata.basics.currency.*;
+import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.neo4j.ogm.model.Result;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 @Slf4j
@@ -81,7 +85,7 @@ public class Neo4jSwapService implements SwapService {
                 if (valuations != null) {
                     for (Valuation valuation : valuations) {
                         log.debug("date in valuation : " + valuation.getDate());
-                        if (valuation.getDate().getYear() == date.getYear() && valuation.getDate().getMonth() == date.getMonth() && valuation.getDate().getDay() == date.getDay()) {
+                        if (valuation.getDate().getYear() == date.getYear() && valuation.getDate().getMonthValue() == date.getMonth() && valuation.getDate().getDayOfMonth() == date.getDay()) {
                             log.debug("existing valuation");
                             //existing date, add or replace the value
                             Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
@@ -93,7 +97,7 @@ public class Neo4jSwapService implements SwapService {
                             com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
 
                             newValue.setSource("Markit");
-                            newValue.setCurrency(currency);
+                            newValue.setCurrency(com.opengamma.strata.basics.currency.Currency.of(currency));
                             newValue.setPv(value.getPv());
 
                             valuation.getValues().add(newValue);
@@ -111,13 +115,13 @@ public class Neo4jSwapService implements SwapService {
 
                     Valuation valuation = new Valuation();
 
-                    valuation.setDate(calendar.getTime());
+                    valuation.setDate(toLocalDate(calendar.getTime()));
                     log.debug("new valuation:" + valuation.getDate());
 
                     com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
 
                     newValue.setSource("Markit");
-                    newValue.setCurrency(currency);
+                    newValue.setCurrency(Currency.of(currency));
                     newValue.setPv(value.getPv());
 
                     Set<com.acuo.persist.entity.Value> values = new HashSet<com.acuo.persist.entity.Value>();
@@ -176,5 +180,10 @@ public class Neo4jSwapService implements SwapService {
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
         swapTrades.add(swapTrade);
         return swapTrades;
+    }
+
+    public static LocalDate toLocalDate(Date date)
+    {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }

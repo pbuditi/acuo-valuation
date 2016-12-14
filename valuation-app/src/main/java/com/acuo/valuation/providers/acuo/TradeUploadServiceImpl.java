@@ -4,6 +4,7 @@ import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
+import com.acuo.persist.services.IRSService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +24,12 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
     SwapExcelParser parser = new SwapExcelParser();
 
+    private IRSService irsService;
+
     @Inject
-    public TradeUploadServiceImpl(Neo4jPersistService sessionProvider) {
+    public TradeUploadServiceImpl(Neo4jPersistService sessionProvider, IRSService irsService) {
         this.sessionProvider = sessionProvider;
+        this.irsService = irsService;
     }
 
     public boolean uploadTradesFromExcel(InputStream fis) {
@@ -72,9 +76,12 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
     public void handleIRSRow(Row row) {
         IRS irs = parser.buildIRS(row);
-        Iterable<IRS> list = sessionProvider.get().query(IRS.class, "MATCH (n:IRS {id:\"" + irs.getIrsId() + "\"}) RETURN n", Collections.emptyMap());
-        if (list.iterator().hasNext()) {
-            IRS existed = sessionProvider.get().load(IRS.class, list.iterator().next().getId(), 2);
+
+        //Iterable<IRS> list = sessionProvider.get().query(IRS.class, "MATCH (n:IRS {id:\"" + irs.getIrsId() + "\"}) RETURN n", Collections.emptyMap());
+
+        IRS queryIRS = irsService.findById(irs.getIrsId());
+        if (queryIRS != null) {
+            IRS existed = sessionProvider.get().load(IRS.class, queryIRS.getId(), 2);
             log.debug("updating irs {} ", existed);
             existed.setClearingDate(irs.getClearingDate());
             existed.setMaturity(irs.getMaturity());

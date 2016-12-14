@@ -4,11 +4,15 @@ import com.acuo.persist.entity.Account;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
+import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.neo4j.cypher.internal.frontend.v2_3.ast.functions.Str;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,8 +34,8 @@ public class SwapExcelParser {
             account.setAccountId(row.getCell(1).getStringCellValue());
             irs.setAccount(account);
 
-            irs.setMaturity(row.getCell(6).getDateCellValue());
-            irs.setClearingDate(row.getCell(7).getDateCellValue());
+            irs.setMaturity(toLocalDate(row.getCell(6).getDateCellValue()));
+            irs.setClearingDate(toLocalDate(row.getCell(7).getDateCellValue()));
 
             irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             irs.setTradeType(TRADE_TYPE_CLEARD);
@@ -118,9 +122,9 @@ public class SwapExcelParser {
             fra.setAccount(account);
 
             fra.setFraId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
-            fra.setCurrency(row.getCell(4).getStringCellValue());
-            fra.setMaturity(row.getCell(6).getDateCellValue());
-            fra.setClearingDate(row.getCell(7).getDateCellValue());
+            fra.setCurrency(Currency.of(row.getCell(4).getStringCellValue()));
+            fra.setMaturity(toLocalDate(row.getCell(6).getDateCellValue()));
+            fra.setClearingDate(toLocalDate(row.getCell(7).getDateCellValue()));
             fra.setTradeType(TRADE_TYPE_CLEARD);
 
             Leg leg1 = buildFraLeg(row, 16);
@@ -185,8 +189,8 @@ public class SwapExcelParser {
             account.setAccountId(row.getCell(1).getStringCellValue());
             irs.setAccount(account);
 
-            irs.setMaturity(row.getCell(6).getDateCellValue());
-            irs.setClearingDate(row.getCell(7).getDateCellValue());
+            irs.setMaturity(toLocalDate(row.getCell(6).getDateCellValue()));
+            irs.setClearingDate(toLocalDate(row.getCell(7).getDateCellValue()));
 
             irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             irs.setTradeType(TRADE_TYPE_CLEARD);
@@ -267,8 +271,8 @@ public class SwapExcelParser {
             account.setAccountId(row.getCell(1).getStringCellValue());
             irs.setAccount(account);
 
-            irs.setMaturity(row.getCell(6).getDateCellValue());
-            irs.setClearingDate(row.getCell(7).getDateCellValue());
+            irs.setMaturity(toLocalDate(row.getCell(6).getDateCellValue()));
+            irs.setClearingDate(toLocalDate(row.getCell(7).getDateCellValue()));
 
             irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             irs.setTradeType(TRADE_TYPE_BILATERAL);
@@ -307,6 +311,11 @@ public class SwapExcelParser {
             throw e;
         }
         return irs;
+    }
+
+    public static LocalDate toLocalDate(Date date)
+    {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
 }
