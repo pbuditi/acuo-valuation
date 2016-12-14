@@ -12,10 +12,12 @@ import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.utils.SwapTradeBuilder;
+import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.neo4j.ogm.model.Result;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -43,17 +45,14 @@ public class Neo4jSwapService implements SwapService {
 
     @Override
     public boolean persist(PricingResults pricingResults) {
-        Date date = pricingResults.getDate();
+        if (pricingResults == null) {
+            log.warn("received a null pricing results to persist");
+            return false;
+        }
 
-        Calendar calendar = Calendar.getInstance();
+        LocalDate date = pricingResults.getDate();
 
-        calendar.setTime(date);
-
-        calendar.set(Calendar.HOUR, 8);
-
-        date = calendar.getTime();
-
-        String currency = pricingResults.getCurrency();
+        Currency currency = pricingResults.getCurrency();
 
         log.debug("persist start :" + pricingResults.getDate());
 
@@ -78,7 +77,7 @@ public class Neo4jSwapService implements SwapService {
                 if (valuations != null) {
                     for (Valuation valuation : valuations) {
                         log.debug("date in valuation : " + valuation.getDate());
-                        if (valuation.getDate().getYear() == date.getYear() && valuation.getDate().getMonth() == date.getMonth() && valuation.getDate().getDay() == date.getDay()) {
+                        if (valuation.getDate().equals(date)) {
                             log.debug("existing valuation");
                             //existing date, add or replace the value
                             Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
@@ -111,7 +110,7 @@ public class Neo4jSwapService implements SwapService {
 
                     Valuation valuation = new Valuation();
 
-                    valuation.setDate(calendar.getTime());
+                    valuation.setDate(date);
                     log.debug("new valuation:" + valuation.getDate());
 
                     com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();

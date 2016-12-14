@@ -6,6 +6,7 @@ import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.protocol.responses.Response;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.Value;
+import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +56,8 @@ public class PortfolioValuationsRetriever implements Retriever {
         resultList.add(result);
 
         PricingResults pricingResults = PricingResults.of(resultList);
-        pricingResults.setDate(LocalDateToDate(results.header().getDate()));
-        pricingResults.setCurrency(results.header().getValuationCurrency());
+        pricingResults.setDate(results.header().getDate());
+        pricingResults.setCurrency(Currency.parse(results.header().getValuationCurrency()));
 
         return  pricingResults;
 
@@ -91,11 +92,4 @@ public class PortfolioValuationsRetriever implements Retriever {
             throw new RuntimeException(String.format(ERROR_MSG, asOfDate), e);
         }
     }
-
-    public static Date LocalDateToDate(LocalDate localDate)
-    {
-        ZoneId defaultZoneId = ZoneId.systemDefault();
-        return Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
-    }
-
 }

@@ -14,6 +14,7 @@ import com.acuo.valuation.providers.acuo.Neo4jSwapService;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
+import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -58,7 +60,7 @@ public class Neo4jSwapServiceTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        service = new Neo4jSwapService(pricingService,session);
+        service = new Neo4jSwapService(pricingService, session);
         irsService.uploadTradesFromExcel(oneIRS.getInputStream());
     }
 
@@ -80,8 +82,7 @@ public class Neo4jSwapServiceTest {
     }
 
     @Test
-    public void testSavePv() throws ParseException
-    {
+    public void testPersistValidPricingResult() throws ParseException {
         List<Result<MarkitValuation>> results = new ArrayList<Result<MarkitValuation>>();
 
         MarkitValue markitValue = new MarkitValue();
@@ -98,9 +99,14 @@ public class Neo4jSwapServiceTest {
         PricingResults pricingResults = PricingResults.of(results);
 
         DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
-        Date myDate1 = dateFormat1.parse("2015-06-01");
+        LocalDate myDate1 = LocalDate.of(2015, 6, 1);
         pricingResults.setDate(myDate1);
-        pricingResults.setCurrency("USD");
+        pricingResults.setCurrency(Currency.USD);
         service.persist(pricingResults);
+    }
+
+    @Test
+    public void testPersistNullPricingResult() throws ParseException {
+        service.persist(null);
     }
 }
