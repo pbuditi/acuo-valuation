@@ -5,6 +5,11 @@ import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
 import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.basics.date.BusinessDayConvention;
+import com.opengamma.strata.basics.date.DayCount;
+import com.opengamma.strata.basics.date.Tenor;
+import com.opengamma.strata.basics.index.FloatingRateName;
+import com.opengamma.strata.basics.schedule.Frequency;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -74,18 +79,27 @@ public class SwapExcelParser {
     private Leg buildLeg(Row row, int startIndex) {
         Leg leg = new Leg();
         leg.setType(getStringValue(row.getCell(startIndex)));
-        leg.setCurrency(getStringValue(row.getCell(startIndex + 1)));
-        leg.setBusinessDayConvention(getStringValue(row.getCell(startIndex + 3)));
+        leg.setCurrency(Currency.parse(getStringValue(row.getCell(startIndex + 1))));
+        leg.setBusinessDayConvention(BusinessDayConvention.of(getStringValue(row.getCell(startIndex + 3))));
         leg.setRefCalendar(getStringValue(row.getCell(startIndex + 4)));
-        leg.setPaymentFrequency(getStringValue(row.getCell(startIndex + 2)));
-        leg.setDayCount(getStringValue(row.getCell(startIndex + 5)));
-        leg.setIndex(getStringValue(row.getCell(startIndex + 6)));
-        leg.setIndexTenor(getStringValue(row.getCell(startIndex + 7)));
-        leg.setResetFrequency(getStringValue(row.getCell(startIndex + 8)));
+        leg.setPaymentFrequency(Frequency.parse(getStringValue(row.getCell(startIndex + 2))));
+        leg.setDayCount(DayCount.of(getStringValue(row.getCell(startIndex + 5))));
+        String index = getStringValue(row.getCell(startIndex + 6));
+        if (index != null) {
+            try{
+                leg.setIndex(FloatingRateName.of(index));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        String tenor = getStringValue(row.getCell(startIndex + 7));
+        if (tenor != null) leg.setIndexTenor(Tenor.parse(tenor));
+        String frequency = getStringValue(row.getCell(startIndex + 8));
+        if(frequency != null) leg.setResetFrequency(Frequency.parse(frequency));
         if (row.getCell(startIndex + 9) != null)
-            leg.setPayStart(row.getCell(startIndex + 9).getDateCellValue());
+            leg.setPayStart(dateToLocalDate(row.getCell(startIndex + 9).getDateCellValue()));
         if (row.getCell(startIndex + 9) != null)
-            leg.setPayEnd(row.getCell(startIndex + 10).getDateCellValue());
+            leg.setPayEnd(dateToLocalDate(row.getCell(startIndex + 10).getDateCellValue()));
         if (row.getCell(startIndex + 11) != null)
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 11)).replace(",", "")));
         if (row.getCell(startIndex + 12) != null && row.getCell(startIndex + 12).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
@@ -143,16 +157,16 @@ public class SwapExcelParser {
     private Leg buildFraLeg(Row row, int startIndex) {
         Leg leg = new Leg();
         leg.setType(getStringValue(row.getCell(startIndex)));
-        leg.setCurrency(getStringValue(row.getCell(startIndex + 1)));
-        leg.setBusinessDayConvention(getStringValue(row.getCell(startIndex + 2)));
+        leg.setCurrency(Currency.parse(getStringValue(row.getCell(startIndex + 1))));
+        leg.setBusinessDayConvention(BusinessDayConvention.of(getStringValue(row.getCell(startIndex + 2))));
         leg.setRefCalendar(getStringValue(row.getCell(startIndex + 3)));
-        leg.setDayCount(getStringValue(row.getCell(startIndex + 4)));
-        leg.setIndex(getStringValue(row.getCell(startIndex + 5)));
-        leg.setIndexTenor(getStringValue(row.getCell(startIndex + 6)));
+        leg.setDayCount(DayCount.of(getStringValue(row.getCell(startIndex + 4))));
+        leg.setIndex(FloatingRateName.of(getStringValue(row.getCell(startIndex + 5))));
+        leg.setIndexTenor(Tenor.parse(getStringValue(row.getCell(startIndex + 6))));
         if (row.getCell(startIndex + 7) != null)
-            leg.setPayStart(row.getCell(startIndex + 7).getDateCellValue());
+            leg.setPayStart(dateToLocalDate(row.getCell(startIndex + 7).getDateCellValue()));
         if (row.getCell(startIndex + 8) != null)
-            leg.setPayEnd(row.getCell(startIndex + 8).getDateCellValue());
+            leg.setPayEnd(dateToLocalDate(row.getCell(startIndex + 8).getDateCellValue()));
         if (row.getCell(startIndex + 9) != null)
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 9)).replace(",", "")));
         if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
@@ -216,17 +230,19 @@ public class SwapExcelParser {
     private Leg buildOISLeg(Row row, int startIndex) {
         Leg leg = new Leg();
         leg.setType(getStringValue(row.getCell(startIndex)));
-        leg.setCurrency(getStringValue(row.getCell(startIndex + 1)));
-        leg.setBusinessDayConvention(getStringValue(row.getCell(startIndex + 3)));
+        leg.setCurrency(Currency.parse(getStringValue(row.getCell(startIndex + 1))));
+        leg.setBusinessDayConvention(BusinessDayConvention.of(getStringValue(row.getCell(startIndex + 3))));
         leg.setRefCalendar(getStringValue(row.getCell(startIndex + 4)));
-        leg.setPaymentFrequency(getStringValue(row.getCell(startIndex + 2)));
-        leg.setDayCount(getStringValue(row.getCell(startIndex + 5)));
-        leg.setIndex(getStringValue(row.getCell(startIndex + 6)));
-        leg.setResetFrequency(getStringValue(row.getCell(startIndex + 7)));
+        leg.setPaymentFrequency(Frequency.parse(getStringValue(row.getCell(startIndex + 2))));
+        leg.setDayCount(DayCount.of(getStringValue(row.getCell(startIndex + 5))));
+        String index = getStringValue(row.getCell(startIndex + 6));
+        if(index != null) leg.setIndex(FloatingRateName.of(index));
+        String frequency = getStringValue(row.getCell(startIndex + 7));
+        if(frequency != null) leg.setResetFrequency(Frequency.parse(frequency));
         if (row.getCell(startIndex + 8) != null)
-            leg.setPayStart(row.getCell(startIndex + 8).getDateCellValue());
+            leg.setPayStart(dateToLocalDate(row.getCell(startIndex + 8).getDateCellValue()));
         if (row.getCell(startIndex + 9) != null)
-            leg.setPayEnd(row.getCell(startIndex + 9).getDateCellValue());
+            leg.setPayEnd(dateToLocalDate(row.getCell(startIndex + 9).getDateCellValue()));
         if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_STRING))
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 10)).replace(",", "")));
         else if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))

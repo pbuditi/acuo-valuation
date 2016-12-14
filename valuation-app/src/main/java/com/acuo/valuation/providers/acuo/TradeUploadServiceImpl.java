@@ -81,12 +81,16 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             existed.setTradeType(irs.getTradeType());
 
             log.debug("pay legs {} ", existed.getPayLegs() );
-            for (Leg leg : existed.getPayLegs())
-                sessionProvider.get().delete(leg);
+            if (existed.getPayLegs() != null) {
+                for (Leg leg : existed.getPayLegs())
+                    sessionProvider.get().delete(leg);
+            }
 
             log.debug("receive legs {} ", existed.getReceiveLegs() );
-            for (Leg leg : existed.getReceiveLegs())
-                sessionProvider.get().delete(leg);
+            if (existed.getReceiveLegs() != null) {
+                for (Leg leg : existed.getReceiveLegs())
+                    sessionProvider.get().delete(leg);
+            }
             existed.setPayLegs(irs.getPayLegs());
             existed.setReceiveLegs(irs.getReceiveLegs());
             sessionProvider.get().save(existed, 2);
@@ -109,11 +113,15 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             existed.setTradeType(fra.getTradeType());
 
             if (fra.getPayLegs().size() > 0) {
-                for (Leg leg : existed.getPayLegs())
-                    sessionProvider.get().delete(leg);
+                if(existed.getPayLegs() != null) {
+                    for (Leg leg : existed.getPayLegs())
+                        sessionProvider.get().delete(leg);
+                }
             } else if (fra.getReceiveLegs().size() > 0) {
-                for (Leg leg : existed.getReceiveLegs())
-                    sessionProvider.get().delete(leg);
+                if(existed.getReceiveLegs() != null) {
+                    for (Leg leg : existed.getReceiveLegs())
+                        sessionProvider.get().delete(leg);
+                }
             }
 
             existed.setPayLegs(fra.getPayLegs());
@@ -161,12 +169,16 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             existed.setMaturity(irs.getMaturity());
             existed.setTradeType(irs.getTradeType());
             log.debug("pay legs {} ", existed.getPayLegs() );
-            for (Leg leg : existed.getPayLegs())
-                sessionProvider.get().delete(leg);
+            if (existed.getPayLegs() != null) {
+                for (Leg leg : existed.getPayLegs())
+                    sessionProvider.get().delete(leg);
+            }
 
             log.debug("receive legs {} ", existed.getReceiveLegs() );
-            for (Leg leg : existed.getReceiveLegs())
-                sessionProvider.get().delete(leg);
+            if (existed.getReceiveLegs() != null) {
+                for (Leg leg : existed.getReceiveLegs())
+                    sessionProvider.get().delete(leg);
+            }
             existed.setPayLegs(irs.getPayLegs());
             existed.setReceiveLegs(irs.getReceiveLegs());
             sessionProvider.get().save(existed, 2);
