@@ -1,4 +1,4 @@
-package com.acuo.valuation.services;
+package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;

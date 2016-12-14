@@ -5,8 +5,8 @@ import com.acuo.valuation.protocol.results.SwapResults;
 
 public interface SwapService {
 
-    PricingResults getPv(String swapId);
+    PricingResults price(String swapId);
 
-
+    boolean persist(PricingResults pricingResults);
 
 }

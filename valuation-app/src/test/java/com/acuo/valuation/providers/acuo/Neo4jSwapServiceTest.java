@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.markit.services;
+package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
@@ -10,9 +10,10 @@ import com.acuo.valuation.modules.*;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.valuation.providers.acuo.Neo4jSwapService;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
+import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
-import com.acuo.valuation.util.ReportHelper;
 import com.opengamma.strata.collect.result.Result;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
@@ -24,8 +25,12 @@ import org.mockito.MockitoAnnotations;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.time.LocalDate;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,13 +39,10 @@ import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, EncryptionModule.class, Neo4jPersistModule.class, EndPointModule.class, ServicesModule.class})
-public class MarkitSwapServiceTest {
+public class Neo4jSwapServiceTest {
 
     @Mock
-    Sender sender;
-
-    @Mock
-    Retriever retriever;
+    PricingService pricingService;
 
     @Inject
     Neo4jPersistService session;
@@ -51,27 +53,23 @@ public class MarkitSwapServiceTest {
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
-    MarkitSwapService service;
+    Neo4jSwapService service;
 
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-
-        service = new MarkitSwapService(sender,retriever,session);
-
+        service = new Neo4jSwapService(pricingService,session);
         irsService.uploadTradesFromExcel(oneIRS.getInputStream());
-
     }
 
     @Test
     public void testPriceSwapWithNoErrorReport() {
-        when(sender.send(any(List.class))).thenReturn(ReportHelper.reportForSwap("455123"));
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
         PricingResults expectedResults = PricingResults.of(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
+        when(pricingService.price(any(List.class))).thenReturn(expectedResults);
 
-        PricingResults results = service.getPv("455123");
+        PricingResults results = service.price("455123");
 
         assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
 
@@ -79,5 +77,30 @@ public class MarkitSwapServiceTest {
         Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
+    }
+
+    @Test
+    public void testSavePv() throws ParseException
+    {
+        List<Result<MarkitValuation>> results = new ArrayList<Result<MarkitValuation>>();
+
+        MarkitValue markitValue = new MarkitValue();
+
+        markitValue.setTradeId("455123");
+        markitValue.setPv(5.98);
+
+        MarkitValuation markitValuation = new MarkitValuation(markitValue);
+
+        Result<MarkitValuation> result = Result.success(markitValuation);
+
+        results.add(result);
+
+        PricingResults pricingResults = PricingResults.of(results);
+
+        DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+        Date myDate1 = dateFormat1.parse("2015-06-01");
+        pricingResults.setDate(myDate1);
+        pricingResults.setCurrency("USD");
+        service.persist(pricingResults);
     }
 }
