@@ -2,8 +2,11 @@ package com.acuo.valuation.utils;
 
 import com.acuo.common.model.AdjustableSchedule;
 import com.acuo.common.model.product.Swap;
+import com.acuo.common.model.trade.ProductType;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.model.trade.TradeInfo;
+import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Leg;
 import com.acuo.persist.entity.Trade;
 import com.opengamma.strata.basics.date.Tenor;
 import com.opengamma.strata.basics.index.FloatingRateName;
@@ -23,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 public class SwapTradeBuilder {
@@ -50,6 +54,29 @@ public class SwapTradeBuilder {
         return tradeInfo;
     }
 
+    public static SwapTrade buildTrade(IRS trade) {
+        SwapTrade swapTrade = new SwapTrade();
+        Swap swap = new Swap();
+        swapTrade.setProduct(swap);
+        swapTrade.setType(ProductType.SWAP);
+
+        swapTrade.setInfo(SwapTradeBuilder.buildTradeInfo(trade));
+
+        Set<Leg> payLegs = trade.getPayLegs();
+        for (Leg payLeg : payLegs) {
+            Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(payLeg);
+            swap.addLeg(leg);
+        }
+
+        Set<Leg> receiveLegs = trade.getReceiveLegs();
+        for (Leg receiveLeg : receiveLegs) {
+            Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(receiveLeg);
+            swap.addLeg(leg);
+        }
+
+        return swapTrade;
+    }
+
     public static TradeInfo buildTradeInfo(Trade trade) {
         TradeInfo tradeInfo = new TradeInfo();
         tradeInfo.setTradeId(trade.getTradeId());
@@ -57,6 +84,46 @@ public class SwapTradeBuilder {
         return tradeInfo;
     }
 
+    public static Swap.SwapLeg buildLeg(Leg leg) {
+        Swap.SwapLeg result = new Swap.SwapLeg();
+
+        result.setNotional(leg.getNotional());
+        result.setRate(leg.getFixedRate());
+        result.setType(leg.getType());
+
+        //if (entry.get("payStart") != null) {
+            AdjustableDate adjustableDate = new AdjustableDate();
+            adjustableDate.setDate(leg.getPayStart());
+            result.setStartDate(adjustableDate);
+        //}
+
+        //if (entry.get("payEnd") != null) {
+            adjustableDate = new AdjustableDate();
+            adjustableDate.setDate(leg.getPayEnd());
+            result.setMaturityDate(adjustableDate);
+        //}
+
+        //failuire at this time
+        //if (entry.get("paymentFrequency") != null) {
+             AdjustableSchedule adjustableSchedule = new AdjustableSchedule();
+             log.debug("paymentFrequency:" + leg.getPaymentFrequency());
+             adjustableSchedule.setFrequency(leg.getPaymentFrequency());
+             result.setPaymentSchedule(adjustableSchedule);
+        //}
+
+
+        Swap.SwapLegFixing swapLegFixing = new Swap.SwapLegFixing();
+        result.setFixing(swapLegFixing);
+
+        //if (entry.get("indexTenor") != null)
+            swapLegFixing.setTenor(leg.getIndexTenor());
+
+        //if (entry.get("index") != null)
+            swapLegFixing.setFloatingRateName(leg.getIndex());
+
+
+        return result;
+    }
     public static Swap.SwapLeg buildLeg(Map<String, Object> entry) {
         Swap.SwapLeg leg = new Swap.SwapLeg();
 

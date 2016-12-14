@@ -53,7 +53,6 @@ public class TradeUploadServiceTest {
         Workbook workbook = new XSSFWorkbook(excel.createInputStream());
         Sheet sheet = workbook.getSheetAt(0);
         Row row = sheet.getRow(1);
-        log.debug("service {} row {}", service, row);
         service.handleIRSRow(row);
     }
 

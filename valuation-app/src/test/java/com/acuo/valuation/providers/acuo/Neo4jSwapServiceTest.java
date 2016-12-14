@@ -3,7 +3,9 @@ package com.acuo.valuation.providers.acuo;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.core.DataLoader;
 import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.TradeService;
@@ -40,7 +42,14 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, EncryptionModule.class, Neo4jPersistModule.class, RepositoryModule.class, EndPointModule.class, ServicesModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
+                                MappingModule.class,
+                                EncryptionModule.class,
+                                Neo4jPersistModule.class,
+                                DataLoaderModule.class,
+                                RepositoryModule.class,
+                                EndPointModule.class,
+                                ServicesModule.class})
 public class Neo4jSwapServiceTest {
 
     @Mock
@@ -55,6 +64,9 @@ public class Neo4jSwapServiceTest {
     @Inject
     TradeService tradeService;
 
+    @Inject
+    DataLoader dataLoader;
+
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
@@ -63,6 +75,7 @@ public class Neo4jSwapServiceTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
+        dataLoader.purgeDatabase();
         service = new Neo4jSwapService(pricingService, session, tradeService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
     }

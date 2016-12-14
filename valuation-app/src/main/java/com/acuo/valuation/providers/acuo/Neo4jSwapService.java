@@ -140,34 +140,9 @@ public class Neo4jSwapService implements SwapService {
     }
 
     private List<SwapTrade> getSwapTrades(String swapId) {
-        SwapTrade swapTrade = new SwapTrade();
-        Swap swap = new Swap();
-        swapTrade.setProduct(swap);
-        swapTrade.setType(ProductType.SWAP);
-
         Trade trade = tradeService.findById(swapId);
-        String query = "match (i:IRS {id:\"" + swapId + "\"}) return i.clearingDate as clearingDate, i.id as id";
-        Result result = sessionProvider.get().query(query, Collections.emptyMap());
-        if (result.iterator().hasNext()) {
-            for (Map<String, Object> entry : result.queryResults())
-                swapTrade.setInfo(SwapTradeBuilder.buildTradeInfo(entry));
-        }
-
-        query = "match (i:IRS {id:\"" + swapId + "\"})-[r:RECEIVES |PAYS]->(l:Leg) return l.notional as notional, l.resetFrequency as resetFrequency, l.payStart as payStart, l.indexTenor as indexTenor, l.index as index, l.paymentFrequency as paymentFrequency,\n" +
-                "l.type as type, l.rollConvention as rollConvention, l.nextCouponPaymentDate as nextCouponPaymentDate, l.payEnd as payEnd, l.refCalendar as refCalendar";
-        log.debug("query:" + query);
-        result = sessionProvider.get().query(query, Collections.emptyMap());
-        if (result.iterator().hasNext()) {
-            for (Map<String, Object> entry : result.queryResults()) {
-                Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(entry);
-                swap.addLeg(leg);
-            }
-        }
-
+        SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
         log.debug("swapTrade:" + swapTrade);
-
-
-        //load swap object based on swapId
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
         swapTrades.add(swapTrade);
         return swapTrades;
