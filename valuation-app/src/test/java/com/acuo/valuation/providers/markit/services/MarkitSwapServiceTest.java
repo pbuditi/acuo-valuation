@@ -11,7 +11,7 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
-import com.acuo.valuation.services.IRSService;
+import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.util.ReportHelper;
 import com.opengamma.strata.collect.result.Result;
 import org.assertj.core.api.Condition;
@@ -46,7 +46,7 @@ public class MarkitSwapServiceTest {
     Neo4jPersistService session;
 
     @Inject
-    IRSService irsService;
+    TradeUploadService irsService;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -59,7 +59,7 @@ public class MarkitSwapServiceTest {
 
         service = new MarkitSwapService(sender,retriever,session);
 
-        irsService.uploadIRS(oneIRS.getInputStream());
+        irsService.uploadTradesFromExcel(oneIRS.getInputStream());
 
     }
 

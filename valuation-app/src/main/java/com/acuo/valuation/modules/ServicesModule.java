@@ -1,5 +1,6 @@
 package com.acuo.valuation.modules;
 
+import com.acuo.valuation.providers.acuo.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
 import com.acuo.valuation.providers.markit.services.*;
 import com.acuo.valuation.services.*;
@@ -14,7 +15,7 @@ public class ServicesModule extends AbstractModule {
         bind(PricingService.class).to(MarkitPricingService.class);
         bind(MarginCalcService.class).to(ClarusMarginCalcService.class);
         bind(SwapService.class).to(MarkitSwapService.class);
-        bind(IRSService.class).to(IRSServiceImpl.class);
+        bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
     }
 
 }
