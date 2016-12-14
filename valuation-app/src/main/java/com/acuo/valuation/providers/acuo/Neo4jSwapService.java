@@ -4,14 +4,18 @@ import com.acuo.common.model.product.Swap;
 import com.acuo.common.model.trade.ProductType;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.services.IRSService;
+import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.utils.SwapTradeBuilder;
+import com.google.common.collect.ImmutableList;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.neo4j.ogm.model.Result;
@@ -25,11 +29,13 @@ public class Neo4jSwapService implements SwapService {
 
     private final PricingService pricingService;
     private final Neo4jPersistService sessionProvider;
+    private final TradeService tradeService;
 
     @Inject
-    public Neo4jSwapService(PricingService pricingService, Neo4jPersistService sessionProvider) {
+    public Neo4jSwapService(PricingService pricingService, Neo4jPersistService sessionProvider, TradeService tradeService) {
         this.pricingService = pricingService;
         this.sessionProvider = sessionProvider;
+        this.tradeService = tradeService;
     }
 
     @Override
@@ -56,10 +62,8 @@ public class Neo4jSwapService implements SwapService {
 
         log.debug("persist start :" + pricingResults.getDate());
 
-        Iterator<com.opengamma.strata.collect.result.Result<MarkitValuation>> iterator = pricingResults.getResults().iterator();
-        while (iterator.hasNext()) {
-
-            com.opengamma.strata.collect.result.Result<MarkitValuation> result = iterator.next();
+        ImmutableList<com.opengamma.strata.collect.result.Result<MarkitValuation>> results = pricingResults.getResults();
+        for (com.opengamma.strata.collect.result.Result<MarkitValuation> result : results) {
             log.debug(result.toString());
             for (Value value : result.getValue().getValues()) {
                 String tradeId = value.getTradeId();
@@ -67,9 +71,8 @@ public class Neo4jSwapService implements SwapService {
 
                 log.debug("tradeId:" + tradeId);
 
-                Iterable<Trade> trades = sessionProvider.get().query(Trade.class, "match (i:Trade {id:\"" + tradeId + "\"}) return i", Collections.emptyMap());
-                Trade trade = trades.iterator().next();
-                trade = sessionProvider.get().load(Trade.class, trade.getId(), 2);
+                Trade trade = tradeService.findById(tradeId);
+
                 log.debug(trade.toString());
 
                 Set<Valuation> valuations = trade.getValuations();
@@ -142,6 +145,7 @@ public class Neo4jSwapService implements SwapService {
         swapTrade.setProduct(swap);
         swapTrade.setType(ProductType.SWAP);
 
+        Trade trade = tradeService.findById(swapId);
         String query = "match (i:IRS {id:\"" + swapId + "\"}) return i.clearingDate as clearingDate, i.id as id";
         Result result = sessionProvider.get().query(query, Collections.emptyMap());
         if (result.iterator().hasNext()) {

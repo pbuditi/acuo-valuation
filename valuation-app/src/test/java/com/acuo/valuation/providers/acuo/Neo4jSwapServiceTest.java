@@ -5,12 +5,13 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.*;
 
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.providers.acuo.Neo4jSwapService;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
@@ -32,7 +33,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +40,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, EncryptionModule.class, Neo4jPersistModule.class, EndPointModule.class, ServicesModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, EncryptionModule.class, Neo4jPersistModule.class, RepositoryModule.class, EndPointModule.class, ServicesModule.class})
 public class Neo4jSwapServiceTest {
 
     @Mock
@@ -50,7 +50,10 @@ public class Neo4jSwapServiceTest {
     Neo4jPersistService session;
 
     @Inject
-    TradeUploadService irsService;
+    TradeUploadService tradeUploadService;
+
+    @Inject
+    TradeService tradeService;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -60,8 +63,8 @@ public class Neo4jSwapServiceTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        service = new Neo4jSwapService(pricingService, session);
-        irsService.uploadTradesFromExcel(oneIRS.getInputStream());
+        service = new Neo4jSwapService(pricingService, session, tradeService);
+        tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
     }
 
     @Test
