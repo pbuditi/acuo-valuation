@@ -66,7 +66,8 @@ public class SwapExcelParser {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw e;
         }
         return irs;
     }
@@ -142,7 +143,8 @@ public class SwapExcelParser {
 
         }catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw e;
         }
         return fra;
     }
@@ -219,7 +221,8 @@ public class SwapExcelParser {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw e;
         }
         return irs;
     }
@@ -300,7 +303,8 @@ public class SwapExcelParser {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw e;
         }
         return irs;
     }
