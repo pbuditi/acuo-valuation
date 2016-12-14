@@ -1,9 +1,7 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.trade.SwapTrade;
-import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.protocol.results.SwapResults;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
 import com.codahale.metrics.annotation.Timed;
@@ -61,7 +59,7 @@ public class SwapValuationResource {
     @Timed
     public PricingResults getPv(@PathParam("id") String id) throws Exception
     {
-        PricingResults result = swapService.getPv(id);
+        PricingResults result = swapService.price(id);
         return result;
     }
 }

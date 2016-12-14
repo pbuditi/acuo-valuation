@@ -6,7 +6,6 @@ import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
@@ -17,7 +16,6 @@ import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
 import com.acuo.valuation.util.ReportHelper;
-import com.google.inject.Inject;
 import com.opengamma.strata.collect.result.Result;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
@@ -27,13 +25,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.codehaus.groovy.runtime.InvokerHelper.asList;
@@ -59,9 +57,6 @@ public class MarkitPricingServiceTest {
     @Named("markit")
     Transformer<SwapTrade> markitTransformer;
 
-    @javax.inject.Inject
-    Neo4jPersistService session;
-
     @Inject
     ReportParser reportParser;
 
@@ -79,10 +74,9 @@ public class MarkitPricingServiceTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
 
-        service = new MarkitPricingService(sender, retriever, session);
+        service = new MarkitPricingService(sender, retriever);
 
         swaps = clarusTransformer.deserialiseToList(cmeCsv.getContent());
-
     }
 
     @Test
@@ -130,30 +124,5 @@ public class MarkitPricingServiceTest {
         Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
-    }
-
-    @Test
-    public void testSavePv() throws ParseException
-    {
-        List<Result<MarkitValuation>> results = new ArrayList<Result<MarkitValuation>>();
-
-        MarkitValue markitValue = new MarkitValue();
-
-        markitValue.setTradeId("ndft2");
-        markitValue.setPv(5.98);
-
-        MarkitValuation markitValuation = new MarkitValuation(markitValue);
-
-        Result<MarkitValuation> result = Result.success(markitValuation);
-
-        results.add(result);
-
-        PricingResults pricingResults = PricingResults.of(results);
-
-        DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
-        Date myDate1 = dateFormat1.parse("2015-06-01");
-        pricingResults.setDate(myDate1);
-        pricingResults.setCurrency("USD");
-        service.savePv(pricingResults);
     }
 }
