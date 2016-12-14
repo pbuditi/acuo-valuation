@@ -1,9 +1,10 @@
-package com.acuo.valuation.services;
+package com.acuo.valuation.providers.acuo;
 
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
+import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,18 +17,18 @@ import java.io.InputStream;
 import java.util.Collections;
 
 @Slf4j
-public class IRSServiceImpl implements IRSService {
+public class TradeUploadServiceImpl implements TradeUploadService {
 
     private Neo4jPersistService sessionProvider;
 
     SwapExcelParser parser = new SwapExcelParser();
 
     @Inject
-    public IRSServiceImpl(Neo4jPersistService sessionProvider) {
+    public TradeUploadServiceImpl(Neo4jPersistService sessionProvider) {
         this.sessionProvider = sessionProvider;
     }
 
-    public boolean uploadIRS(InputStream fis) {
+    public boolean uploadTradesFromExcel(InputStream fis) {
         try {
             Workbook workbook = new XSSFWorkbook(fis);
             Sheet sheet = workbook.getSheetAt(0);

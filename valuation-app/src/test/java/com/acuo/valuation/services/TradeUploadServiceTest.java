@@ -1,16 +1,19 @@
 package com.acuo.valuation.services;
 
 import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.providers.acuo.TradeUploadServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,24 +25,24 @@ import java.io.IOException;
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, Neo4jPersistModule.class})
 @Slf4j
-public class IRSServiceTest {
+public class TradeUploadServiceTest {
 
-    IRSServiceImpl service;
+    TradeUploadServiceImpl service;
 
     @Inject
     Neo4jPersistService session;
 
-    FileInputStream fis;
+    @Rule
+    public ResourceFile excel = new ResourceFile("/excel/NewExposures.xlsx");
 
     @Before
     public void setup() throws FileNotFoundException {
-        service = new IRSServiceImpl(session);
-        fis = new FileInputStream("src/test/resources/excel/NewExposures.xlsx");
+        service = new TradeUploadServiceImpl(session);
     }
 
     @Test
     public void testHandleIRSRowS() throws FileNotFoundException, IOException {
-        Workbook workbook = new XSSFWorkbook(fis);
+        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
         Sheet sheet = workbook.getSheetAt(0);
         Row row = sheet.getRow(1);
         log.debug("service {} row {}", service, row);
@@ -48,7 +51,7 @@ public class IRSServiceTest {
 
     @Test
     public void testHandleFRARowS() throws FileNotFoundException, IOException {
-        Workbook workbook = new XSSFWorkbook(fis);
+        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
         Sheet sheet = workbook.getSheetAt(1);
         Row row = sheet.getRow(1);
         service.handleFRARow(row);
@@ -56,22 +59,17 @@ public class IRSServiceTest {
 
     @Test
     public void testHandleOIS() throws FileNotFoundException, IOException {
-        Workbook workbook = new XSSFWorkbook(fis);
+        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
         Sheet sheet = workbook.getSheetAt(2);
         Row row = sheet.getRow(1);
         service.handleOISRow(row);
-
     }
 
     @Test
     public void testHandleIRSBilateral() throws FileNotFoundException, IOException {
-        Workbook workbook = new XSSFWorkbook(fis);
+        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
         Sheet sheet = workbook.getSheetAt(3);
         Row row = sheet.getRow(1);
         service.handleIRSBilateralRow(row);
-
     }
-
-
-
 }
