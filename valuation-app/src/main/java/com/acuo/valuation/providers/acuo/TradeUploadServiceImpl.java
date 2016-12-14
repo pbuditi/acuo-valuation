@@ -31,34 +31,40 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     public boolean uploadTradesFromExcel(InputStream fis) {
         try {
             Workbook workbook = new XSSFWorkbook(fis);
-            Sheet sheet = workbook.getSheetAt(0);
-
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                handleIRSRow(row);
+            Sheet sheet = workbook.getSheet("IRS-Cleared");
+            if (sheet != null) {
+                for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                    Row row = sheet.getRow(i);
+                    handleIRSRow(row);
+                }
             }
 
-            sheet = workbook.getSheetAt(1);
-            for (int i = 1; i < sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                handleFRARow(row);
+            sheet = workbook.getSheet("FRA-Cleared");
+            if (sheet != null) {
+                for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                    Row row = sheet.getRow(i);
+                    handleFRARow(row);
+                }
             }
 
-            sheet = workbook.getSheetAt(2);
-            for (int i = 1; i < sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                handleOISRow(row);
+            sheet = workbook.getSheet("OIS-Cleared");
+            if (sheet != null) {
+                for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                    Row row = sheet.getRow(i);
+                    handleOISRow(row);
+                }
             }
 
-            sheet = workbook.getSheetAt(3);
-            for (int i = 1; i < sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                handleIRSBilateralRow(row);
+            sheet = workbook.getSheet("IRS-Bilateral");
+            if (sheet != null) {
+                for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                    Row row = sheet.getRow(i);
+                    handleIRSBilateralRow(row);
+                }
             }
-
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
 
         return true;
