@@ -1,4 +1,6 @@
 {
+  "date" : "2016-06-09T16:00:00.000+0000",
+  "currency" : "USD",
   "results" : [ {
     "values" : [ {
       "tradeId" : "IRS_VANILLA",
