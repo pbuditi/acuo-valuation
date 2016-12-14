@@ -22,8 +22,7 @@ public class MarkitPricingService implements PricingService {
 
     private final Sender sender;
     private final Retriever retriever;
-
-    private final Neo4jPersistService sessionProvider;
+    protected final Neo4jPersistService sessionProvider;
 
     @Inject
     public MarkitPricingService(Sender sender, Retriever retriever, Neo4jPersistService sessionProvider) {
