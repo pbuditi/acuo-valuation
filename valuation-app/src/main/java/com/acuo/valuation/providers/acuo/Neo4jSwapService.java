@@ -69,6 +69,9 @@ public class Neo4jSwapService implements SwapService {
                 log.debug("tradeId:" + tradeId);
 
                 Iterable<Trade> trades = sessionProvider.get().query(Trade.class, "match (i:Trade {id:\"" + tradeId + "\"}) return i", Collections.emptyMap());
+                if(!trades.iterator().hasNext())
+                    continue;
+
                 Trade trade = trades.iterator().next();
                 trade = sessionProvider.get().load(Trade.class, trade.getId(), 2);
                 log.debug(trade.toString());
@@ -93,10 +96,7 @@ public class Neo4jSwapService implements SwapService {
                             newValue.setCurrency(currency);
                             newValue.setPv(value.getPv());
 
-                            existedValues = valuation.getValues();
-                            existedValues.add(newValue);
-
-                            valuation.setValues(existedValues);
+                            valuation.getValues().add(newValue);
 
                             sessionProvider.get().save(valuation, 2);
 
@@ -126,7 +126,15 @@ public class Neo4jSwapService implements SwapService {
 
                     valuation.setValues(values);
 
-                    trade.getValuations().add(valuation);
+                    if(trade.getValuations() != null)
+                        trade.getValuations().add(valuation);
+                    else
+                    {
+                        Set<Valuation> valuationSet = new HashSet<Valuation>();
+                        trade.setValuations(valuationSet);
+
+                    }
+
 
 
                     sessionProvider.get().save(trade, 2);

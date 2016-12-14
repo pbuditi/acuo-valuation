@@ -94,7 +94,8 @@ public class SwapTradeBuilder {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw e;
         }
 
 
@@ -125,7 +126,7 @@ public class SwapTradeBuilder {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return null;
     }
