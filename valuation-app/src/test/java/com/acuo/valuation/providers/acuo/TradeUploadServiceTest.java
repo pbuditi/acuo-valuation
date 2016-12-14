@@ -4,6 +4,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.services.IRSService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.providers.acuo.TradeUploadServiceImpl;
@@ -32,6 +33,9 @@ public class TradeUploadServiceTest {
     @Inject
     Neo4jPersistService session;
 
+    @Inject
+    IRSService irsService;
+
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
@@ -40,7 +44,7 @@ public class TradeUploadServiceTest {
 
     @Before
     public void setup() throws FileNotFoundException {
-        service = new TradeUploadServiceImpl(session);
+        service = new TradeUploadServiceImpl(session,irsService);
     }
 
     @Test
@@ -52,31 +56,45 @@ public class TradeUploadServiceTest {
     public void testHandleIRSRowS() throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook(excel.createInputStream());
         Sheet sheet = workbook.getSheetAt(0);
-        Row row = sheet.getRow(1);
-        service.handleIRSRow(row);
+        for (int i = 1; i < sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            service.handleIRSRow(row);
+        }
     }
 
     @Test
     public void testHandleFRARowS() throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook(excel.createInputStream());
         Sheet sheet = workbook.getSheetAt(1);
-        Row row = sheet.getRow(1);
-        service.handleFRARow(row);
+        for (int i = 1; i < sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            service.handleFRARow(row);
+        }
+
     }
 
     @Test
     public void testHandleOIS() throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook(excel.createInputStream());
         Sheet sheet = workbook.getSheetAt(2);
-        Row row = sheet.getRow(1);
-        service.handleOISRow(row);
+        for (int i = 1; i < sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            service.handleOISRow(row);
+
+        }
+
     }
 
     @Test
     public void testHandleIRSBilateral() throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook(excel.createInputStream());
         Sheet sheet = workbook.getSheetAt(3);
-        Row row = sheet.getRow(1);
-        service.handleIRSBilateralRow(row);
+        for (int i = 1; i < sheet.getLastRowNum(); i++)
+        {
+            Row row = sheet.getRow(i);
+            service.handleIRSBilateralRow(row);
+
+        }
+
     }
 }

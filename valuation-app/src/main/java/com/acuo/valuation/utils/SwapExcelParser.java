@@ -36,10 +36,8 @@ public class SwapExcelParser {
             Account account = new Account();
             account.setAccountId(row.getCell(1).getStringCellValue());
             irs.setAccount(account);
-
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
-
             irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             irs.setTradeType(TRADE_TYPE_CLEARD);
 
