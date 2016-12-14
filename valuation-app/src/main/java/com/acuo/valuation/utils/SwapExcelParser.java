@@ -4,6 +4,7 @@ import com.acuo.persist.entity.Account;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
+import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -19,13 +20,12 @@ public class SwapExcelParser {
 
     public static String TRADE_TYPE_BILATERAL = "Bilateral";
 
-    public IRS buildIRS(Row row)
-    {
+    public IRS buildIRS(Row row) {
         IRS irs = null;
-        try
-        {
+        try {
             irs = new IRS();
 
+            irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
             Account account = new Account();
             account.setAccountId(row.getCell(1).getStringCellValue());
             irs.setAccount(account);
@@ -52,27 +52,24 @@ public class SwapExcelParser {
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
 
-            if(leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
-            if(leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
+            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg2);
             else
                 payLegs.add(leg2);
 
 
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return irs;
     }
 
-    private Leg buildLeg(Row row, int startIndex)
-    {
+    private Leg buildLeg(Row row, int startIndex) {
         Leg leg = new Leg();
         leg.setType(getStringValue(row.getCell(startIndex)));
         leg.setCurrency(getStringValue(row.getCell(startIndex + 1)));
@@ -80,34 +77,31 @@ public class SwapExcelParser {
         leg.setRefCalendar(getStringValue(row.getCell(startIndex + 4)));
         leg.setPaymentFrequency(getStringValue(row.getCell(startIndex + 2)));
         leg.setDayCount(getStringValue(row.getCell(startIndex + 5)));
-        leg.setIndex(getStringValue(row.getCell(startIndex+ 6)));
+        leg.setIndex(getStringValue(row.getCell(startIndex + 6)));
         leg.setIndexTenor(getStringValue(row.getCell(startIndex + 7)));
         leg.setResetFrequency(getStringValue(row.getCell(startIndex + 8)));
-        if(row.getCell(startIndex + 9) != null)
+        if (row.getCell(startIndex + 9) != null)
             leg.setPayStart(row.getCell(startIndex + 9).getDateCellValue());
         if (row.getCell(startIndex + 9) != null)
             leg.setPayEnd(row.getCell(startIndex + 10).getDateCellValue());
-        if(row.getCell(startIndex + 11) != null)
+        if (row.getCell(startIndex + 11) != null)
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 11)).replace(",", "")));
-        if(row.getCell(startIndex + 12) != null && row.getCell(startIndex + 12).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
+        if (row.getCell(startIndex + 12) != null && row.getCell(startIndex + 12).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
             leg.setFixedRate(row.getCell(startIndex + 12).getNumericCellValue());
-        else
-        if(row.getCell(startIndex + 12) != null && row.getCell(startIndex + 12).getCellStyle().equals(Cell.CELL_TYPE_STRING))
+        else if (row.getCell(startIndex + 12) != null && row.getCell(startIndex + 12).getCellStyle().equals(Cell.CELL_TYPE_STRING))
             leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 12).getStringCellValue())));
         return leg;
     }
 
-    private String getStringValue(Cell cell)
-    {
-        if(cell == null)
+    private String getStringValue(Cell cell) {
+        if (cell == null)
             return null;
         else
             return cell.getStringCellValue();
     }
 
 
-    public FRA buildFRA(Row row)
-    {
+    public FRA buildFRA(Row row) {
         FRA fra = new FRA();
 
         try {
@@ -117,7 +111,7 @@ public class SwapExcelParser {
             fra.setAccount(account);
 
             fra.setFraId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
-            fra.setCurrency(row.getCell(4).getStringCellValue());
+            fra.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
             fra.setMaturity(row.getCell(6).getDateCellValue());
             fra.setClearingDate(row.getCell(7).getDateCellValue());
             fra.setTradeType(TRADE_TYPE_CLEARD);
@@ -132,52 +126,47 @@ public class SwapExcelParser {
             fra.setPayLegs(payLegs);
             fra.setReceiveLegs(receiveLegs);
 
-            if(leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
 
-
-
-        }catch (Exception e)
-        {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return fra;
     }
 
-    private Leg buildFraLeg(Row row, int startIndex)
-    {
+    private Leg buildFraLeg(Row row, int startIndex) {
         Leg leg = new Leg();
         leg.setType(getStringValue(row.getCell(startIndex)));
         leg.setCurrency(getStringValue(row.getCell(startIndex + 1)));
         leg.setBusinessDayConvention(getStringValue(row.getCell(startIndex + 2)));
         leg.setRefCalendar(getStringValue(row.getCell(startIndex + 3)));
         leg.setDayCount(getStringValue(row.getCell(startIndex + 4)));
-        leg.setIndex(getStringValue(row.getCell(startIndex+ 5)));
+        leg.setIndex(getStringValue(row.getCell(startIndex + 5)));
         leg.setIndexTenor(getStringValue(row.getCell(startIndex + 6)));
-        if(row.getCell(startIndex + 7) != null)
+        if (row.getCell(startIndex + 7) != null)
             leg.setPayStart(row.getCell(startIndex + 7).getDateCellValue());
         if (row.getCell(startIndex + 8) != null)
             leg.setPayEnd(row.getCell(startIndex + 8).getDateCellValue());
-        if(row.getCell(startIndex + 9) != null)
+        if (row.getCell(startIndex + 9) != null)
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 9)).replace(",", "")));
-        if(row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
+        if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
             leg.setFixedRate(row.getCell(startIndex + 10).getNumericCellValue());
-        else
-        if(row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_STRING))
+        else if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_STRING))
             leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 10).getStringCellValue())));
         return leg;
     }
 
 
-    public IRS buildOIS(Row row)
-    {
+    public IRS buildOIS(Row row) {
         IRS irs = null;
-        try
-        {
+        try {
             irs = new IRS();
+
+            irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
 
             Account account = new Account();
             account.setAccountId(row.getCell(1).getStringCellValue());
@@ -205,27 +194,24 @@ public class SwapExcelParser {
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
 
-            if(leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
-            if(leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
+            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg2);
             else
                 payLegs.add(leg2);
 
 
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return irs;
     }
 
-    private Leg buildOISLeg(Row row, int startIndex)
-    {
+    private Leg buildOISLeg(Row row, int startIndex) {
         Leg leg = new Leg();
         leg.setType(getStringValue(row.getCell(startIndex)));
         leg.setCurrency(getStringValue(row.getCell(startIndex + 1)));
@@ -233,32 +219,30 @@ public class SwapExcelParser {
         leg.setRefCalendar(getStringValue(row.getCell(startIndex + 4)));
         leg.setPaymentFrequency(getStringValue(row.getCell(startIndex + 2)));
         leg.setDayCount(getStringValue(row.getCell(startIndex + 5)));
-        leg.setIndex(getStringValue(row.getCell(startIndex+ 6)));
+        leg.setIndex(getStringValue(row.getCell(startIndex + 6)));
         leg.setResetFrequency(getStringValue(row.getCell(startIndex + 7)));
-        if(row.getCell(startIndex + 8) != null)
+        if (row.getCell(startIndex + 8) != null)
             leg.setPayStart(row.getCell(startIndex + 8).getDateCellValue());
         if (row.getCell(startIndex + 9) != null)
             leg.setPayEnd(row.getCell(startIndex + 9).getDateCellValue());
-        if(row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_STRING))
+        if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_STRING))
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 10)).replace(",", "")));
-        else
-        if(row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
+        else if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
             leg.setNotional(row.getCell(startIndex + 10).getNumericCellValue());
-        if(row.getCell(startIndex + 11) != null && row.getCell(startIndex + 11).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
+        if (row.getCell(startIndex + 11) != null && row.getCell(startIndex + 11).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
             leg.setFixedRate(row.getCell(startIndex + 11).getNumericCellValue());
-        else
-        if(row.getCell(startIndex + 11) != null && row.getCell(startIndex + 11).getCellStyle().equals(Cell.CELL_TYPE_STRING))
+        else if (row.getCell(startIndex + 11) != null && row.getCell(startIndex + 11).getCellStyle().equals(Cell.CELL_TYPE_STRING))
             leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 11).getStringCellValue())));
         return leg;
     }
 
 
-    public IRS buildIRSBilateral(Row row)
-    {
+    public IRS buildIRSBilateral(Row row) {
         IRS irs = null;
-        try
-        {
+        try {
             irs = new IRS();
+
+            irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
 
             Account account = new Account();
             account.setAccountId(row.getCell(1).getStringCellValue());
@@ -286,21 +270,19 @@ public class SwapExcelParser {
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
 
-            if(leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
-            if(leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
+            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg2);
             else
                 payLegs.add(leg2);
 
 
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return irs;
     }

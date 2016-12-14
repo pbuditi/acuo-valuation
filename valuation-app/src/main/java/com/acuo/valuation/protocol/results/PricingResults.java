@@ -1,30 +1,31 @@
 package com.acuo.valuation.protocol.results;
 
 import com.google.common.collect.ImmutableList;
+import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class PricingResults {
 
-    private Date date;
+    private LocalDate date;
 
-    private String currency;
+    private Currency currency;
 
-    public String getCurrency() {
+    public Currency getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    public void setCurrency(Currency currency) {
         this.currency = currency;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

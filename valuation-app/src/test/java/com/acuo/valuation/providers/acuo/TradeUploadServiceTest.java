@@ -33,11 +33,19 @@ public class TradeUploadServiceTest {
     Neo4jPersistService session;
 
     @Rule
+    public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
+
+    @Rule
     public ResourceFile excel = new ResourceFile("/excel/NewExposures.xlsx");
 
     @Before
     public void setup() throws FileNotFoundException {
         service = new TradeUploadServiceImpl(session);
+    }
+
+    @Test
+    public void testUploadOneIRS() {
+        service.uploadTradesFromExcel(oneIRS.createInputStream());
     }
 
     @Test
