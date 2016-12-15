@@ -53,13 +53,20 @@ public class SwapValuationResource {
     }
 
     @GET
-    //@Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/pv/{id}")
+    @Path("/price/swapid/{id}")
     @Timed
-    public PricingResults getPv(@PathParam("id") String id) throws Exception
-    {
+    public PricingResults priceBySwapId(@PathParam("id") String id) throws Exception {
         PricingResults result = swapService.price(id);
+        return result;
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/price/clientid/{id}")
+    @Timed
+    public PricingResults getPv(@PathParam("id") String id) throws Exception {
+        PricingResults result = swapService.priceClientTrades(id);
         return result;
     }
 }
