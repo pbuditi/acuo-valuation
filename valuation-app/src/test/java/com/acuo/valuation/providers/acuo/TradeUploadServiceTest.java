@@ -2,12 +2,14 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.core.DataLoader;
+import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.services.FRAService;
 import com.acuo.persist.services.IRSService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
-import com.acuo.valuation.providers.acuo.TradeUploadServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -19,22 +21,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, Neo4jPersistModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, Neo4jPersistModule.class, RepositoryModule.class, DataLoaderModule.class})
 @Slf4j
 public class TradeUploadServiceTest {
 
     TradeUploadServiceImpl service;
 
     @Inject
-    Neo4jPersistService session;
+    IRSService irsService;
 
     @Inject
-    IRSService irsService;
+    FRAService fraService;
+
+    @Inject
+    DataLoader dataLoader;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -44,7 +48,8 @@ public class TradeUploadServiceTest {
 
     @Before
     public void setup() throws FileNotFoundException {
-        service = new TradeUploadServiceImpl(session,irsService);
+        service = new TradeUploadServiceImpl(irsService, fraService);
+        dataLoader.purgeDatabase();
     }
 
     @Test
@@ -70,7 +75,6 @@ public class TradeUploadServiceTest {
             Row row = sheet.getRow(i);
             service.handleFRARow(row);
         }
-
     }
 
     @Test
@@ -80,9 +84,7 @@ public class TradeUploadServiceTest {
         for (int i = 1; i < sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
             service.handleOISRow(row);
-
         }
-
     }
 
     @Test
@@ -93,8 +95,6 @@ public class TradeUploadServiceTest {
         {
             Row row = sheet.getRow(i);
             service.handleIRSBilateralRow(row);
-
         }
-
     }
 }
