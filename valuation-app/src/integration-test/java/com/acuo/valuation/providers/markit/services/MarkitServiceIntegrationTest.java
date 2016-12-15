@@ -5,6 +5,7 @@ import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.valuation.modules.*;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
                                 MappingModule.class,
                                 EncryptionModule.class,
                                 Neo4jPersistModule.class,
+                                RepositoryModule.class,
                                 ParsersModule.class,
                                 EndPointModule.class,
                                 ServicesModule.class})
