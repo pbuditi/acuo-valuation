@@ -3,8 +3,10 @@ package com.acuo.valuation.providers.acuo;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
 import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
@@ -47,6 +49,7 @@ import static org.mockito.Mockito.when;
                                 EncryptionModule.class,
                                 Neo4jPersistModule.class,
                                 DataLoaderModule.class,
+                                DataImporterModule.class,
                                 RepositoryModule.class,
                                 EndPointModule.class,
                                 ServicesModule.class})
@@ -67,6 +70,9 @@ public class Neo4jSwapServiceTest {
     @Inject
     DataLoader dataLoader;
 
+    @Inject
+    DataImporter dataImporter;
+
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
@@ -76,6 +82,7 @@ public class Neo4jSwapServiceTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         dataLoader.purgeDatabase();
+        dataImporter.importFiles("clients", "legalentities", "accounts");
         service = new Neo4jSwapService(pricingService, session, tradeService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
     }
@@ -95,6 +102,24 @@ public class Neo4jSwapServiceTest {
         Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
+    }
+
+    @Test
+    public void testPriceSwapFromClientId() {
+        MarkitValue markitValue = new MarkitValue();
+        markitValue.setPv(1.0d);
+        PricingResults expectedResults = PricingResults.of(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
+        when(pricingService.price(any(List.class))).thenReturn(expectedResults);
+
+        PricingResults results = service.priceClientTrades("c1");
+
+        assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
+
+        Result<MarkitValuation> swapResult = results.getResults().get(0);
+        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
+
+        assertThat(swapResult.getValue()).is(pvEqualToOne);
+
     }
 
     @Test

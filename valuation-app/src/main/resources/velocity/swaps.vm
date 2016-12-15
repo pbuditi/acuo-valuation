@@ -131,7 +131,6 @@
   			<textarea id="message" rows="30" cols="50" wrap="off"></textarea>
   		</div>
   	</div>
-  	<!--div class="footer">Thanks to <a href="http://www.kawa.net">Yusuke Kawasaki</a> for ObjTree.js library.</div-->
   </div>
 </body>
 </html>

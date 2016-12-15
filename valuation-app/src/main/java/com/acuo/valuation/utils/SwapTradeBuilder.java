@@ -26,29 +26,6 @@ import java.util.Set;
 @Slf4j
 public class SwapTradeBuilder {
 
-    public static SwapTrade buildIRS(Map<String, Object> entry) {
-        SwapTrade swapTrade = new SwapTrade();
-
-        TradeInfo tradeInfo = new TradeInfo();
-        swapTrade.setInfo(tradeInfo);
-        tradeInfo.setTradeId((String) entry.get("id"));
-
-        Swap swap = new Swap();
-
-        return swapTrade;
-    }
-
-    public static TradeInfo buildTradeInfo(Map<String, Object> entry) {
-        TradeInfo tradeInfo = new TradeInfo();
-
-        if (entry.get("id") != null)
-            tradeInfo.setTradeId((String) entry.get("id"));
-
-        if (entry.get("clearingDate") != null)
-            tradeInfo.setClearedTradeDate(StringToLocalDate((String) entry.get("clearingDate")));
-        return tradeInfo;
-    }
-
     public static SwapTrade buildTrade(IRS trade) {
         SwapTrade swapTrade = new SwapTrade();
         Swap swap = new Swap();
