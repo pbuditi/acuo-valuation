@@ -73,14 +73,14 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     public void handleIRSRow(Row row) {
         IRS irs = parser.buildIRS(row);
         log.debug("parsed IRS {}", irs);
-        irs = irsService.createOrUpdate(irs);
-        log.debug("saved IRS {}", irs);
+        irs = irsService.createOrUpdateById(irs, irs.getIrsId());
+        log.debug("saved IRS {}", irs.getId());
     }
 
     public void handleFRARow(Row row) {
         FRA fra = parser.buildFRA(row);
         log.debug("parsed IRS {}", fra);
-        fra = fraService.createOrUpdate(fra);
+        fra = fraService.createOrUpdateById(fra, fra.getFraId());
         log.debug("saved IRS {}", fra);
 
     }
@@ -88,14 +88,14 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     public void handleOISRow(Row row) {
         IRS irs = parser.buildOIS(row);
         log.debug("parsed IRS {}", irs);
-        irs = irsService.createOrUpdate(irs);
+        irs = irsService.createOrUpdateById(irs, irs.getIrsId());
         log.debug("saved IRS {}", irs);
     }
 
     public void handleIRSBilateralRow(Row row) {
         IRS irs = parser.buildIRSBilateral(row);
         log.debug("parsed IRS {}", irs);
-        irs = irsService.createOrUpdate(irs);
+        irs = irsService.createOrUpdateById(irs,irs.getIrsId());
         log.debug("saved IRS {}", irs);
     }
 }
