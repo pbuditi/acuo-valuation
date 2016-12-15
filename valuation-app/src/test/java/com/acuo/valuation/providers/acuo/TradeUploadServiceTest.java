@@ -5,6 +5,8 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
 import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.entity.IRS;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
@@ -18,6 +20,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,6 +29,8 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Iterator;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
@@ -54,6 +59,9 @@ public class TradeUploadServiceTest {
     @Inject
     DataImporter dataImporter;
 
+    @Inject
+    Neo4jPersistService sessionProvider;
+
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
@@ -80,6 +88,24 @@ public class TradeUploadServiceTest {
             Row row = sheet.getRow(i);
             service.handleIRSRow(row);
         }
+    }
+
+    @Test
+    public void testHandleIRSOneRowUpdate() throws FileNotFoundException, IOException {
+        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
+        Sheet sheet = workbook.getSheetAt(0);
+        Row row = sheet.getRow(1);
+        service.handleIRSRow(row);
+        service.handleIRSRow(row);
+        Iterator<IRS> irses = sessionProvider.get().query(IRS.class, "MATCH (n:IRS {id:'455123'}) RETURN n", Collections.emptyMap()).iterator();
+        int count = 0;
+        while(irses.hasNext())
+        {
+            log.debug(irses.next().getId() + " id of irs");
+            count ++;
+        }
+
+        Assert.assertFalse(count != 1);
     }
 
     @Test
