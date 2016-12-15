@@ -20,6 +20,8 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 public class Neo4jSwapService implements SwapService {
@@ -44,6 +46,16 @@ public class Neo4jSwapService implements SwapService {
             log.error(e.getMessage(), e);
         }
         return null;
+    }
+
+    @Override
+    public PricingResults priceClientTrades(String clientId) {
+        Iterable<Trade> trades = tradeService.findBilateralTradesByClientId(clientId);
+        List<SwapTrade> swapTrades = StreamSupport.stream(trades.spliterator(), false)
+                .filter(trade -> trade instanceof IRS)
+                .map(trade -> SwapTradeBuilder.buildTrade((IRS) trade))
+                .collect(Collectors.toList());
+        return pricingService.price(swapTrades);
     }
 
     @Override
