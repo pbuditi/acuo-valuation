@@ -1,7 +1,10 @@
 package com.acuo.valuation.providers.acuo;
 
+import com.acuo.persist.entity.Account;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Trade;
+import com.acuo.persist.services.AccountService;
 import com.acuo.persist.services.FRAService;
 import com.acuo.persist.services.IRSService;
 import com.acuo.valuation.services.TradeUploadService;
@@ -21,11 +24,13 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     final SwapExcelParser parser = new SwapExcelParser();
     private final IRSService irsService;
     private final FRAService fraService;
+    private final AccountService accountService;
 
     @Inject
-    public TradeUploadServiceImpl(IRSService irsService, FRAService fraService) {
+    public TradeUploadServiceImpl(IRSService irsService, FRAService fraService, AccountService accountService) {
         this.irsService = irsService;
         this.fraService = fraService;
+        this.accountService = accountService;
     }
 
     public boolean uploadTradesFromExcel(InputStream fis) {
@@ -35,7 +40,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    handleIRSRow(row);
+                    addToAccount(row, handleIRSRow(row));
                 }
             }
 
@@ -43,7 +48,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i < sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    handleFRARow(row);
+                    addToAccount(row, handleFRARow(row));
                 }
             }
 
@@ -51,7 +56,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i < sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    handleOISRow(row);
+                    addToAccount(row, handleOISRow(row));
                 }
             }
 
@@ -59,7 +64,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i < sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    handleIRSBilateralRow(row);
+                    addToAccount(row, handleIRSBilateralRow(row));
                 }
             }
 
@@ -70,11 +75,18 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         return true;
     }
 
-    public void handleIRSRow(Row row) {
+    private void addToAccount(Row row, Trade trade) {
+        Account account = accountService.findById(row.getCell(1).getStringCellValue());
+        account.add(trade);
+        accountService.createOrUpdate(account);
+    }
+
+    public IRS handleIRSRow(Row row) {
         IRS irs = parser.buildIRS(row);
         log.debug("parsed IRS {}", irs);
         irs = irsService.createOrUpdate(irs);
         log.debug("saved IRS {}", irs);
+        return irs;
     }
 
     public void handleFRARow(Row row) {

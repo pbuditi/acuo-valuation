@@ -2,10 +2,13 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
+import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.services.AccountService;
 import com.acuo.persist.services.FRAService;
 import com.acuo.persist.services.IRSService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
@@ -25,7 +28,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, Neo4jPersistModule.class, RepositoryModule.class, DataLoaderModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
+                                MappingModule.class,
+                                Neo4jPersistModule.class,
+                                RepositoryModule.class,
+                                DataLoaderModule.class,
+                                DataImporterModule.class})
 @Slf4j
 public class TradeUploadServiceTest {
 
@@ -38,7 +46,13 @@ public class TradeUploadServiceTest {
     FRAService fraService;
 
     @Inject
+    AccountService accountService;
+
+    @Inject
     DataLoader dataLoader;
+
+    @Inject
+    DataImporter dataImporter;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -48,8 +62,9 @@ public class TradeUploadServiceTest {
 
     @Before
     public void setup() throws FileNotFoundException {
-        service = new TradeUploadServiceImpl(irsService, fraService);
+        service = new TradeUploadServiceImpl(irsService, fraService, accountService);
         dataLoader.purgeDatabase();
+        dataImporter.importFiles("clients", "legalentities", "accounts");
     }
 
     @Test
