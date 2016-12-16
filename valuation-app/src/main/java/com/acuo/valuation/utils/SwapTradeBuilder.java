@@ -2,6 +2,7 @@ package com.acuo.valuation.utils;
 
 import com.acuo.common.model.AdjustableDate;
 import com.acuo.common.model.AdjustableSchedule;
+import com.acuo.common.model.BusinessDayAdjustment;
 import com.acuo.common.model.product.Swap;
 import com.acuo.common.model.trade.ProductType;
 import com.acuo.common.model.trade.SwapTrade;
@@ -9,6 +10,10 @@ import com.acuo.common.model.trade.TradeInfo;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
 import com.acuo.persist.entity.Trade;
+import com.google.common.collect.ImmutableSet;
+import com.opengamma.strata.basics.date.HolidayCalendar;
+import com.opengamma.strata.basics.date.HolidayCalendarId;
+import com.opengamma.strata.basics.date.HolidayCalendars;
 import com.opengamma.strata.basics.date.Tenor;
 import com.opengamma.strata.basics.index.FloatingRateName;
 import com.opengamma.strata.basics.schedule.Frequency;
@@ -32,17 +37,19 @@ public class SwapTradeBuilder {
         swapTrade.setProduct(swap);
         swapTrade.setType(ProductType.SWAP);
 
-        swapTrade.setInfo(SwapTradeBuilder.buildTradeInfo(trade));
+        TradeInfo info = SwapTradeBuilder.buildTradeInfo(trade);
+        info.setTradeId(trade.getIrsId());
+        swapTrade.setInfo(info);
 
         Set<Leg> payLegs = trade.getPayLegs();
         for (Leg payLeg : payLegs) {
-            Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(payLeg);
+            Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(1, payLeg);
             swap.addLeg(leg);
         }
 
         Set<Leg> receiveLegs = trade.getReceiveLegs();
         for (Leg receiveLeg : receiveLegs) {
-            Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(receiveLeg);
+            Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(2,receiveLeg);
             swap.addLeg(leg);
         }
 
@@ -53,12 +60,15 @@ public class SwapTradeBuilder {
         TradeInfo tradeInfo = new TradeInfo();
         tradeInfo.setTradeId(trade.getTradeId());
         tradeInfo.setClearedTradeDate(trade.getClearingDate());
+        tradeInfo.setTradeDate(trade.getTradeDate());
         return tradeInfo;
     }
 
-    public static Swap.SwapLeg buildLeg(Leg leg) {
+    public static Swap.SwapLeg buildLeg(int id, Leg leg) {
         Swap.SwapLeg result = new Swap.SwapLeg();
 
+        result.setId(id);
+        result.setCurrency(leg.getCurrency());
         result.setNotional(leg.getNotional());
         result.setRate(leg.getFixedRate());
         result.setType(leg.getType());
@@ -66,12 +76,18 @@ public class SwapTradeBuilder {
         //if (entry.get("payStart") != null) {
             AdjustableDate adjustableDate = new AdjustableDate();
             adjustableDate.setDate(leg.getPayStart());
+        BusinessDayAdjustment adjustment = new BusinessDayAdjustment();
+        adjustment.setBusinessDayConvention(leg.getBusinessDayConvention());
+        HolidayCalendarId holidays = HolidayCalendars.of(leg.getRefCalendar()).getId();
+        adjustment.setHolidays(ImmutableSet.of(holidays));
+        adjustableDate.setAdjustment(adjustment);
             result.setStartDate(adjustableDate);
         //}
 
         //if (entry.get("payEnd") != null) {
             adjustableDate = new AdjustableDate();
             adjustableDate.setDate(leg.getPayEnd());
+        adjustableDate.setAdjustment(adjustment);
             result.setMaturityDate(adjustableDate);
         //}
 
@@ -80,6 +96,7 @@ public class SwapTradeBuilder {
              AdjustableSchedule adjustableSchedule = new AdjustableSchedule();
              log.debug("paymentFrequency:" + leg.getPaymentFrequency());
              adjustableSchedule.setFrequency(leg.getPaymentFrequency());
+        adjustableSchedule.setAdjustment(adjustment);
              result.setPaymentSchedule(adjustableSchedule);
         //}
 

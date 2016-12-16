@@ -27,13 +27,13 @@ import java.util.stream.StreamSupport;
 public class Neo4jSwapService implements SwapService {
 
     private final PricingService pricingService;
-    private final Neo4jPersistService sessionProvider;
+    //private final Neo4jPersistService sessionProvider;
     private final TradeService tradeService;
 
     @Inject
-    public Neo4jSwapService(PricingService pricingService, Neo4jPersistService sessionProvider, TradeService tradeService) {
+    public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService tradeService) {
         this.pricingService = pricingService;
-        this.sessionProvider = sessionProvider;
+        //this.sessionProvider = sessionProvider;
         this.tradeService = tradeService;
     }
 
@@ -94,8 +94,8 @@ public class Neo4jSwapService implements SwapService {
                             //existing date, add or replace the value
                             Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
                             for (com.acuo.persist.entity.Value existedValue : existedValues) {
-                                if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit"))
-                                    sessionProvider.get().delete(existedValue);
+                                //if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit"))
+                                    //sessionProvider.get().delete(existedValue);
                             }
 
                             com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
@@ -106,7 +106,7 @@ public class Neo4jSwapService implements SwapService {
 
                             valuation.getValues().add(newValue);
 
-                            sessionProvider.get().save(valuation, 2);
+                            //sessionProvider.get().save(valuation, 2);
 
                             found = true;
                             break;
@@ -143,10 +143,7 @@ public class Neo4jSwapService implements SwapService {
                         trade.setValuations(valuationSet);
 
                     }
-
-
-
-                    sessionProvider.get().save(trade, 2);
+                    //sessionProvider.get().save(trade, 2);
 
                 }
             }
