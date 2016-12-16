@@ -4,6 +4,10 @@ import com.acuo.collateral.transform.Transformer;
 import com.acuo.collateral.transform.TransformerContext;
 import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.services.PortfolioService;
+import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.clarus.protocol.RequestBuilder;
@@ -19,7 +23,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.*;
@@ -30,12 +36,16 @@ public class ClarusMarginCalcService implements MarginCalcService {
     private final ClientEndPoint clientEndPoint;
     private final ObjectMapper objectMapper;
     private final Transformer<SwapTrade> transformer;
+    private final ValuationService valuationService;
+    private final PortfolioService portfolioService;
 
     @Inject
-    public ClarusMarginCalcService(ClientEndPoint<ClarusEndPointConfig> clientEndPoint, ObjectMapper objectMapper, @Named("clarus") Transformer<SwapTrade> dataMapper) {
+    public ClarusMarginCalcService(ClientEndPoint<ClarusEndPointConfig> clientEndPoint, ObjectMapper objectMapper, @Named("clarus") Transformer<SwapTrade> dataMapper, ValuationService valuationService, PortfolioService portfolioService) {
         this.clientEndPoint = clientEndPoint;
         this.objectMapper = objectMapper;
         this.transformer = dataMapper;
+        this.valuationService = valuationService;
+        this.portfolioService = portfolioService;
     }
 
     @Override
@@ -82,5 +92,31 @@ public class ClarusMarginCalcService implements MarginCalcService {
                 map.getValue().get("Margin")))
                 .map(r -> Result.success(r))
                 .collect(Collectors.toList()));
+    }
+
+    public boolean savePV(MarginResults marginResults)
+    {
+//        Iterator<Portfolio> portfolioIterator = portfolioService.findAll().iterator();
+//
+//        while(portfolioIterator.hasNext())
+//            log.debug(portfolioIterator.next().toString());
+
+        String portfolioId = marginResults.getPortfolioId();
+
+        Portfolio portfolio = portfolioService.findById(portfolioId);
+
+        if(portfolio == null)
+            return false;
+
+        log.debug(portfolio.toString());
+
+        Set<Valuation> valuations = portfolio.getValuations();
+        for(Valuation valuation : valuations)
+        {
+            log.debug(valuation.toString());
+        }
+
+
+        return true;
     }
 }
