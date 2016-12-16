@@ -83,7 +83,7 @@ public class Neo4jSwapServiceTest {
         MockitoAnnotations.initMocks(this);
         dataLoader.purgeDatabase();
         dataImporter.importFiles("clients", "legalentities", "accounts");
-        service = new Neo4jSwapService(pricingService, session, tradeService);
+        service = new Neo4jSwapService(pricingService, /*session,*/ tradeService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
     }
 
