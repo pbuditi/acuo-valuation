@@ -36,6 +36,7 @@ public class SwapExcelParser {
             Account account = new Account();
             account.setAccountId(row.getCell(1).getStringCellValue());
             irs.setAccount(account);
+            irs.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
             irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
@@ -78,9 +79,9 @@ public class SwapExcelParser {
         Leg leg = new Leg();
         leg.setType(getStringValue(row.getCell(startIndex)));
         leg.setCurrency(Currency.parse(getStringValue(row.getCell(startIndex + 1))));
+        leg.setPaymentFrequency(Frequency.parse(getStringValue(row.getCell(startIndex + 2))));
         leg.setBusinessDayConvention(BusinessDayConvention.of(getStringValue(row.getCell(startIndex + 3))));
         leg.setRefCalendar(getStringValue(row.getCell(startIndex + 4)));
-        leg.setPaymentFrequency(Frequency.parse(getStringValue(row.getCell(startIndex + 2))));
         leg.setDayCount(DayCount.of(getStringValue(row.getCell(startIndex + 5))));
         String index = getStringValue(row.getCell(startIndex + 6));
         if (index != null) {
@@ -100,9 +101,7 @@ public class SwapExcelParser {
             leg.setPayEnd(dateToLocalDate(row.getCell(startIndex + 10).getDateCellValue()));
         if (row.getCell(startIndex + 11) != null)
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 11)).replace(",", "")));
-        if (row.getCell(startIndex + 12) != null && row.getCell(startIndex + 12).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
-            leg.setFixedRate(row.getCell(startIndex + 12).getNumericCellValue());
-        else if (row.getCell(startIndex + 12) != null && row.getCell(startIndex + 12).getCellStyle().equals(Cell.CELL_TYPE_STRING))
+        if (row.getCell(startIndex + 12) != null)
             leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 12).getStringCellValue())));
         return leg;
     }
