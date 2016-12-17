@@ -14,6 +14,7 @@ import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
+import com.acuo.persist.services.ValueService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -81,6 +82,10 @@ public class ClarusMarginCalcServiceTest {
     @Inject
     PortfolioService portfolioService;
 
+    @Inject
+    ValueService valueService;
+
+
     ClarusMarginCalcService service;
 
     @Before
@@ -92,7 +97,7 @@ public class ClarusMarginCalcServiceTest {
 
         ClientEndPoint<ClarusEndPointConfig> clientEndPoint = new OkHttpClient(httpClient, config);
 
-        service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer, valuationService, portfolioService);
+        service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer, valuationService, portfolioService, valueService);
     }
 
     @Test
@@ -121,11 +126,12 @@ public class ClarusMarginCalcServiceTest {
     @Test
     public void testSavePv()
     {
-        MarginValuation marginValuation = new MarginValuation("", 1d, 1d, 1d);
+        MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d);
         Result<MarginValuation> result = Result.success(marginValuation);
         MarginResults marginResults = MarginResults.of(Arrays.asList(result));
         marginResults.setPortfolioId("p2");
         marginResults.setValuationDate(LocalDate.now());
+        marginResults.setCurrency("USD");
         Assert.assertTrue(service.savePV(marginResults));
     }
 
