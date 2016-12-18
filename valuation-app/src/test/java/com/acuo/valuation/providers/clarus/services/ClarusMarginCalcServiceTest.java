@@ -8,6 +8,9 @@ import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.Value;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
@@ -37,7 +40,9 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataFormat;
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
@@ -98,6 +103,10 @@ public class ClarusMarginCalcServiceTest {
         ClientEndPoint<ClarusEndPointConfig> clientEndPoint = new OkHttpClient(httpClient, config);
 
         service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer, valuationService, portfolioService, valueService);
+
+        Portfolio portfolio = new Portfolio();
+        portfolio.setPortfolioId("p2");
+        portfolioService.createOrUpdateById(portfolio, "p2");
     }
 
     @Test
@@ -130,9 +139,21 @@ public class ClarusMarginCalcServiceTest {
         Result<MarginValuation> result = Result.success(marginValuation);
         MarginResults marginResults = MarginResults.of(Arrays.asList(result));
         marginResults.setPortfolioId("p2");
-        marginResults.setValuationDate(LocalDate.now());
+        LocalDate localDate = LocalDate.now();
+        marginResults.setValuationDate(localDate);
         marginResults.setCurrency("USD");
         Assert.assertTrue(service.savePV(marginResults));
+        Portfolio portfolio = portfolioService.findById("p2");
+        Set<Valuation> valuationSet = portfolio.getValuations();
+        for(Valuation valuation : valuationSet)
+        {
+            Assert.assertEquals(localDate, valuation.getDate());
+            Set<Value> values = valuation.getValues();
+            for(Value value : values)
+            {
+                Assert.assertEquals(value.getPv().doubleValue(), 1d,0);
+            }
+        }
     }
 
 }
