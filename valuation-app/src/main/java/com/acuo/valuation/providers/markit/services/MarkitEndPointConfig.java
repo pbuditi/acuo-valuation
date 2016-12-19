@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.common.http.client.EndPointConfig;
 import com.acuo.common.util.ArgChecker;
+import com.acuo.valuation.utils.PropertiesHelper;
 import lombok.Data;
 import okhttp3.HttpUrl;
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
@@ -25,6 +26,7 @@ public class MarkitEndPointConfig implements EndPointConfig {
     private final Long retryDelayInMilliseconds;
     private final int connectionTimeOut;
     private final TimeUnit connectionTimeOutUnit;
+    private final boolean useProxy;
 
     public MarkitEndPointConfig(HttpUrl httpUrl,
                                 String uploadPath,
@@ -32,8 +34,9 @@ public class MarkitEndPointConfig implements EndPointConfig {
                                 String username,
                                 String password,
                                 String retryDelayInMinute,
-                                String connectionTimeOutInMilli) {
-        this(httpUrl.scheme(), httpUrl.host(), httpUrl.port(), uploadPath, downloadPath, username, password, retryDelayInMinute, connectionTimeOutInMilli, null);
+                                String connectionTimeOutInMilli,
+                                String useProxy) {
+        this(httpUrl.scheme(), httpUrl.host(), httpUrl.port(), uploadPath, downloadPath, username, password, retryDelayInMinute, connectionTimeOutInMilli, useProxy, null);
     }
 
     public MarkitEndPointConfig(String scheme,
@@ -44,8 +47,9 @@ public class MarkitEndPointConfig implements EndPointConfig {
                                 String username,
                                 String password,
                                 String retryDelayInMinute,
-                                String connectionTimeOutInMilli) {
-        this(scheme, host, port, uploadPath, downloadPath, username, password, retryDelayInMinute, connectionTimeOutInMilli, null);
+                                String connectionTimeOutInMilli,
+                                String useProxy) {
+        this(scheme, host, port, uploadPath, downloadPath, username, password, retryDelayInMinute, connectionTimeOutInMilli, useProxy,null);
     }
 
     @Inject
@@ -58,6 +62,7 @@ public class MarkitEndPointConfig implements EndPointConfig {
                                 @Named(ACUO_VALUATION_MARKIT_PASSWORD) String password,
                                 @Named(ACUO_VALUATION_MARKIT_RETRY_DELAY) String retryDelayInMinute,
                                 @Named(ACUO_VALUATION_MARKIT_CONNECTION_TIMEOUT) String connectionTimeOutInMilli,
+                                @Named(PropertiesHelper.ACUO_VALUATION_MARKIT_USE_PROXY) String useProxy,
                                 PBEStringEncryptor encryptor) {
         ArgChecker.notEmpty(scheme, "scheme");
         ArgChecker.notEmpty(host, "host");
@@ -65,6 +70,7 @@ public class MarkitEndPointConfig implements EndPointConfig {
         ArgChecker.notEmpty(password, "password");
         ArgChecker.notEmpty(password, "retryDelayInMinute");
         ArgChecker.notEmpty(connectionTimeOutInMilli, "connectionTimeOutInMilli");
+        ArgChecker.notEmpty(useProxy, "useProxy");
         this.scheme = scheme;
         this.host = host;
         this.port = (port == 0) ? HttpUrl.defaultPort(scheme) : port;
@@ -75,6 +81,7 @@ public class MarkitEndPointConfig implements EndPointConfig {
         this.retryDelayInMilliseconds = TimeUnit.MINUTES.toMillis(Long.parseLong(retryDelayInMinute));
         this.connectionTimeOut = Integer.valueOf(connectionTimeOutInMilli);
         this.connectionTimeOutUnit = TimeUnit.MILLISECONDS;
+        this.useProxy = Boolean.valueOf(useProxy);
     }
 
     @Override
@@ -85,5 +92,10 @@ public class MarkitEndPointConfig implements EndPointConfig {
     @Override
     public TimeUnit connectionTimeOutUnit() {
         return connectionTimeOutUnit;
+    }
+
+    @Override
+    public boolean useLocalSocksProxy() {
+        return useProxy;
     }
 }
