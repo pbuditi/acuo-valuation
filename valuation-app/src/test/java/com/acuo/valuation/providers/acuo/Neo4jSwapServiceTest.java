@@ -101,10 +101,10 @@ public class Neo4jSwapServiceTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-//        dataLoader.purgeDatabase();
-//        dataImporter.importFiles("clients", "legalentities", "accounts");
+        dataLoader.purgeDatabase();
+        dataImporter.importFiles("clients", "legalentities", "accounts");
         service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService);
-//        tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
+        tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
 
         Portfolio portfolio = new Portfolio();
         portfolio.setPortfolioId("p2");
@@ -176,7 +176,7 @@ public class Neo4jSwapServiceTest {
     }
 
     @Test
-    public void testSavePv()
+    public void testPersistClarusResult()
     {
         MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d);
         Result<MarginValuation> result = Result.success(marginValuation);
