@@ -5,12 +5,28 @@ import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.http.client.LoggingInterceptor;
 import com.acuo.common.http.client.OkHttpClient;
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.Value;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.services.PortfolioService;
+import com.acuo.persist.services.ValuationService;
+import com.acuo.persist.services.ValueService;
+import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.protocol.results.MarginValuation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import com.opengamma.strata.collect.result.Result;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -22,7 +38,11 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Named;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataFormat;
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
@@ -32,7 +52,15 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({MappingModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
+        MappingModule.class,
+        EncryptionModule.class,
+        Neo4jPersistModule.class,
+        DataLoaderModule.class,
+        DataImporterModule.class,
+        RepositoryModule.class,
+        EndPointModule.class,
+        ServicesModule.class})
 public class ClarusMarginCalcServiceTest {
 
     @Rule
@@ -53,6 +81,16 @@ public class ClarusMarginCalcServiceTest {
 
     MockWebServer server = new MockWebServer();
 
+    @Inject
+    ValuationService valuationService;
+
+    @Inject
+    PortfolioService portfolioService;
+
+    @Inject
+    ValueService valueService;
+
+
     ClarusMarginCalcService service;
 
     @Before
@@ -64,7 +102,11 @@ public class ClarusMarginCalcServiceTest {
 
         ClientEndPoint<ClarusEndPointConfig> clientEndPoint = new OkHttpClient(httpClient, config);
 
-        service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer);
+        service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer, valuationService, portfolioService, valueService);
+
+        Portfolio portfolio = new Portfolio();
+        portfolio.setPortfolioId("p2");
+        portfolioService.createOrUpdateById(portfolio, "p2");
     }
 
     @Test
@@ -88,6 +130,30 @@ public class ClarusMarginCalcServiceTest {
         String body = r.getBody().readUtf8();
         assertThat(results).isNotNull();
         assertThat(results.getResults().size()).isEqualTo(2);
+    }
+
+    @Test
+    public void testSavePv()
+    {
+        MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d);
+        Result<MarginValuation> result = Result.success(marginValuation);
+        MarginResults marginResults = MarginResults.of(Arrays.asList(result));
+        marginResults.setPortfolioId("p2");
+        LocalDate localDate = LocalDate.now();
+        marginResults.setValuationDate(localDate);
+        marginResults.setCurrency("USD");
+        Assert.assertTrue(service.savePV(marginResults));
+        Portfolio portfolio = portfolioService.findById("p2");
+        Set<Valuation> valuationSet = portfolio.getValuations();
+        for(Valuation valuation : valuationSet)
+        {
+            Assert.assertEquals(localDate, valuation.getDate());
+            Set<Value> values = valuation.getValues();
+            for(Value value : values)
+            {
+                Assert.assertEquals(value.getPv().doubleValue(), 1d,0);
+            }
+        }
     }
 
 }
