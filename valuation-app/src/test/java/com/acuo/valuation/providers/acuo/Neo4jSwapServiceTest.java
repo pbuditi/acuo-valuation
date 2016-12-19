@@ -7,15 +7,19 @@ import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.Account;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.Value;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
-import com.acuo.persist.services.AccountService;
-import com.acuo.persist.services.TradeService;
+import com.acuo.persist.services.*;
 import com.acuo.valuation.modules.*;
 
 import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
@@ -23,8 +27,8 @@ import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Condition;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +45,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -56,7 +61,6 @@ import static org.mockito.Mockito.when;
                                 RepositoryModule.class,
                                 EndPointModule.class,
                                 ServicesModule.class})
-@Slf4j
 public class Neo4jSwapServiceTest {
 
     @Mock
@@ -77,7 +81,16 @@ public class Neo4jSwapServiceTest {
     @Inject
     DataImporter dataImporter;
 
-    @Inject
+    @com.google.inject.Inject
+    ValuationService valuationService;
+
+    @com.google.inject.Inject
+    PortfolioService portfolioService;
+
+    @com.google.inject.Inject
+    ValueService valueService;
+
+    @com.google.inject.Inject
     AccountService accountService;
 
     @Rule
@@ -90,8 +103,12 @@ public class Neo4jSwapServiceTest {
         MockitoAnnotations.initMocks(this);
         dataLoader.purgeDatabase();
         dataImporter.importFiles("clients", "legalentities", "accounts");
-        service = new Neo4jSwapService(pricingService, /*session,*/ tradeService);
+        service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
+
+        Portfolio portfolio = new Portfolio();
+        portfolio.setPortfolioId("p2");
+        portfolioService.createOrUpdateById(portfolio, "p2");
     }
 
     @Test
@@ -150,11 +167,35 @@ public class Neo4jSwapServiceTest {
         LocalDate myDate1 = LocalDate.of(2015, 6, 1);
         pricingResults.setDate(myDate1);
         pricingResults.setCurrency(Currency.USD);
-        service.persist(pricingResults);
+        service.persistMarkitResult(pricingResults);
     }
 
     @Test
     public void testPersistNullPricingResult() throws ParseException {
-        service.persist(null);
+        service.persistMarkitResult(null);
+    }
+
+    @Test
+    public void testPersistClarusResult()
+    {
+        MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d);
+        Result<MarginValuation> result = Result.success(marginValuation);
+        MarginResults marginResults = MarginResults.of(Arrays.asList(result));
+        marginResults.setPortfolioId("p2");
+        LocalDate localDate = LocalDate.now();
+        marginResults.setValuationDate(localDate);
+        marginResults.setCurrency("USD");
+        Assert.assertTrue(service.persistClarusResult(marginResults));
+        Portfolio portfolio = portfolioService.findById("p2");
+        Set<Valuation> valuationSet = portfolio.getValuations();
+        for(Valuation valuation : valuationSet)
+        {
+            Assert.assertEquals(localDate, valuation.getDate());
+            Set<Value> values = valuation.getValues();
+            for(Value value : values)
+            {
+                Assert.assertEquals(value.getPv().doubleValue(), 1d,0);
+            }
+        }
     }
 }
