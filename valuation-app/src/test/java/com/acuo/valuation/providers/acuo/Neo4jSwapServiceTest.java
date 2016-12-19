@@ -6,10 +6,12 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
 import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.entity.Account;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.services.AccountService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.*;
 
@@ -21,6 +23,7 @@ import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Rule;
@@ -53,6 +56,7 @@ import static org.mockito.Mockito.when;
                                 RepositoryModule.class,
                                 EndPointModule.class,
                                 ServicesModule.class})
+@Slf4j
 public class Neo4jSwapServiceTest {
 
     @Mock
@@ -72,6 +76,9 @@ public class Neo4jSwapServiceTest {
 
     @Inject
     DataImporter dataImporter;
+
+    @Inject
+    AccountService accountService;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
