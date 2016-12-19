@@ -4,9 +4,9 @@ apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/ja
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/sonarqube.gradle"
 
 ext.versions += [
-        persist         : '0.2.0-SNAPSHOT',
-        common          : '0.2.4',
-        mapping         : '0.1.2',
+        persist         : '0.1.1-SNAPSHOT',
+        common          : '0.3.0-SNAPSHOT',
+        mapping         : '0.1.3-SNAPSHOT',
         neo4j           : '3.0.6',
         neo4jOgm        : '2.0.5',
         okhttp          : '3.3.1',
@@ -67,7 +67,6 @@ dependencies {
             "com.palominolabs.metrics:metrics-guice:${versions.metricsguice}",
             "org.jasypt:jasypt:1.9.2",
 
-            "com.opengamma.strata:strata-product:0.15.0",
             "com.xebia:jackson-lombok:1.1"
     )
 

@@ -1,6 +1,5 @@
 package com.acuo.valuation.utils;
 
-import com.acuo.persist.entity.Account;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
@@ -9,6 +8,8 @@ import com.opengamma.strata.basics.date.BusinessDayConvention;
 import com.opengamma.strata.basics.date.DayCount;
 import com.opengamma.strata.basics.date.Tenor;
 import com.opengamma.strata.basics.index.FloatingRateName;
+import com.opengamma.strata.basics.index.FloatingRateType;
+import com.opengamma.strata.basics.index.ImmutableFloatingRateName;
 import com.opengamma.strata.basics.schedule.Frequency;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
@@ -33,9 +34,6 @@ public class SwapExcelParser {
             irs = new IRS();
 
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
-//            Account account = new Account();
-//            account.setAccountId(row.getCell(1).getStringCellValue());
-//            irs.setAccount(account);
             irs.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
@@ -88,7 +86,8 @@ public class SwapExcelParser {
             try{
                 leg.setIndex(FloatingRateName.of(index));
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
+                log.warn(e.getMessage());
+                leg.setIndex(ImmutableFloatingRateName.of(index,index, FloatingRateType.IBOR));
             }
         }
         String tenor = getStringValue(row.getCell(startIndex + 7));
@@ -118,10 +117,6 @@ public class SwapExcelParser {
         FRA fra = new FRA();
 
         try {
-
-//            Account account = new Account();
-//            account.setAccountId(row.getCell(1).getStringCellValue());
-//            fra.setAccount(account);
 
             fra.setFraId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             fra.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
@@ -180,10 +175,6 @@ public class SwapExcelParser {
             irs = new IRS();
 
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
-
-//            Account account = new Account();
-//            account.setAccountId(row.getCell(1).getStringCellValue());
-//            irs.setAccount(account);
 
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
@@ -258,10 +249,6 @@ public class SwapExcelParser {
             irs = new IRS();
 
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
-
-//            Account account = new Account();
-//            account.setAccountId(row.getCell(1).getStringCellValue());
-//            irs.setAccount(account);
 
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
