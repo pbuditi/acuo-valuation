@@ -61,6 +61,7 @@ public class SwapTradeBuilder {
         tradeInfo.setTradeId(trade.getTradeId());
         tradeInfo.setClearedTradeDate(trade.getClearingDate());
         tradeInfo.setTradeDate(trade.getTradeDate());
+        tradeInfo.setBook(trade.getAccount().getAccountId());
         return tradeInfo;
     }
 
@@ -71,6 +72,7 @@ public class SwapTradeBuilder {
         result.setCurrency(leg.getCurrency());
         result.setNotional(leg.getNotional());
         result.setRate(leg.getFixedRate());
+        result.setDaycount(leg.getDayCount());
         result.setType(leg.getType());
 
         //if (entry.get("payStart") != null) {
@@ -78,7 +80,10 @@ public class SwapTradeBuilder {
             adjustableDate.setDate(leg.getPayStart());
         BusinessDayAdjustment adjustment = new BusinessDayAdjustment();
         adjustment.setBusinessDayConvention(leg.getBusinessDayConvention());
-        HolidayCalendarId holidays = HolidayCalendars.of(leg.getRefCalendar()).getId();
+        HolidayCalendarId holidays = HolidayCalendars.NO_HOLIDAYS.getId();
+        try  {
+            holidays = HolidayCalendars.of(leg.getRefCalendar()).getId();
+        } catch(Exception e) {log.error(e.getMessage(),e);}
         adjustment.setHolidays(ImmutableSet.of(holidays));
         adjustableDate.setAdjustment(adjustment);
             result.setStartDate(adjustableDate);
