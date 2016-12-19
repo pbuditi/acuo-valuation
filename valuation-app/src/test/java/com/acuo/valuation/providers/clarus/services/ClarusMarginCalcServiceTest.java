@@ -54,13 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
         MappingModule.class,
-        EncryptionModule.class,
-        Neo4jPersistModule.class,
-        DataLoaderModule.class,
-        DataImporterModule.class,
-        RepositoryModule.class,
-        EndPointModule.class,
-        ServicesModule.class})
+        EncryptionModule.class})
 public class ClarusMarginCalcServiceTest {
 
     @Rule
@@ -81,14 +75,7 @@ public class ClarusMarginCalcServiceTest {
 
     MockWebServer server = new MockWebServer();
 
-    @Inject
-    ValuationService valuationService;
 
-    @Inject
-    PortfolioService portfolioService;
-
-    @Inject
-    ValueService valueService;
 
 
     ClarusMarginCalcService service;
@@ -102,11 +89,9 @@ public class ClarusMarginCalcServiceTest {
 
         ClientEndPoint<ClarusEndPointConfig> clientEndPoint = new OkHttpClient(httpClient, config);
 
-        service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer, valuationService, portfolioService, valueService);
+        service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer);
 
-        Portfolio portfolio = new Portfolio();
-        portfolio.setPortfolioId("p2");
-        portfolioService.createOrUpdateById(portfolio, "p2");
+
     }
 
     @Test
@@ -132,28 +117,6 @@ public class ClarusMarginCalcServiceTest {
         assertThat(results.getResults().size()).isEqualTo(2);
     }
 
-    @Test
-    public void testSavePv()
-    {
-        MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d);
-        Result<MarginValuation> result = Result.success(marginValuation);
-        MarginResults marginResults = MarginResults.of(Arrays.asList(result));
-        marginResults.setPortfolioId("p2");
-        LocalDate localDate = LocalDate.now();
-        marginResults.setValuationDate(localDate);
-        marginResults.setCurrency("USD");
-        Assert.assertTrue(service.savePV(marginResults));
-        Portfolio portfolio = portfolioService.findById("p2");
-        Set<Valuation> valuationSet = portfolio.getValuations();
-        for(Valuation valuation : valuationSet)
-        {
-            Assert.assertEquals(localDate, valuation.getDate());
-            Set<Value> values = valuation.getValues();
-            for(Value value : values)
-            {
-                Assert.assertEquals(value.getPv().doubleValue(), 1d,0);
-            }
-        }
-    }
+
 
 }

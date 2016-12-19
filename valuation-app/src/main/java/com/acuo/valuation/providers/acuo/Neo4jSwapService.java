@@ -2,18 +2,19 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.core.Neo4jPersistService;
-import com.acuo.persist.entity.IRS;
-import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.*;
+import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
-import com.acuo.valuation.protocol.results.MarkitValuation;
-import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.persist.services.ValuationService;
+import com.acuo.persist.services.ValueService;
+import com.acuo.valuation.protocol.results.*;
 import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.utils.SwapTradeBuilder;
 import com.google.common.collect.ImmutableList;
 import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -29,12 +30,18 @@ public class Neo4jSwapService implements SwapService {
     private final PricingService pricingService;
     //private final Neo4jPersistService sessionProvider;
     private final TradeService tradeService;
+    private final ValuationService valuationService;
+    private final PortfolioService portfolioService;
+    private final ValueService valueService;
 
     @Inject
-    public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService tradeService) {
+    public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService tradeService, ValuationService valuationService, PortfolioService portfolioService, ValueService valueService) {
         this.pricingService = pricingService;
         //this.sessionProvider = sessionProvider;
         this.tradeService = tradeService;
+        this.valuationService = valuationService;
+        this.portfolioService = portfolioService;
+        this.valueService = valueService;
     }
 
     @Override
@@ -59,9 +66,9 @@ public class Neo4jSwapService implements SwapService {
     }
 
     @Override
-    public boolean persist(PricingResults pricingResults) {
+    public boolean persistMarkitResult(PricingResults pricingResults) {
         if (pricingResults == null) {
-            log.warn("received a null pricing results to persist");
+            log.warn("received a null pricing results to persistMarkitResult");
             return false;
         }
 
@@ -69,7 +76,7 @@ public class Neo4jSwapService implements SwapService {
 
         Currency currency = pricingResults.getCurrency();
 
-        log.debug("persist start :" + pricingResults.getDate());
+        log.debug("persistMarkitResult start :" + pricingResults.getDate());
 
         ImmutableList<com.opengamma.strata.collect.result.Result<MarkitValuation>> results = pricingResults.getResults();
         for (com.opengamma.strata.collect.result.Result<MarkitValuation> result : results) {
@@ -164,4 +171,128 @@ public class Neo4jSwapService implements SwapService {
     {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
+
+    @Override
+    public boolean persistClarusResult(MarginResults marginResults)
+    {
+//        Iterator<Portfolio> portfolioIterator = portfolioService.findAll().iterator();
+//
+//        while(portfolioIterator.hasNext())
+//            log.debug(portfolioIterator.next().toString());
+
+        String portfolioId = marginResults.getPortfolioId();
+
+        Portfolio portfolio = portfolioService.findById(portfolioId);
+
+        if(portfolio == null)
+            return false;
+
+        //parse the result
+        String currency = marginResults.getCurrency();
+        Iterator<Result<MarginValuation>> resultIterator = marginResults.getResults().iterator();
+        Valuation newValuation = new Valuation();
+        newValuation.setDate(marginResults.getValuationDate());
+        com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
+        while(resultIterator.hasNext())
+        {
+            Result<MarginValuation> result = resultIterator.next();
+            MarginValuation marginValuation= result.getValue();
+            if(marginValuation.getName().equals(currency))
+            {
+                newValue.setPv(marginValuation.getMargin());
+                newValue.setSource("Clarus");
+                newValue.setCurrency(Currency.of(currency));
+            }
+        }
+
+
+        log.debug(portfolio.toString());
+
+        Set<Valuation> valuations = portfolio.getValuations();
+        if(valuations == null)
+        {
+            valuations = new HashSet<Valuation>();
+
+
+        }
+
+        for(Valuation valuation : valuations)
+        {
+            valuation = valuationService.find(valuation.getId());
+            if(valuation.getDate().equals(marginResults.getValuationDate()))
+            {
+                Set<com.acuo.persist.entity.Value> values = valuation.getValues();
+                if(values == null)
+                {
+                    values = new HashSet<com.acuo.persist.entity.Value>();
+                }
+                for(com.acuo.persist.entity.Value value : values)
+                {
+                    if(value.getCurrency().equals(currency) && value.getSource().equals("Clarus"))
+                    {
+                        //replace this value
+                        value.setPv(newValue.getPv());
+                        valueService.createOrUpdate(value);
+                        return true;
+
+                    }
+                }
+
+                values.add(newValue);
+                valuation.setValues(values);
+                valuationService.createOrUpdate(valuation);
+                return true;
+            }
+        }
+
+
+
+
+        valuations.add(newValuation);
+        Set<com.acuo.persist.entity.Value> values = new HashSet<com.acuo.persist.entity.Value>();
+        values.add(newValue);
+        newValuation.setValues(values);
+        portfolio.setValuations(valuations);
+        valuationService.createOrUpdate(newValuation);
+        portfolioService.createOrUpdate(portfolio);
+
+
+//        for(Valuation valuation : valuations)
+//        {
+//            log.debug(valuation.toString());
+//            if(valuation.getDate().equals(marginResults.getValuationDate()))
+//            {
+//
+//                //find valuation
+//                valuation = valuationService.find(valuation.getId());
+//                Set<Value> values = valuation.getValues();
+//                if(values == null)
+//                    values = new HashSet<Value>();
+//
+//                boolean foundValue = false;
+//                for(Value value : values)
+//                {
+//                    if(value.getSource().equals("Clarus") && value.getCurrency().equals(marginResults.getCurrency()))
+//                    {
+//
+//                        foundValue = true;
+//                        break;
+//                    }
+//                }
+//
+//
+//                foundValuation = true;
+//                break;
+//            }
+//        }
+//
+//        if(!foundValuation)
+//        {
+//            //insert new valuation and value
+//        }
+
+
+        return true;
+    }
+
 }
