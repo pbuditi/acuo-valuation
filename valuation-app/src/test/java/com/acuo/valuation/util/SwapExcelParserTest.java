@@ -33,8 +33,8 @@ public class SwapExcelParserTest {
         Sheet sheet = workbook.getSheetAt(0);
         Row row = sheet.getRow(1);
 
-       IRS irs  = parser.buildIRS(row);
-        log.debug(irs.toString());
+       //IRS irs  = parser.buildIRS(row);
+        //log.debug(irs.toString());
     }
 
     @Test
@@ -53,8 +53,8 @@ public class SwapExcelParserTest {
         Sheet sheet = workbook.getSheetAt(2);
         Row row = sheet.getRow(1);
 
-        IRS irs = parser.buildOIS(row);
-        log.debug(irs.toString());
+        //IRS irs = parser.buildOIS(row);
+        //log.debug(irs.toString());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class SwapExcelParserTest {
         Sheet sheet = workbook.getSheetAt(3);
         Row row = sheet.getRow(1);
 
-        IRS irs = parser.buildIRSBilateral(row);
-        log.debug(irs.toString());
+        //IRS irs = parser.buildIRSBilateral(row);
+        //log.debug(irs.toString());
     }
 }

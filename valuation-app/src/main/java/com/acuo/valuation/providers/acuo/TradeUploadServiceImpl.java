@@ -78,13 +78,11 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     private void addToAccount(Row row, Trade trade) {
         Account account = accountService.findById(row.getCell(1).getStringCellValue());
         account.add(trade);
-        accountService.createOrUpdateById(account, account.getAccountId());
+        accountService.createOrUpdate(account);
     }
 
     public IRS handleIRSRow(Row row) {
         IRS irs = parser.buildIRS(row);
-        log.debug("parsed IRS {}", irs);
-        irs = irsService.createOrUpdateById(irs, irs.getIrsId());
         addToAccount(row, irs);
         log.debug("saved IRS {}", irs);
         return irs;
@@ -92,28 +90,23 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
     public FRA handleFRARow(Row row) {
         FRA fra = parser.buildFRA(row);
-        log.debug("parsed IRS {}", fra);
         addToAccount(row, fra);
-        fra = fraService.createOrUpdateById(fra, fra.getFraId());
-        log.debug("saved IRS {}", fra);
+        log.debug("saved FRA {}", fra);
         return fra;
     }
 
     public IRS handleOISRow(Row row) {
         IRS irs = parser.buildOIS(row);
-        log.debug("parsed IRS {}", irs);
         addToAccount(row, irs);
-        irs = irsService.createOrUpdateById(irs, irs.getIrsId());
-        log.debug("saved IRS {}", irs);
+        log.debug("saved OIS {}", irs);
         return irs;
     }
 
     public IRS handleIRSBilateralRow(Row row) {
         IRS irs = parser.buildIRSBilateral(row);
-        log.debug("parsed IRS {}", irs);
         addToAccount(row, irs);
         irs = irsService.createOrUpdateById(irs,irs.getIrsId());
-        log.debug("saved IRS {}", irs);
+        log.debug("saved IRS-Bilateral {}", irs);
         return irs;
     }
 }

@@ -1,9 +1,21 @@
 version: '2'
 
 services:
+ neo4j:
+  image: neo4j:3.0.6-enterprise
+  ports:
+   - "7474:7474"
+   - "7687:7687"
+  expose:
+   - "7687"
+   - "7474"
+  environment:
+   - NEO4J_AUTH=none
+
  valuation:
   build: ./build
   image: valuation-app
   ports:
-   - "0.0.0.0:9090:9090"
-  network_mode: "host"
+   - "9090:9090"
+  links:
+    - neo4j

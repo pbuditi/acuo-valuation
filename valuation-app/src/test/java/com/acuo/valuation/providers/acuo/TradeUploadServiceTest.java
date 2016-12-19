@@ -72,6 +72,7 @@ public class TradeUploadServiceTest {
     public void setup() throws FileNotFoundException {
         service = new TradeUploadServiceImpl(irsService, fraService, accountService);
         dataLoader.purgeDatabase();
+        dataLoader.createConstraints();;
         dataImporter.importFiles("clients", "legalentities", "accounts");
     }
 

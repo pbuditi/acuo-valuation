@@ -29,10 +29,8 @@ public class SwapExcelParser {
     public static String TRADE_TYPE_BILATERAL = "Bilateral";
 
     public IRS buildIRS(Row row) {
-        IRS irs = null;
         try {
-            irs = new IRS();
-
+            IRS irs = new IRS();
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
             irs.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
@@ -66,15 +64,17 @@ public class SwapExcelParser {
             else
                 payLegs.add(leg2);
 
+            return irs;
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            return null;
         }
-        return irs;
     }
 
     private Leg buildLeg(Row row, int startIndex) {
         Leg leg = new Leg();
+        leg.setLegId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "-"+startIndex);
         leg.setType(getStringValue(row.getCell(startIndex)));
         leg.setCurrency(Currency.parse(getStringValue(row.getCell(startIndex + 1))));
         leg.setPaymentFrequency(Frequency.parse(getStringValue(row.getCell(startIndex + 2))));
@@ -170,10 +170,8 @@ public class SwapExcelParser {
 
 
     public IRS buildOIS(Row row) {
-        IRS irs = null;
         try {
-            irs = new IRS();
-
+            IRS irs = new IRS();
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
 
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
@@ -208,11 +206,12 @@ public class SwapExcelParser {
             else
                 payLegs.add(leg2);
 
+            return irs;
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            return null;
         }
-        return irs;
     }
 
     private Leg buildOISLeg(Row row, int startIndex) {
@@ -244,10 +243,9 @@ public class SwapExcelParser {
 
 
     public IRS buildIRSBilateral(Row row) {
-        IRS irs = null;
         try {
-            irs = new IRS();
 
+            IRS irs = new IRS();
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
 
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
@@ -282,11 +280,12 @@ public class SwapExcelParser {
             else
                 payLegs.add(leg2);
 
+            return irs;
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            return null;
         }
-        return irs;
     }
 
     private static LocalDate dateToLocalDate(Date date) {
