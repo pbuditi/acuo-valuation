@@ -33,9 +33,9 @@ public class SwapExcelParser {
             irs = new IRS();
 
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
-            Account account = new Account();
-            account.setAccountId(row.getCell(1).getStringCellValue());
-            irs.setAccount(account);
+//            Account account = new Account();
+//            account.setAccountId(row.getCell(1).getStringCellValue());
+//            irs.setAccount(account);
             irs.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
@@ -119,9 +119,9 @@ public class SwapExcelParser {
 
         try {
 
-            Account account = new Account();
-            account.setAccountId(row.getCell(1).getStringCellValue());
-            fra.setAccount(account);
+//            Account account = new Account();
+//            account.setAccountId(row.getCell(1).getStringCellValue());
+//            fra.setAccount(account);
 
             fra.setFraId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             fra.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
@@ -181,9 +181,9 @@ public class SwapExcelParser {
 
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
 
-            Account account = new Account();
-            account.setAccountId(row.getCell(1).getStringCellValue());
-            irs.setAccount(account);
+//            Account account = new Account();
+//            account.setAccountId(row.getCell(1).getStringCellValue());
+//            irs.setAccount(account);
 
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
@@ -259,9 +259,9 @@ public class SwapExcelParser {
 
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
 
-            Account account = new Account();
-            account.setAccountId(row.getCell(1).getStringCellValue());
-            irs.setAccount(account);
+//            Account account = new Account();
+//            account.setAccountId(row.getCell(1).getStringCellValue());
+//            irs.setAccount(account);
 
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
