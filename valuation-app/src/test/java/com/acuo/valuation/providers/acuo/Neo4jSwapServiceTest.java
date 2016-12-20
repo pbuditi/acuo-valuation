@@ -102,13 +102,14 @@ public class Neo4jSwapServiceTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         dataLoader.purgeDatabase();
+        dataLoader.createConstraints();
         dataImporter.importFiles("clients", "legalentities", "accounts");
         service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
 
         Portfolio portfolio = new Portfolio();
         portfolio.setPortfolioId("p2");
-        portfolioService.createOrUpdateById(portfolio, "p2");
+        portfolio = portfolioService.createOrUpdate(portfolio);
     }
 
     @Test
