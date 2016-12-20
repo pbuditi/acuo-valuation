@@ -101,8 +101,8 @@ public class Neo4jSwapService implements SwapService {
                             //existing date, add or replace the value
                             Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
                             for (com.acuo.persist.entity.Value existedValue : existedValues) {
-                                //if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit"))
-                                    //sessionProvider.get().delete(existedValue);
+                                if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit"))
+                                    valueService.delete(existedValue.getId());
                             }
 
                             com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
@@ -113,7 +113,7 @@ public class Neo4jSwapService implements SwapService {
 
                             valuation.getValues().add(newValue);
 
-                            //sessionProvider.get().save(valuation, 2);
+                            valuationService.createOrUpdate(valuation);
 
                             found = true;
                             break;
@@ -150,7 +150,7 @@ public class Neo4jSwapService implements SwapService {
                         trade.setValuations(valuationSet);
 
                     }
-                    //sessionProvider.get().save(trade, 2);
+                    valuationService.createOrUpdate(valuation);
 
                 }
             }
@@ -175,10 +175,7 @@ public class Neo4jSwapService implements SwapService {
     @Override
     public boolean persistClarusResult(MarginResults marginResults)
     {
-//        Iterator<Portfolio> portfolioIterator = portfolioService.findAll().iterator();
-//
-//        while(portfolioIterator.hasNext())
-//            log.debug(portfolioIterator.next().toString());
+
 
         String portfolioId = marginResults.getPortfolioId();
 
@@ -256,40 +253,6 @@ public class Neo4jSwapService implements SwapService {
         valuationService.createOrUpdate(newValuation);
         portfolioService.createOrUpdate(portfolio);
 
-
-//        for(Valuation valuation : valuations)
-//        {
-//            log.debug(valuation.toString());
-//            if(valuation.getDate().equals(marginResults.getValuationDate()))
-//            {
-//
-//                //find valuation
-//                valuation = valuationService.find(valuation.getId());
-//                Set<Value> values = valuation.getValues();
-//                if(values == null)
-//                    values = new HashSet<Value>();
-//
-//                boolean foundValue = false;
-//                for(Value value : values)
-//                {
-//                    if(value.getSource().equals("Clarus") && value.getCurrency().equals(marginResults.getCurrency()))
-//                    {
-//
-//                        foundValue = true;
-//                        break;
-//                    }
-//                }
-//
-//
-//                foundValuation = true;
-//                break;
-//            }
-//        }
-//
-//        if(!foundValuation)
-//        {
-//            //insert new valuation and value
-//        }
 
 
         return true;
