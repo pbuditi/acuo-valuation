@@ -6,10 +6,7 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
 import com.acuo.persist.core.Neo4jPersistService;
-import com.acuo.persist.entity.Account;
-import com.acuo.persist.entity.Portfolio;
-import com.acuo.persist.entity.Valuation;
-import com.acuo.persist.entity.Value;
+import com.acuo.persist.entity.*;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
@@ -168,6 +165,31 @@ public class Neo4jSwapServiceTest {
         pricingResults.setDate(myDate1);
         pricingResults.setCurrency(Currency.USD);
         service.persistMarkitResult(pricingResults);
+
+        Trade trade = tradeService.findById("455123");
+        Set<Valuation> valuations  = trade.getValuations();
+        boolean foundValuation = false;
+        boolean foundValue = false;
+        for(Valuation valuation : valuations)
+        {
+            if(valuation.getDate().equals(myDate1))
+            {
+                foundValuation = true;
+                Set<Value> values = valuation.getValues();
+                for(Value value : values)
+                {
+                    if(value.getCurrency().equals(Currency.USD) && value.getSource().equals("Markit") && value.getPv().doubleValue() ==5.98)
+                    {
+                        foundValue = true;
+                    }
+
+                }
+            }
+
+        }
+
+        Assert.assertTrue(foundValuation);
+        Assert.assertTrue(foundValue);
     }
 
     @Test
