@@ -71,7 +71,7 @@ public class TradeUploadServiceTest {
     @Before
     public void setup() throws FileNotFoundException {
         service = new TradeUploadServiceImpl(irsService, fraService, accountService);
-        dataLoader.purgeDatabase();
+        //dataLoader.purgeDatabase();
         dataLoader.createConstraints();;
         dataImporter.importFiles("clients", "legalentities", "accounts");
     }
@@ -107,6 +107,12 @@ public class TradeUploadServiceTest {
         }
 
         Assert.assertFalse(count != 1);
+    }
+
+    @Test
+    public void testMultipleUploadOfTheSameTrade() {
+        service.uploadTradesFromExcel(oneIRS.createInputStream());
+        service.uploadTradesFromExcel(oneIRS.createInputStream());
     }
 
     @Test

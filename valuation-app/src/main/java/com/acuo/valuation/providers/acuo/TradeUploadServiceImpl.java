@@ -105,7 +105,6 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     public IRS handleIRSBilateralRow(Row row) {
         IRS irs = parser.buildIRSBilateral(row);
         addToAccount(row, irs);
-        irs = irsService.createOrUpdateById(irs,irs.getIrsId());
         log.debug("saved IRS-Bilateral {}", irs);
         return irs;
     }

@@ -35,11 +35,11 @@ public class SwapExcelParser {
             irs.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
-            irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
+            irs.setTradeId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             irs.setTradeType(TRADE_TYPE_CLEARD);
 
 
-            log.debug("loading irs id {} ", irs.getIrsId());
+            log.debug("loading irs id {} ", irs.getTradeId());
 
             Leg leg1 = buildLeg(row, 15);
             Leg leg2 = buildLeg(row, 28);
@@ -118,7 +118,7 @@ public class SwapExcelParser {
 
         try {
 
-            fra.setFraId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
+            fra.setTradeId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             fra.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
             fra.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             fra.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
@@ -177,11 +177,11 @@ public class SwapExcelParser {
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
 
-            irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
+            irs.setTradeId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             irs.setTradeType(TRADE_TYPE_CLEARD);
 
 
-            log.debug(irs.getIrsId());
+            log.debug(irs.getTradeId());
 
             Leg leg1 = buildOISLeg(row, 15);
             Leg leg2 = buildOISLeg(row, 27);
@@ -251,11 +251,11 @@ public class SwapExcelParser {
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
 
-            irs.setIrsId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
+            irs.setTradeId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
             irs.setTradeType(TRADE_TYPE_BILATERAL);
 
 
-            log.debug("loading irs Bilateral id {} ", irs.getIrsId());
+            log.debug("loading irs Bilateral id {} ", irs.getTradeId());
 
             Leg leg1 = buildLeg(row, 11);
             Leg leg2 = buildLeg(row, 24);
