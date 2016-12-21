@@ -100,7 +100,7 @@ public class SwapExcelParser {
         if (row.getCell(startIndex + 11) != null)
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 11)).replace(",", "")));
         if (row.getCell(startIndex + 12) != null)
-            leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 12).getStringCellValue())));
+            leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 12).getStringCellValue())) / 100);
         return leg;
     }
 
@@ -119,6 +119,7 @@ public class SwapExcelParser {
 
             fra.setTradeId((new Double(row.getCell(3).getNumericCellValue())).longValue());
             fra.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
+            fra.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             fra.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             fra.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
             fra.setTradeType(TRADE_TYPE_CLEARD);
@@ -161,9 +162,9 @@ public class SwapExcelParser {
         if (row.getCell(startIndex + 9) != null)
             leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 9)).replace(",", "")));
         if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
-            leg.setFixedRate(row.getCell(startIndex + 10).getNumericCellValue());
+            leg.setFixedRate(row.getCell(startIndex + 10).getNumericCellValue() / 100);
         else if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_STRING))
-            leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 10).getStringCellValue())));
+            leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 10).getStringCellValue())) / 100);
         return leg;
     }
 
@@ -172,7 +173,7 @@ public class SwapExcelParser {
         try {
             IRS irs = new IRS();
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
-
+            irs.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
 
@@ -234,9 +235,9 @@ public class SwapExcelParser {
         else if (row.getCell(startIndex + 10) != null && row.getCell(startIndex + 10).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
             leg.setNotional(row.getCell(startIndex + 10).getNumericCellValue());
         if (row.getCell(startIndex + 11) != null && row.getCell(startIndex + 11).getCellStyle().equals(Cell.CELL_TYPE_NUMERIC))
-            leg.setFixedRate(row.getCell(startIndex + 11).getNumericCellValue());
+            leg.setFixedRate(row.getCell(startIndex + 11).getNumericCellValue() / 100);
         else if (row.getCell(startIndex + 11) != null && row.getCell(startIndex + 11).getCellStyle().equals(Cell.CELL_TYPE_STRING))
-            leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 11).getStringCellValue())));
+            leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 11).getStringCellValue())) / 100);
         return leg;
     }
 
@@ -246,7 +247,7 @@ public class SwapExcelParser {
 
             IRS irs = new IRS();
             irs.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
-
+            irs.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
 
