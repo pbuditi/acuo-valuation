@@ -70,7 +70,7 @@ public class Neo4jSwapServiceTest {
     TradeUploadService tradeUploadService;
 
     @Inject
-    TradeService tradeService;
+    TradeService<Trade> tradeService;
 
     @Inject
     DataLoader dataLoader;
@@ -167,7 +167,7 @@ public class Neo4jSwapServiceTest {
         pricingResults.setCurrency(Currency.USD);
         service.persistMarkitResult(pricingResults);
 
-        Trade trade = tradeService.findById("455123");
+        Trade trade = tradeService.findById(455123l);
         Set<Valuation> valuations  = trade.getValuations();
         boolean foundValuation = false;
         boolean foundValue = false;

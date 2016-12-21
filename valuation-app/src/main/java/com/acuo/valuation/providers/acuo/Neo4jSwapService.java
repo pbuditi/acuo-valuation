@@ -29,13 +29,13 @@ public class Neo4jSwapService implements SwapService {
 
     private final PricingService pricingService;
     //private final Neo4jPersistService sessionProvider;
-    private final TradeService tradeService;
+    private final TradeService<Trade> tradeService;
     private final ValuationService valuationService;
     private final PortfolioService portfolioService;
     private final ValueService valueService;
 
     @Inject
-    public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService tradeService, ValuationService valuationService, PortfolioService portfolioService, ValueService valueService) {
+    public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService<Trade> tradeService, ValuationService valuationService, PortfolioService portfolioService, ValueService valueService) {
         this.pricingService = pricingService;
         //this.sessionProvider = sessionProvider;
         this.tradeService = tradeService;
@@ -87,7 +87,7 @@ public class Neo4jSwapService implements SwapService {
 
                 log.debug("tradeId:" + tradeId);
 
-                Trade trade = tradeService.findById(tradeId);
+                Trade trade = tradeService.findById(Long.valueOf(tradeId));
 
                 log.debug(trade.toString());
 
@@ -159,7 +159,7 @@ public class Neo4jSwapService implements SwapService {
     }
 
     private List<SwapTrade> getSwapTrades(String swapId) {
-        Trade trade = tradeService.findById(swapId);
+        Trade trade = tradeService.findById(Long.valueOf(swapId));
         SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
         log.debug("swapTrade:" + swapTrade);
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();

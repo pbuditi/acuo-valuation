@@ -35,7 +35,7 @@ public class SwapExcelParser {
             irs.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
-            irs.setTradeId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
+            irs.setTradeId((new Double(row.getCell(3).getNumericCellValue())).longValue());
             irs.setTradeType(TRADE_TYPE_CLEARD);
 
 
@@ -118,7 +118,7 @@ public class SwapExcelParser {
 
         try {
 
-            fra.setTradeId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
+            fra.setTradeId((new Double(row.getCell(3).getNumericCellValue())).longValue());
             fra.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
             fra.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             fra.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
@@ -177,11 +177,11 @@ public class SwapExcelParser {
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
 
-            irs.setTradeId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
+            irs.setTradeId((new Double(row.getCell(3).getNumericCellValue())).longValue());
             irs.setTradeType(TRADE_TYPE_CLEARD);
 
 
-            log.debug(irs.getTradeId());
+            log.debug("irs trade id {}",irs.getTradeId());
 
             Leg leg1 = buildOISLeg(row, 15);
             Leg leg2 = buildOISLeg(row, 27);
@@ -251,7 +251,7 @@ public class SwapExcelParser {
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
 
-            irs.setTradeId((new Double(row.getCell(3).getNumericCellValue())).intValue() + "");
+            irs.setTradeId((new Double(row.getCell(3).getNumericCellValue())).longValue());
             irs.setTradeType(TRADE_TYPE_BILATERAL);
 
 

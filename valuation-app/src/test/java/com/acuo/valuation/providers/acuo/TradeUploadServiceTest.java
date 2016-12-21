@@ -4,15 +4,14 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
-import com.acuo.persist.modules.DataImporterModule;
-import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
+import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.AccountService;
-import com.acuo.persist.services.FRAService;
-import com.acuo.persist.services.IRSService;
+import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +28,6 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
@@ -45,10 +42,10 @@ public class TradeUploadServiceTest {
     TradeUploadServiceImpl service;
 
     @Inject
-    IRSService irsService;
+    TradeService<IRS> irsService;
 
     @Inject
-    FRAService fraService;
+    TradeService<FRA> fraService;
 
     @Inject
     AccountService accountService;
@@ -59,9 +56,6 @@ public class TradeUploadServiceTest {
     @Inject
     DataImporter dataImporter;
 
-    @Inject
-    Neo4jPersistService sessionProvider;
-
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
@@ -71,7 +65,7 @@ public class TradeUploadServiceTest {
     @Before
     public void setup() throws FileNotFoundException {
         service = new TradeUploadServiceImpl(irsService, fraService, accountService);
-        //dataLoader.purgeDatabase();
+        dataLoader.purgeDatabase();
         dataLoader.createConstraints();;
         dataImporter.importFiles("clients", "legalentities", "accounts");
     }
@@ -98,21 +92,14 @@ public class TradeUploadServiceTest {
         Row row = sheet.getRow(1);
         service.handleIRSRow(row);
         service.handleIRSRow(row);
-        Iterator<IRS> irses = sessionProvider.get().query(IRS.class, "MATCH (n:IRS {id:'455123'}) RETURN n", Collections.emptyMap()).iterator();
+        Iterable<IRS> irses = irsService.findAll();
         int count = 0;
-        while(irses.hasNext())
-        {
-            log.debug(irses.next().getId() + " id of irs");
+        for (IRS irs : irses) {
+            log.debug(irs.getId() + " id of irs");
             count ++;
         }
 
         Assert.assertFalse(count != 1);
-    }
-
-    @Test
-    public void testMultipleUploadOfTheSameTrade() {
-        service.uploadTradesFromExcel(oneIRS.createInputStream());
-        service.uploadTradesFromExcel(oneIRS.createInputStream());
     }
 
     @Test
