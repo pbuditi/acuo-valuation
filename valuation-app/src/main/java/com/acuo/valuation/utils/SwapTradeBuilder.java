@@ -10,11 +10,9 @@ import com.acuo.common.model.trade.TradeInfo;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
 import com.acuo.persist.entity.Trade;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.opengamma.strata.basics.date.HolidayCalendar;
-import com.opengamma.strata.basics.date.HolidayCalendarId;
-import com.opengamma.strata.basics.date.HolidayCalendars;
-import com.opengamma.strata.basics.date.Tenor;
+import com.opengamma.strata.basics.date.*;
 import com.opengamma.strata.basics.index.FloatingRateName;
 import com.opengamma.strata.basics.schedule.Frequency;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +25,9 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+
+import static java.time.DayOfWeek.SATURDAY;
+import static java.time.DayOfWeek.SUNDAY;
 
 @Slf4j
 public class SwapTradeBuilder {
@@ -44,6 +45,7 @@ public class SwapTradeBuilder {
         Set<Leg> payLegs = trade.getPayLegs();
         for (Leg payLeg : payLegs) {
             Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(1, payLeg);
+            leg.setNotional( -1 * leg.getNotional());
             swap.addLeg(leg);
         }
 
@@ -81,9 +83,13 @@ public class SwapTradeBuilder {
         BusinessDayAdjustment adjustment = new BusinessDayAdjustment();
         adjustment.setBusinessDayConvention(leg.getBusinessDayConvention());
         HolidayCalendarId holidays = HolidayCalendars.NO_HOLIDAYS.getId();
+        String refCalendar = leg.getRefCalendar();
         try  {
-            holidays = HolidayCalendars.of(leg.getRefCalendar()).getId();
-        } catch(Exception e) {log.error(e.getMessage(),e);}
+            holidays = HolidayCalendars.of(refCalendar).getId();
+        } catch(Exception e) {
+            log.warn(e.getMessage());
+            holidays = ImmutableHolidayCalendar.of(HolidayCalendarId.of(refCalendar), ImmutableList.of(), SATURDAY, SUNDAY ).getId();
+        }
         adjustment.setHolidays(ImmutableSet.of(holidays));
         adjustableDate.setAdjustment(adjustment);
             result.setStartDate(adjustableDate);

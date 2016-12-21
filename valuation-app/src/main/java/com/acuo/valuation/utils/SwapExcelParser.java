@@ -41,12 +41,11 @@ public class SwapExcelParser {
 
             log.debug("loading irs id {} ", irs.getTradeId());
 
-            Leg leg1 = buildLeg(row, 15);
-            Leg leg2 = buildLeg(row, 28);
-
             String leg1Relationship = row.getCell(41).getStringCellValue();
             String leg2Relationship = row.getCell(42).getStringCellValue();
 
+            Leg leg1 = buildLeg(row, 15);
+            Leg leg2 = buildLeg(row, 28);
 
             Set<Leg> payLegs = new HashSet<Leg>();
             Set<Leg> receiveLegs = new HashSet<Leg>();
@@ -290,5 +289,9 @@ public class SwapExcelParser {
 
     private static LocalDate dateToLocalDate(Date date) {
         return date != null ? date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
+    }
+
+    private static int sign(String direction) {
+        return "R".equals(direction) ? 1 : -1;
     }
 }
