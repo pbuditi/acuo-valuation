@@ -17,21 +17,25 @@ public class ClarusEndPointConfig implements EndPointConfig {
     private final String secret;
     private final int connectionTimeOut;
     private final TimeUnit connectionTimeOutUnit;
+    private final boolean useProxy;
 
     @Inject
     public ClarusEndPointConfig(@Named(PropertiesHelper.ACUO_VALUATION_CLARUS_HOST) String host,
                                 @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_API_KEY) String key,
                                 @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_API_SECRET) String secret,
-                                @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_CONNECTION_TIMEOUT) String connectionTimeOutInMilli) {
+                                @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_CONNECTION_TIMEOUT) String connectionTimeOutInMilli,
+                                @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_USE_PROXY) String useProxy) {
         ArgChecker.notEmpty(host, "host");
         ArgChecker.notEmpty(key, "key");
         ArgChecker.notEmpty(secret, "secret");
         ArgChecker.notEmpty(connectionTimeOutInMilli, "connectionTimeOutInMilli");
+        ArgChecker.notEmpty(useProxy, "useProxy");
         this.host = host;
         this.key = key;
         this.secret = secret;
         this.connectionTimeOut = Integer.valueOf(connectionTimeOutInMilli);
         this.connectionTimeOutUnit = TimeUnit.MILLISECONDS;
+        this.useProxy = Boolean.valueOf(useProxy);
     }
 
     @Override
@@ -42,5 +46,10 @@ public class ClarusEndPointConfig implements EndPointConfig {
     @Override
     public TimeUnit connectionTimeOutUnit() {
         return connectionTimeOutUnit;
+    }
+
+    @Override
+    public boolean useLocalSocksProxy() {
+        return useProxy;
     }
 }

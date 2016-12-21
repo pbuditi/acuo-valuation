@@ -26,11 +26,13 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_VALUATION_MARKIT_PASSWORD = "acuo.markit.password";
     public static final String ACUO_VALUATION_MARKIT_RETRY_DELAY = "acuo.markit.retry.delay";
     public static final String ACUO_VALUATION_MARKIT_CONNECTION_TIMEOUT = "acuo.markit.connection.timeout";
+    public static final String ACUO_VALUATION_MARKIT_USE_PROXY = "acuo.markit.use.proxy";
 
     public static final String ACUO_VALUATION_CLARUS_HOST = "acuo.clarus.host";
     public static final String ACUO_VALUATION_CLARUS_API_KEY = "acuo.clarus.api.key";
     public static final String ACUO_VALUATION_CLARUS_API_SECRET = "acuo.clarus.api.secret";
     public static final String ACUO_VALUATION_CLARUS_CONNECTION_TIMEOUT = "acuo.clarus.connection.timeout";
+    public static final String ACUO_VALUATION_CLARUS_USE_PROXY = "acuo.clarus.use.proxy";
 
     public static final String NEO4J_OGM_URL = "neo4j.ogm.url";
     public static final String NEO4J_OGM_USERNAME = "neo4j.ogm.username";
