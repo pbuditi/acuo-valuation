@@ -38,7 +38,7 @@ public class SwapTradeBuilder {
         swapTrade.setType(ProductType.SWAP);
 
         TradeInfo info = SwapTradeBuilder.buildTradeInfo(trade);
-        info.setTradeId(trade.getTradeId());
+        info.setTradeId(trade.getTradeId().toString());
         swapTrade.setInfo(info);
 
         Set<Leg> payLegs = trade.getPayLegs();
@@ -58,7 +58,7 @@ public class SwapTradeBuilder {
 
     public static TradeInfo buildTradeInfo(Trade trade) {
         TradeInfo tradeInfo = new TradeInfo();
-        tradeInfo.setTradeId(trade.getTradeId());
+        tradeInfo.setTradeId(trade.getTradeId().toString());
         tradeInfo.setClearedTradeDate(trade.getClearingDate());
         tradeInfo.setTradeDate(trade.getTradeDate());
         tradeInfo.setBook(trade.getAccount().getAccountId());
