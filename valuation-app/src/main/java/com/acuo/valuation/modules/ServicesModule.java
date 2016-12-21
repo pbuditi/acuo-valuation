@@ -1,5 +1,9 @@
 package com.acuo.valuation.modules;
 
+import com.acuo.persist.core.ImportService;
+import com.acuo.persist.core.Neo4jImportService;
+import com.acuo.valuation.providers.acuo.Neo4jSwapService;
+import com.acuo.valuation.providers.acuo.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
 import com.acuo.valuation.providers.markit.services.*;
 import com.acuo.valuation.services.*;
@@ -13,8 +17,8 @@ public class ServicesModule extends AbstractModule {
         bind(Retriever.class).to(PortfolioValuationsRetriever.class);
         bind(PricingService.class).to(MarkitPricingService.class);
         bind(MarginCalcService.class).to(ClarusMarginCalcService.class);
-        bind(SwapService.class).to(MarkitSwapService.class);
-        bind(IRSService.class).to(IRSServiceImpl.class);
+        bind(SwapService.class).to(Neo4jSwapService.class);
+        bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
     }
 
 }

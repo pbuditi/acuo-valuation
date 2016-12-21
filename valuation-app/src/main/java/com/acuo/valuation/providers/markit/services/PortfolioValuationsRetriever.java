@@ -6,13 +6,17 @@ import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.protocol.responses.Response;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.Value;
+import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +37,30 @@ public class PortfolioValuationsRetriever implements Retriever {
 
     @Override
     public PricingResults retrieve(LocalDate valuationDate, List<String> tradeIds) {
-        return PricingResults.of(tradeIds.stream().map(id -> retrieve(valuationDate, id)).collect(Collectors.toList()));
+        //return PricingResults.of(tradeIds.stream().map(id -> retrieve(valuationDate, id)).collect(Collectors.toList()));
+        Response results = retrieve(valuationDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        List<Value> values = new ArrayList<Value>();
+        for(Value value : results.values())
+        {
+            for(String tradeId : tradeIds)
+            {
+                if(value.getTradeId().equals(tradeId))
+                {
+                    values.add(value);
+                    break;
+                }
+            }
+        }
+        Result<MarkitValuation> result = Result.success(new MarkitValuation(values.toArray(new Value[values.size()])));
+        List<Result<MarkitValuation>> resultList = new ArrayList<>();
+        resultList.add(result);
+
+        PricingResults pricingResults = PricingResults.of(resultList);
+        pricingResults.setDate(results.header().getDate());
+        pricingResults.setCurrency(Currency.parse(results.header().getValuationCurrency()));
+
+        return  pricingResults;
+
     }
 
     private Result<MarkitValuation> retrieve(LocalDate valuationDate, String tradeId) {
@@ -65,5 +92,4 @@ public class PortfolioValuationsRetriever implements Retriever {
             throw new RuntimeException(String.format(ERROR_MSG, asOfDate), e);
         }
     }
-
 }

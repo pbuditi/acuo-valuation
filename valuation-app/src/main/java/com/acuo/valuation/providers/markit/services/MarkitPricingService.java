@@ -1,15 +1,23 @@
 package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.persist.core.Neo4jPersistService;
+import com.acuo.persist.entity.Trade;
+import com.acuo.persist.entity.Valuation;
 import com.acuo.valuation.protocol.reports.Report;
+import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.services.PricingService;
+import com.opengamma.strata.collect.result.Result;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class MarkitPricingService implements PricingService {
 
     private final Sender sender;
@@ -42,5 +50,4 @@ public class MarkitPricingService implements PricingService {
 
         return retriever.retrieve(report.valuationDate(), tradeIds);
     }
-
 }

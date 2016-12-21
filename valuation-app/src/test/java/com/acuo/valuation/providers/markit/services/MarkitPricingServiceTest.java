@@ -3,15 +3,20 @@ package com.acuo.valuation.providers.markit.services;
 import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.model.product.SwapHelper;
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
 import com.acuo.valuation.util.ReportHelper;
-import com.google.inject.Inject;
 import com.opengamma.strata.collect.result.Result;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
@@ -21,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -34,7 +40,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({MappingModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, EncryptionModule.class, Neo4jPersistModule.class, RepositoryModule.class, EndPointModule.class, ServicesModule.class})
+
 public class MarkitPricingServiceTest {
 
     @Rule
@@ -71,7 +78,6 @@ public class MarkitPricingServiceTest {
         service = new MarkitPricingService(sender, retriever);
 
         swaps = clarusTransformer.deserialiseToList(cmeCsv.getContent());
-
     }
 
     @Test
