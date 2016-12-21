@@ -5,8 +5,7 @@ import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.services.AccountService;
-import com.acuo.persist.services.FRAService;
-import com.acuo.persist.services.IRSService;
+import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
 import lombok.extern.slf4j.Slf4j;
@@ -22,12 +21,12 @@ import java.io.InputStream;
 public class TradeUploadServiceImpl implements TradeUploadService {
 
     final SwapExcelParser parser = new SwapExcelParser();
-    private final IRSService irsService;
-    private final FRAService fraService;
+    private final TradeService<IRS> irsService;
+    private final TradeService<FRA> fraService;
     private final AccountService accountService;
 
     @Inject
-    public TradeUploadServiceImpl(IRSService irsService, FRAService fraService, AccountService accountService) {
+    public TradeUploadServiceImpl(TradeService<IRS> irsService, TradeService<FRA> fraService, AccountService accountService) {
         this.irsService = irsService;
         this.fraService = fraService;
         this.accountService = accountService;
