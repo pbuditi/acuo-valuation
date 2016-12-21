@@ -5,12 +5,28 @@ import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.http.client.LoggingInterceptor;
 import com.acuo.common.http.client.OkHttpClient;
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.Value;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.services.PortfolioService;
+import com.acuo.persist.services.ValuationService;
+import com.acuo.persist.services.ValueService;
+import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.protocol.results.MarginValuation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import com.opengamma.strata.collect.result.Result;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -22,7 +38,11 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Named;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataFormat;
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
@@ -32,7 +52,9 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({MappingModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
+        MappingModule.class,
+        EncryptionModule.class})
 public class ClarusMarginCalcServiceTest {
 
     @Rule
@@ -53,6 +75,9 @@ public class ClarusMarginCalcServiceTest {
 
     MockWebServer server = new MockWebServer();
 
+
+
+
     ClarusMarginCalcService service;
 
     @Before
@@ -60,11 +85,13 @@ public class ClarusMarginCalcServiceTest {
         server.start();
 
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
-        ClarusEndPointConfig config = new ClarusEndPointConfig(server.url("/").toString(), "key", "secret", "10000");
+        ClarusEndPointConfig config = new ClarusEndPointConfig(server.url("/").toString(), "key", "secret", "10000", "false");
 
         ClientEndPoint<ClarusEndPointConfig> clientEndPoint = new OkHttpClient(httpClient, config);
 
         service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer);
+
+
     }
 
     @Test
@@ -89,5 +116,7 @@ public class ClarusMarginCalcServiceTest {
         assertThat(results).isNotNull();
         assertThat(results.getResults().size()).isEqualTo(2);
     }
+
+
 
 }

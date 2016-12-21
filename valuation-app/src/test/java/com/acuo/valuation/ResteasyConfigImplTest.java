@@ -9,7 +9,7 @@ public class ResteasyConfigImplTest {
 
     @Test
     public void testWithContextPathEndingWithSlash() throws Exception {
-        ResteasyConfigImpl configFactory = new ResteasyConfigImpl(0, "127.0.0.1", "/", "test");
+        ResteasyConfigImpl configFactory = new ResteasyConfigImpl(0, "127.0.0.1", "", "/", "test");
         HttpServerWrapperConfig config = configFactory.getConfig();
 
         assertThat(config.getContextPath()).isEqualTo("/");
@@ -19,7 +19,7 @@ public class ResteasyConfigImplTest {
 
     @Test
     public void testWithContextPathEndingWithNoSlash() throws Exception {
-        ResteasyConfigImpl configFactory = new ResteasyConfigImpl(0, "127.0.0.1", "", "test");
+        ResteasyConfigImpl configFactory = new ResteasyConfigImpl(0, "127.0.0.1", "","", "test");
         HttpServerWrapperConfig config = configFactory.getConfig();
 
         assertThat(config.getContextPath()).isEqualTo("/");

@@ -6,6 +6,7 @@ import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.providers.clarus.protocol.RequestBuilder;
 import com.acuo.valuation.providers.clarus.protocol.Response;
 import com.acuo.valuation.services.MarginCalcService;
@@ -19,7 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.*;
@@ -31,11 +32,13 @@ public class ClarusMarginCalcService implements MarginCalcService {
     private final ObjectMapper objectMapper;
     private final Transformer<SwapTrade> transformer;
 
+
     @Inject
     public ClarusMarginCalcService(ClientEndPoint<ClarusEndPointConfig> clientEndPoint, ObjectMapper objectMapper, @Named("clarus") Transformer<SwapTrade> dataMapper) {
         this.clientEndPoint = clientEndPoint;
         this.objectMapper = objectMapper;
         this.transformer = dataMapper;
+
     }
 
     @Override
@@ -83,4 +86,6 @@ public class ClarusMarginCalcService implements MarginCalcService {
                 .map(r -> Result.success(r))
                 .collect(Collectors.toList()));
     }
+
+
 }
