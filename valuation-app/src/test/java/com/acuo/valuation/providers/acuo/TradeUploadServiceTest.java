@@ -76,22 +76,15 @@ public class TradeUploadServiceTest {
     }
 
     @Test
-    public void testHandleIRSRowS() throws FileNotFoundException, IOException {
-        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
-        Sheet sheet = workbook.getSheetAt(0);
-        for (int i = 1; i < sheet.getLastRowNum(); i++) {
-            Row row = sheet.getRow(i);
-            service.handleIRSRow(row);
-        }
+    public void testUploadAll() throws IOException {
+        service.uploadTradesFromExcel(excel.createInputStream());
     }
 
     @Test
     public void testHandleIRSOneRowUpdate() throws FileNotFoundException, IOException {
-        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
-        Sheet sheet = workbook.getSheetAt(0);
-        Row row = sheet.getRow(1);
-        service.handleIRSRow(row);
-        service.handleIRSRow(row);
+        service.uploadTradesFromExcel(oneIRS.createInputStream());
+        service.uploadTradesFromExcel(oneIRS.createInputStream());
+
         Iterable<IRS> irses = irsService.findAll();
         int count = 0;
         for (IRS irs : irses) {
@@ -99,37 +92,6 @@ public class TradeUploadServiceTest {
             count ++;
         }
 
-        Assert.assertFalse(count != 1);
-    }
-
-    @Test
-    public void testHandleFRARowS() throws FileNotFoundException, IOException {
-        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
-        Sheet sheet = workbook.getSheetAt(1);
-        for (int i = 1; i < sheet.getLastRowNum(); i++) {
-            Row row = sheet.getRow(i);
-            service.handleFRARow(row);
-        }
-    }
-
-    @Test
-    public void testHandleOIS() throws FileNotFoundException, IOException {
-        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
-        Sheet sheet = workbook.getSheetAt(2);
-        for (int i = 1; i < sheet.getLastRowNum(); i++) {
-            Row row = sheet.getRow(i);
-            service.handleOISRow(row);
-        }
-    }
-
-    @Test
-    public void testHandleIRSBilateral() throws FileNotFoundException, IOException {
-        Workbook workbook = new XSSFWorkbook(excel.createInputStream());
-        Sheet sheet = workbook.getSheetAt(3);
-        for (int i = 1; i < sheet.getLastRowNum(); i++)
-        {
-            Row row = sheet.getRow(i);
-            service.handleIRSBilateralRow(row);
-        }
+        Assert.assertTrue(count == 2);
     }
 }

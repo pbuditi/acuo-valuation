@@ -16,6 +16,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.inject.Inject;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class TradeUploadServiceImpl implements TradeUploadService {
@@ -36,10 +38,12 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         try {
             Workbook workbook = new XSSFWorkbook(fis);
             Sheet sheet = workbook.getSheet("IRS-Cleared");
+            Map<String, Account> accounts = new HashMap<>();
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    handleIRSRow(row);
+                    Account account = handleIRSRow(row);
+                    accounts.putIfAbsent(account.getAccountId(), account);
                 }
             }
 
@@ -47,7 +51,8 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    handleFRARow(row);
+                    Account account = handleFRARow(row);
+                    accounts.putIfAbsent(account.getAccountId(), account);
                 }
             }
 
@@ -55,7 +60,8 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    handleOISRow(row);
+                    Account account = handleOISRow(row);
+                    accounts.putIfAbsent(account.getAccountId(), account);
                 }
             }
 
@@ -63,8 +69,13 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    handleIRSBilateralRow(row);
+                    Account account = handleIRSBilateralRow(row);
+                    accounts.putIfAbsent(account.getAccountId(), account);
                 }
+            }
+
+            for (Account account : accounts.values()) {
+                accountService.createOrUpdate(account);
             }
 
         } catch (Exception e) {
@@ -74,37 +85,37 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         return true;
     }
 
-    private void addToAccount(Row row, Trade trade) {
+    private Account addToAccount(Row row, Trade trade) {
         Account account = accountService.findById(row.getCell(1).getStringCellValue());
         account.add(trade);
-        accountService.createOrUpdate(account);
+        return account;
     }
 
-    public IRS handleIRSRow(Row row) {
+    private Account handleIRSRow(Row row) {
         IRS irs = parser.buildIRS(row);
-        addToAccount(row, irs);
+        Account account = addToAccount(row, irs);
         log.debug("saved IRS {}", irs);
-        return irs;
+        return account;
     }
 
-    public FRA handleFRARow(Row row) {
+    private Account handleFRARow(Row row) {
         FRA fra = parser.buildFRA(row);
-        addToAccount(row, fra);
+        Account account = addToAccount(row, fra);
         log.debug("saved FRA {}", fra);
-        return fra;
+        return account;
     }
 
-    public IRS handleOISRow(Row row) {
+    private Account handleOISRow(Row row) {
         IRS irs = parser.buildOIS(row);
-        addToAccount(row, irs);
+        Account account = addToAccount(row, irs);
         log.debug("saved OIS {}", irs);
-        return irs;
+        return account;
     }
 
-    public IRS handleIRSBilateralRow(Row row) {
+    private Account handleIRSBilateralRow(Row row) {
         IRS irs = parser.buildIRSBilateral(row);
-        addToAccount(row, irs);
+        Account account = addToAccount(row, irs);
         log.debug("saved IRS-Bilateral {}", irs);
-        return irs;
+        return account;
     }
 }
