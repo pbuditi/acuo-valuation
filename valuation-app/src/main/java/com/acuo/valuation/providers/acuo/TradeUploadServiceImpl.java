@@ -45,7 +45,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
             sheet = workbook.getSheet("FRA-Cleared");
             if (sheet != null) {
-                for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
                     handleFRARow(row);
                 }
@@ -53,7 +53,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
             sheet = workbook.getSheet("OIS-Cleared");
             if (sheet != null) {
-                for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
                     handleOISRow(row);
                 }
@@ -61,7 +61,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
             sheet = workbook.getSheet("IRS-Bilateral");
             if (sheet != null) {
-                for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
                     handleIRSBilateralRow(row);
                 }
