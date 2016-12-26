@@ -13,7 +13,6 @@ import javax.ws.rs.core.Response.Status;
 public class ImportResource {
 
     private final ImportService service;
-    private String[] fileNames = {"clients", "legalentities", "accounts"};
 
     @Inject
     public ImportResource(ImportService service) {
@@ -24,7 +23,7 @@ public class ImportResource {
     @Path("reload")
     @Timed
     public Response reload() {
-        service.reload(fileNames);
+        service.reload();
         return Response.status(Status.OK).build();
     }
 }
