@@ -92,7 +92,7 @@ public class Neo4jSwapServiceTest {
     ValueService valueService;
 
     @Inject
-    AccountService accountService;
+    TradingAccountService accountService;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -104,7 +104,7 @@ public class Neo4jSwapServiceTest {
         MockitoAnnotations.initMocks(this);
         dataLoader.purgeDatabase();
         dataLoader.createConstraints();
-        dataImporter.importFiles("clients", "legalentities", "accounts");
+        dataImporter.importFiles("clients", "legalentities", "tradingAccounts");
         service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
 

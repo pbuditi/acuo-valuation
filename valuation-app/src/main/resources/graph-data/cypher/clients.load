@@ -1,3 +1,0 @@
-LOAD CSV WITH HEADERS FROM '%dataImportLink%/csv/clients.csv' AS line
-
-MERGE (c:Client {id:line.ClientId, name:line.ClientName})
