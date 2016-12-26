@@ -6,15 +6,19 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
 import com.acuo.persist.core.Neo4jPersistService;
-import com.acuo.persist.entity.*;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.Trade;
+import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.Value;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.*;
-import com.acuo.valuation.modules.*;
-
 import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.EndPointModule;
+import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.protocol.results.MarkitValuation;
@@ -78,16 +82,16 @@ public class Neo4jSwapServiceTest {
     @Inject
     DataImporter dataImporter;
 
-    @com.google.inject.Inject
+    @Inject
     ValuationService valuationService;
 
-    @com.google.inject.Inject
+    @Inject
     PortfolioService portfolioService;
 
-    @com.google.inject.Inject
+    @Inject
     ValueService valueService;
 
-    @com.google.inject.Inject
+    @Inject
     AccountService accountService;
 
     @Rule
