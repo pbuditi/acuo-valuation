@@ -10,7 +10,7 @@ import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
-import com.acuo.persist.services.AccountService;
+import com.acuo.persist.services.TradingAccountService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -48,7 +48,7 @@ public class TradeUploadServiceTest {
     TradeService<FRA> fraService;
 
     @Inject
-    AccountService accountService;
+    TradingAccountService accountService;
 
     @Inject
     DataLoader dataLoader;
@@ -67,7 +67,7 @@ public class TradeUploadServiceTest {
         service = new TradeUploadServiceImpl(irsService, fraService, accountService);
         dataLoader.purgeDatabase();
         dataLoader.createConstraints();;
-        dataImporter.importFiles("clients", "legalentities", "accounts");
+        dataImporter.importFiles("clients", "legalentities", "tradingAccounts");
     }
 
     @Test

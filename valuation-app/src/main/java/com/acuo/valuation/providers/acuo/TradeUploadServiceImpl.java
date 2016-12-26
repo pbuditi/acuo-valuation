@@ -1,11 +1,11 @@
 package com.acuo.valuation.providers.acuo;
 
-import com.acuo.persist.entity.Account;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.services.AccountService;
+import com.acuo.persist.entity.TradingAccount;
 import com.acuo.persist.services.TradeService;
+import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +25,10 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     final SwapExcelParser parser = new SwapExcelParser();
     private final TradeService<IRS> irsService;
     private final TradeService<FRA> fraService;
-    private final AccountService accountService;
+    private final TradingAccountService accountService;
 
     @Inject
-    public TradeUploadServiceImpl(TradeService<IRS> irsService, TradeService<FRA> fraService, AccountService accountService) {
+    public TradeUploadServiceImpl(TradeService<IRS> irsService, TradeService<FRA> fraService, TradingAccountService accountService) {
         this.irsService = irsService;
         this.fraService = fraService;
         this.accountService = accountService;
@@ -38,11 +38,11 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         try {
             Workbook workbook = new XSSFWorkbook(fis);
             Sheet sheet = workbook.getSheet("IRS-Cleared");
-            Map<String, Account> accounts = new HashMap<>();
+            Map<String, TradingAccount> accounts = new HashMap<>();
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    Account account = handleIRSRow(row);
+                    TradingAccount account = handleIRSRow(row);
                     accounts.putIfAbsent(account.getAccountId(), account);
                 }
             }
@@ -51,7 +51,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    Account account = handleFRARow(row);
+                    TradingAccount account = handleFRARow(row);
                     accounts.putIfAbsent(account.getAccountId(), account);
                 }
             }
@@ -60,7 +60,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    Account account = handleOISRow(row);
+                    TradingAccount account = handleOISRow(row);
                     accounts.putIfAbsent(account.getAccountId(), account);
                 }
             }
@@ -69,12 +69,12 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    Account account = handleIRSBilateralRow(row);
+                    TradingAccount account = handleIRSBilateralRow(row);
                     accounts.putIfAbsent(account.getAccountId(), account);
                 }
             }
 
-            for (Account account : accounts.values()) {
+            for (TradingAccount account : accounts.values()) {
                 accountService.createOrUpdate(account);
             }
 
@@ -85,36 +85,36 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         return true;
     }
 
-    private Account addToAccount(Row row, Trade trade) {
-        Account account = accountService.findById(row.getCell(1).getStringCellValue());
+    private TradingAccount addToAccount(Row row, Trade trade) {
+        TradingAccount account = accountService.findById(row.getCell(1).getStringCellValue());
         account.add(trade);
         return account;
     }
 
-    private Account handleIRSRow(Row row) {
+    private TradingAccount handleIRSRow(Row row) {
         IRS irs = parser.buildIRS(row);
-        Account account = addToAccount(row, irs);
+        TradingAccount account = addToAccount(row, irs);
         log.debug("saved IRS {}", irs);
         return account;
     }
 
-    private Account handleFRARow(Row row) {
+    private TradingAccount handleFRARow(Row row) {
         FRA fra = parser.buildFRA(row);
-        Account account = addToAccount(row, fra);
+        TradingAccount account = addToAccount(row, fra);
         log.debug("saved FRA {}", fra);
         return account;
     }
 
-    private Account handleOISRow(Row row) {
+    private TradingAccount handleOISRow(Row row) {
         IRS irs = parser.buildOIS(row);
-        Account account = addToAccount(row, irs);
+        TradingAccount account = addToAccount(row, irs);
         log.debug("saved OIS {}", irs);
         return account;
     }
 
-    private Account handleIRSBilateralRow(Row row) {
+    private TradingAccount handleIRSBilateralRow(Row row) {
         IRS irs = parser.buildIRSBilateral(row);
-        Account account = addToAccount(row, irs);
+        TradingAccount account = addToAccount(row, irs);
         log.debug("saved IRS-Bilateral {}", irs);
         return account;
     }
