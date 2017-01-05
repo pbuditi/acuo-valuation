@@ -5,15 +5,13 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
+import com.acuo.persist.core.ImportService;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.Valuation;
 import com.acuo.persist.entity.Value;
-import com.acuo.persist.modules.DataImporterModule;
-import com.acuo.persist.modules.DataLoaderModule;
-import com.acuo.persist.modules.Neo4jPersistModule;
-import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.modules.*;
 import com.acuo.persist.services.*;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
@@ -54,14 +52,15 @@ import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
-                                MappingModule.class,
-                                EncryptionModule.class,
-                                Neo4jPersistModule.class,
-                                DataLoaderModule.class,
-                                DataImporterModule.class,
-                                RepositoryModule.class,
-                                EndPointModule.class,
-                                ServicesModule.class})
+        MappingModule.class,
+        EncryptionModule.class,
+        Neo4jPersistModule.class,
+        DataLoaderModule.class,
+        DataImporterModule.class,
+        ImportServiceModule.class,
+        RepositoryModule.class,
+        EndPointModule.class,
+        ServicesModule.class})
 public class Neo4jSwapServiceTest {
 
     @Mock
@@ -77,10 +76,7 @@ public class Neo4jSwapServiceTest {
     TradeService<Trade> tradeService;
 
     @Inject
-    DataLoader dataLoader;
-
-    @Inject
-    DataImporter dataImporter;
+    ImportService importService;
 
     @Inject
     ValuationService valuationService;
@@ -102,9 +98,7 @@ public class Neo4jSwapServiceTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        dataLoader.purgeDatabase();
-        dataLoader.createConstraints();
-        dataImporter.importFiles("clients", "legalentities", "tradingAccounts");
+        importService.reload();
         service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
 
