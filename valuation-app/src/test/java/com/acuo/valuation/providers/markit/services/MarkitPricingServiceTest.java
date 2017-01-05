@@ -40,7 +40,14 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, MappingModule.class, EncryptionModule.class, Neo4jPersistModule.class, RepositoryModule.class, EndPointModule.class, ServicesModule.class})
+@GuiceJUnitRunner.GuiceModules({
+        ConfigurationTestModule.class,
+        MappingModule.class,
+        EncryptionModule.class,
+        Neo4jPersistModule.class,
+        RepositoryModule.class,
+        EndPointModule.class,
+        ServicesModule.class})
 
 public class MarkitPricingServiceTest {
 

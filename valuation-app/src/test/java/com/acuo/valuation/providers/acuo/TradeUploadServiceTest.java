@@ -4,12 +4,10 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
+import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
-import com.acuo.persist.modules.DataImporterModule;
-import com.acuo.persist.modules.DataLoaderModule;
-import com.acuo.persist.modules.Neo4jPersistModule;
-import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.modules.*;
 import com.acuo.persist.services.TradingAccountService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
@@ -31,11 +29,12 @@ import java.io.IOException;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
-                                MappingModule.class,
-                                Neo4jPersistModule.class,
-                                RepositoryModule.class,
-                                DataLoaderModule.class,
-                                DataImporterModule.class})
+        MappingModule.class,
+        Neo4jPersistModule.class,
+        RepositoryModule.class,
+        DataLoaderModule.class,
+        DataImporterModule.class,
+        ImportServiceModule.class,})
 @Slf4j
 public class TradeUploadServiceTest {
 
@@ -51,10 +50,7 @@ public class TradeUploadServiceTest {
     TradingAccountService accountService;
 
     @Inject
-    DataLoader dataLoader;
-
-    @Inject
-    DataImporter dataImporter;
+    ImportService importService;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -65,9 +61,7 @@ public class TradeUploadServiceTest {
     @Before
     public void setup() throws FileNotFoundException {
         service = new TradeUploadServiceImpl(irsService, fraService, accountService);
-        dataLoader.purgeDatabase();
-        dataLoader.createConstraints();;
-        dataImporter.importFiles("clients", "legalentities", "tradingAccounts");
+        importService.reload();
     }
 
     @Test
