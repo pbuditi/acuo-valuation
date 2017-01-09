@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.date.*;
 import com.opengamma.strata.basics.index.FloatingRateName;
 import com.opengamma.strata.basics.schedule.Frequency;
+import com.opengamma.strata.product.swap.FixingRelativeTo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
@@ -112,14 +113,18 @@ public class SwapTradeBuilder {
         //}
 
 
-        Swap.SwapLegFixing swapLegFixing = new Swap.SwapLegFixing();
-        result.setFixing(swapLegFixing);
+        if ("FLOAT".equals(leg.getType())) {
+            Swap.SwapLegFixing swapLegFixing = new Swap.SwapLegFixing();
+            result.setFixing(swapLegFixing);
 
-        //if (entry.get("indexTenor") != null)
+            //if (entry.get("indexTenor") != null)
             swapLegFixing.setTenor(leg.getIndexTenor());
 
-        //if (entry.get("index") != null)
+            //if (entry.get("index") != null)
             swapLegFixing.setFloatingRateName(leg.getIndex());
+
+            swapLegFixing.setFixingRelativeTo(FixingRelativeTo.PERIOD_START);
+        }
 
 
         return result;
