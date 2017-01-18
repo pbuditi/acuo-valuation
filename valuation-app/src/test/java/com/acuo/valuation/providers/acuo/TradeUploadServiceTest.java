@@ -8,6 +8,7 @@ import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.modules.*;
+import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradingAccountService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
@@ -50,17 +51,20 @@ public class TradeUploadServiceTest {
     TradingAccountService accountService;
 
     @Inject
+    PortfolioService portfolioService;
+
+    @Inject
     ImportService importService;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/NewExposures.xlsx");
+    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio.xlsx");
 
     @Before
     public void setup() throws FileNotFoundException {
-        service = new TradeUploadServiceImpl(irsService, fraService, accountService);
+        service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService);
         importService.reload();
     }
 

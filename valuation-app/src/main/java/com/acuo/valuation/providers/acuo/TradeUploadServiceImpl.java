@@ -1,9 +1,7 @@
 package com.acuo.valuation.providers.acuo;
 
-import com.acuo.persist.entity.FRA;
-import com.acuo.persist.entity.IRS;
-import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.TradingAccount;
+import com.acuo.persist.entity.*;
+import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.services.TradeUploadService;
@@ -26,12 +24,14 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     private final TradeService<IRS> irsService;
     private final TradeService<FRA> fraService;
     private final TradingAccountService accountService;
+    private final PortfolioService portfolioService;
 
     @Inject
-    public TradeUploadServiceImpl(TradeService<IRS> irsService, TradeService<FRA> fraService, TradingAccountService accountService) {
+    public TradeUploadServiceImpl(TradeService<IRS> irsService, TradeService<FRA> fraService, TradingAccountService accountService, PortfolioService portfolioService) {
         this.irsService = irsService;
         this.fraService = fraService;
         this.accountService = accountService;
+        this.portfolioService = portfolioService;
     }
 
     public boolean uploadTradesFromExcel(InputStream fis) {
@@ -91,8 +91,16 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         return account;
     }
 
+    private void linkPortfolio(Trade trade, String portfolioId)
+    {
+        log.info("portfolioId:" + portfolioId);
+        Portfolio portfolio = portfolioService.findById(portfolioId);
+        trade.setPortfolio(portfolio);
+    }
+
     private TradingAccount handleIRSRow(Row row) {
         IRS irs = parser.buildIRS(row);
+        linkPortfolio(irs, row.getCell(47).getStringCellValue());
         TradingAccount account = addToAccount(row, irs);
         log.debug("saved IRS {}", irs);
         return account;
@@ -100,6 +108,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
     private TradingAccount handleFRARow(Row row) {
         FRA fra = parser.buildFRA(row);
+        linkPortfolio(fra, row.getCell(34).getStringCellValue());
         TradingAccount account = addToAccount(row, fra);
         log.debug("saved FRA {}", fra);
         return account;
@@ -107,6 +116,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
     private TradingAccount handleOISRow(Row row) {
         IRS irs = parser.buildOIS(row);
+        linkPortfolio(irs, row.getCell(46).getStringCellValue());
         TradingAccount account = addToAccount(row, irs);
         log.debug("saved OIS {}", irs);
         return account;
@@ -114,6 +124,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
     private TradingAccount handleIRSBilateralRow(Row row) {
         IRS irs = parser.buildIRSBilateral(row);
+        linkPortfolio(irs, row.getCell(41).getStringCellValue());
         TradingAccount account = addToAccount(row, irs);
         log.debug("saved IRS-Bilateral {}", irs);
         return account;
