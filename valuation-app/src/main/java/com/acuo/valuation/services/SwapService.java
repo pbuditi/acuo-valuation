@@ -1,5 +1,8 @@
 package com.acuo.valuation.services;
 
+import com.acuo.persist.entity.Agreement;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.Valuation;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.protocol.results.SwapResults;
@@ -15,5 +18,7 @@ public interface SwapService {
     boolean persistMarkitResult(PricingResults pricingResults);
 
     boolean persistClarusResult(MarginResults marginResults);
+
+    boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation);
 
 }
