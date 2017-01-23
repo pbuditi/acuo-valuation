@@ -90,6 +90,12 @@ public class Neo4jSwapServiceTest {
     @Inject
     TradingAccountService accountService;
 
+    @Inject
+    MarginStatementService marginStatementService;
+
+    @Inject
+    AgreementService agreementService;
+
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
@@ -99,7 +105,7 @@ public class Neo4jSwapServiceTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         importService.reload();
-        service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService);
+        service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService, marginStatementService, agreementService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
 
         Portfolio portfolio = new Portfolio();
@@ -218,5 +224,12 @@ public class Neo4jSwapServiceTest {
                 Assert.assertEquals(value.getPv().doubleValue(), 1d,0);
             }
         }
+    }
+
+    @Test
+    public void testGeneareteMarginCall()
+    {
+
+        //service.geneareteMarginCall()
     }
 }
