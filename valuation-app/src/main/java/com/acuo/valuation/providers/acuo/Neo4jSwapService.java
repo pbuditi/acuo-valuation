@@ -1,12 +1,10 @@
 package com.acuo.valuation.providers.acuo;
 
+import com.acuo.common.model.margin.Types;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.*;
-import com.acuo.persist.services.PortfolioService;
-import com.acuo.persist.services.TradeService;
-import com.acuo.persist.services.ValuationService;
-import com.acuo.persist.services.ValueService;
+import com.acuo.persist.services.*;
 import com.acuo.valuation.protocol.results.*;
 import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.services.PricingService;
@@ -19,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -33,15 +33,23 @@ public class Neo4jSwapService implements SwapService {
     private final ValuationService valuationService;
     private final PortfolioService portfolioService;
     private final ValueService valueService;
+    private final MarginStatementService marginStatementService;
+    private final AgreementService agreementService;
+
+    Double pv = null;
+    Currency currencyOfValue = null;
 
     @Inject
-    public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService<Trade> tradeService, ValuationService valuationService, PortfolioService portfolioService, ValueService valueService) {
+    public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService<Trade> tradeService, ValuationService valuationService, PortfolioService portfolioService, ValueService valueService,
+                            MarginStatementService marginStatementService, AgreementService agreementService) {
         this.pricingService = pricingService;
         //this.sessionProvider = sessionProvider;
         this.tradeService = tradeService;
         this.valuationService = valuationService;
         this.portfolioService = portfolioService;
         this.valueService = valueService;
+        this.marginStatementService = marginStatementService;
+        this.agreementService = agreementService;
     }
 
     @Override
@@ -256,6 +264,149 @@ public class Neo4jSwapService implements SwapService {
 
 
         return true;
+    }
+
+    @Override
+    public boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation)
+    {
+        //given a Agreeement, a Portofolio, a Valuation
+
+
+        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> { pv = value.getPv(); currencyOfValue = value.getCurrency();});
+
+
+        ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
+
+
+        Double balance = clientSignsRelation.getVariationMarginBalance();
+        Double pendingCollateral = clientSignsRelation.getVariationPending();
+
+        if(!currencyOfValue.equals(agreement.getCurrency()))
+            pv = getFXValue(currencyOfValue, agreement.getCurrency(), pv);
+
+        if(Math.abs(pv) > clientSignsRelation.getThreshold())
+            return false;
+
+        Double diff = pv - (balance + pendingCollateral);
+
+        if(Math.abs(diff) > agreement.getClientSignsRelation().getMTA())
+        {
+            //new mc
+            LocalDate valuationDate = LocalDate.now();
+            LocalDate callDate = valuationDate.plusDays(1);
+            Types.CallType marginType = Types.CallType.Variation;
+            Double callAmount = diff;
+            String todayFormatted = valuationDate.format(DateTimeFormatter.ofPattern("yyyy/mm/dd"));
+            String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-"+ marginType.name().toString();
+            String direction;
+            Double deliverAmount;
+            Double returnAmount;
+            Double excessAmount = diff;
+            if(diff <0) {
+                direction = "OUT";
+                if(balance+pendingCollateral < 0)
+                {
+                    deliverAmount = excessAmount;
+                    returnAmount = 0d;
+                }
+                else
+                if(0 < balance + pendingCollateral  && balance + pendingCollateral < 0-excessAmount)
+                {
+                    deliverAmount = excessAmount + (balance+pendingCollateral);
+                    returnAmount = 0- (balance+pendingCollateral);
+                }
+                else
+                {
+                    deliverAmount = 0d;
+                    returnAmount = excessAmount;
+                }
+            }
+            else {
+                direction = "IN";
+                if(balance+pendingCollateral > 0)
+                {
+                    deliverAmount = excessAmount;
+                    returnAmount = 0d;
+                }
+                else
+                if(0 > balance && balance > 0-excessAmount)
+                {
+                    deliverAmount = excessAmount + (balance+pendingCollateral);
+                    returnAmount = 0- (balance+pendingCollateral);
+                }
+                else
+                {
+                    deliverAmount = 0d;
+                    returnAmount = excessAmount;
+                }
+            }
+
+            //round amount
+            excessAmount = round(deliverAmount, returnAmount, clientSignsRelation.getRounding());
+
+
+            MarginCall marginCall = new MarginCall();
+            marginCall.setMarginCallId(mcId);
+            marginCall.setExcessAmount(excessAmount);
+            marginCall.setPendingCollateral(pendingCollateral);
+            marginCall.setBalanceAmount(balance);
+            marginCall.setAgreement(agreement);
+
+            marginCall.setCallDate(callDate);
+            marginCall.setCallType(marginType.name());
+            marginCall.setCurrency(agreement.getCurrency().getCode());
+            marginCall.setDirection(direction);
+            Step step = new Step();
+            step.setStatus(CallStatus.Expected);
+            marginCall.setFirstStep(step);
+            marginCall.setLastStep(step);
+
+            //get ms
+            String msId = todayFormatted + "-" + agreement.getAgreementId();
+            MarginStatement marginStatement = marginStatementService.findById(msId);
+
+            if(marginStatement == null)
+            {
+                //create ms
+                marginStatement = new MarginStatement();
+                marginStatement.setStatementId(msId);
+                marginStatement.setDirection(direction);
+                marginStatement.setCurrency(agreement.getCurrency());
+                marginStatement.setDate(LocalDateTime.now());
+                marginStatement.setMarginCalls(new HashSet<MarginCall>(){{
+                    add(marginCall);
+                }});
+                agreement.getMarginStatements().add(marginStatement);
+
+                agreementService.createOrUpdate(agreement);
+            }
+            else
+            {
+                marginStatement.getMarginCalls().add(marginCall);
+            }
+
+            marginStatementService.createOrUpdate(marginStatement);
+
+
+        }
+        else
+        {
+            return false;
+        }
+
+        return true;
+
+
+    }
+
+    private Double getFXValue(Currency from, Currency to, Double value)
+    {
+        return value;
+    }
+
+    private Double round(Double deliverAmount, Double returnAmount, Double rounding)
+    {
+        return deliverAmount + returnAmount;
     }
 
 }
