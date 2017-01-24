@@ -121,6 +121,13 @@ public class Neo4jSwapService implements SwapService {
 
                             valuation.getValues().add(newValue);
 
+                            if(trade.getPortfolio().getValuations() != null)
+                                trade.getPortfolio().getValuations().add(valuation);
+                            else
+                                trade.getPortfolio().setValuations(new HashSet<Valuation>(){{add(valuation);}});
+
+                            portfolioService.createOrUpdate(trade.getPortfolio());
+
                             valuationService.createOrUpdate(valuation);
 
                             found = true;
@@ -158,6 +165,13 @@ public class Neo4jSwapService implements SwapService {
                         trade.setValuations(valuationSet);
 
                     }
+
+                    if(trade.getPortfolio().getValuations() != null)
+                        trade.getPortfolio().getValuations().add(valuation);
+                    else
+                        trade.getPortfolio().setValuations(new HashSet<Valuation>(){{add(valuation);}});
+
+                    portfolioService.createOrUpdate(trade.getPortfolio());
                     valuationService.createOrUpdate(valuation);
 
                 }
@@ -284,7 +298,7 @@ public class Neo4jSwapService implements SwapService {
         if(!currencyOfValue.equals(agreement.getCurrency()))
             pv = getFXValue(currencyOfValue, agreement.getCurrency(), pv);
 
-        if(Math.abs(pv) > clientSignsRelation.getThreshold())
+        if(clientSignsRelation.getThreshold() != null && Math.abs(pv) > clientSignsRelation.getThreshold())
             return false;
 
         Double diff = pv - (balance + pendingCollateral);
@@ -296,7 +310,7 @@ public class Neo4jSwapService implements SwapService {
             LocalDate callDate = valuationDate.plusDays(1);
             Types.CallType marginType = Types.CallType.Variation;
             Double callAmount = diff;
-            String todayFormatted = valuationDate.format(DateTimeFormatter.ofPattern("yyyy/mm/dd"));
+            String todayFormatted = valuationDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
             String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-"+ marginType.name().toString();
             String direction;
             Double deliverAmount;
@@ -406,6 +420,10 @@ public class Neo4jSwapService implements SwapService {
 
     private Double round(Double deliverAmount, Double returnAmount, Double rounding)
     {
+        if(rounding != null && rounding.doubleValue() != 0) {
+            deliverAmount = Math.floor(deliverAmount / rounding) * rounding;
+            returnAmount = Math.ceil(returnAmount / rounding) * rounding;
+        }
         return deliverAmount + returnAmount;
     }
 
