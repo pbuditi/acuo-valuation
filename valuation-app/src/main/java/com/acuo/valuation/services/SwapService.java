@@ -19,6 +19,5 @@ public interface SwapService {
 
     boolean persistClarusResult(MarginResults marginResults);
 
-    boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation);
 
 }
