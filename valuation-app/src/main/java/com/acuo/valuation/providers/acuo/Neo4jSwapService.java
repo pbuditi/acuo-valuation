@@ -56,7 +56,9 @@ public class Neo4jSwapService implements SwapService {
     public PricingResults price(String swapId) {
         try {
             List<SwapTrade> swapTrades = getSwapTrades(swapId);
-            return pricingService.price(swapTrades);
+            PricingResults results = pricingService.price(swapTrades);
+            persistMarkitResult(results);
+            return results;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -121,15 +123,17 @@ public class Neo4jSwapService implements SwapService {
 
                             valuation.getValues().add(newValue);
 
-                            if(trade.getPortfolio().getValuations() != null)
-                                trade.getPortfolio().getValuations().add(valuation);
-                            else
-                                trade.getPortfolio().setValuations(new HashSet<Valuation>(){{add(valuation);}});
+//                            if(trade.getPortfolio().getValuations() != null)
+//                                trade.getPortfolio().getValuations().add(valuation);
+//                            else
+//                                trade.getPortfolio().setValuations(new HashSet<Valuation>(){{add(valuation);}});
+//
+//                            portfolioService.createOrUpdate(trade.getPortfolio());
 
-                            portfolioService.createOrUpdate(trade.getPortfolio());
+
 
                             valuationService.createOrUpdate(valuation);
-
+                            addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
                             found = true;
                             break;
                         }
@@ -140,6 +144,8 @@ public class Neo4jSwapService implements SwapService {
                     //new valutaion
 
                     Valuation valuation = new Valuation();
+
+                    valuation.setValuationId(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + trade.getTradeId());
 
                     valuation.setDate(date);
 
@@ -166,14 +172,16 @@ public class Neo4jSwapService implements SwapService {
 
                     }
 
-                    if(trade.getPortfolio().getValuations() != null)
-                        trade.getPortfolio().getValuations().add(valuation);
-                    else
-                        trade.getPortfolio().setValuations(new HashSet<Valuation>(){{add(valuation);}});
+//                    if(trade.getPortfolio().getValuations() != null)
+//                        trade.getPortfolio().getValuations().add(valuation);
+//                    else
+//                        trade.getPortfolio().setValuations(new HashSet<Valuation>(){{add(valuation);}});
+//
+//                    portfolioService.createOrUpdate(trade.getPortfolio());
 
-                    portfolioService.createOrUpdate(trade.getPortfolio());
                     valuationService.createOrUpdate(valuation);
-
+                    tradeService.createOrUpdate(trade);
+                    addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
                 }
             }
         }
@@ -301,14 +309,20 @@ public class Neo4jSwapService implements SwapService {
         if(clientSignsRelation.getThreshold() != null && Math.abs(pv) > clientSignsRelation.getThreshold())
             return false;
 
+        log.info("pv:" + pv);
+        log.info("balance:" + balance);
+        log.info("pendingCollateral:" + pendingCollateral);
         Double diff = pv - (balance + pendingCollateral);
+
+        LegalEntity client = agreement.getClientSignsRelation().getLegalEntity();
+        LegalEntity counterpart = agreement.getCounterpartSignsRelation().getLegalEntity();
 
         if(Math.abs(diff) > agreement.getClientSignsRelation().getMTA())
         {
             //new mc
             LocalDate valuationDate = LocalDate.now();
             LocalDate callDate = valuationDate.plusDays(1);
-            Types.CallType marginType = Types.CallType.Variation;
+            Types.MarginType marginType = Types.MarginType.Variation;
             Double callAmount = diff;
             String todayFormatted = valuationDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
             String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-"+ marginType.name().toString();
@@ -356,24 +370,37 @@ public class Neo4jSwapService implements SwapService {
             }
 
             //round amount
-            excessAmount = round(deliverAmount, returnAmount, clientSignsRelation.getRounding());
+            Double rounding = clientSignsRelation.getRounding();
+            if(rounding != null && rounding.doubleValue() != 0) {
+                if(deliverAmount != null && deliverAmount.doubleValue() != 0)
+                    deliverAmount = deliverAmount/Math.abs(deliverAmount)*Math.ceil(Math.abs(deliverAmount) / rounding) * rounding;
+                if(returnAmount != null && returnAmount.doubleValue() != 0)
+                    returnAmount = returnAmount/Math.abs(returnAmount)*Math.floor(Math.abs(returnAmount) / rounding) * rounding;
+            }
+            excessAmount = deliverAmount + returnAmount;
 
 
             MarginCall marginCall = new MarginCall();
             marginCall.setMarginCallId(mcId);
-            marginCall.setExcessAmount(excessAmount);
+            marginCall.setExcessAmount(diff);
             marginCall.setPendingCollateral(pendingCollateral);
             marginCall.setBalanceAmount(balance);
             marginCall.setAgreement(agreement);
-
+            marginCall.setReturnAmount(returnAmount);
+            marginCall.setDeliverAmount(deliverAmount);
+            marginCall.setValuationDate(valuationDate);
             marginCall.setCallDate(callDate);
-            marginCall.setCallType(marginType.name());
+            marginCall.setMarginType(marginType);
             marginCall.setCurrency(agreement.getCurrency().getCode());
             marginCall.setDirection(direction);
             Step step = new Step();
             step.setStatus(CallStatus.Expected);
             marginCall.setFirstStep(step);
             marginCall.setLastStep(step);
+            marginCall.setMarginAmount(excessAmount);
+            marginCall.setStatus(CallStatus.Expected.name());
+            marginCall.setNotificationTime(callDate.atTime(agreement.getNotificationTime()));
+            marginCall.setExposure(pv);
 
             //get ms
             String msId = todayFormatted + "-" + agreement.getAgreementId();
@@ -391,6 +418,25 @@ public class Neo4jSwapService implements SwapService {
                     add(marginCall);
                 }});
                 agreement.getMarginStatements().add(marginStatement);
+
+                if(direction.equals("IN"))
+                {
+                    if(counterpart.getMarginStatements() == null)
+                        counterpart.setMarginStatements(new HashSet<>());
+                    counterpart.getMarginStatements().add(marginStatement);
+                    if(client.getFromMarginStatements() == null)
+                        client.setFromMarginStatements(new HashSet<>());
+                    client.getFromMarginStatements().add(marginStatement);
+                }
+                else
+                {
+                    if(client.getMarginStatements() == null)
+                        client.setMarginStatements(new HashSet<>());
+                    client.getMarginStatements().add(marginStatement);
+                    if(counterpart.getFromMarginStatements() == null)
+                        counterpart.setFromMarginStatements(new HashSet<>());
+                    counterpart.getFromMarginStatements().add(marginStatement);
+                }
 
                 agreementService.createOrUpdate(agreement);
             }
@@ -425,6 +471,81 @@ public class Neo4jSwapService implements SwapService {
             returnAmount = Math.ceil(returnAmount / rounding) * rounding;
         }
         return deliverAmount + returnAmount;
+    }
+
+    private void addsumValuationOfPortfolio(Portfolio portfolio, LocalDate date, Currency currency, String source, Double pv)
+    {
+
+        portfolio = portfolioService.findById(portfolio.getPortfolioId(), 2);
+
+        Valuation theValuation = null;
+        com.acuo.persist.entity.Value theValue = null;
+
+
+
+        if(portfolio.getValuations() != null)
+        {
+            for(Valuation valuation : portfolio.getValuations())
+            {
+                if(valuation.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
+                {
+                    theValuation = valuation;
+                    if(valuation.getValues() != null)
+                        for(com.acuo.persist.entity.Value value : valuation.getValues())
+                        {
+                            if(value.getCurrency().equals(currency) && value.getSource().equals(source))
+                                theValue = value;
+                        }
+                }
+            }
+        }
+
+
+        if(theValuation == null)
+        {
+            theValuation = new Valuation();
+            theValuation.setValuationId(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + portfolio.getPortfolioId());
+            theValuation.setDate(date);
+            Set<com.acuo.persist.entity.Value> values = new HashSet<com.acuo.persist.entity.Value>();
+            theValue = new com.acuo.persist.entity.Value();
+            theValue.setPv(pv);
+            theValue.setCurrency(currency);
+            theValue.setSource(source);
+            values.add(theValue);
+            theValuation.setValues(values);
+
+            if (portfolio.getValuations() == null)
+                portfolio.setValuations(new HashSet<Valuation>());
+
+            portfolio.getValuations().add(theValuation);
+            portfolioService.createOrUpdate(portfolio);
+        }
+        else
+        {
+            if(theValue == null)
+            {
+                theValue = new com.acuo.persist.entity.Value();
+                theValue.setPv(pv);
+                theValue.setCurrency(currency);
+                theValue.setSource(source);
+
+                if(theValuation.getValues() == null)
+                    theValuation.setValues(new HashSet<com.acuo.persist.entity.Value>());
+
+                theValuation.getValues().add(theValue);
+                valuationService.createOrUpdate(theValuation);
+            }
+            else
+            {
+                theValue.setPv(theValue.getPv() + pv);
+                valueService.createOrUpdate(theValue);
+            }
+        }
+
+
+
+
+
     }
 
 }
