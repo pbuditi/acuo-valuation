@@ -19,6 +19,7 @@ import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
+import com.acuo.valuation.services.MarginCallGenService;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.basics.currency.Currency;
@@ -88,10 +89,8 @@ public class Neo4jSwapServiceTest {
     TradingAccountService accountService;
 
     @Inject
-    MarginStatementService marginStatementService;
+    MarginCallGenService marginCallGenService;
 
-    @Inject
-    AgreementService agreementService;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -102,7 +101,7 @@ public class Neo4jSwapServiceTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         //importService.reload();
-        service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService, marginStatementService, agreementService);
+        service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService,marginCallGenService);
         //tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
 
         Portfolio portfolio = new Portfolio();
@@ -154,7 +153,7 @@ public class Neo4jSwapServiceTest {
         MarkitValue markitValue = new MarkitValue();
 
         markitValue.setTradeId(tradeId);
-        markitValue.setPv(-40000000d);
+        markitValue.setPv(new Double(-30017690));
 
         MarkitValuation markitValuation = new MarkitValuation(markitValue);
 
@@ -165,7 +164,7 @@ public class Neo4jSwapServiceTest {
         PricingResults pricingResults = PricingResults.of(results);
 
         DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
-        LocalDate myDate1 = LocalDate.of(2015, 6, 1);
+        LocalDate myDate1 = LocalDate.now();
         pricingResults.setDate(myDate1);
         pricingResults.setCurrency(Currency.USD);
         service.persistMarkitResult(pricingResults);
@@ -225,13 +224,4 @@ public class Neo4jSwapServiceTest {
         }
     }
 
-    @Test
-    public void testGeneareteMarginCall()
-    {
-        Portfolio portfolio = portfolioService.findById("p6");
-
-        Agreement agreement = agreementService.findById("a6");
-        Valuation valuation = valuationService.find(18763l);
-        service.geneareteMarginCall(agreement, portfolio, valuation);
-    }
 }

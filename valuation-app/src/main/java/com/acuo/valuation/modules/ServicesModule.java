@@ -19,6 +19,7 @@ public class ServicesModule extends AbstractModule {
         bind(MarginCalcService.class).to(ClarusMarginCalcService.class);
         bind(SwapService.class).to(Neo4jSwapService.class);
         bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
+        bind(MarginCallGenService.class).to(MarkitMarginCallGenServiceImpl.class);
     }
 
 }
