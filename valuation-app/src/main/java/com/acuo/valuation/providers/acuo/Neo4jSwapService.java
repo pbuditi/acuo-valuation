@@ -1,14 +1,13 @@
 package com.acuo.valuation.providers.acuo;
 
+import com.acuo.common.model.margin.Types;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.*;
-import com.acuo.persist.services.PortfolioService;
-import com.acuo.persist.services.TradeService;
-import com.acuo.persist.services.ValuationService;
-import com.acuo.persist.services.ValueService;
+import com.acuo.persist.services.*;
 import com.acuo.valuation.protocol.results.*;
 import com.acuo.valuation.protocol.results.Value;
+import com.acuo.valuation.services.MarginCallGenService;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.utils.SwapTradeBuilder;
@@ -18,8 +17,11 @@ import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -33,22 +35,31 @@ public class Neo4jSwapService implements SwapService {
     private final ValuationService valuationService;
     private final PortfolioService portfolioService;
     private final ValueService valueService;
+    private final MarginCallGenService marginCallGenService;
+
+
 
     @Inject
-    public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService<Trade> tradeService, ValuationService valuationService, PortfolioService portfolioService, ValueService valueService) {
+    public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService<Trade> tradeService, ValuationService valuationService, PortfolioService portfolioService, ValueService valueService,
+                            MarginCallGenService marginCallGenService
+                            ) {
         this.pricingService = pricingService;
         //this.sessionProvider = sessionProvider;
         this.tradeService = tradeService;
         this.valuationService = valuationService;
         this.portfolioService = portfolioService;
         this.valueService = valueService;
+        this.marginCallGenService = marginCallGenService;
     }
 
     @Override
     public PricingResults price(String swapId) {
         try {
             List<SwapTrade> swapTrades = getSwapTrades(swapId);
-            return pricingService.price(swapTrades);
+            PricingResults results = pricingService.price(swapTrades);
+            persistMarkitResult(results);
+
+            return results;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -83,7 +94,6 @@ public class Neo4jSwapService implements SwapService {
             log.debug(result.toString());
             for (Value value : result.getValue().getValues()) {
                 String tradeId = value.getTradeId();
-                Double pv = value.getPv();
 
                 log.debug("tradeId:" + tradeId);
 
@@ -113,8 +123,12 @@ public class Neo4jSwapService implements SwapService {
 
                             valuation.getValues().add(newValue);
 
-                            valuationService.createOrUpdate(valuation);
 
+
+
+                            valuationService.createOrUpdate(valuation);
+                            addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
+                            marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
                             found = true;
                             break;
                         }
@@ -125,6 +139,8 @@ public class Neo4jSwapService implements SwapService {
                     //new valutaion
 
                     Valuation valuation = new Valuation();
+
+                    valuation.setValuationId(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + trade.getTradeId());
 
                     valuation.setDate(date);
 
@@ -150,8 +166,12 @@ public class Neo4jSwapService implements SwapService {
                         trade.setValuations(valuationSet);
 
                     }
-                    valuationService.createOrUpdate(valuation);
 
+
+                    valuationService.createOrUpdate(valuation);
+                    tradeService.createOrUpdate(trade);
+                    addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
+                    marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
                 }
             }
         }
@@ -256,6 +276,81 @@ public class Neo4jSwapService implements SwapService {
 
 
         return true;
+    }
+
+    private void addsumValuationOfPortfolio(Portfolio portfolio, LocalDate date, com.opengamma.strata.basics.currency.Currency currency, String source, Double pv)
+    {
+
+        portfolio = portfolioService.findById(portfolio.getPortfolioId(), 2);
+
+        Valuation theValuation = null;
+        com.acuo.persist.entity.Value theValue = null;
+
+
+
+        if(portfolio.getValuations() != null)
+        {
+            for(Valuation valuation : portfolio.getValuations())
+            {
+                if(valuation.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
+                {
+                    theValuation = valuation;
+                    if(valuation.getValues() != null)
+                        for(com.acuo.persist.entity.Value value : valuation.getValues())
+                        {
+                            if(value.getCurrency().equals(currency) && value.getSource().equals(source))
+                                theValue = value;
+                        }
+                }
+            }
+        }
+
+
+        if(theValuation == null)
+        {
+            theValuation = new Valuation();
+            theValuation.setValuationId(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + portfolio.getPortfolioId());
+            theValuation.setDate(date);
+            Set<com.acuo.persist.entity.Value> values = new HashSet<com.acuo.persist.entity.Value>();
+            theValue = new com.acuo.persist.entity.Value();
+            theValue.setPv(pv);
+            theValue.setCurrency(currency);
+            theValue.setSource(source);
+            values.add(theValue);
+            theValuation.setValues(values);
+
+            if (portfolio.getValuations() == null)
+                portfolio.setValuations(new HashSet<Valuation>());
+
+            portfolio.getValuations().add(theValuation);
+            portfolioService.createOrUpdate(portfolio);
+        }
+        else
+        {
+            if(theValue == null)
+            {
+                theValue = new com.acuo.persist.entity.Value();
+                theValue.setPv(pv);
+                theValue.setCurrency(currency);
+                theValue.setSource(source);
+
+                if(theValuation.getValues() == null)
+                    theValuation.setValues(new HashSet<com.acuo.persist.entity.Value>());
+
+                theValuation.getValues().add(theValue);
+                valuationService.createOrUpdate(theValuation);
+            }
+            else
+            {
+                theValue.setPv(theValue.getPv() + pv);
+                valueService.createOrUpdate(theValue);
+            }
+        }
+
+
+
+
+
     }
 
 }
