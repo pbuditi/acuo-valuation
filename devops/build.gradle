@@ -1,5 +1,5 @@
 project.ext.imageSource = project(":valuation-app").name
-project.ext.imageName = "${name}:${version}"
+project.ext.imageName = "acuo-valuation"
 project.ext.imagePort = 9090
 
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/devops/docker.gradle"

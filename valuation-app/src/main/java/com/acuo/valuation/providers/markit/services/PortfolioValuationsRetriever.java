@@ -1,11 +1,11 @@
 package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.common.http.client.ClientEndPoint;
-import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.protocol.responses.Response;
 import com.acuo.valuation.protocol.results.MarkitValuation;
+import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.protocol.results.Value;
+import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import org.slf4j.Logger;
@@ -13,10 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
