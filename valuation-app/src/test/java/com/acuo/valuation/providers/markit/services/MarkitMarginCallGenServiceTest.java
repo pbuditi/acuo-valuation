@@ -47,9 +47,9 @@ public class MarkitMarginCallGenServiceTest {
     @Test
     public void testGeneareteMarginCall()
     {
-        Agreement agreement = agreementService.findById("a12");
-        Portfolio portfolio = portfolioService.findById("p12");
-        Valuation valuation = valuationService.findById("2017/01/25-455773");
-        marginCallGenService.geneareteMarginCall(agreement,portfolio,valuation);
+//        Agreement agreement = agreementService.findById("a12");
+//        Portfolio portfolio = portfolioService.findById("p12");
+//        Valuation valuation = valuationService.findById("2017/01/25-455773");
+//        marginCallGenService.geneareteMarginCall(agreement,portfolio,valuation);
     }
 }
