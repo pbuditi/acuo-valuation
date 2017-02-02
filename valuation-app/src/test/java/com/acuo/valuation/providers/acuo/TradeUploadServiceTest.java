@@ -65,7 +65,7 @@ public class TradeUploadServiceTest {
     @Before
     public void setup() throws FileNotFoundException {
         service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService);
-        //importService.reload();
+        importService.reload();
     }
 
     @Test
