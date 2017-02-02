@@ -100,21 +100,22 @@ public class Neo4jSwapServiceTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        //importService.reload();
+        importService.reload();
         service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService,marginCallGenService);
-        //tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
-
-        Portfolio portfolio = new Portfolio();
-        portfolio.setPortfolioId("p2");
-        portfolio = portfolioService.createOrUpdate(portfolio);
+        tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
     }
 
     @Test
     public void testPriceSwapWithNoErrorReport() {
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
+        markitValue.setTradeId("455123");
         PricingResults expectedResults = PricingResults.of(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
+        expectedResults.setDate(LocalDate.now());
+        expectedResults.setCurrency(Currency.USD);
         when(pricingService.price(any(List.class))).thenReturn(expectedResults);
+
+
 
         PricingResults results = service.price("455123");
 
@@ -148,7 +149,7 @@ public class Neo4jSwapServiceTest {
     public void testPersistValidPricingResult() throws ParseException {
         List<Result<MarkitValuation>> results = new ArrayList<Result<MarkitValuation>>();
 
-        String tradeId = "455707";
+        String tradeId = "455123";
 
         MarkitValue markitValue = new MarkitValue();
 
