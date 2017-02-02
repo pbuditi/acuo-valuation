@@ -43,9 +43,6 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
     @Override
     public boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation)
     {
-        //given a Agreeement, a Portofolio, a Valuation
-
-
         valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> { pv = value.getPv(); currencyOfValue = value.getCurrency();});
 
 
@@ -80,25 +77,25 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         LocalDate valuationDate = LocalDate.now();
         LocalDate callDate = valuationDate.plusDays(1);
         Types.MarginType marginType = Types.MarginType.Variation;
-        Double callAmount = diff;
         String todayFormatted = valuationDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
         String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-"+ marginType.name().toString();
         String direction;
         Double deliverAmount;
         Double returnAmount;
         Double excessAmount = diff;
+        double amount = balance+pendingCollateral;
         if(diff <0) {
             direction = "OUT";
-            if(balance+pendingCollateral < 0)
+            if(amount < 0)
             {
                 deliverAmount = excessAmount;
                 returnAmount = 0d;
             }
             else
-            if(0 < balance + pendingCollateral  && balance + pendingCollateral < 0-excessAmount)
+            if(0 < amount  && amount < 0-excessAmount)
             {
-                deliverAmount = excessAmount + (balance+pendingCollateral);
-                returnAmount = 0- (balance+pendingCollateral);
+                deliverAmount = excessAmount + amount;
+                returnAmount = 0- amount;
             }
             else
             {
@@ -108,7 +105,7 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         }
         else {
             direction = "IN";
-            if(balance+pendingCollateral > 0)
+            if(amount > 0)
             {
                 deliverAmount = excessAmount;
                 returnAmount = 0d;
@@ -116,8 +113,8 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
             else
             if(0 > balance && balance > 0-excessAmount)
             {
-                deliverAmount = excessAmount + (balance+pendingCollateral);
-                returnAmount = 0- (balance+pendingCollateral);
+                deliverAmount = excessAmount + amount;
+                returnAmount = 0- amount;
             }
             else
             {
@@ -137,31 +134,22 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         excessAmount = deliverAmount + returnAmount;
 
 
-        MarginCall marginCall = new MarginCall();
-        marginCall.setMarginCallId(mcId);
-        marginCall.setExcessAmount(format(diff));
-        marginCall.setPendingCollateral(format(pendingCollateral));
-        marginCall.setBalanceAmount(format(balance));
+        MarginCall marginCall = new MarginCall(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
+                format(diff), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(pv),null,null,
+                callDate.atTime(agreement.getNotificationTime()),null,null,null,format(excessAmount),CallStatus.Expected.name());
+
         marginCall.setAgreement(agreement);
-        marginCall.setReturnAmount(format(returnAmount));
-        marginCall.setDeliverAmount(format(deliverAmount));
-        marginCall.setValuationDate(valuationDate);
-        marginCall.setCallDate(callDate);
-        marginCall.setMarginType(marginType);
-        marginCall.setCurrency(agreement.getCurrency().getCode());
-        marginCall.setDirection(direction);
+
         Step step = new Step();
         step.setStatus(CallStatus.Expected);
         marginCall.setFirstStep(step);
         marginCall.setLastStep(step);
-        marginCall.setMarginAmount(format(excessAmount));
-        marginCall.setStatus(CallStatus.Expected.name());
-        marginCall.setNotificationTime(callDate.atTime(agreement.getNotificationTime()));
-        marginCall.setExposure(format(pv));
 
         //get ms
         String msId = todayFormatted + "-" + agreement.getAgreementId();
         MarginStatement marginStatement = marginStatementService.findById(msId);
+
+        log.info("msid:" + msId);
 
         if(marginStatement == null)
         {
@@ -203,8 +191,6 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         }
 
         marginStatementService.createOrUpdate(marginStatement);
-
-
 
 
         return true;
