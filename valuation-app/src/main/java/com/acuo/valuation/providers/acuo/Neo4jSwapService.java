@@ -53,9 +53,9 @@ public class Neo4jSwapService implements SwapService {
     }
 
     @Override
-    public PricingResults price(String swapId) {
+    public PricingResults price(List<String> swapIds) {
         try {
-            List<SwapTrade> swapTrades = getSwapTrades(swapId);
+            List<SwapTrade> swapTrades = getSwapTrades(swapIds);
             PricingResults results = pricingService.price(swapTrades);
             persistMarkitResult(results);
 
@@ -178,12 +178,16 @@ public class Neo4jSwapService implements SwapService {
         return true;
     }
 
-    private List<SwapTrade> getSwapTrades(String swapId) {
-        Trade trade = tradeService.findById(Long.valueOf(swapId));
-        SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
-        log.debug("swapTrade:" + swapTrade);
+    private List<SwapTrade> getSwapTrades(List<String> swapIds) {
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
-        swapTrades.add(swapTrade);
+        for(String tradeId : swapIds)
+        {
+            Trade trade = tradeService.findById(Long.valueOf(tradeId));
+            SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS)trade);
+            log.debug("swapTrade:" + swapTrade);
+            swapTrades.add(swapTrade);
+        }
+
         return swapTrades;
     }
 
@@ -348,9 +352,19 @@ public class Neo4jSwapService implements SwapService {
         }
 
 
+    }
 
+    @Override
+    public PricingResults pricePortfolio(String id)
+    {
+        Iterator<Trade> trades = tradeService.findByPortfolioId(id).iterator();
 
+        List<String> tradeIds = new ArrayList<String>();
 
+        trades.forEachRemaining(trade -> tradeIds.add(trade.getTradeId() + ""));
+
+        log.info(tradeIds.toString());
+        return price(tradeIds);
     }
 
 }

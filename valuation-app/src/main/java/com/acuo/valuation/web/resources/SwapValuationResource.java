@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @Path("/swaps")
@@ -57,7 +58,19 @@ public class SwapValuationResource {
     @Path("/price/swapid/{id}")
     @Timed
     public PricingResults priceBySwapId(@PathParam("id") String id) throws Exception {
-        PricingResults result = swapService.price(id);
+        PricingResults result = swapService.price(new ArrayList<String>() {{
+            add(id);
+        }});
+        return result;
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/price/portfolioid/{id}")
+    @Timed
+    public PricingResults priceByPortfolio(@PathParam("id") String id) throws Exception
+    {
+        PricingResults result = swapService.pricePortfolio(id);
         return result;
     }
 

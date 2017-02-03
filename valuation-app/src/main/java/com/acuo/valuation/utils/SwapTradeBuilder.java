@@ -44,6 +44,7 @@ public class SwapTradeBuilder {
         swapTrade.setInfo(info);
 
         Set<Leg> payLegs = trade.getPayLegs();
+        if(payLegs != null)
         for (Leg payLeg : payLegs) {
             Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(1, payLeg);
             leg.setNotional( -1 * leg.getNotional());
@@ -51,6 +52,7 @@ public class SwapTradeBuilder {
         }
 
         Set<Leg> receiveLegs = trade.getReceiveLegs();
+        if(receiveLegs != null)
         for (Leg receiveLeg : receiveLegs) {
             Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(2,receiveLeg);
             swap.addLeg(leg);

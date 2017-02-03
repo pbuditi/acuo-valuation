@@ -11,13 +11,15 @@ import java.util.List;
 
 public interface SwapService {
 
-    PricingResults price(String swapId);
+    PricingResults price(List<String> swapId);
 
     PricingResults priceClientTrades(String clientId);
 
     boolean persistMarkitResult(PricingResults pricingResults);
 
     boolean persistClarusResult(MarginResults marginResults);
+
+    PricingResults pricePortfolio(String id);
 
 
 }
