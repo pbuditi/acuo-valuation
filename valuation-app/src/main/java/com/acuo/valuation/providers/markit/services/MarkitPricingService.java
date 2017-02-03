@@ -42,12 +42,13 @@ public class MarkitPricingService implements PricingService {
             return true;
         };
 
+
         List<String> tradeIds = swaps
                 .stream()
                 .map(swap -> swap.getInfo().getTradeId())
                 .filter(errorReport)
                 .collect(Collectors.toList());
 
-        return retriever.retrieve(report.valuationDate(), tradeIds);
+        return retriever.retrieve(report.valuationDate().minusDays(1), tradeIds);
     }
 }

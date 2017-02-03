@@ -115,9 +115,7 @@ public class Neo4jSwapServiceTest {
         expectedResults.setCurrency(Currency.USD);
         when(pricingService.price(any(List.class))).thenReturn(expectedResults);
 
-
-
-        PricingResults results = service.price("455123");
+        PricingResults results = service.price(new ArrayList<String>() {{add("455123");}});
 
         assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
 
@@ -125,6 +123,12 @@ public class Neo4jSwapServiceTest {
         Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
+    }
+
+    @Test
+    public void testPriceAllTrades()
+    {
+
     }
 
     @Test
