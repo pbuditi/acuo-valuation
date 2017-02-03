@@ -73,6 +73,7 @@ public class PortfolioValuationsSender implements Sender {
 
     private String generateFile(List<SwapTrade> swaps) throws Exception {
         LocalDate valuationDate = LocalDate.now();
+        valuationDate = valuationDate.minusDays(1);
         TransformerContext context = new TransformerContext();
         context.setValueDate(valuationDate);
         String pvRequest = transformer.serialise(swaps, context);

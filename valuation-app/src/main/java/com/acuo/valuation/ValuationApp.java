@@ -5,13 +5,20 @@ import com.acuo.common.app.ResteasyMain;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.persist.modules.*;
 import com.acuo.valuation.modules.*;
+import com.acuo.valuation.quartz.DailyPriceJob;
 import com.acuo.valuation.web.ObjectMapperContextResolver;
 import com.google.inject.Module;
+import com.opengamma.strata.basics.schedule.Schedule;
+import com.opengamma.strata.basics.schedule.ScheduleException;
+import lombok.extern.slf4j.Slf4j;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
 
+@Slf4j
 public class ValuationApp extends ResteasyMain {
 
     @Override
@@ -43,7 +50,20 @@ public class ValuationApp extends ResteasyMain {
     }
 
     public static void main(String[] args) throws Exception {
+
         ValuationApp valuationApp = new ValuationApp();
         valuationApp.startAsync();
+        JobDetail jobDetail = JobBuilder.newJob(DailyPriceJob.class).withIdentity("DailyPriceJob", "markitgroup").build();
+        try
+        {
+            Trigger trigger = TriggerBuilder.newTrigger().withIdentity("DailyPriceJob", "markitgroup").withSchedule(CronScheduleBuilder.cronSchedule("0 */40 * * * ?")).build();
+            Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+            scheduler.start();
+            scheduler.scheduleJob(jobDetail, trigger);
+        }
+        catch (ScheduleException e)
+        {
+            log.error("error in Scheduler:" + e.toString());
+        }
     }
 }

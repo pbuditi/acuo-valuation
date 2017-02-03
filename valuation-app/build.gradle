@@ -58,7 +58,9 @@ dependencies {
             "com.palominolabs.metrics:metrics-guice:${versions.metricsguice}",
             "org.jasypt:jasypt:1.9.2",
 
-            "com.xebia:jackson-lombok:1.1"
+            "com.xebia:jackson-lombok:1.1",
+            "org.quartz-scheduler:quartz:2.2.1",
+            "org.quartz-scheduler:quartz-jobs:2.2.1"
     )
 
     testCompile(
