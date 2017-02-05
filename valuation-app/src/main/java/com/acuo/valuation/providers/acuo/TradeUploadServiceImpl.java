@@ -4,6 +4,9 @@ import com.acuo.persist.entity.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
+import com.acuo.valuation.services.MarginCallGenService;
+import com.acuo.valuation.services.PricingService;
+import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +17,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.inject.Inject;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,13 +30,15 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     private final TradeService<FRA> fraService;
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
+    private final SwapService swapService;
 
     @Inject
-    public TradeUploadServiceImpl(TradeService<IRS> irsService, TradeService<FRA> fraService, TradingAccountService accountService, PortfolioService portfolioService) {
+    public TradeUploadServiceImpl(TradeService<IRS> irsService, TradeService<FRA> fraService, TradingAccountService accountService, PortfolioService portfolioService, SwapService swapService) {
         this.irsService = irsService;
         this.fraService = fraService;
         this.accountService = accountService;
         this.portfolioService = portfolioService;
+        this.swapService = swapService;
     }
 
     public boolean uploadTradesFromExcel(InputStream fis) {
@@ -74,9 +81,14 @@ public class TradeUploadServiceImpl implements TradeUploadService {
                 }
             }
 
+            List<String> tradeIdList = new ArrayList<String>();
+
             for (TradingAccount account : accounts.values()) {
                 accountService.createOrUpdate(account);
+                account.getTrades().forEach(trade -> tradeIdList.add(trade.getTradeId() + ""));
             }
+
+            swapService.price(tradeIdList);
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
