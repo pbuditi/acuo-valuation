@@ -121,6 +121,8 @@ public class SwapTradeBuilder {
 
             //if (entry.get("indexTenor") != null)
             swapLegFixing.setTenor(leg.getIndexTenor());
+            if(swapLegFixing.getTenor() == null)
+                swapLegFixing.setTenor(Tenor.TENOR_1D);
 
             //if (entry.get("index") != null)
             swapLegFixing.setFloatingRateName(leg.getIndex());

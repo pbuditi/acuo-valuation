@@ -13,6 +13,7 @@ import com.acuo.persist.services.TradingAccountService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.services.SwapService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -56,6 +57,9 @@ public class TradeUploadServiceTest {
     @Inject
     ImportService importService;
 
+    @Inject
+    SwapService swapService;
+
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
@@ -64,7 +68,7 @@ public class TradeUploadServiceTest {
 
     @Before
     public void setup() throws FileNotFoundException {
-        service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService);
+        service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService, swapService);
         importService.reload();
     }
 
