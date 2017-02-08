@@ -82,7 +82,7 @@ public class ClarusMarginCalcService implements MarginCalcService {
         return MarginResults.of(res.getResults().entrySet().stream().map(map -> new MarginValuation(map.getKey(),
                 map.getValue().get("Account"),
                 map.getValue().get("Change"),
-                map.getValue().get("Margin")))
+                map.getValue().get("Margin"),null))
                 .map(r -> Result.success(r))
                 .collect(Collectors.toList()));
     }

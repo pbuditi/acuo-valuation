@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.acuo;
 
+import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
@@ -12,7 +13,9 @@ import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradingAccountService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.services.SwapService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
@@ -32,11 +35,14 @@ import java.io.IOException;
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
         MappingModule.class,
+        EncryptionModule.class,
         Neo4jPersistModule.class,
-        RepositoryModule.class,
         DataLoaderModule.class,
         DataImporterModule.class,
-        ImportServiceModule.class,})
+        ImportServiceModule.class,
+        RepositoryModule.class,
+        EndPointModule.class,
+        ServicesModule.class})
 @Slf4j
 public class TradeUploadServiceTest {
 
