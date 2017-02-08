@@ -41,7 +41,7 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
     }
 
     @Override
-    public boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation)
+    public MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation)
     {
         valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> { pv = value.getPv(); currencyOfValue = value.getCurrency();});
 
@@ -56,7 +56,7 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
             pv = getFXValue(currencyOfValue, agreement.getCurrency(), pv);
 
         if(clientSignsRelation.getThreshold() != null && Math.abs(pv) > clientSignsRelation.getThreshold())
-            return false;
+            return null;
 
         log.info("pv:" + pv);
         log.info("balance:" + balance);
@@ -70,7 +70,7 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         Double MTA  = agreement.getClientSignsRelation().getMTA() != null ? agreement.getClientSignsRelation().getMTA() : 0;
 
         if(Math.abs(diff) <= MTA)
-            return false;
+            return null;
 
 
         //new mc
@@ -193,7 +193,7 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         marginStatementService.createOrUpdate(marginStatement);
 
 
-        return true;
+        return marginCall;
 
 
     }

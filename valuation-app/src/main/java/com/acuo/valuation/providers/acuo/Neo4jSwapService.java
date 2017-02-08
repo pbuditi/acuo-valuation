@@ -5,6 +5,7 @@ import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.*;
 import com.acuo.persist.services.*;
+import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.*;
 import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.services.MarginCallGenService;
@@ -53,13 +54,12 @@ public class Neo4jSwapService implements SwapService {
     }
 
     @Override
-    public PricingResults price(List<String> swapIds) {
+    public MarginCallDetail price(List<String> swapIds) {
         try {
             List<SwapTrade> swapTrades = getSwapTrades(swapIds);
             PricingResults results = pricingService.price(swapTrades);
-            persistMarkitResult(results);
+            return persistMarkitResult(results);
 
-            return results;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -77,10 +77,10 @@ public class Neo4jSwapService implements SwapService {
     }
 
     @Override
-    public boolean persistMarkitResult(PricingResults pricingResults) {
+    public MarginCallDetail persistMarkitResult(PricingResults pricingResults) {
         if (pricingResults == null) {
             log.warn("received a null pricing results to persistMarkitResult");
-            return false;
+            return null;
         }
 
         LocalDate date = pricingResults.getDate();
@@ -90,6 +90,7 @@ public class Neo4jSwapService implements SwapService {
         log.debug("persistMarkitResult start :" + pricingResults.getDate());
 
         ImmutableList<com.opengamma.strata.collect.result.Result<MarkitValuation>> results = pricingResults.getResults();
+        List<MarginCall> marginCalls = new ArrayList<MarginCall>();
         for (com.opengamma.strata.collect.result.Result<MarkitValuation> result : results) {
             log.debug(result.toString());
             for (Value value : result.getValue().getValues()) {
@@ -171,11 +172,13 @@ public class Neo4jSwapService implements SwapService {
                     valuationService.createOrUpdate(valuation);
                     tradeService.createOrUpdate(trade);
                     addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
-                    marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
+                    MarginCall mc = marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
+                    if(mc != null)
+                        marginCalls.add(mc);
                 }
             }
         }
-        return true;
+        return MarginCallDetail.of(marginCalls);
     }
 
     private List<SwapTrade> getSwapTrades(List<String> swapIds) {
@@ -355,7 +358,7 @@ public class Neo4jSwapService implements SwapService {
     }
 
     @Override
-    public PricingResults pricePortfolio(String id)
+    public MarginCallDetail pricePortfolio(String id)
     {
         Iterator<Trade> trades = tradeService.findByPortfolioId(id).iterator();
 
