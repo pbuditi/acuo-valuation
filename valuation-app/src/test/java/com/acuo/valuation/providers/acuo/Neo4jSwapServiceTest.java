@@ -10,6 +10,7 @@ import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.*;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.*;
+import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -115,14 +116,9 @@ public class Neo4jSwapServiceTest {
         expectedResults.setCurrency(Currency.USD);
         when(pricingService.price(any(List.class))).thenReturn(expectedResults);
 
-        PricingResults results = service.price(new ArrayList<String>() {{add("455123");}});
+        MarginCallDetail results = service.price(new ArrayList<String>() {{add("455123");}});
 
-        assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
-
-        Result<MarkitValuation> swapResult = results.getResults().get(0);
-        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
-
-        assertThat(swapResult.getValue()).is(pvEqualToOne);
+        Assert.assertNotNull(results);
     }
 
     @Test
@@ -208,7 +204,7 @@ public class Neo4jSwapServiceTest {
     @Test
     public void testPersistClarusResult()
     {
-        MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d);
+        MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d, null);
         Result<MarginValuation> result = Result.success(marginValuation);
         MarginResults marginResults = MarginResults.of(Arrays.asList(result));
         marginResults.setPortfolioId("p2");

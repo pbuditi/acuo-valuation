@@ -1,6 +1,7 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
@@ -57,8 +58,8 @@ public class SwapValuationResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/price/swapid/{id}")
     @Timed
-    public PricingResults priceBySwapId(@PathParam("id") String id) throws Exception {
-        PricingResults result = swapService.price(new ArrayList<String>() {{
+    public MarginCallDetail priceBySwapId(@PathParam("id") String id) throws Exception {
+        MarginCallDetail result = swapService.price(new ArrayList<String>() {{
             add(id);
         }});
         return result;
@@ -68,9 +69,9 @@ public class SwapValuationResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/price/portfolioid/{id}")
     @Timed
-    public PricingResults priceByPortfolio(@PathParam("id") String id) throws Exception
+    public MarginCallDetail priceByPortfolio(@PathParam("id") String id) throws Exception
     {
-        PricingResults result = swapService.pricePortfolio(id);
+        MarginCallDetail result = swapService.pricePortfolio(id);
         return result;
     }
 
