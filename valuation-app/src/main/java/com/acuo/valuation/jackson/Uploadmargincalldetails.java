@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 import com.acuo.common.json.DoubleSerializer;
+import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -53,6 +54,8 @@ public class Uploadmargincalldetails {
 
      public static Uploadmargincalldetails of(MarginCall marginCall)
      {
+         log.info(marginCall.toString());
+         log.info(marginCall.getAgreement() + "");
          Uploadmargincalldetails uploadmargincalldetails = new Uploadmargincalldetails();
          Agreement agreement = marginCall.getAgreement();
          uploadmargincalldetails.marginagreement = agreement.getAgreementId();
@@ -64,7 +67,13 @@ public class Uploadmargincalldetails {
          uploadmargincalldetails.referenceidentifier = marginCall.getMarginCallId();
          uploadmargincalldetails.exposure = marginCall.getExposure();
          uploadmargincalldetails.pendingcollateral = marginCall.getPendingCollateral();
-
+         uploadmargincalldetails.totalcallamount = marginCall.getMarginAmount();
+         ClientSignsRelation r = agreement.getClientSignsRelation();
+         if(marginCall.getMarginType().equals(Types.CallType.Variation) && r != null)
+             uploadmargincalldetails.collateralvalue = r.getVariationMarginBalance();
+         else
+         if(marginCall.getMarginType().equals(Types.CallType.Initial) && r != null)
+             uploadmargincalldetails.collateralvalue = r.getInitialMarginBalance();
 
          CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
          if (counterpartSignsRelation != null) {
@@ -76,10 +85,20 @@ public class Uploadmargincalldetails {
                  log.error("agreement[{}] le[{}] has firm set to null", agreement.getAgreementId(), legalEntity);
              }
          }
-         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
-         if (clientSignsRelation!= null) {
-             uploadmargincalldetails.legalentity = clientSignsRelation.getLegalEntity().getName();
+         if (r!= null) {
+             uploadmargincalldetails.legalentity = r.getLegalEntity().getName();
          }
+
+         uploadmargincalldetails.agreementdetails = new Agreementdetails();
+         if(r != null)
+         {
+             uploadmargincalldetails.agreementdetails.setMintransfer(r.getMTA());
+             uploadmargincalldetails.agreementdetails.setRounding(r.getRounding());
+             uploadmargincalldetails.agreementdetails.setThreshold(r.getThreshold());
+
+         }
+         uploadmargincalldetails.agreementdetails.setNetrequired(marginCall.getMarginAmount());
+
          return uploadmargincalldetails;
      }
 
