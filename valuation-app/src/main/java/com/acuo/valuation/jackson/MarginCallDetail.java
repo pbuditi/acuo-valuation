@@ -17,11 +17,11 @@ public class MarginCallDetail {
 
 
 
-     public static MarginCallDetail of(List<MarginCall> marginCalls)
+     public static MarginCallDetail of(Iterable<MarginCall> marginCalls)
      {
          MarginCallDetail marginCallDetail = new MarginCallDetail();
          marginCallDetail.uploadmargincalldetails = new ArrayList<Uploadmargincalldetails>();
-         marginCalls.stream().forEach(Uploadmargincalldetails::of);
+         marginCalls.forEach(mc-> marginCallDetail.uploadmargincalldetails.add(Uploadmargincalldetails.of(mc)));
          return marginCallDetail;
      }
 
