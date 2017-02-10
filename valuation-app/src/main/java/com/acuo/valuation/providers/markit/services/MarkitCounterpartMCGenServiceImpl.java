@@ -40,7 +40,7 @@ public class MarkitCounterpartMCGenServiceImpl implements CounterpartMCGenServic
     @Override
     public boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation,double random)
     {
-        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> { pv = value.getPv() + random; currencyOfValue = value.getCurrency();});
+        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> { pv = value.getPv() * random; currencyOfValue = value.getCurrency();});
 
 
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();

@@ -49,7 +49,7 @@ public class MarginCallDetailTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        //importService.reload();
+        importService.reload();
     }
 
     @Test
