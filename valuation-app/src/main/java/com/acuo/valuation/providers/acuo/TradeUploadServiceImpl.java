@@ -31,6 +31,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
     private final SwapService swapService;
+    List<String> tradeIdList;
 
     @Inject
     public TradeUploadServiceImpl(TradeService<IRS> irsService, TradeService<FRA> fraService, TradingAccountService accountService, PortfolioService portfolioService, SwapService swapService) {
@@ -42,6 +43,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     }
 
     public boolean uploadTradesFromExcel(InputStream fis) {
+        tradeIdList = new ArrayList<String>();
         try {
             Workbook workbook = new XSSFWorkbook(fis);
             Sheet sheet = workbook.getSheet("IRS-Cleared");
@@ -72,20 +74,24 @@ public class TradeUploadServiceImpl implements TradeUploadService {
                 }
             }
 
+
+
             sheet = workbook.getSheet("IRS-Bilateral");
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
                     TradingAccount account = handleIRSBilateralRow(row);
+
                     accounts.putIfAbsent(account.getAccountId(), account);
+
+
                 }
             }
 
-            List<String> tradeIdList = new ArrayList<String>();
+
 
             for (TradingAccount account : accounts.values()) {
                 accountService.createOrUpdate(account);
-                account.getTrades().forEach(trade -> tradeIdList.add(trade.getTradeId() + ""));
             }
 
             swapService.price(tradeIdList);
@@ -115,6 +121,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         linkPortfolio(irs, row.getCell(47).getStringCellValue());
         TradingAccount account = addToAccount(row, irs);
         log.debug("saved IRS {}", irs);
+        tradeIdList.add(irs.getTradeId() + "");
         return account;
     }
 
@@ -131,6 +138,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         linkPortfolio(irs, row.getCell(46).getStringCellValue());
         TradingAccount account = addToAccount(row, irs);
         log.debug("saved OIS {}", irs);
+        tradeIdList.add(irs.getTradeId() + "");
         return account;
     }
 
@@ -139,6 +147,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         linkPortfolio(irs, row.getCell(41).getStringCellValue());
         TradingAccount account = addToAccount(row, irs);
         log.debug("saved IRS-Bilateral {}", irs);
+        tradeIdList.add(irs.getTradeId() + "");
         return account;
     }
 }
