@@ -23,6 +23,7 @@ public class ServicesModule extends AbstractModule {
         bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
         bind(MarginCallGenService.class).to(MarkitMarginCallGenServiceImpl.class);
         bind(JobFactory.class).to(AcuoJobFactory.class);
+        bind(CounterpartMCGenService.class).to(MarkitCounterpartMCGenServiceImpl.class);
     }
 
 }
