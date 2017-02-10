@@ -184,10 +184,10 @@ public class SwapExcelParser {
             log.debug("irs trade id {}",irs.getTradeId());
 
             Leg leg1 = buildOISLeg(row, 15);
-            Leg leg2 = buildOISLeg(row, 27);
+            Leg leg2 = buildOISLeg(row, 28);
 
-            String leg1Relationship = row.getCell(39).getStringCellValue();
-            String leg2Relationship = row.getCell(40).getStringCellValue();
+            String leg1Relationship = row.getCell(41).getStringCellValue();
+            String leg2Relationship = row.getCell(42).getStringCellValue();
 
 
             Set<Leg> payLegs = new HashSet<Leg>();
@@ -217,23 +217,25 @@ public class SwapExcelParser {
     private Leg buildOISLeg(Row row, int startIndex) {
         Leg leg = new Leg();
         leg.setType(getStringValue(row.getCell(startIndex)));
-        leg.setCurrency(Currency.parse(getStringValue(row.getCell(startIndex + 1))));
-        leg.setBusinessDayConvention(BusinessDayConvention.of(getStringValue(row.getCell(startIndex + 3))));
-        leg.setRefCalendar(getStringValue(row.getCell(startIndex + 4)));
-        leg.setPaymentFrequency(Frequency.parse(getStringValue(row.getCell(startIndex + 2))));
-        leg.setDayCount(DayCount.of(getStringValue(row.getCell(startIndex + 5))));
-        String index = getStringValue(row.getCell(startIndex + 6));
+        if(row.getCell(startIndex + 1) != null)
+        leg.setIndexTenor(Tenor.parse(getStringValue(row.getCell(startIndex + 1))));
+        leg.setCurrency(Currency.parse(getStringValue(row.getCell(startIndex + 2))));
+        leg.setBusinessDayConvention(BusinessDayConvention.of(getStringValue(row.getCell(startIndex + 4))));
+        leg.setRefCalendar(getStringValue(row.getCell(startIndex + 5)));
+        leg.setPaymentFrequency(Frequency.parse(getStringValue(row.getCell(startIndex + 3))));
+        leg.setDayCount(DayCount.of(getStringValue(row.getCell(startIndex + 6))));
+        String index = getStringValue(row.getCell(startIndex + 7));
         if(index != null) leg.setIndex(FloatingRateName.of(index));
-        String frequency = getStringValue(row.getCell(startIndex + 7));
+        String frequency = getStringValue(row.getCell(startIndex + 8));
         if(frequency != null) leg.setResetFrequency(Frequency.parse(frequency));
-        if (row.getCell(startIndex + 8) != null)
-            leg.setPayStart(dateToLocalDate(row.getCell(startIndex + 8).getDateCellValue()));
         if (row.getCell(startIndex + 9) != null)
-            leg.setPayEnd(dateToLocalDate(row.getCell(startIndex + 9).getDateCellValue()));
+            leg.setPayStart(dateToLocalDate(row.getCell(startIndex + 9).getDateCellValue()));
         if (row.getCell(startIndex + 10) != null)
-            leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 10)).replace(",", "")));
+            leg.setPayEnd(dateToLocalDate(row.getCell(startIndex + 10).getDateCellValue()));
         if (row.getCell(startIndex + 11) != null)
-            leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 11).getStringCellValue())) / 100);
+            leg.setNotional(Double.parseDouble(getStringValue(row.getCell(startIndex + 11)).replace(",", "")));
+        if (row.getCell(startIndex + 12) != null)
+            leg.setFixedRate(Double.parseDouble((row.getCell(startIndex + 12).getStringCellValue())) / 100);
         return leg;
     }
 

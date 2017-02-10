@@ -111,6 +111,7 @@ public class Neo4jSwapService implements SwapService {
                             log.debug("existing valuation");
                             //existing date, add or replace the value
                             Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
+                            if(existedValues != null)
                             for (com.acuo.persist.entity.Value existedValue : existedValues) {
                                 if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit"))
                                     valueService.delete(existedValue.getId());
@@ -185,10 +186,15 @@ public class Neo4jSwapService implements SwapService {
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
         for(String tradeId : swapIds)
         {
+            log.info(tradeId);
             Trade trade = tradeService.findById(Long.valueOf(tradeId));
-            SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS)trade);
-            log.debug("swapTrade:" + swapTrade);
-            swapTrades.add(swapTrade);
+            if(trade != null)
+            {
+                SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS)trade);
+                log.debug("swapTrade:" + swapTrade);
+                swapTrades.add(swapTrade);
+            }
+
         }
 
         return swapTrades;
@@ -368,6 +374,18 @@ public class Neo4jSwapService implements SwapService {
 
         log.info(tradeIds.toString());
         return price(tradeIds);
+    }
+
+    @Override
+    public MarginCallDetail valuationAllBilateralIRS()
+    {
+        Iterator<Trade> trades = tradeService.findAllIRS().iterator();
+        List<String> tradeIdList = new ArrayList<String>();
+        while(trades.hasNext())
+        {
+            tradeIdList.add(trades.next().getTradeId() + "");
+        }
+        return price(tradeIdList);
     }
 
 }

@@ -54,8 +54,8 @@ public class Uploadmargincalldetails {
 
      public static Uploadmargincalldetails of(MarginCall marginCall)
      {
-         log.info(marginCall.toString());
-         log.info(marginCall.getAgreement() + "");
+         log.debug(marginCall.toString());
+         log.debug(marginCall.getAgreement() + "");
          Uploadmargincalldetails uploadmargincalldetails = new Uploadmargincalldetails();
          Agreement agreement = marginCall.getAgreement();
          uploadmargincalldetails.marginagreement = agreement.getAgreementId();
@@ -82,7 +82,7 @@ public class Uploadmargincalldetails {
              if (legalEntity.getFirm() != null) {
                  uploadmargincalldetails.cptyorg = legalEntity.getFirm().getName();
              } else {
-                 log.error("agreement[{}] le[{}] has firm set to null", agreement.getAgreementId(), legalEntity);
+                 log.debug("agreement[{}] le[{}] has firm set to null", agreement.getAgreementId(), legalEntity);
              }
          }
          if (r!= null) {
