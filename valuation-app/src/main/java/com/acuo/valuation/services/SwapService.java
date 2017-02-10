@@ -22,5 +22,6 @@ public interface SwapService {
 
     MarginCallDetail pricePortfolio(String id);
 
+    MarginCallDetail valuationAllBilateralIRS();
 
 }

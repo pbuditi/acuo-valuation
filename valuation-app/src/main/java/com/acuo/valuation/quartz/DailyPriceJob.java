@@ -19,24 +19,17 @@ import java.util.List;
 @Slf4j
 public class DailyPriceJob implements Job {
 
-    final TradeService<IRS> tradeTradeService;
     private final SwapService swapService;
 
     @Inject
-    public DailyPriceJob(TradeService<IRS> tradeTradeService, SwapService swapService)
+    public DailyPriceJob(SwapService swapService)
     {
-        this.tradeTradeService = tradeTradeService;
         this.swapService = swapService;
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        Iterator<IRS> trades = tradeTradeService.findAllIRS().iterator();
-        List<String> tradeIdList = new ArrayList<String>();
-        while(trades.hasNext())
-        {
-            tradeIdList.add(trades.next().getTradeId() + "");
-        }
-        swapService.price(tradeIdList);
+
+        swapService.valuationAllBilateralIRS();
     }
 }

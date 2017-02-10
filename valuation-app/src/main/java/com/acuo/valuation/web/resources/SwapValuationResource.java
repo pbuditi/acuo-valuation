@@ -83,4 +83,15 @@ public class SwapValuationResource {
         PricingResults result = swapService.priceClientTrades(id);
         return result;
     }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/price/allBilateralIRS")
+    @Timed
+    public MarginCallDetail priceallBilateralIRS() throws Exception
+    {
+        MarginCallDetail result = swapService.valuationAllBilateralIRS();
+        return result;
+    }
+
 }
