@@ -12,6 +12,7 @@ import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradingAccountService;
 import com.acuo.persist.services.TradeService;
+import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -27,10 +28,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
@@ -63,7 +70,7 @@ public class TradeUploadServiceTest {
     @Inject
     ImportService importService;
 
-    @Inject
+    @Mock
     SwapService swapService;
 
     @Rule
@@ -74,8 +81,10 @@ public class TradeUploadServiceTest {
 
     @Before
     public void setup() throws FileNotFoundException {
+        MockitoAnnotations.initMocks(this);
         service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService, swapService);
         importService.reload();
+
     }
 
     @Test
@@ -85,6 +94,8 @@ public class TradeUploadServiceTest {
 
     @Test
     public void testUploadAll() throws IOException {
+
+        when(swapService.price(any(List.class))).thenReturn(new MarginCallDetail());
         service.uploadTradesFromExcel(excel.createInputStream());
     }
 
