@@ -14,9 +14,11 @@ public interface SwapService {
 
     MarginCallDetail price(List<String> swapId);
 
+    MarginCallDetail price(List<String> swapId, boolean isGenCounterpart);
+
     PricingResults priceClientTrades(String clientId);
 
-    MarginCallDetail persistMarkitResult(PricingResults pricingResults);
+    MarginCallDetail persistMarkitResult(PricingResults pricingResults, boolean isGenCounterpart);
 
     boolean persistClarusResult(MarginResults marginResults);
 
