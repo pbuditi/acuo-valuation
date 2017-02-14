@@ -8,6 +8,7 @@ import com.acuo.persist.services.*;
 import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.*;
 import com.acuo.valuation.protocol.results.Value;
+import com.acuo.valuation.services.CounterpartMCGenService;
 import com.acuo.valuation.services.MarginCallGenService;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
@@ -37,12 +38,13 @@ public class Neo4jSwapService implements SwapService {
     private final PortfolioService portfolioService;
     private final ValueService valueService;
     private final MarginCallGenService marginCallGenService;
+    private final CounterpartMCGenService counterpartMCGenService;
 
 
 
     @Inject
     public Neo4jSwapService(PricingService pricingService, /*Neo4jPersistService sessionProvider,*/ TradeService<Trade> tradeService, ValuationService valuationService, PortfolioService portfolioService, ValueService valueService,
-                            MarginCallGenService marginCallGenService
+                            MarginCallGenService marginCallGenService, CounterpartMCGenService counterpartMCGenService
                             ) {
         this.pricingService = pricingService;
         //this.sessionProvider = sessionProvider;
@@ -51,14 +53,21 @@ public class Neo4jSwapService implements SwapService {
         this.portfolioService = portfolioService;
         this.valueService = valueService;
         this.marginCallGenService = marginCallGenService;
+        this.counterpartMCGenService = counterpartMCGenService;
     }
 
     @Override
-    public MarginCallDetail price(List<String> swapIds) {
+    public MarginCallDetail price(List<String> swapIds)
+    {
+        return price(swapIds, false);
+    }
+
+    @Override
+    public MarginCallDetail price(List<String> swapIds, boolean isGenCounterpart) {
         try {
             List<SwapTrade> swapTrades = getSwapTrades(swapIds);
             PricingResults results = pricingService.price(swapTrades);
-            return persistMarkitResult(results);
+            return persistMarkitResult(results, isGenCounterpart);
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -77,7 +86,7 @@ public class Neo4jSwapService implements SwapService {
     }
 
     @Override
-    public MarginCallDetail persistMarkitResult(PricingResults pricingResults) {
+    public MarginCallDetail persistMarkitResult(PricingResults pricingResults, boolean isGenCounterpart) {
         if (pricingResults == null) {
             log.warn("received a null pricing results to persistMarkitResult");
             return null;
@@ -91,9 +100,21 @@ public class Neo4jSwapService implements SwapService {
 
         ImmutableList<com.opengamma.strata.collect.result.Result<MarkitValuation>> results = pricingResults.getResults();
         List<MarginCall> marginCalls = new ArrayList<MarginCall>();
+
         for (com.opengamma.strata.collect.result.Result<MarkitValuation> result : results) {
             log.debug(result.toString());
+            double startVar = 1;
+            int i = 0;
             for (Value value : result.getValue().getValues()) {
+                //for the random var
+                int index = (i + 1)/2 ;
+                double rate = 0.2;
+                double var;
+                if(i % 2 == 0)
+                    var = startVar + rate * index;
+                else
+                    var = startVar - rate * index;
+
                 String tradeId = value.getTradeId();
 
                 log.debug("tradeId:" + tradeId);
@@ -110,8 +131,11 @@ public class Neo4jSwapService implements SwapService {
                         if (valuation.getDate().equals(date)) {
                             log.debug("existing valuation");
                             //existing date, add or replace the value
+                            if(valuation.getValues() == null)
+                                valuation.setValues(new HashSet<com.acuo.persist.entity.Value>());
                             Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
-                            if(existedValues != null)
+
+
                             for (com.acuo.persist.entity.Value existedValue : existedValues) {
                                 if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit"))
                                     valueService.delete(existedValue.getId());
@@ -131,6 +155,8 @@ public class Neo4jSwapService implements SwapService {
                             valuationService.createOrUpdate(valuation);
                             addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
                             marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
+                            if(isGenCounterpart)
+                                counterpartMCGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation, var);
                             found = true;
                             break;
                         }
@@ -174,6 +200,8 @@ public class Neo4jSwapService implements SwapService {
                     tradeService.createOrUpdate(trade);
                     addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
                     MarginCall mc = marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
+                    if(isGenCounterpart)
+                        counterpartMCGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation, var);
                     if(mc != null)
                         marginCalls.add(mc);
                 }
@@ -385,7 +413,7 @@ public class Neo4jSwapService implements SwapService {
         {
             tradeIdList.add(trades.next().getTradeId() + "");
         }
-        return price(tradeIdList);
+        return price(tradeIdList, true);
     }
 
 }
