@@ -20,6 +20,7 @@ import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
+import com.acuo.valuation.services.CounterpartMCGenService;
 import com.acuo.valuation.services.MarginCallGenService;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
@@ -92,6 +93,9 @@ public class Neo4jSwapServiceTest {
     @Inject
     MarginCallGenService marginCallGenService;
 
+    @Inject
+    CounterpartMCGenService counterpartMCGenService;
+
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -102,7 +106,7 @@ public class Neo4jSwapServiceTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         importService.reload();
-        service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService,marginCallGenService);
+        service = new Neo4jSwapService(pricingService, /*session,*/ tradeService, valuationService, portfolioService, valueService,marginCallGenService, counterpartMCGenService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
     }
 
@@ -168,7 +172,7 @@ public class Neo4jSwapServiceTest {
         LocalDate myDate1 = LocalDate.now();
         pricingResults.setDate(myDate1);
         pricingResults.setCurrency(Currency.USD);
-        service.persistMarkitResult(pricingResults);
+        service.persistMarkitResult(pricingResults, false);
 
         Trade trade = tradeService.findById(Long.parseLong(tradeId));
         Set<Valuation> valuations  = trade.getValuations();
@@ -198,7 +202,7 @@ public class Neo4jSwapServiceTest {
 
     @Test
     public void testPersistNullPricingResult() throws ParseException {
-        service.persistMarkitResult(null);
+        service.persistMarkitResult(null, false);
     }
 
     @Test
