@@ -7,5 +7,6 @@ public class MarginValuation {
     Double account;
     Double change;
     Double margin;
+    String marginType;
 
 }
