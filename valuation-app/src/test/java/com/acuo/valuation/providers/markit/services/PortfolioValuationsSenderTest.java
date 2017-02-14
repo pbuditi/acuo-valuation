@@ -68,7 +68,7 @@ public class PortfolioValuationsSenderTest {
                                                      .addInterceptor(new LoggingInterceptor())
                                                      .build();
         MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/"), "", "",
-                "username", "password", "0", "10000");
+                "username", "password", "0", "10000", "false");
 
         OkHttpClient client = new MarkitClient(httpClient, markitEndPointConfig);
 
