@@ -15,6 +15,8 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.assertNotNull;
 
 @Ignore
@@ -36,7 +38,7 @@ public class PortfolioValuationsRetrieverIntegrationTest {
     @Test
     public void testRetrieve() throws Exception {
         PortfolioValuationsRetriever retriever = new PortfolioValuationsRetriever(clientEndPoint, parser);
-        Response response = retriever.retrieve("2016-06-10");
+        Response response = retriever.retrieve("2016-06-10", new ArrayList<String>());
         assertNotNull(response);
     }
 

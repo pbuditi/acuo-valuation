@@ -1,9 +1,8 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.trade.SwapTrade;
-import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.protocol.results.SwapResults;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
 import com.codahale.metrics.annotation.Timed;
@@ -15,6 +14,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @Path("/swaps")
@@ -55,13 +55,45 @@ public class SwapValuationResource {
     }
 
     @GET
-    //@Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/pv/{id}")
+    @Path("/price/swapid/{id}")
     @Timed
-    public PricingResults getPv(@PathParam("id") String id) throws Exception
-    {
-        PricingResults result = swapService.getPv(id);
+    public MarginCallDetail priceBySwapId(@PathParam("id") String id) throws Exception {
+        MarginCallDetail result = swapService.price(new ArrayList<String>() {{
+            add(id);
+        }});
         return result;
     }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/price/portfolioid/{id}")
+    @Timed
+    public MarginCallDetail priceByPortfolio(@PathParam("id") String id) throws Exception
+    {
+        MarginCallDetail result = swapService.pricePortfolio(id);
+        return result;
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/price/clientid/{id}")
+    @Timed
+    public PricingResults getPv(@PathParam("id") String id) throws Exception {
+        PricingResults result = swapService.priceClientTrades(id);
+        return result;
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/price/allBilateralIRS")
+    @Timed
+    public MarginCallDetail priceallBilateralIRS() throws Exception
+    {
+        MarginCallDetail result = swapService.valuationAllBilateralIRS();
+        return result;
+    }
+
+
+
 }

@@ -1,8 +1,7 @@
 package com.acuo.valuation.modules;
 
 import com.acuo.valuation.jackson.StrataSerDer;
-import com.acuo.valuation.web.resources.SwapValuationResource;
-import com.acuo.valuation.web.resources.UploadResource;
+import com.acuo.valuation.web.resources.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -29,6 +28,9 @@ public class ResourcesModule extends AbstractModule {
         bind(UploadResource.class);
         bind(SwapValuationResource.class);
         bind(ModelMapper.class);
+        bind(ImportResource.class);
+        bind(ClarusValuationResource.class);
+        bind(Neo4jConnectionExceptionHandler.class);
     }
 
     @Provides

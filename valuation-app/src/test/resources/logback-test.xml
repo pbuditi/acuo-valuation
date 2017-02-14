@@ -7,9 +7,13 @@
         </encoder>
     </appender>
     
-    <logger name="com.acuo" level="debug" />
-    <logger name="org.jboss" level="debug" />
-    <logger name="javax.ws" level="debug" />
+    <logger name="com.acuo" level="info" />
+    <logger name="org.jboss" level="error" />
+    <logger name="javax.ws" level="error" />
+
+    <logger name="org.neo4j.ogm.drivers.bolt.request" level="info"/>
+    <logger name="org.neo4j.ogm.drivers.bolt.response" level="info"/>
+    <logger name="org.neo4j.ogm.context" level="info"/>
 
     <root level="warn">
         <appender-ref ref="console" />
