@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.model.margin.Types;
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.model.trade.TradeAttributeType;
 import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.persist.entity.*;
 import com.acuo.persist.services.*;
@@ -101,19 +102,13 @@ public class Neo4jSwapService implements SwapService {
         ImmutableList<com.opengamma.strata.collect.result.Result<MarkitValuation>> results = pricingResults.getResults();
         List<MarginCall> marginCalls = new ArrayList<MarginCall>();
 
+        Set<String> portfolioSet = new HashSet<String>();
+
         for (com.opengamma.strata.collect.result.Result<MarkitValuation> result : results) {
             log.debug(result.toString());
-            double startVar = 1;
-            int i = 0;
+
             for (Value value : result.getValue().getValues()) {
-                //for the random var
-                int index = (i + 1)/2 ;
-                double rate = 0.2;
-                double var;
-                if(i % 2 == 0)
-                    var = startVar + rate * index;
-                else
-                    var = startVar - rate * index;
+
 
                 String tradeId = value.getTradeId();
 
@@ -154,9 +149,10 @@ public class Neo4jSwapService implements SwapService {
 
                             valuationService.createOrUpdate(valuation);
                             addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
-                            marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
-                            if(isGenCounterpart)
-                                counterpartMCGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation, var);
+                            portfolioSet.add(trade.getPortfolio().getPortfolioId());
+//                            marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
+//                            if(isGenCounterpart)
+//                                counterpartMCGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation, var);
                             found = true;
                             break;
                         }
@@ -199,14 +195,42 @@ public class Neo4jSwapService implements SwapService {
                     valuationService.createOrUpdate(valuation);
                     tradeService.createOrUpdate(trade);
                     addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
-                    MarginCall mc = marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
-                    if(isGenCounterpart)
-                        counterpartMCGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation, var);
-                    if(mc != null)
-                        marginCalls.add(mc);
+                    portfolioSet.add(trade.getPortfolio().getPortfolioId());
+//                    MarginCall mc = marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
+//                    if(isGenCounterpart)
+//                        counterpartMCGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation, var);
+//                    if(mc != null)
+//                        marginCalls.add(mc);
                 }
             }
         }
+
+        double startVar = 1;
+        int i = 0;
+        for(String portfolioId : portfolioSet)
+        {
+            //for the random var
+            int index = (i + 1)/2 ;
+            double rate = 0.2;
+            double var;
+            if(i % 2 == 0)
+                var = startVar + rate * index;
+            else
+                var = startVar - rate * index;
+
+            log.debug("portfolioId:" + portfolioId);
+
+            Portfolio portfolio = portfolioService.findById(portfolioId);
+
+            Valuation valuation = valuationService.findById(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + portfolio.getPortfolioId());
+            MarginCall mc = marginCallGenService.geneareteMarginCall(portfolio.getAgreement(), portfolio, valuation);
+            if(mc != null)
+                marginCalls.add(mc);
+            if(isGenCounterpart)
+                counterpartMCGenService.geneareteMarginCall(portfolio.getAgreement(), portfolio, valuation, var);
+
+        }
+
         return MarginCallDetail.of(marginCalls);
     }
 
@@ -398,7 +422,16 @@ public class Neo4jSwapService implements SwapService {
 
         List<String> tradeIds = new ArrayList<String>();
 
-        trades.forEachRemaining(trade -> tradeIds.add(trade.getTradeId() + ""));
+        while(trades.hasNext())
+        {
+            Trade trade = trades.next();
+            if(trade instanceof  IRS)
+            {
+                IRS irs = (IRS) trade;
+                if(irs.getTradeType().equalsIgnoreCase("Bilateral"))
+                    tradeIds.add(irs.getTradeId() + "");
+            }
+        }
 
         log.info(tradeIds.toString());
         return price(tradeIds);
