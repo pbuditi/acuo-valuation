@@ -107,45 +107,31 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         if(diff <0) {
             exposure = pv;
             direction = "OUT";
-//            if(amount < 0)
-//            {
-//                deliverAmount = excessAmount;
-//                returnAmount = 0d;
-//            }
-//            else
-//            if(0 < amount  && amount < 0-excessAmount)
-//            {
-//                deliverAmount = excessAmount + amount;
-//                returnAmount = 0- amount;
-//            }
-//            else
-//            {
-//                deliverAmount = 0d;
-//                returnAmount = excessAmount;
-//            }
+
         }
         else {
             exposure = 0 - pv;
             direction = "IN";
         }
 
-        if(amount <= marginAmount && marginAmount <0 )
+        if(sign(exposure) == sign(amount) && exposure > 0 )
         {
-            returnAmount = marginAmount;
-            deliverAmount = 0d;
-        }
-        else
-        if(0 - marginAmount < amount && amount <= 0)
-        {
-            returnAmount = amount;
-            deliverAmount = marginAmount - amount;
-        }
-        else
-        if(amount > 0)
-        {
-            returnAmount = 0d;
             deliverAmount = marginAmount;
+            returnAmount = 0d;
         }
+        else
+        if(sign(exposure) == sign(amount) && exposure < 0 )
+        {
+            deliverAmount = 0d;
+            returnAmount = marginAmount;
+        }
+        else
+        {
+            deliverAmount = exposure;
+            returnAmount = Math.abs(amount);
+        }
+
+
 
         //round amount
         if(rounding != 0) {
@@ -250,5 +236,15 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
     {
 
         return Double.parseDouble(df.format(d));
+    }
+
+    private int sign(double d)
+    {
+        if(d > 0)
+            return 1;
+        if(d < 0)
+            return -1;
+        else
+            return 0;
     }
 }
