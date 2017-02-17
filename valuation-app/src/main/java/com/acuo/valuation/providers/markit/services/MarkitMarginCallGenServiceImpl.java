@@ -59,11 +59,9 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         if(clientSignsRelation.getThreshold() != null && Math.abs(pv) <= clientSignsRelation.getThreshold())
             return null;
 
-        log.info("pv:" + pv);
-        log.info("balance:" + balance);
-        log.info("pendingCollateral:" + pendingCollateral);
+
         Double diff = pv - (balance + pendingCollateral);
-        log.info("diff:" + diff);
+
 
 
 
