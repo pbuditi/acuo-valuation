@@ -105,12 +105,12 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
 
         double amount = balance+pendingCollateral;
         if(diff <0) {
-            exposure = pv;
+            exposure = 0 - pv;
             direction = "OUT";
 
         }
         else {
-            exposure = 0 - pv;
+            exposure = pv;
             direction = "IN";
         }
 
@@ -140,7 +140,7 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
             if(returnAmount != null && returnAmount.doubleValue() != 0)
                 returnAmount = returnAmount/Math.abs(returnAmount)*Math.floor(Math.abs(returnAmount) / rounding) * rounding;
         }
-        excessAmount = deliverAmount + returnAmount;
+        marginAmount = deliverAmount + returnAmount;
 
 
         MarginCall marginCall = new MarginCall(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
