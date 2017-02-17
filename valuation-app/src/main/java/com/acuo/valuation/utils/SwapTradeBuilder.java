@@ -162,7 +162,6 @@ public class SwapTradeBuilder {
         try {
             if (entry.get("paymentFrequency") != null) {
                 AdjustableSchedule adjustableSchedule = new AdjustableSchedule();
-                log.debug("paymentFrequency:" + (String) entry.get("paymentFrequency"));
                 adjustableSchedule.setFrequency(parseFrequency((String) entry.get("paymentFrequency")));
                 leg.setPaymentSchedule(adjustableSchedule);
             }
