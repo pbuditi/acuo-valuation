@@ -54,8 +54,7 @@ public class Uploadmargincalldetails {
 
      public static Uploadmargincalldetails of(MarginCall marginCall)
      {
-         log.debug(marginCall.toString());
-         log.debug(marginCall.getAgreement() + "");
+
          Uploadmargincalldetails uploadmargincalldetails = new Uploadmargincalldetails();
          Agreement agreement = marginCall.getAgreement();
          uploadmargincalldetails.marginagreement = agreement.getAgreementId();
