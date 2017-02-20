@@ -47,6 +47,7 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
 
 
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
+        CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
 
 
         Double balance = clientSignsRelation.getVariationMarginBalance() != null? clientSignsRelation.getVariationMarginBalance(): 0;
@@ -55,24 +56,38 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         if(!currencyOfValue.equals(agreement.getCurrency()))
             pv = getFXValue(currencyOfValue, agreement.getCurrency(), pv);
 
-        if(clientSignsRelation.getThreshold() != null && Math.abs(pv) > clientSignsRelation.getThreshold())
+        if(clientSignsRelation.getThreshold() != null && Math.abs(pv) <= clientSignsRelation.getThreshold())
             return null;
 
-        log.info("pv:" + pv);
-        log.info("balance:" + balance);
-        log.info("pendingCollateral:" + pendingCollateral);
+
         Double diff = pv - (balance + pendingCollateral);
-        log.info("diff:" + diff);
 
-        LegalEntity client = agreement.getClientSignsRelation().getLegalEntity();
-        LegalEntity counterpart = agreement.getCounterpartSignsRelation().getLegalEntity();
 
-        Double MTA  = agreement.getClientSignsRelation().getMTA() != null ? agreement.getClientSignsRelation().getMTA() : 0;
+
+
+        double MTA;
+        double rounding;
+
+
+        if(diff > 0)
+        {
+            MTA = clientSignsRelation.getMTA() != null ? clientSignsRelation.getMTA() : 0;
+            rounding = clientSignsRelation.getRounding() != null ? clientSignsRelation.getRounding() : 0;
+            balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
+            pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
+        }
+        else
+        {
+            MTA = counterpartSignsRelation.getMTA() != null ? counterpartSignsRelation.getMTA() : 0;
+            rounding = counterpartSignsRelation.getRounding() != null ? counterpartSignsRelation.getRounding() : 0;
+            balance = counterpartSignsRelation.getVariationMarginBalance() != null ? counterpartSignsRelation.getVariationMarginBalance() : 0;
+            pendingCollateral = counterpartSignsRelation.getVariationPending() != null ? counterpartSignsRelation.getVariationPending() : 0;
+        }
 
         if(Math.abs(diff) <= MTA)
             return null;
-
-
+//
+//
         //new mc
         LocalDate valuationDate = LocalDate.now();
         LocalDate callDate = valuationDate.plusDays(1);
@@ -80,63 +95,55 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         String todayFormatted = valuationDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
         String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-"+ marginType.name().toString();
         String direction;
-        Double deliverAmount;
-        Double returnAmount;
+        Double deliverAmount = 0d;
+        Double returnAmount = 0d;
         Double excessAmount = diff;
+        Double marginAmount = diff;
+        Double exposure;
+
         double amount = balance+pendingCollateral;
         if(diff <0) {
+            exposure = 0 - pv;
             direction = "OUT";
-            if(amount < 0)
-            {
-                deliverAmount = excessAmount;
-                returnAmount = 0d;
-            }
-            else
-            if(0 < amount  && amount < 0-excessAmount)
-            {
-                deliverAmount = excessAmount + amount;
-                returnAmount = 0- amount;
-            }
-            else
-            {
-                deliverAmount = 0d;
-                returnAmount = excessAmount;
-            }
+
         }
         else {
+            exposure = pv;
             direction = "IN";
-            if(amount > 0)
-            {
-                deliverAmount = excessAmount;
-                returnAmount = 0d;
-            }
-            else
-            if(0 > balance && balance > 0-excessAmount)
-            {
-                deliverAmount = excessAmount + amount;
-                returnAmount = 0- amount;
-            }
-            else
-            {
-                deliverAmount = 0d;
-                returnAmount = excessAmount;
-            }
         }
 
+        if(sign(exposure) == sign(amount) && exposure > 0 )
+        {
+            deliverAmount = marginAmount;
+            returnAmount = 0d;
+        }
+        else
+        if(sign(exposure) == sign(amount) && exposure < 0 )
+        {
+            deliverAmount = 0d;
+            returnAmount = marginAmount;
+        }
+        else
+        {
+            deliverAmount = exposure;
+            returnAmount = Math.abs(amount);
+        }
+
+
+
         //round amount
-        Double rounding = clientSignsRelation.getRounding();
-        if(rounding != null && rounding.doubleValue() != 0) {
+        if(rounding != 0) {
             if(deliverAmount != null && deliverAmount.doubleValue() != 0)
                 deliverAmount = deliverAmount/Math.abs(deliverAmount)*Math.ceil(Math.abs(deliverAmount) / rounding) * rounding;
             if(returnAmount != null && returnAmount.doubleValue() != 0)
                 returnAmount = returnAmount/Math.abs(returnAmount)*Math.floor(Math.abs(returnAmount) / rounding) * rounding;
         }
-        excessAmount = deliverAmount + returnAmount;
+        marginAmount = deliverAmount + returnAmount;
 
 
         MarginCall marginCall = new MarginCall(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
-                format(diff), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(pv),null,null,
-                callDate.atTime(agreement.getNotificationTime()),null,null,null,format(excessAmount),CallStatus.Expected.name());
+                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,null,
+                callDate.atTime(agreement.getNotificationTime()),null,null,null,format(marginAmount),CallStatus.Expected.name());
 
         marginCall.setAgreement(agreement);
 
@@ -154,6 +161,8 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
         if(marginStatement == null)
         {
             //create ms
+            LegalEntity client = agreement.getClientSignsRelation().getLegalEntity();
+            LegalEntity counterpart = agreement.getCounterpartSignsRelation().getLegalEntity();
             marginStatement = new MarginStatement();
             marginStatement.setStatementId(msId);
             marginStatement.setDirection(direction);
@@ -225,5 +234,15 @@ public class MarkitMarginCallGenServiceImpl implements MarginCallGenService {
     {
 
         return Double.parseDouble(df.format(d));
+    }
+
+    private int sign(double d)
+    {
+        if(d > 0)
+            return 1;
+        if(d < 0)
+            return -1;
+        else
+            return 0;
     }
 }
