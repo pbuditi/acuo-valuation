@@ -1,0 +1,2112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <header>
+        <name>Valuations Upload Report</name>
+        <version>2.2</version>
+        <date>2017-02-21</date>
+    </header>
+    <report>
+        <tradeid>455785</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455785 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455749</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455749 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455677</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455677 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455716</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455716 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455716</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455716 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455659</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455659 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455659</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455659 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455725</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455725 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455680</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455680 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455680</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455680 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455719</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455719 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455719</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455719 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455701</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455701 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455740</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455740 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455740</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455740 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455656</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455656 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455656</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455656 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455776</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455776 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455776</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455776 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455671</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455671 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455671</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455671 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455704</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455704 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455704</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455704 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455752</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455752 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455752</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455752 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455668</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455668 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455668</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455668 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455728</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455728 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455728</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455728 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455692</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455692 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455692</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455692 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455755</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455755 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455755</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455755 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455764</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455764 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455764</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455764 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455779</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455779 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455779</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455779 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455788</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455788 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455788</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455788 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455815</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455815 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455815</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455815 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455809</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455809 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455791</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455791 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455791</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455791 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455683</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455683 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455683</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455683 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455797</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455797 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455695</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455695 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455695</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455695 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455812</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455812 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455812</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455812 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455800</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455800 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455800</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455800 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455665</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455665 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455707</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455707 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455707</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455707 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455653</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455653 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455761</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455761 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455821</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455821 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455689</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455689 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455713</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455713 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455803</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455803 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455803</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455803 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455731</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455731 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455731</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455731 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455737</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455737 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455773</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455773 : Leg 2 has fixing 6M against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455647</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455647 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455647</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455647 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455743</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455743 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455743</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455743 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455644</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455644 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455644</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455644 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455767</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455767 : Can't specify a rollcode of MODFOLL, PREV or MODPREV with a frequency of 1D as this could cause infinite loops when calculating schedules. Rollcode has been defaulted to FOLLOW.</report>
+    </report>
+    <report>
+        <tradeid>455767</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455767 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455786</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455786 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455741</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455741 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455741</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455741 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455678</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455678 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455705</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455705 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455705</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455705 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455813</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455813 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455813</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455813 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455714</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455714 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455669</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455669 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455669</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455669 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455642</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455642 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455777</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455777 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455777</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455777 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455750</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455750 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455717</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455717 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455717</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455717 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455798</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455798 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455690</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455690 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455645</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455645 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455645</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455645 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455753</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455753 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455753</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455753 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455681</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455681 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455681</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455681 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455789</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455789 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455789</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455789 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455762</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455762 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455726</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455726 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455654</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455654 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455666</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455666 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455729</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455729 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455729</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455729 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455702</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455702 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455774</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455774 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455693</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455693 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455693</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455693 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455810</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455810 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455765</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455765 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455765</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455765 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455738</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455738 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455657</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455657 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455657</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455657 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455801</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455801 : Leg 1 has fixing 1D against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455801</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455801 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455688</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455688 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455658</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455658 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455658</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455658 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455658</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455658 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455724</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455724 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455784</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455784 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455676</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455676 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455646</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455646 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455646</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455646 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455646</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455646 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455802</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455802 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455802</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455802 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455802</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455802 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455712</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455712 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455772</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455772 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455736</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455736 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455670</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455670 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455670</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455670 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455670</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455670 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455796</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455796 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455790</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455790 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455790</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455790 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455790</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455790 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455730</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455730 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455730</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455730 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455730</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455730 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455694</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455694 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455694</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455694 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455694</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455694 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455754</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455754 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455754</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455754 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455754</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455754 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455682</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455682 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455682</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455682 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455682</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455682 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455652</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455652 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455742</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455742 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455742</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455742 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455742</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455742 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455766</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455766 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455766</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455766 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455766</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455766 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455820</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455820 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455748</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455748 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455706</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455706 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455706</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455706 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455706</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455706 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455814</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455814 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455814</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455814 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455814</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455814 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455808</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455808 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455778</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455778 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455778</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455778 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455778</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455778 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455700</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455700 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455718</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455718 : Leg 2 has fixing 1D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455718</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455718 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455718</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455718 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455760</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455760 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455664</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455664 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455787</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455787 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455787</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455787 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455787</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455787 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455691</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455691 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455691</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455691 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455691</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455691 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455817</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455817 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455679</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455679 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455679</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455679 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455679</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455679 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455763</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455763 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455763</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455763 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455763</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455763 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455805</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455805 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455733</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455733 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455715</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455715 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455715</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455715 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455715</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455715 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455811</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455811 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455811</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455811 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455811</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455811 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455721</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455721 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455775</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455775 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455775</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455775 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455775</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455775 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455655</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455655 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455655</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455655 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455655</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455655 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455685</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455685 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455769</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455769 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455703</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455703 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455703</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455703 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455703</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455703 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455727</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455727 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455727</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455727 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455727</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455727 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455739</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455739 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455739</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455739 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455739</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455739 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455709</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455709 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455697</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455697 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455643</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455643 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455643</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455643 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455643</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455643 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455649</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455649 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455757</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455757 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455793</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455793 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455751</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455751 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455751</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455751 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455751</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455751 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455673</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455673 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455745</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455745 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455667</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455667 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455667</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455667 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455667</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455667 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455799</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455799 : Leg 2 has fixing 28D against 3M payments</report>
+    </report>
+    <report>
+        <tradeid>455799</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455799 : Start date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455799</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455799 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>455781</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455781 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455661</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 455661 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>455749</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455749</report>
+    </report>
+    <report>
+        <tradeid>455785</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455785</report>
+    </report>
+    <report>
+        <tradeid>455677</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455677</report>
+    </report>
+    <report>
+        <tradeid>455716</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455716</report>
+    </report>
+    <report>
+        <tradeid>455659</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455659</report>
+    </report>
+    <report>
+        <tradeid>455725</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455725</report>
+    </report>
+    <report>
+        <tradeid>455680</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455680</report>
+    </report>
+    <report>
+        <tradeid>455719</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455719</report>
+    </report>
+    <report>
+        <tradeid>455710</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455710</report>
+    </report>
+    <report>
+        <tradeid>455701</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455701</report>
+    </report>
+    <report>
+        <tradeid>455740</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455740</report>
+    </report>
+    <report>
+        <tradeid>455656</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455656</report>
+    </report>
+    <report>
+        <tradeid>455776</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455776</report>
+    </report>
+    <report>
+        <tradeid>455671</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455671</report>
+    </report>
+    <report>
+        <tradeid>455698</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455698</report>
+    </report>
+    <report>
+        <tradeid>455704</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455704</report>
+    </report>
+    <report>
+        <tradeid>455752</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455752</report>
+    </report>
+    <report>
+        <tradeid>455668</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455668</report>
+    </report>
+    <report>
+        <tradeid>455728</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455728</report>
+    </report>
+    <report>
+        <tradeid>455692</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455692</report>
+    </report>
+    <report>
+        <tradeid>455755</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455755</report>
+    </report>
+    <report>
+        <tradeid>455764</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455764</report>
+    </report>
+    <report>
+        <tradeid>455779</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455779</report>
+    </report>
+    <report>
+        <tradeid>455734</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455734</report>
+    </report>
+    <report>
+        <tradeid>455788</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455788</report>
+    </report>
+    <report>
+        <tradeid>455815</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455815</report>
+    </report>
+    <report>
+        <tradeid>455806</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455806</report>
+    </report>
+    <report>
+        <tradeid>455686</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455686</report>
+    </report>
+    <report>
+        <tradeid>455674</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455674</report>
+    </report>
+    <report>
+        <tradeid>455809</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455809</report>
+    </report>
+    <report>
+        <tradeid>455770</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455770</report>
+    </report>
+    <report>
+        <tradeid>455818</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455818</report>
+    </report>
+    <report>
+        <tradeid>455791</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455791</report>
+    </report>
+    <report>
+        <tradeid>455683</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455683</report>
+    </report>
+    <report>
+        <tradeid>455797</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455797</report>
+    </report>
+    <report>
+        <tradeid>455746</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455746</report>
+    </report>
+    <report>
+        <tradeid>455695</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455695</report>
+    </report>
+    <report>
+        <tradeid>455812</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455812</report>
+    </report>
+    <report>
+        <tradeid>455800</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455800</report>
+    </report>
+    <report>
+        <tradeid>455662</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455662</report>
+    </report>
+    <report>
+        <tradeid>455665</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455665</report>
+    </report>
+    <report>
+        <tradeid>455707</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455707</report>
+    </report>
+    <report>
+        <tradeid>455653</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455653</report>
+    </report>
+    <report>
+        <tradeid>455761</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455761</report>
+    </report>
+    <report>
+        <tradeid>455650</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455650</report>
+    </report>
+    <report>
+        <tradeid>455782</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455782</report>
+    </report>
+    <report>
+        <tradeid>455758</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455758</report>
+    </report>
+    <report>
+        <tradeid>455821</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455821</report>
+    </report>
+    <report>
+        <tradeid>455689</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455689</report>
+    </report>
+    <report>
+        <tradeid>455722</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455722</report>
+    </report>
+    <report>
+        <tradeid>455713</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455713</report>
+    </report>
+    <report>
+        <tradeid>455803</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455803</report>
+    </report>
+    <report>
+        <tradeid>455794</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455794</report>
+    </report>
+    <report>
+        <tradeid>455731</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455731</report>
+    </report>
+    <report>
+        <tradeid>455737</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455737</report>
+    </report>
+    <report>
+        <tradeid>455647</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455647</report>
+    </report>
+    <report>
+        <tradeid>455743</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455743</report>
+    </report>
+    <report>
+        <tradeid>455644</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455644</report>
+    </report>
+    <report>
+        <tradeid>455767</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455767</report>
+    </report>
+    <report>
+        <tradeid>455773</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455773</report>
+    </report>
+    <report>
+        <tradeid>455651</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455651</report>
+    </report>
+    <report>
+        <tradeid>455786</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455786</report>
+    </report>
+    <report>
+        <tradeid>455759</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455759</report>
+    </report>
+    <report>
+        <tradeid>455741</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455741</report>
+    </report>
+    <report>
+        <tradeid>455768</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455768</report>
+    </report>
+    <report>
+        <tradeid>455804</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455804</report>
+    </report>
+    <report>
+        <tradeid>455678</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455678</report>
+    </report>
+    <report>
+        <tradeid>455705</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455705</report>
+    </report>
+    <report>
+        <tradeid>455687</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455687</report>
+    </report>
+    <report>
+        <tradeid>455813</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455813</report>
+    </report>
+    <report>
+        <tradeid>455714</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455714</report>
+    </report>
+    <report>
+        <tradeid>455669</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455669</report>
+    </report>
+    <report>
+        <tradeid>455795</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455795</report>
+    </report>
+    <report>
+        <tradeid>455696</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455696</report>
+    </report>
+    <report>
+        <tradeid>455642</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455642</report>
+    </report>
+    <report>
+        <tradeid>455732</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455732</report>
+    </report>
+    <report>
+        <tradeid>455777</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455777</report>
+    </report>
+    <report>
+        <tradeid>455723</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455723</report>
+    </report>
+    <report>
+        <tradeid>455660</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455660</report>
+    </report>
+    <report>
+        <tradeid>455750</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455750</report>
+    </report>
+    <report>
+        <tradeid>455717</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455717</report>
+    </report>
+    <report>
+        <tradeid>455744</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455744</report>
+    </report>
+    <report>
+        <tradeid>455798</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455798</report>
+    </report>
+    <report>
+        <tradeid>455780</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455780</report>
+    </report>
+    <report>
+        <tradeid>455690</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455690</report>
+    </report>
+    <report>
+        <tradeid>455645</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455645</report>
+    </report>
+    <report>
+        <tradeid>455753</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455753</report>
+    </report>
+    <report>
+        <tradeid>455681</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455681</report>
+    </report>
+    <report>
+        <tradeid>455735</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455735</report>
+    </report>
+    <report>
+        <tradeid>455807</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455807</report>
+    </report>
+    <report>
+        <tradeid>455663</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455663</report>
+    </report>
+    <report>
+        <tradeid>455789</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455789</report>
+    </report>
+    <report>
+        <tradeid>455816</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455816</report>
+    </report>
+    <report>
+        <tradeid>455672</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455672</report>
+    </report>
+    <report>
+        <tradeid>455708</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455708</report>
+    </report>
+    <report>
+        <tradeid>455771</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455771</report>
+    </report>
+    <report>
+        <tradeid>455762</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455762</report>
+    </report>
+    <report>
+        <tradeid>455699</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455699</report>
+    </report>
+    <report>
+        <tradeid>455726</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455726</report>
+    </report>
+    <report>
+        <tradeid>455711</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455711</report>
+    </report>
+    <report>
+        <tradeid>455654</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455654</report>
+    </report>
+    <report>
+        <tradeid>455666</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455666</report>
+    </report>
+    <report>
+        <tradeid>455747</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455747</report>
+    </report>
+    <report>
+        <tradeid>455648</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455648</report>
+    </report>
+    <report>
+        <tradeid>455729</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455729</report>
+    </report>
+    <report>
+        <tradeid>455702</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455702</report>
+    </report>
+    <report>
+        <tradeid>455720</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455720</report>
+    </report>
+    <report>
+        <tradeid>455774</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455774</report>
+    </report>
+    <report>
+        <tradeid>455693</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455693</report>
+    </report>
+    <report>
+        <tradeid>455810</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455810</report>
+    </report>
+    <report>
+        <tradeid>455675</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455675</report>
+    </report>
+    <report>
+        <tradeid>455765</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455765</report>
+    </report>
+    <report>
+        <tradeid>455738</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455738</report>
+    </report>
+    <report>
+        <tradeid>455819</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455819</report>
+    </report>
+    <report>
+        <tradeid>455657</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455657</report>
+    </report>
+    <report>
+        <tradeid>455684</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455684</report>
+    </report>
+    <report>
+        <tradeid>455792</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455792</report>
+    </report>
+    <report>
+        <tradeid>455756</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455756</report>
+    </report>
+    <report>
+        <tradeid>455801</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455801</report>
+    </report>
+    <report>
+        <tradeid>455783</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455783</report>
+    </report>
+    <report>
+        <tradeid>455688</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455688</report>
+    </report>
+    <report>
+        <tradeid>455658</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455658</report>
+    </report>
+    <report>
+        <tradeid>455724</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455724</report>
+    </report>
+    <report>
+        <tradeid>455784</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455784</report>
+    </report>
+    <report>
+        <tradeid>455676</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455676</report>
+    </report>
+    <report>
+        <tradeid>455802</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455802</report>
+    </report>
+    <report>
+        <tradeid>455646</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455646</report>
+    </report>
+    <report>
+        <tradeid>455712</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455712</report>
+    </report>
+    <report>
+        <tradeid>455772</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455772</report>
+    </report>
+    <report>
+        <tradeid>455736</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455736</report>
+    </report>
+    <report>
+        <tradeid>455670</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455670</report>
+    </report>
+    <report>
+        <tradeid>455796</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455796</report>
+    </report>
+    <report>
+        <tradeid>455730</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455730</report>
+    </report>
+    <report>
+        <tradeid>455790</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455790</report>
+    </report>
+    <report>
+        <tradeid>455694</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455694</report>
+    </report>
+    <report>
+        <tradeid>455754</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455754</report>
+    </report>
+    <report>
+        <tradeid>455682</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455682</report>
+    </report>
+    <report>
+        <tradeid>455652</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455652</report>
+    </report>
+    <report>
+        <tradeid>455742</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455742</report>
+    </report>
+    <report>
+        <tradeid>455766</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455766</report>
+    </report>
+    <report>
+        <tradeid>455748</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455748</report>
+    </report>
+    <report>
+        <tradeid>455820</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455820</report>
+    </report>
+    <report>
+        <tradeid>455706</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455706</report>
+    </report>
+    <report>
+        <tradeid>455814</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455814</report>
+    </report>
+    <report>
+        <tradeid>455808</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455808</report>
+    </report>
+    <report>
+        <tradeid>455778</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455778</report>
+    </report>
+    <report>
+        <tradeid>455700</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455700</report>
+    </report>
+    <report>
+        <tradeid>455718</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455718</report>
+    </report>
+    <report>
+        <tradeid>455760</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455760</report>
+    </report>
+    <report>
+        <tradeid>455664</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455664</report>
+    </report>
+    <report>
+        <tradeid>455787</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455787</report>
+    </report>
+    <report>
+        <tradeid>455691</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455691</report>
+    </report>
+    <report>
+        <tradeid>455817</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455817</report>
+    </report>
+    <report>
+        <tradeid>455679</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455679</report>
+    </report>
+    <report>
+        <tradeid>455763</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455763</report>
+    </report>
+    <report>
+        <tradeid>455805</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455805</report>
+    </report>
+    <report>
+        <tradeid>455733</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455733</report>
+    </report>
+    <report>
+        <tradeid>455715</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455715</report>
+    </report>
+    <report>
+        <tradeid>455811</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455811</report>
+    </report>
+    <report>
+        <tradeid>455721</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455721</report>
+    </report>
+    <report>
+        <tradeid>455655</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455655</report>
+    </report>
+    <report>
+        <tradeid>455775</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455775</report>
+    </report>
+    <report>
+        <tradeid>455685</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455685</report>
+    </report>
+    <report>
+        <tradeid>455769</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455769</report>
+    </report>
+    <report>
+        <tradeid>455703</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455703</report>
+    </report>
+    <report>
+        <tradeid>455739</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455739</report>
+    </report>
+    <report>
+        <tradeid>455727</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455727</report>
+    </report>
+    <report>
+        <tradeid>455709</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455709</report>
+    </report>
+    <report>
+        <tradeid>455697</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455697</report>
+    </report>
+    <report>
+        <tradeid>455643</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455643</report>
+    </report>
+    <report>
+        <tradeid>455649</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455649</report>
+    </report>
+    <report>
+        <tradeid>455757</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455757</report>
+    </report>
+    <report>
+        <tradeid>455793</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455793</report>
+    </report>
+    <report>
+        <tradeid>455751</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455751</report>
+    </report>
+    <report>
+        <tradeid>455673</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455673</report>
+    </report>
+    <report>
+        <tradeid>455745</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455745</report>
+    </report>
+    <report>
+        <tradeid>455667</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455667</report>
+    </report>
+    <report>
+        <tradeid>455799</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455799</report>
+    </report>
+    <report>
+        <tradeid>455781</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455781</report>
+    </report>
+    <report>
+        <tradeid>455661</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 455661</report>
+    </report>
+    <report>
+        <type>AUDIT</type>
+        <report>Processed 180/180 trades successfully</report>
+    </report>
+</data>
