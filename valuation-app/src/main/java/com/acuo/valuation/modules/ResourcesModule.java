@@ -1,23 +1,15 @@
 package com.acuo.valuation.modules;
 
-import com.acuo.valuation.jackson.StrataSerDer;
-import com.acuo.valuation.web.resources.*;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.acuo.common.rest.GenericExceptionMapper;
+import com.acuo.valuation.web.resources.ClarusValuationResource;
+import com.acuo.valuation.web.resources.ImportResource;
+import com.acuo.valuation.web.resources.SwapValuationResource;
+import com.acuo.valuation.web.resources.UploadResource;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.xebia.jacksonlombok.JacksonLombokAnnotationIntrospector;
 import org.apache.velocity.app.VelocityEngine;
 import org.modelmapper.ModelMapper;
 
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -30,7 +22,7 @@ public class ResourcesModule extends AbstractModule {
         bind(ModelMapper.class);
         bind(ImportResource.class);
         bind(ClarusValuationResource.class);
-        bind(Neo4jConnectionExceptionHandler.class);
+        bind(GenericExceptionMapper.class);
     }
 
     @Provides
