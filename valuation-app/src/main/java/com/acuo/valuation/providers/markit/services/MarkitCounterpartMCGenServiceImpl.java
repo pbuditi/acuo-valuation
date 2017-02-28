@@ -136,9 +136,9 @@ public class MarkitCounterpartMCGenServiceImpl implements CounterpartMCGenServic
         marginAmount = deliverAmount + returnAmount;
 
 
-        MarginCall marginCall = new MarginCall(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
-                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,null,
-                callDate.atTime(agreement.getNotificationTime()),null,null,null,format(marginAmount),CallStatus.Unrecon.name());
+        MarginCall marginCall = new InitialMargin(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
+                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,
+                callDate.atTime(agreement.getNotificationTime()),format(marginAmount),CallStatus.Unrecon.name());
 
         marginCall.setAgreement(agreement);
 
