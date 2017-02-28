@@ -128,9 +128,15 @@ public class Neo4jSwapService implements SwapService {
 
 
                             for (com.acuo.persist.entity.Value existedValue : existedValues) {
-                                if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit"))
-                                    valueService.delete(existedValue.getId());
+                                if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit")) {
+                                    log.debug("deleting value id [{}]", existedValue.getId());
+                                    try {
+                                        valueService.delete(existedValue.getId());
+                                        existedValues.remove(existedValue);
+                                    } catch (Exception e) {}
+                                }
                             }
+
 
                             com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
 
@@ -140,10 +146,9 @@ public class Neo4jSwapService implements SwapService {
 
                             valuation.getValues().add(newValue);
 
-
-
-
                             valuationService.createOrUpdate(valuation);
+                            trade.getValuations().add(valuation);
+                            Trade byId = tradeService.findById(Long.valueOf(tradeId));
                             addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
                             portfolioSet.add(trade.getPortfolio().getPortfolioId());
 //                            marginCallGenService.geneareteMarginCall(trade.getPortfolio().getAgreement(), trade.getPortfolio(), valuation);
