@@ -117,13 +117,13 @@ public class StressTest implements WithResteasyFixtures {
         dispatcher = createDispatcher(JacksonObjectMapperProvider.class);
         dispatcher.getRegistry().addSingletonResource(resource);
         service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService, swapService);
-
+        importService.reload();
     }
 
-    @Ignore
     @Test
+    @Ignore
     public void testValuationAll() throws URISyntaxException, IOException {
-        importService.reload();
+
         server.enqueue(new MockResponse().setBody("key"));
         server.enqueue(new MockResponse().setBody(largeReport.getContent()));
         server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
@@ -138,7 +138,6 @@ public class StressTest implements WithResteasyFixtures {
 
     }
 
-    @Ignore
     @Test
     public void testStress()
     {
