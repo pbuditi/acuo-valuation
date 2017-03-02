@@ -6,6 +6,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
+import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
@@ -16,7 +17,6 @@ import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.services.TradeUploadService;
-import com.google.common.collect.ImmutableList;
 import com.opengamma.strata.collect.result.Result;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -73,7 +74,7 @@ public class MarkitServiceIntegrationTest {
     @Ignore
     public void testPriceASwap() {
         SwapTrade swap = SwapHelper.createTrade();
-        PricingResults pricingResults = pricingService.price(ImmutableList.of(swap));
+        PricingResults pricingResults = pricingService.priceSwapTrades(ImmutableList.of(swap));
 
         assertThat(pricingResults).isNotNull();
         ImmutableList<Result<MarkitValuation>> results = pricingResults.getResults();
@@ -85,9 +86,9 @@ public class MarkitServiceIntegrationTest {
 
     @Test
     public void testPriceSwapFromClientId() {
-        PricingResults pricingResults = swapService.priceClientTrades("c1");
+        PricingResults pricingResults = swapService.priceClientTrades(ClientId.fromString("c1"));
         assertThat(pricingResults).isNotNull();
-        ImmutableList<Result<MarkitValuation>> results = pricingResults.getResults();
+        List<Result<MarkitValuation>> results = pricingResults.getResults();
         assertThat(results).isNotEmpty();
         for (Result result: results) {
             assertThat(result.isSuccess()).isTrue();

@@ -6,8 +6,11 @@ import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.entity.Trade;
+import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -68,6 +71,9 @@ public class MarkitPricingServiceTest {
     @Inject
     ReportParser reportParser;
 
+    @Inject
+    TradeService<Trade> tradeService;
+
     @Mock
     Sender sender;
 
@@ -82,7 +88,7 @@ public class MarkitPricingServiceTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
 
-        service = new MarkitPricingService(sender, retriever);
+        service = new MarkitPricingService(sender, retriever, tradeService);
 
         swaps = clarusTransformer.deserialiseToList(cmeCsv.getContent());
     }
@@ -91,9 +97,11 @@ public class MarkitPricingServiceTest {
     public void testPriceSwapWithErrorReport() {
         when(sender.send(any(List.class))).thenReturn(ReportHelper.reportError());
 
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(PricingResults.of(Collections.EMPTY_LIST));
+        PricingResults pricingResults = new PricingResults();
+        pricingResults.setResults(Collections.EMPTY_LIST);
+        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(pricingResults);
 
-        PricingResults results = service.price(swaps);
+        PricingResults results = service.priceSwapTrades(swaps);
 
         assertThat(results).isNotNull();
     }
@@ -103,10 +111,11 @@ public class MarkitPricingServiceTest {
         when(sender.send(any(List.class))).thenReturn(ReportHelper.report());
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
-        PricingResults expectedResults = PricingResults.of(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
+        PricingResults expectedResults = new PricingResults();
+        expectedResults.setResults(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
-        PricingResults results = service.price(swaps);
+        PricingResults results = service.priceSwapTrades(swaps);
 
         assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
 
@@ -121,10 +130,26 @@ public class MarkitPricingServiceTest {
         when(sender.send(any(List.class))).thenReturn(reportParser.parse(test02.getContent()));
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
-        PricingResults expectedResults = PricingResults.of(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
+        PricingResults expectedResults = new PricingResults();
+        expectedResults.setResults(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
-        PricingResults results = service.price(asList(SwapHelper.createTrade()));
+        PricingResults results = service.priceSwapTrades(asList(SwapHelper.createTrade()));
+
+        assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
+
+        Result<MarkitValuation> swapResult = results.getResults().get(0);
+        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
+
+        assertThat(swapResult.getValue()).is(pvEqualToOne);
+    }
+
+    @Test
+    public void testPriceSwapFromClientId() {
+        MarkitValue markitValue = new MarkitValue();
+        markitValue.setPv(1.0d);
+
+        PricingResults results = service.priceTradesOf(ClientId.fromString("c1"));
 
         assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
 

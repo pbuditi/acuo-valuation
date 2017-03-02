@@ -1,6 +1,5 @@
 package com.acuo.valuation.providers.acuo;
 
-
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
@@ -14,6 +13,7 @@ import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.modules.*;
 import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.services.SwapService;
@@ -46,6 +46,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+@Ignore
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({
         ConfigurationTestModule.class,
@@ -91,6 +92,9 @@ public class StressTest implements WithResteasyFixtures {
     @Mock
     SwapService swapService;
 
+    @Mock
+    PricingResults pricingResults;
+
     private static MockWebServer server;
 
     public static class MockServiceModule extends AbstractModule {
@@ -121,16 +125,16 @@ public class StressTest implements WithResteasyFixtures {
     }
 
     @Test
-    @Ignore
     public void testValuationAll() throws URISyntaxException, IOException {
 
         server.enqueue(new MockResponse().setBody("key"));
         server.enqueue(new MockResponse().setBody(largeReport.getContent()));
         server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
-        when(swapService.price(any(List.class))).thenReturn(new MarginCallDetail());
+        when(swapService.price(any(List.class))).thenReturn(pricingResults);
+        //when(swapService.persistMarkitResult(pricingResults, false)).thenReturn(new MarginCallDetail());
         service.uploadTradesFromExcel(excel.createInputStream());
 
-        MockHttpRequest request = MockHttpRequest.get("/swaps/price/allBilateralIRS");
+        MockHttpRequest request = MockHttpRequest.get("/swaps/priceSwapTrades/allBilateralIRS");
         MockHttpResponse response = new MockHttpResponse();
 
 
@@ -139,6 +143,7 @@ public class StressTest implements WithResteasyFixtures {
     }
 
     @Test
+    @Ignore
     public void testStress()
     {
         while(true)

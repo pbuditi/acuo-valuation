@@ -53,7 +53,8 @@ public class PortfolioValuationsRetriever implements Retriever {
         List<Result<MarkitValuation>> resultList = new ArrayList<>();
         resultList.add(result);
 
-        PricingResults pricingResults = PricingResults.of(resultList);
+        PricingResults pricingResults = new PricingResults();
+        pricingResults.setResults(resultList);
         pricingResults.setDate(results.header().getDate());
         pricingResults.setCurrency(Currency.parse(results.header().getValuationCurrency()));
 

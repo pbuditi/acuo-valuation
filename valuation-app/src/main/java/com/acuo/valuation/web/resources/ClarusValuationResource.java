@@ -33,7 +33,7 @@ public class ClarusValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/swapid/{id}/{format}/{type}")
+    @Path("/priceSwapTrades/swapid/{id}/{format}/{type}")
     @Timed
     public MarginResults valuation(@PathParam("id") String id, @PathParam("format") String format, @PathParam("type") String type)
     {
