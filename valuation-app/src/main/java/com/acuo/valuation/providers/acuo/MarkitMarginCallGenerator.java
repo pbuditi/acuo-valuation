@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.*;
+import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.*;
 import com.acuo.valuation.services.MarginCallGenService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +43,11 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
         this.currencyService = currencyService;
     }
 
-    public List<MarginCall> marginCalls(Set<String> portfolioSet, LocalDate date) {
+    public List<MarginCall> marginCalls(Set<PortfolioId> portfolioSet, LocalDate date) {
         List<MarginCall> marginCalls = new ArrayList<MarginCall>();
-        for (String portfolioId : portfolioSet) {
+        for (PortfolioId portfolioId : portfolioSet) {
 
-            Portfolio portfolio = portfolioService.findById(portfolioId);
+            Portfolio portfolio = portfolioService.findById(portfolioId.toString());
 
             Valuation valuation = valuationService.findById(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + portfolio.getPortfolioId());
             MarginCall mc = geneareteMarginCall(portfolio.getAgreement(), portfolio, valuation);

@@ -15,7 +15,6 @@ import com.acuo.valuation.modules.*;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.PricingService;
-import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.collect.result.Result;
 import org.junit.Before;
@@ -55,9 +54,6 @@ public class MarkitServiceIntegrationTest {
     DataLoader dataLoader;
 
     @Inject
-    SwapService swapService;
-
-    @Inject
     TradeUploadService tradeUploadService;
 
     @Rule
@@ -86,7 +82,7 @@ public class MarkitServiceIntegrationTest {
 
     @Test
     public void testPriceSwapFromClientId() {
-        PricingResults pricingResults = swapService.priceClientTrades(ClientId.fromString("c1"));
+        PricingResults pricingResults = pricingService.priceTradesOf(ClientId.fromString("c1"));
         assertThat(pricingResults).isNotNull();
         List<Result<MarkitValuation>> results = pricingResults.getResults();
         assertThat(results).isNotEmpty();

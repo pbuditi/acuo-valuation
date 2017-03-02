@@ -1,7 +1,5 @@
 package com.acuo.valuation.protocol.results;
 
-import com.acuo.valuation.services.SwapService;
-
 public class SwapResults {
 
     String test;

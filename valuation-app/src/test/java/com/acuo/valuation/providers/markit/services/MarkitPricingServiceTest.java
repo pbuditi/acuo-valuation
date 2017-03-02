@@ -145,9 +145,16 @@ public class MarkitPricingServiceTest {
     }
 
     @Test
-    public void testPriceSwapFromClientId() {
+    public void testPriceSwapFromClientId() throws Exception {
+
+        when(sender.send(any(List.class))).thenReturn(reportParser.parse(test02.getContent()));
+
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
+
+        PricingResults expectedResults = new PricingResults();
+        expectedResults.setResults(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
+        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
         PricingResults results = service.priceTradesOf(ClientId.fromString("c1"));
 

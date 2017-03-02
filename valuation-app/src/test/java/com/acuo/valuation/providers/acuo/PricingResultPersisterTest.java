@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.Valuation;
@@ -18,10 +19,12 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
+import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -53,6 +56,9 @@ public class PricingResultPersisterTest {
     ImportService importService;
 
     @Inject
+    TradeUploadService tradeUploadService;
+
+    @Inject
     TradeService<Trade> tradeService;
 
     @Inject
@@ -64,12 +70,16 @@ public class PricingResultPersisterTest {
     @Inject
     ValueService valueService;
 
+    @Rule
+    public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
+
     PricingResultPersister persister;
 
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         importService.reload();
+        tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
         persister = new PricingResultPersister(tradeService, valuationService, portfolioService, valueService);
     }
     @Test
@@ -98,7 +108,7 @@ public class PricingResultPersisterTest {
         pricingResults.setCurrency(Currency.USD);
         persister.persist(pricingResults);
 
-        Trade trade = tradeService.findById(Long.parseLong(tradeId));
+        Trade trade = tradeService.findById(tradeId);
         Set<Valuation> valuations = trade.getValuations();
         boolean foundValuation = false;
         boolean foundValue = false;

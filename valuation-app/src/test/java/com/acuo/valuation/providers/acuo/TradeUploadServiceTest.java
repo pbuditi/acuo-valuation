@@ -3,27 +3,20 @@ package com.acuo.valuation.providers.acuo;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.persist.core.DataImporter;
-import com.acuo.persist.core.DataLoader;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
-import com.acuo.persist.services.TradingAccountService;
 import com.acuo.persist.services.TradeService;
-import com.acuo.valuation.jackson.MarginCallDetail;
+import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.services.SwapService;
+import com.acuo.valuation.services.PricingService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
@@ -72,7 +66,10 @@ public class TradeUploadServiceTest {
     ImportService importService;
 
     @Mock
-    SwapService swapService;
+    PricingService pricingService;
+
+    @Mock
+    MarkitValautionsProcessor processor;
 
     @Mock
     PricingResults pricingResults;
@@ -86,7 +83,7 @@ public class TradeUploadServiceTest {
     @Before
     public void setup() throws FileNotFoundException {
         MockitoAnnotations.initMocks(this);
-        service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService, swapService);
+        service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService, pricingService, processor);
         importService.reload();
 
     }
@@ -98,11 +95,9 @@ public class TradeUploadServiceTest {
 
     @Test
     public void testUploadAll() throws IOException {
-
-        when(swapService.price(any(List.class))).thenReturn(pricingResults);
-        //when(swapService.persistMarkitResult(pricingResults, false)).thenReturn(new MarginCallDetail());
-        service.uploadTradesFromExcel(excel.createInputStream());
-    }
+        when(pricingService.priceSwapTrades(any(List.class))).thenReturn(pricingResults);
+        when(processor.process(pricingResults)).thenReturn(Collections.emptyList());
+        service.uploadTradesFromExcel(excel.createInputStream());    }
 
     @Test
     public void testHandleIRSOneRowUpdate() throws IOException {

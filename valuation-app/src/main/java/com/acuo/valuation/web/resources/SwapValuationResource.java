@@ -6,8 +6,8 @@ import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.valuation.providers.acuo.MarkitValautionsProcessor;
 import com.acuo.valuation.services.PricingService;
-import com.acuo.valuation.services.SwapService;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
 import org.apache.velocity.VelocityContext;
@@ -18,7 +18,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,16 +27,19 @@ import java.util.List;
 public class SwapValuationResource {
 
     private final PricingService pricingService;
+    private final MarkitValautionsProcessor resultProcessor;
     private final VelocityEngine velocityEngine;
     private final ModelMapper mapper;
-    private final SwapService swapService;
 
     @Inject
-    public SwapValuationResource(PricingService pricingService, VelocityEngine velocityEngine, ModelMapper mapper, SwapService swapService) {
-        this.velocityEngine = velocityEngine;
+    public SwapValuationResource(PricingService pricingService,
+                                 MarkitValautionsProcessor resultProcessor,
+                                 VelocityEngine velocityEngine,
+                                 ModelMapper mapper) {
         this.pricingService = pricingService;
+        this.resultProcessor = resultProcessor;
+        this.velocityEngine = velocityEngine;
         this.mapper = mapper;
-        this.swapService = swapService;
     }
 
     @GET
@@ -55,7 +57,7 @@ public class SwapValuationResource {
     @Path("/value")
     @Timed
     public PricingResults price(SwapTrade swapTrade) throws Exception {
-        PricingResults result = pricingService.price(Arrays.asList(swapTrade));
+        PricingResults result = pricingService.priceSwapTrades(Arrays.asList(swapTrade));
         return result;
     }
 
@@ -63,9 +65,9 @@ public class SwapValuationResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/priceSwapTrades/swapid/{id}")
     @Timed
-    public MarginCallDetail priceBySwapId(@PathParam("id") Long id) throws Exception {
-        PricingResults results = swapService.price(ImmutableList.of(id));
-        List<MarginCall> marginCalls = swapService.persistMarkitResult(results, false);
+    public MarginCallDetail priceBySwapId(@PathParam("id") String id) throws Exception {
+        PricingResults results = pricingService.priceTradeIds(ImmutableList.of(id));
+        List<MarginCall> marginCalls = resultProcessor.process(results);
         MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
     }
@@ -75,8 +77,8 @@ public class SwapValuationResource {
     @Path("/priceSwapTrades/portfolioid/{id}")
     @Timed
     public MarginCallDetail priceByPortfolio(@PathParam("id") PortfolioId portfolioId) throws Exception {
-        PricingResults results = swapService.pricePortfolio(portfolioId);
-        List<MarginCall> marginCalls = swapService.persistMarkitResult(results, false);
+        PricingResults results = pricingService.priceTradesUnder(portfolioId);
+        List<MarginCall> marginCalls = resultProcessor.process(results);
         MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
     }
@@ -86,7 +88,7 @@ public class SwapValuationResource {
     @Path("/priceSwapTrades/clientid/{id}")
     @Timed
     public PricingResults getPv(@PathParam("id") ClientId clientId) throws Exception {
-        PricingResults result = swapService.priceClientTrades(clientId);
+        PricingResults result = pricingService.priceTradesOf(clientId);
         return result;
     }
 
@@ -95,8 +97,8 @@ public class SwapValuationResource {
     @Path("/priceSwapTrades/allBilateralIRS")
     @Timed
     public MarginCallDetail priceallBilateralIRS() throws Exception {
-        PricingResults results = swapService.valuationAllBilateralIRS();
-        List<MarginCall> marginCalls = swapService.persistMarkitResult(results, false);
+        PricingResults results = pricingService.priceTradesOfType("Bilateral");
+        List<MarginCall> marginCalls = resultProcessor.process(results);
         MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
     }
