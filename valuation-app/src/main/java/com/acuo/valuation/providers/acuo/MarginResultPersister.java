@@ -2,14 +2,18 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarginValuation;
+import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 
+import javax.inject.Inject;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -20,20 +24,20 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
     private final PortfolioService portfolioService;
     private final ValueService valueService;
 
+    @Inject
     public MarginResultPersister(ValuationService valuationService, PortfolioService portfolioService, ValueService valueService) {
         this.valuationService = valuationService;
         this.portfolioService = portfolioService;
         this.valueService = valueService;
     }
 
-
     @Override
-    public void persist(MarginResults results) {
+    public Set<PortfolioId> persist(MarginResults results) {
         String portfolioId = results.getPortfolioId();
 
         Portfolio portfolio = portfolioService.findById(portfolioId);
 
-        if(portfolio == null) return;
+        if(portfolio == null) return Collections.emptySet();
 
         //parse the result
         String currency = results.getCurrency();
@@ -96,5 +100,7 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
         portfolio.setValuations(valuations);
         valuationService.createOrUpdate(newValuation);
         portfolioService.createOrUpdate(portfolio);
+
+        return ImmutableSet.of(PortfolioId.fromString(portfolioId));
     }
 }

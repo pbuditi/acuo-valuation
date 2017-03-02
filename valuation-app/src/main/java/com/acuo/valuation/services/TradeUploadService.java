@@ -1,10 +1,9 @@
 package com.acuo.valuation.services;
 
-import com.acuo.valuation.jackson.MarginCallDetail;
-
 import java.io.InputStream;
+import java.util.List;
 
 public interface TradeUploadService {
 
-    MarginCallDetail uploadTradesFromExcel(InputStream fis);
+    List<String> uploadTradesFromExcel(InputStream fis);
 }
