@@ -1,11 +1,15 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.ids.ClientId;
+import com.acuo.persist.ids.PortfolioId;
 import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.ImmutableList;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.modelmapper.ModelMapper;
@@ -16,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Path("/swaps")
 @Produces(MediaType.APPLICATION_JSON)
@@ -56,44 +61,43 @@ public class SwapValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/swapid/{id}")
+    @Path("/priceSwapTrades/swapid/{id}")
     @Timed
-    public MarginCallDetail priceBySwapId(@PathParam("id") String id) throws Exception {
-        MarginCallDetail result = swapService.price(new ArrayList<String>() {{
-            add(id);
-        }});
+    public MarginCallDetail priceBySwapId(@PathParam("id") Long id) throws Exception {
+        PricingResults results = swapService.price(ImmutableList.of(id));
+        List<MarginCall> marginCalls = swapService.persistMarkitResult(results, false);
+        MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
     }
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/portfolioid/{id}")
+    @Path("/priceSwapTrades/portfolioid/{id}")
     @Timed
-    public MarginCallDetail priceByPortfolio(@PathParam("id") String id) throws Exception
-    {
-        MarginCallDetail result = swapService.pricePortfolio(id);
+    public MarginCallDetail priceByPortfolio(@PathParam("id") PortfolioId portfolioId) throws Exception {
+        PricingResults results = swapService.pricePortfolio(portfolioId);
+        List<MarginCall> marginCalls = swapService.persistMarkitResult(results, false);
+        MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
     }
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/clientid/{id}")
+    @Path("/priceSwapTrades/clientid/{id}")
     @Timed
-    public PricingResults getPv(@PathParam("id") String id) throws Exception {
-        PricingResults result = swapService.priceClientTrades(id);
+    public PricingResults getPv(@PathParam("id") ClientId clientId) throws Exception {
+        PricingResults result = swapService.priceClientTrades(clientId);
         return result;
     }
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/allBilateralIRS")
+    @Path("/priceSwapTrades/allBilateralIRS")
     @Timed
-    public MarginCallDetail priceallBilateralIRS() throws Exception
-    {
-        MarginCallDetail result = swapService.valuationAllBilateralIRS();
+    public MarginCallDetail priceallBilateralIRS() throws Exception {
+        PricingResults results = swapService.valuationAllBilateralIRS();
+        List<MarginCall> marginCalls = swapService.persistMarkitResult(results, false);
+        MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
     }
-
-
-
 }

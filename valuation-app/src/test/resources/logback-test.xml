@@ -7,7 +7,7 @@
         </encoder>
     </appender>
     
-    <logger name="com.acuo" level="debug" />
+    <logger name="com.acuo" level="info" />
     <logger name="org.jboss" level="error" />
     <logger name="javax.ws" level="error" />
 

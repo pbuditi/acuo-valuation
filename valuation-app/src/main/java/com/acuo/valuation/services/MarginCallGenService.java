@@ -1,10 +1,13 @@
 package com.acuo.valuation.services;
 
-import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.MarginCall;
-import com.acuo.persist.entity.Portfolio;
-import com.acuo.persist.entity.Valuation;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 public interface MarginCallGenService {
-    MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation);
+
+    List<MarginCall> marginCalls(Set<String> portfolioSet, LocalDate date);
+
 }
