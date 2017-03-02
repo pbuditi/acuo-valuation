@@ -1,7 +1,5 @@
-/**
-  * Copyright 2017 aTool.org 
-  */
 package com.acuo.valuation.jackson;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +14,10 @@ public class MarginCallDetail {
     private List<Uploadmargincalldetails> uploadmargincalldetails;
 
 
-
-     public static MarginCallDetail of(Iterable<MarginCall> marginCalls)
-     {
-         MarginCallDetail marginCallDetail = new MarginCallDetail();
-         marginCallDetail.uploadmargincalldetails = new ArrayList<Uploadmargincalldetails>();
-         marginCalls.forEach(mc-> marginCallDetail.uploadmargincalldetails.add(Uploadmargincalldetails.of(mc)));
-         return marginCallDetail;
-     }
-
+    public static MarginCallDetail of(Iterable<MarginCall> marginCalls) {
+        MarginCallDetail marginCallDetail = new MarginCallDetail();
+        marginCallDetail.uploadmargincalldetails = new ArrayList<Uploadmargincalldetails>();
+        marginCalls.forEach(mc -> marginCallDetail.uploadmargincalldetails.add(Uploadmargincalldetails.of(mc)));
+        return marginCallDetail;
+    }
 }

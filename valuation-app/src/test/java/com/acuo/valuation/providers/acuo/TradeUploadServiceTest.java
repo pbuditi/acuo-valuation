@@ -17,6 +17,7 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.SwapService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
@@ -73,6 +74,9 @@ public class TradeUploadServiceTest {
     @Mock
     SwapService swapService;
 
+    @Mock
+    PricingResults pricingResults;
+
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
@@ -95,12 +99,13 @@ public class TradeUploadServiceTest {
     @Test
     public void testUploadAll() throws IOException {
 
-        when(swapService.price(any(List.class))).thenReturn(new MarginCallDetail());
+        when(swapService.price(any(List.class))).thenReturn(pricingResults);
+        //when(swapService.persistMarkitResult(pricingResults, false)).thenReturn(new MarginCallDetail());
         service.uploadTradesFromExcel(excel.createInputStream());
     }
 
     @Test
-    public void testHandleIRSOneRowUpdate() throws FileNotFoundException, IOException {
+    public void testHandleIRSOneRowUpdate() throws IOException {
         service.uploadTradesFromExcel(oneIRS.createInputStream());
         service.uploadTradesFromExcel(oneIRS.createInputStream());
 
