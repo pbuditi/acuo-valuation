@@ -6,9 +6,7 @@ import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.services.MarginCallGenService;
 import com.acuo.valuation.services.PricingService;
-import com.acuo.valuation.services.SwapService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
 import lombok.extern.slf4j.Slf4j;
@@ -32,20 +30,26 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     private final TradeService<FRA> fraService;
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
-    private final SwapService swapService;
-    List<Long> tradeIdList;
+    private final PricingService pricingService;
+    private final MarkitValautionsProcessor resultProcessor;
+    private final List<String> tradeIdList = new ArrayList<String>();
 
     @Inject
-    public TradeUploadServiceImpl(TradeService<IRS> irsService, TradeService<FRA> fraService, TradingAccountService accountService, PortfolioService portfolioService, SwapService swapService) {
+    public TradeUploadServiceImpl(TradeService<IRS> irsService,
+                                  TradeService<FRA> fraService,
+                                  TradingAccountService accountService,
+                                  PortfolioService portfolioService,
+                                  PricingService pricingService,
+                                  MarkitValautionsProcessor resultProcessor) {
         this.irsService = irsService;
         this.fraService = fraService;
         this.accountService = accountService;
         this.portfolioService = portfolioService;
-        this.swapService = swapService;
+        this.pricingService = pricingService;
+        this.resultProcessor = resultProcessor;
     }
 
-    public MarginCallDetail uploadTradesFromExcel(InputStream fis) {
-        tradeIdList = new ArrayList<Long>();
+    public List<String> uploadTradesFromExcel(InputStream fis) {
         MarginCallDetail marginCallDetail = null;
         try {
             Workbook workbook = new XSSFWorkbook(fis);
@@ -91,21 +95,15 @@ public class TradeUploadServiceImpl implements TradeUploadService {
                 }
             }
 
-
-
             for (TradingAccount account : accounts.values()) {
                 accountService.createOrUpdate(account);
             }
-
-            PricingResults results = swapService.price(tradeIdList);
-            List<MarginCall> marginCalls = swapService.persistMarkitResult(results, false);
-            marginCallDetail = MarginCallDetail.of(marginCalls);
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
 
-        return marginCallDetail;
+        return tradeIdList;
     }
 
     private TradingAccount addToAccount(Row row, Trade trade) {

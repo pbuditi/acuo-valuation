@@ -22,7 +22,7 @@ public class SwapExcelParserTest {
     @Before
     public void setUp() throws Exception
     {
-        FileInputStream fis = new FileInputStream("src/test/resources/excel/NewExposures.xlsx");
+        FileInputStream fis = new FileInputStream("src/test/resources/excel/TradePortfolio.xlsx");
         workbook = new XSSFWorkbook(fis);
 
     }

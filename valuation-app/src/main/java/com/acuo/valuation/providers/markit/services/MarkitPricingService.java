@@ -35,7 +35,7 @@ public class MarkitPricingService implements PricingService {
     }
 
     @Override
-    public PricingResults price(List<Long> swapIds) {
+    public PricingResults priceTradeIds(List<String> swapIds) {
         List<SwapTrade> swapTrades = swapIds.stream()
                 .map(id -> tradeService.findById(id))
                 .map(trade -> (IRS) trade)
@@ -76,6 +76,7 @@ public class MarkitPricingService implements PricingService {
         return priceSwapTrades(tradeIds);
     }
 
+    @Override
     public PricingResults priceSwapTrades(List<SwapTrade> swaps) {
 
         Report report = sender.send(swaps);
