@@ -171,7 +171,7 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
             marginStatement.setDirection(direction);
             marginStatement.setCurrency(agreement.getCurrency());
             marginStatement.setDate(LocalDateTime.now());
-            marginStatement.setMarginCalls(new HashSet<MarginCall>(){{
+            marginStatement.setStatementItems(new HashSet<StatementItem>(){{
                 add(marginCall);
             }});
             agreement.getMarginStatements().add(marginStatement);
