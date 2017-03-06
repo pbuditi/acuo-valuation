@@ -4,6 +4,7 @@ import com.acuo.persist.entity.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
+import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.services.MarginCallGenService;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.SwapService;
@@ -42,8 +43,9 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         this.swapService = swapService;
     }
 
-    public boolean uploadTradesFromExcel(InputStream fis) {
+    public MarginCallDetail uploadTradesFromExcel(InputStream fis) {
         tradeIdList = new ArrayList<String>();
+        MarginCallDetail marginCallDetail = null;
         try {
             Workbook workbook = new XSSFWorkbook(fis);
             Sheet sheet = workbook.getSheet("IRS-Cleared");
@@ -94,13 +96,13 @@ public class TradeUploadServiceImpl implements TradeUploadService {
                 accountService.createOrUpdate(account);
             }
 
-            swapService.price(tradeIdList);
+            marginCallDetail = swapService.price(tradeIdList);
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
 
-        return true;
+        return marginCallDetail;
     }
 
     private TradingAccount addToAccount(Row row, Trade trade) {
