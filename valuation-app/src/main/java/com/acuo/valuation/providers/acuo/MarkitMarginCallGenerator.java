@@ -62,11 +62,10 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
             pv = value.getPv();
             currencyOfValue = value.getCurrency();
         });
-
-
+        //reload the agreement object due to the depth fetch
+        agreement = agreementService.findById(agreement.getAgreementId());
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
-
 
         Double balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
         Double pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
@@ -76,7 +75,6 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
 
         if (clientSignsRelation.getThreshold() != null && Math.abs(pv) <= clientSignsRelation.getThreshold())
             return null;
-
 
         Double diff = pv - (balance + pendingCollateral);
 
@@ -96,6 +94,7 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
             balance = counterpartSignsRelation.getVariationMarginBalance() != null ? counterpartSignsRelation.getVariationMarginBalance() : 0;
             pendingCollateral = counterpartSignsRelation.getVariationPending() != null ? counterpartSignsRelation.getVariationPending() : 0;
         }
+
 
         if (Math.abs(diff) <= MTA)
             return null;
@@ -161,7 +160,6 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
         String msId = todayFormatted + "-" + agreement.getAgreementId();
         MarginStatement marginStatement = marginStatementService.findById(msId);
 
-        log.info("msid:" + msId);
 
         if (marginStatement == null) {
             //create ms
@@ -199,7 +197,6 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
         }
 
         marginStatementService.createOrUpdate(marginStatement);
-
 
         return marginCall;
 
