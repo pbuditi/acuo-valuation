@@ -70,7 +70,7 @@ public class MarkitPricingService implements PricingService {
     public PricingResults priceTradesOfType(String type) {
         Iterable<Trade> trades = tradeService.findAllIRS();
         List<SwapTrade> tradeIds = StreamSupport.stream(trades.spliterator(), false)
-                .map(trade -> (IRS) trade)
+                .map(trade -> (IRS) tradeService.find(trade.getId(), 3))
                 .map(irs -> SwapTradeBuilder.buildTrade(irs))
                 .collect(toList());
         return priceSwapTrades(tradeIds);

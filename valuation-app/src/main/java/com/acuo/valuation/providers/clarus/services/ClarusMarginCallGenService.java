@@ -145,8 +145,8 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
 
 
         MarginCall marginCall = new MarginCall(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
-                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,
-                callDate.atTime(agreement.getNotificationTime()),format(marginAmount),CallStatus.Expected.name());
+                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,null,
+                callDate.atTime(agreement.getNotificationTime()),null,null,null,format(marginAmount),CallStatus.Expected.name());
 
         marginCall.setAgreement(agreement);
 
