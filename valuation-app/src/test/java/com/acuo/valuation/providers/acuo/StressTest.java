@@ -1,6 +1,5 @@
 package com.acuo.valuation.providers.acuo;
 
-
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
@@ -11,15 +10,14 @@ import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
-import com.acuo.valuation.jackson.MarginCallDetail;
-import com.acuo.valuation.modules.*;
 import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.*;
+import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
-import com.acuo.valuation.services.SwapService;
+import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
 import com.acuo.valuation.web.resources.SwapValuationResource;
-import com.acuo.valuation.web.resources.SwapValuationResourceTest;
 import com.google.inject.AbstractModule;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -35,17 +33,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+@Ignore
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({
         ConfigurationTestModule.class,
@@ -89,7 +84,13 @@ public class StressTest implements WithResteasyFixtures {
     ImportService importService;
 
     @Mock
-    SwapService swapService;
+    PricingService pricingService;
+
+    @Mock
+    MarkitValautionsProcessor resultProcessor;
+
+    @Mock
+    PricingResults pricingResults;
 
     private static MockWebServer server;
 
@@ -116,21 +117,21 @@ public class StressTest implements WithResteasyFixtures {
         MockitoAnnotations.initMocks(this);
         dispatcher = createDispatcher(JacksonObjectMapperProvider.class);
         dispatcher.getRegistry().addSingletonResource(resource);
-        service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService, swapService);
-
+        service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService, pricingService, resultProcessor);
+        importService.reload();
     }
 
-    @Ignore
     @Test
     public void testValuationAll() throws URISyntaxException, IOException {
-        importService.reload();
+
         server.enqueue(new MockResponse().setBody("key"));
         server.enqueue(new MockResponse().setBody(largeReport.getContent()));
         server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
-        when(swapService.price(any(List.class))).thenReturn(new MarginCallDetail());
+        when(pricingService.priceSwapTrades(any(List.class))).thenReturn(pricingResults);
+        //when(pricingService.persistMarkitResult(pricingResults, false)).thenReturn(new MarginCallDetail());
         service.uploadTradesFromExcel(excel.createInputStream());
 
-        MockHttpRequest request = MockHttpRequest.get("/swaps/price/allBilateralIRS");
+        MockHttpRequest request = MockHttpRequest.get("/swaps/priceSwapTrades/allBilateralIRS");
         MockHttpResponse response = new MockHttpResponse();
 
 
@@ -138,8 +139,8 @@ public class StressTest implements WithResteasyFixtures {
 
     }
 
-    @Ignore
     @Test
+    @Ignore
     public void testStress()
     {
         while(true)
