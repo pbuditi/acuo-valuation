@@ -23,14 +23,12 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
     private final CurrencyService currencyService;
 
 
-
     DecimalFormat df = new DecimalFormat("#.##");
     Double pv = null;
     com.opengamma.strata.basics.currency.Currency currencyOfValue = null;
 
     @Inject
-    public ClarusMarginCallGenService(MarginStatementService marginStatementService, AgreementService agreementService, CurrencyService currencyService)
-    {
+    public ClarusMarginCallGenService(MarginStatementService marginStatementService, AgreementService agreementService, CurrencyService currencyService) {
 
         this.marginStatementService = marginStatementService;
         this.agreementService = agreementService;
@@ -38,37 +36,32 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
     }
 
     @Override
-    public MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation)
-    {
-        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> { pv = value.getPv(); currencyOfValue = value.getCurrency();});
+    public MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation) {
+        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> {
+            pv = value.getPv();
+            currencyOfValue = value.getCurrency();
+        });
 
 
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
 
 
-        Double balance = clientSignsRelation.getInitialMarginBalance() != null? clientSignsRelation.getInitialMarginBalance(): 0;
-        Double pendingCollateral = clientSignsRelation.getInitialPending() != null? clientSignsRelation.getInitialPending() : 0;
+        Double balance = clientSignsRelation.getInitialMarginBalance() != null ? clientSignsRelation.getInitialMarginBalance() : 0;
+        Double pendingCollateral = clientSignsRelation.getInitialPending() != null ? clientSignsRelation.getInitialPending() : 0;
 
-        if(!currencyOfValue.equals(agreement.getCurrency()))
+        if (!currencyOfValue.equals(agreement.getCurrency()))
             pv = getFXValue(currencyOfValue, agreement.getCurrency(), pv);
-
-
 
 
         Double diff = pv - (balance + pendingCollateral);
 
 
-
-
         Double exposure;
 
-        if(diff > 0)
-        {
+        if (diff > 0) {
             exposure = pv;
-        }
-        else
-        {
+        } else {
 
             balance = 0 - balance;
             pendingCollateral = 0 - pendingCollateral;
@@ -78,15 +71,11 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
 
         double initialBalanceCashToVariation = 1;
         double initialBalanceCash = 1000;
-        if(initialBalanceCashToVariation  == 1 && diff > 0 && initialBalanceCash  > 0)
-        {
-            if(initialBalanceCash >= diff)
-            {
+        if (initialBalanceCashToVariation == 1 && diff > 0 && initialBalanceCash > 0) {
+            if (initialBalanceCash >= diff) {
                 //set some value in client sign,and return
                 return null;
-            }
-            else
-            {
+            } else {
                 //step 5
             }
         }
@@ -96,7 +85,7 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
         LocalDate callDate = valuationDate.plusDays(1);
         Types.MarginType marginType = Types.MarginType.Variation;
         String todayFormatted = valuationDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-        String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-"+ marginType.name().toString();
+        String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-" + marginType.name().toString();
         String direction;
         Double deliverAmount = 0d;
         Double returnAmount = 0d;
@@ -104,34 +93,26 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
         Double marginAmount = diff;
 
 
-        double amount = balance+pendingCollateral;
-        if(diff <0) {
+        double amount = balance + pendingCollateral;
+        if (diff < 0) {
             exposure = 0 - pv;
             direction = "OUT";
 
-        }
-        else {
+        } else {
             exposure = pv;
             direction = "IN";
         }
 
-        if(sign(exposure) == sign(amount) && exposure > 0 )
-        {
+        if (sign(exposure) == sign(amount) && exposure > 0) {
             deliverAmount = marginAmount;
             returnAmount = 0d;
-        }
-        else
-        if(sign(exposure) == sign(amount) && exposure < 0 )
-        {
+        } else if (sign(exposure) == sign(amount) && exposure < 0) {
             deliverAmount = 0d;
             returnAmount = marginAmount;
-        }
-        else
-        {
+        } else {
             deliverAmount = exposure;
             returnAmount = Math.abs(amount);
         }
-
 
 
         //round amount
@@ -144,9 +125,22 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
         marginAmount = deliverAmount + returnAmount;
 
 
-        MarginCall marginCall = new MarginCall(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
-                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,null,
-                callDate.atTime(agreement.getNotificationTime()),null,null,null,format(marginAmount),CallStatus.Expected.name());
+        MarginCall marginCall = new MarginCall(mcId,
+                callDate,
+                marginType,
+                direction,
+                valuationDate,
+                agreement.getCurrency().getCode(),
+                format(excessAmount),
+                format(balance),
+                format(deliverAmount),
+                format(returnAmount),
+                format(pendingCollateral),
+                format(exposure),
+                0,
+                callDate.atTime(agreement.getNotificationTime()),
+                format(marginAmount),
+                CallStatus.Expected.name());
 
         marginCall.setAgreement(agreement);
 
@@ -161,8 +155,7 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
 
         log.info("msid:" + msId);
 
-        if(marginStatement == null)
-        {
+        if (marginStatement == null) {
             //create ms
             LegalEntity client = agreement.getClientSignsRelation().getLegalEntity();
             LegalEntity counterpart = agreement.getCounterpartSignsRelation().getLegalEntity();
@@ -171,34 +164,29 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
             marginStatement.setDirection(direction);
             marginStatement.setCurrency(agreement.getCurrency());
             marginStatement.setDate(LocalDateTime.now());
-            marginStatement.setStatementItems(new HashSet<StatementItem>(){{
+            marginStatement.setStatementItems(new HashSet<StatementItem>() {{
                 add(marginCall);
             }});
             agreement.getMarginStatements().add(marginStatement);
 
-            if(direction.equals("IN"))
-            {
-                if(counterpart.getMarginStatements() == null)
+            if (direction.equals("IN")) {
+                if (counterpart.getMarginStatements() == null)
                     counterpart.setMarginStatements(new HashSet<>());
                 counterpart.getMarginStatements().add(marginStatement);
-                if(client.getFromMarginStatements() == null)
+                if (client.getFromMarginStatements() == null)
                     client.setFromMarginStatements(new HashSet<>());
                 client.getFromMarginStatements().add(marginStatement);
-            }
-            else
-            {
-                if(client.getMarginStatements() == null)
+            } else {
+                if (client.getMarginStatements() == null)
                     client.setMarginStatements(new HashSet<>());
                 client.getMarginStatements().add(marginStatement);
-                if(counterpart.getFromMarginStatements() == null)
+                if (counterpart.getFromMarginStatements() == null)
                     counterpart.setFromMarginStatements(new HashSet<>());
                 counterpart.getFromMarginStatements().add(marginStatement);
             }
 
             agreementService.createOrUpdate(agreement);
-        }
-        else
-        {
+        } else {
             marginStatement.getMarginCalls().add(marginCall);
         }
 
@@ -210,21 +198,19 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
 
     }
 
-    private Double getFXValue(com.opengamma.strata.basics.currency.Currency from, com.opengamma.strata.basics.currency.Currency to, Double value)
-    {
+    private Double getFXValue(com.opengamma.strata.basics.currency.Currency from, com.opengamma.strata.basics.currency.Currency to, Double value) {
         double fromRate = 1;
-        if(!from.equals(com.opengamma.strata.basics.currency.Currency.USD))
+        if (!from.equals(com.opengamma.strata.basics.currency.Currency.USD))
             fromRate = currencyService.getFXValue(from.getCode());
         double toRate = 1;
-        if(!to.equals(com.opengamma.strata.basics.currency.Currency.USD))
+        if (!to.equals(com.opengamma.strata.basics.currency.Currency.USD))
             toRate = currencyService.getFXValue(to.getCode());
 
         return value * toRate / fromRate;
     }
 
-    private Double round(Double deliverAmount, Double returnAmount, Double rounding)
-    {
-        if(rounding != null && rounding.doubleValue() != 0) {
+    private Double round(Double deliverAmount, Double returnAmount, Double rounding) {
+        if (rounding != null && rounding.doubleValue() != 0) {
             deliverAmount = Math.floor(deliverAmount / rounding) * rounding;
             returnAmount = Math.ceil(returnAmount / rounding) * rounding;
         }
@@ -232,18 +218,15 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
     }
 
 
-
-    private double format(double d)
-    {
+    private double format(double d) {
 
         return Double.parseDouble(df.format(d));
     }
 
-    private int sign(double d)
-    {
-        if(d > 0)
+    private int sign(double d) {
+        if (d > 0)
             return 1;
-        if(d < 0)
+        if (d < 0)
             return -1;
         else
             return 0;
