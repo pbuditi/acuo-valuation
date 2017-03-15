@@ -145,9 +145,22 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
         marginAmount = deliverAmount + returnAmount;
 
 
-        MarginCall marginCall =  new MarginCall(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
-                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,null,
-                callDate.atTime(agreement.getNotificationTime()),null,null,null,format(marginAmount),CallStatus.Expected.name());
+        MarginCall marginCall = new MarginCall(mcId,
+                callDate,
+                marginType,
+                direction,
+                valuationDate,
+                agreement.getCurrency().getCode(),
+                format(excessAmount),
+                format(balance),
+                format(deliverAmount),
+                format(returnAmount),
+                format(pendingCollateral),
+                format(exposure),
+                0,
+                callDate.atTime(agreement.getNotificationTime()),
+                format(marginAmount),
+                CallStatus.Expected.name());
 
 
         marginCall.setAgreement(agreement);
