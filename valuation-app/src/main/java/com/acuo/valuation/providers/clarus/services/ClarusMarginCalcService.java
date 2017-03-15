@@ -68,7 +68,7 @@ public class ClarusMarginCalcService implements MarginCalcService {
         return request;
     }
 
-    String sendRequest(String request) {
+    private String sendRequest(String request) {
         String response = ClarusCall.of(clientEndPoint)
                 .with("data", request)
                 .create()
@@ -77,14 +77,17 @@ public class ClarusMarginCalcService implements MarginCalcService {
         return response;
     }
 
-    MarginResults makeResult(String response) throws IOException {
+    private MarginResults makeResult(String response) throws IOException {
         Response res = objectMapper.readValue(response, Response.class);
-        return MarginResults.of(res.getResults().entrySet().stream().map(map -> new MarginValuation(map.getKey(),
+        List<Result<MarginValuation>> results = res.getResults().entrySet().stream().map(map -> new MarginValuation(map.getKey(),
                 map.getValue().get("Account"),
                 map.getValue().get("Change"),
-                map.getValue().get("Margin"),null))
+                map.getValue().get("Margin"), null))
                 .map(r -> Result.success(r))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+        MarginResults marginResults = new MarginResults();
+        marginResults.setResults(results);
+        return marginResults;
     }
 
 

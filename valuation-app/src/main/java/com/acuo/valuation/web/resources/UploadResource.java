@@ -1,6 +1,10 @@
 package com.acuo.valuation.web.resources;
 
+import com.acuo.persist.entity.MarginCall;
 import com.acuo.valuation.jackson.MarginCallDetail;
+import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.valuation.providers.acuo.MarkitValautionsProcessor;
+import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.web.entities.UploadForm;
 import lombok.extern.slf4j.Slf4j;
@@ -15,25 +19,33 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Path("/upload")
 public class UploadResource {
 
     private final TradeUploadService irsService;
+    private final PricingService pricingService;
+    private final MarkitValautionsProcessor resultProcessor;
 
     @Inject
-    public UploadResource(TradeUploadService irsService) {
+    public UploadResource(TradeUploadService irsService,
+                          PricingService pricingService,
+                          MarkitValautionsProcessor resultProcessor) {
         this.irsService = irsService;
+        this.pricingService = pricingService;
+        this.resultProcessor = resultProcessor;
     }
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_JSON})
     public MarginCallDetail upload(@MultipartForm UploadForm entity) throws IOException {
-
         ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
-
-        return irsService.uploadTradesFromExcel(fis);
+        List<String> tradeIdList = irsService.uploadTradesFromExcel(fis);
+        PricingResults results = pricingService.priceTradeIds(tradeIdList);
+        List<MarginCall> marginCalls = resultProcessor.process(results);
+        return MarginCallDetail.of(marginCalls);
     }
 }

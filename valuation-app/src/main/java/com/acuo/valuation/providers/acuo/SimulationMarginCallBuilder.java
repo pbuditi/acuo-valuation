@@ -1,44 +1,71 @@
-package com.acuo.valuation.providers.markit.services;
+package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.*;
-import com.acuo.persist.services.AgreementService;
-import com.acuo.persist.services.CurrencyService;
-import com.acuo.persist.services.MarginStatementService;
-import com.acuo.valuation.services.CounterpartMCGenService;
+import com.acuo.persist.ids.PortfolioId;
+import com.acuo.persist.services.*;
+import com.acuo.valuation.services.MarginCallGenService;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
-public class MarkitCounterpartMCGenServiceImpl implements CounterpartMCGenService {
+public class SimulationMarginCallBuilder implements MarginCallGenService {
 
+    private final ValuationService valuationService;
+    private final PortfolioService portfolioService;
     private final MarginStatementService marginStatementService;
     private final AgreementService agreementService;
     private final CurrencyService currencyService;
 
+    private DecimalFormat df = new DecimalFormat("#.##");
+    private Double pv = null;
+    private com.opengamma.strata.basics.currency.Currency currencyOfValue = null;
 
-
-    DecimalFormat df = new DecimalFormat("#.##");
-    Double pv = null;
-    com.opengamma.strata.basics.currency.Currency currencyOfValue = null;
-
-    @Inject
-    public MarkitCounterpartMCGenServiceImpl(MarginStatementService marginStatementService, AgreementService agreementService, CurrencyService currencyService)
-    {
-
+    public SimulationMarginCallBuilder(ValuationService valuationService,
+                                       PortfolioService portfolioService,
+                                       MarginStatementService marginStatementService,
+                                       AgreementService agreementService,
+                                       CurrencyService currencyService) {
+        this.valuationService = valuationService;
+        this.portfolioService = portfolioService;
         this.marginStatementService = marginStatementService;
         this.agreementService = agreementService;
         this.currencyService = currencyService;
     }
 
-    @Override
-    public boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation,double random)
+    public List<MarginCall> marginCalls(Set<PortfolioId> portfolioSet, LocalDate date) {
+        List<MarginCall> marginCalls = new ArrayList<MarginCall>();
+        double startVar = 1;
+        int i = 0;
+        for(PortfolioId portfolioId : portfolioSet)
+        {
+            //for the random var
+            int index = (i + 1)/2 ;
+            double rate = 0.2;
+            double var;
+            if(i % 2 == 0)
+                var = startVar + rate * index;
+            else
+                var = startVar - rate * index;
+
+            Portfolio portfolio = portfolioService.findById(portfolioId.toString());
+
+            Valuation valuation = valuationService.findById(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + portfolio.getPortfolioId());
+            geneareteMarginCall(portfolio.getAgreement(), portfolio, valuation, var);
+
+        }
+        return marginCalls;
+    }
+
+    public boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation, double random)
     {
         valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> { pv = value.getPv(); currencyOfValue = value.getCurrency();});
 
@@ -136,9 +163,10 @@ public class MarkitCounterpartMCGenServiceImpl implements CounterpartMCGenServic
         marginAmount = deliverAmount + returnAmount;
 
 
-        MarginCall marginCall = new InitialMargin(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
-                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,
-                callDate.atTime(agreement.getNotificationTime()),format(marginAmount),CallStatus.Unrecon.name());
+        MarginCall marginCall = new MarginCall(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
+                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,null,
+                callDate.atTime(agreement.getNotificationTime()),null,null,null,format(marginAmount),CallStatus.Unrecon.name());
+
 
         marginCall.setAgreement(agreement);
 

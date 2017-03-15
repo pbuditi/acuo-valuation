@@ -1,35 +1,27 @@
 package com.acuo.valuation.quartz;
 
-import com.acuo.persist.entity.IRS;
-import com.acuo.persist.entity.Trade;
-import com.acuo.persist.services.MarginStatementService;
-import com.acuo.persist.services.TradeService;
-import com.acuo.persist.services.TradeServiceImpl;
-import com.acuo.valuation.services.SwapService;
+import com.acuo.valuation.services.PricingService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 @Slf4j
 public class DailyPriceJob implements Job {
 
-    private final SwapService swapService;
+    private final PricingService pricingService;
 
     @Inject
-    public DailyPriceJob(SwapService swapService)
+    public DailyPriceJob(PricingService pricingService)
     {
-        this.swapService = swapService;
+        this.pricingService = pricingService;
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        swapService.valuationAllBilateralIRS();
+        pricingService.priceTradesOfType("Bilateral");
     }
 }
