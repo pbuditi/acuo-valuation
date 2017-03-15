@@ -42,7 +42,7 @@ public class PortfolioValuationsSender implements Sender {
     public Report send(List<SwapTrade> swaps) {
         try {
             String file = generateFile(swaps);
-            FileUtils.writeStringToFile(File.createTempFile("PvRequest",".tmp"), file);
+            //FileUtils.writeStringToFile(File.createTempFile("PvRequest",".tmp"), file);
             if (log.isDebugEnabled()) log.debug(file);
             return send(file);
         } catch (Exception e) {

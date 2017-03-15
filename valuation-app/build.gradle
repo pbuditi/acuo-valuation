@@ -4,7 +4,7 @@ apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/ja
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/sonarqube.gradle"
 
 ext.versions += [
-        persist         : '0.3.5',
+        persist         : '0.3.7-SNAPSHOT',
         common          : '0.3.3',
         mapping         : '0.2.5',
         okhttp          : '3.3.1',
@@ -28,7 +28,7 @@ dependencies {
     compile("com.acuo.collateral:acuo-common:${versions.common}") { changing = true }
     compile("com.acuo.collateral:acuo-mapping:${versions.mapping}") { changing = true }
     compile(
-            "org.codehaus.groovy:groovy-all:2.4.8",
+            "org.codehaus.groovy:groovy-all:2.4.9",
             "com.google.inject:guice:${versions.guice}",
             "com.google.inject.extensions:guice-persist:${versions.guice}",
 
