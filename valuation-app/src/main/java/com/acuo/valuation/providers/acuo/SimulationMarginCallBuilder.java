@@ -45,13 +45,12 @@ public class SimulationMarginCallBuilder implements MarginCallGenService {
         List<MarginCall> marginCalls = new ArrayList<MarginCall>();
         double startVar = 1;
         int i = 0;
-        for(PortfolioId portfolioId : portfolioSet)
-        {
+        for (PortfolioId portfolioId : portfolioSet) {
             //for the random var
-            int index = (i + 1)/2 ;
+            int index = (i + 1) / 2;
             double rate = 0.2;
             double var;
-            if(i % 2 == 0)
+            if (i % 2 == 0)
                 var = startVar + rate * index;
             else
                 var = startVar - rate * index;
@@ -65,48 +64,46 @@ public class SimulationMarginCallBuilder implements MarginCallGenService {
         return marginCalls;
     }
 
-    public boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation, double random)
-    {
-        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> { pv = value.getPv(); currencyOfValue = value.getCurrency();});
+    public boolean geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation valuation, double random) {
+        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> {
+            pv = value.getPv();
+            currencyOfValue = value.getCurrency();
+        });
 
 
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
 
 
-        Double balance = clientSignsRelation.getVariationMarginBalance() != null? clientSignsRelation.getVariationMarginBalance(): 0;
-        Double pendingCollateral = clientSignsRelation.getVariationPending() != null? clientSignsRelation.getVariationPending() : 0;
+        Double balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
+        Double pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
 
-        if(!currencyOfValue.equals(agreement.getCurrency()))
+        if (!currencyOfValue.equals(agreement.getCurrency()))
             pv = getFXValue(currencyOfValue, agreement.getCurrency(), pv);
 
-        if(clientSignsRelation.getThreshold() != null && Math.abs(pv) <= clientSignsRelation.getThreshold())
+        if (clientSignsRelation.getThreshold() != null && Math.abs(pv) <= clientSignsRelation.getThreshold())
             return false;
 
         Double diff = pv - (balance + pendingCollateral);
-
 
 
         double MTA;
         double rounding;
 
 
-        if(diff > 0)
-        {
+        if (diff > 0) {
             MTA = clientSignsRelation.getMTA() != null ? clientSignsRelation.getMTA() : 0;
             rounding = clientSignsRelation.getRounding() != null ? clientSignsRelation.getRounding() : 0;
             balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
             pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
-        }
-        else
-        {
+        } else {
             MTA = counterpartSignsRelation.getMTA() != null ? counterpartSignsRelation.getMTA() : 0;
             rounding = counterpartSignsRelation.getRounding() != null ? counterpartSignsRelation.getRounding() : 0;
             balance = counterpartSignsRelation.getVariationMarginBalance() != null ? counterpartSignsRelation.getVariationMarginBalance() : 0;
             pendingCollateral = counterpartSignsRelation.getVariationPending() != null ? counterpartSignsRelation.getVariationPending() : 0;
         }
 
-        if(Math.abs(diff) <= MTA)
+        if (Math.abs(diff) <= MTA)
             return false;
 //
 //
@@ -115,7 +112,7 @@ public class SimulationMarginCallBuilder implements MarginCallGenService {
         LocalDate callDate = valuationDate.plusDays(1);
         Types.MarginType marginType = Types.MarginType.Variation;
         String todayFormatted = valuationDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-        String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-"+ marginType.name().toString();
+        String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-" + marginType.name().toString();
         String direction;
         Double deliverAmount = 0d;
         Double returnAmount = 0d;
@@ -123,49 +120,54 @@ public class SimulationMarginCallBuilder implements MarginCallGenService {
         Double marginAmount = diff;
         Double exposure;
 
-        double amount = balance+pendingCollateral;
-        if(diff <0) {
+        double amount = balance + pendingCollateral;
+        if (diff < 0) {
             exposure = 0 - pv;
             direction = "OUT";
 
-        }
-        else {
+        } else {
             exposure = pv;
             direction = "IN";
         }
 
-        if(sign(exposure) == sign(amount) && exposure > 0 )
-        {
+        if (sign(exposure) == sign(amount) && exposure > 0) {
             deliverAmount = marginAmount;
             returnAmount = 0d;
-        }
-        else
-        if(sign(exposure) == sign(amount) && exposure < 0 )
-        {
+        } else if (sign(exposure) == sign(amount) && exposure < 0) {
             deliverAmount = 0d;
             returnAmount = marginAmount;
-        }
-        else
-        {
+        } else {
             deliverAmount = exposure;
             returnAmount = Math.abs(amount);
         }
 
 
-
         //round amount
-        if(rounding != 0) {
-            if(deliverAmount != null && deliverAmount.doubleValue() != 0)
-                deliverAmount = deliverAmount/Math.abs(deliverAmount)*Math.ceil(Math.abs(deliverAmount) / rounding) * rounding;
-            if(returnAmount != null && returnAmount.doubleValue() != 0)
-                returnAmount = returnAmount/Math.abs(returnAmount)*Math.floor(Math.abs(returnAmount) / rounding) * rounding;
+        if (rounding != 0) {
+            if (deliverAmount != null && deliverAmount.doubleValue() != 0)
+                deliverAmount = deliverAmount / Math.abs(deliverAmount) * Math.ceil(Math.abs(deliverAmount) / rounding) * rounding;
+            if (returnAmount != null && returnAmount.doubleValue() != 0)
+                returnAmount = returnAmount / Math.abs(returnAmount) * Math.floor(Math.abs(returnAmount) / rounding) * rounding;
         }
         marginAmount = deliverAmount + returnAmount;
 
 
-        MarginCall marginCall = new MarginCall(mcId ,callDate, marginType,direction ,valuationDate,agreement.getCurrency().getCode(),
-                format(excessAmount), format(balance),format(deliverAmount), format(returnAmount),format(pendingCollateral),format(exposure),null,null,
-                callDate.atTime(agreement.getNotificationTime()),null,null,null,format(marginAmount),CallStatus.Unrecon.name());
+        MarginCall marginCall = new MarginCall(mcId,
+                callDate,
+                marginType,
+                direction,
+                valuationDate,
+                agreement.getCurrency().getCode(),
+                format(excessAmount),
+                format(balance),
+                format(deliverAmount),
+                format(returnAmount),
+                format(pendingCollateral),
+                format(exposure),
+                0,
+                callDate.atTime(agreement.getNotificationTime()),
+                format(marginAmount),
+                CallStatus.Unrecon.name());
 
 
         marginCall.setAgreement(agreement);
@@ -181,8 +183,7 @@ public class SimulationMarginCallBuilder implements MarginCallGenService {
 
         log.info("msid:" + msId);
 
-        if(marginStatement == null)
-        {
+        if (marginStatement == null) {
             //create ms
             LegalEntity client = agreement.getClientSignsRelation().getLegalEntity();
             LegalEntity counterpart = agreement.getCounterpartSignsRelation().getLegalEntity();
@@ -191,34 +192,29 @@ public class SimulationMarginCallBuilder implements MarginCallGenService {
             marginStatement.setDirection(direction);
             marginStatement.setCurrency(agreement.getCurrency());
             marginStatement.setDate(LocalDateTime.now());
-            marginStatement.setMarginCalls(new HashSet<MarginCall>(){{
+            marginStatement.setStatementItems(new HashSet<StatementItem>() {{
                 add(marginCall);
             }});
             agreement.getMarginStatements().add(marginStatement);
 
-            if(direction.equals("IN"))
-            {
-                if(counterpart.getMarginStatements() == null)
+            if (direction.equals("IN")) {
+                if (counterpart.getMarginStatements() == null)
                     counterpart.setMarginStatements(new HashSet<>());
                 counterpart.getMarginStatements().add(marginStatement);
-                if(client.getFromMarginStatements() == null)
+                if (client.getFromMarginStatements() == null)
                     client.setFromMarginStatements(new HashSet<>());
                 client.getFromMarginStatements().add(marginStatement);
-            }
-            else
-            {
-                if(client.getMarginStatements() == null)
+            } else {
+                if (client.getMarginStatements() == null)
                     client.setMarginStatements(new HashSet<>());
                 client.getMarginStatements().add(marginStatement);
-                if(counterpart.getFromMarginStatements() == null)
+                if (counterpart.getFromMarginStatements() == null)
                     counterpart.setFromMarginStatements(new HashSet<>());
                 counterpart.getFromMarginStatements().add(marginStatement);
             }
 
             agreementService.createOrUpdate(agreement);
-        }
-        else
-        {
+        } else {
             marginStatement.getMarginCalls().add(marginCall);
         }
 
@@ -230,21 +226,19 @@ public class SimulationMarginCallBuilder implements MarginCallGenService {
 
     }
 
-    private Double getFXValue(com.opengamma.strata.basics.currency.Currency from, com.opengamma.strata.basics.currency.Currency to, Double value)
-    {
+    private Double getFXValue(com.opengamma.strata.basics.currency.Currency from, com.opengamma.strata.basics.currency.Currency to, Double value) {
         double fromRate = 1;
-        if(!from.equals(com.opengamma.strata.basics.currency.Currency.USD))
+        if (!from.equals(com.opengamma.strata.basics.currency.Currency.USD))
             fromRate = currencyService.getFXValue(from.getCode());
         double toRate = 1;
-        if(!to.equals(com.opengamma.strata.basics.currency.Currency.USD))
+        if (!to.equals(com.opengamma.strata.basics.currency.Currency.USD))
             toRate = currencyService.getFXValue(to.getCode());
 
         return value * toRate / fromRate;
     }
 
-    private Double round(Double deliverAmount, Double returnAmount, Double rounding)
-    {
-        if(rounding != null && rounding.doubleValue() != 0) {
+    private Double round(Double deliverAmount, Double returnAmount, Double rounding) {
+        if (rounding != null && rounding.doubleValue() != 0) {
             deliverAmount = Math.floor(deliverAmount / rounding) * rounding;
             returnAmount = Math.ceil(returnAmount / rounding) * rounding;
         }
@@ -252,18 +246,15 @@ public class SimulationMarginCallBuilder implements MarginCallGenService {
     }
 
 
-
-    private double format(double d)
-    {
+    private double format(double d) {
 
         return Double.parseDouble(df.format(d));
     }
 
-    private int sign(double d)
-    {
-        if(d > 0)
+    private int sign(double d) {
+        if (d > 0)
             return 1;
-        if(d < 0)
+        if (d < 0)
             return -1;
         else
             return 0;
