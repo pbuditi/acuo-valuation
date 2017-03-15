@@ -1,5 +1,5 @@
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/java-plugins.gradle"
-apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/develop/java/dependencies.gradle"
+apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/dependencies.gradle"
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/integration-test.gradle"
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/sonarqube.gradle"
 
