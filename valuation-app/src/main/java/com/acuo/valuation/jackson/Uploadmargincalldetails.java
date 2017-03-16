@@ -56,7 +56,7 @@ public class Uploadmargincalldetails {
      {
 
          Uploadmargincalldetails uploadmargincalldetails = new Uploadmargincalldetails();
-         Agreement agreement = marginCall.getAgreement();
+         Agreement agreement = marginCall.getMarginStatement().getAgreement();
          uploadmargincalldetails.marginagreement = agreement.getAgreementId();
          uploadmargincalldetails.valuationdate = marginCall.getValuationDate();
          uploadmargincalldetails.calldate = marginCall.getCallDate();

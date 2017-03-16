@@ -142,7 +142,6 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
                 format(marginAmount),
                 CallStatus.Expected.name());
 
-        marginCall.setAgreement(agreement);
 
         Step step = new Step();
         step.setStatus(CallStatus.Expected);
