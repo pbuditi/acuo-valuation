@@ -170,8 +170,6 @@ public class SimulationMarginCallBuilder implements MarginCallGenService {
                 CallStatus.Unrecon.name());
 
 
-        marginCall.setAgreement(agreement);
-
         Step step = new Step();
         step.setStatus(CallStatus.Unrecon);
         marginCall.setFirstStep(step);
