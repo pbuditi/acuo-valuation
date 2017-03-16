@@ -163,7 +163,6 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
                 CallStatus.Expected.name());
 
 
-        marginCall.setAgreement(agreement);
 
         Step step = new Step();
         step.setStatus(CallStatus.Expected);
