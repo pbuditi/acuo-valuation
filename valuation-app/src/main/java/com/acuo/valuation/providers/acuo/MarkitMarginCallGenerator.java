@@ -145,7 +145,7 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
         marginAmount = deliverAmount + returnAmount;
 
 
-        MarginCall marginCall = new MarginCall(mcId,
+        MarginCall marginCall = new InitialMargin(mcId,
                 callDate,
                 marginType,
                 direction,
