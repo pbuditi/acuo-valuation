@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -90,27 +91,23 @@ public class TradeUploadServiceTest {
 
     @Test
     public void testUploadOneIRS() {
-        service.uploadTradesFromExcel(oneIRS.createInputStream());
+        List<String> tradeIds = service.uploadTradesFromExcel(oneIRS.createInputStream());
+        assertThat(tradeIds).isNotEmpty();
     }
 
     @Test
     public void testUploadAll() throws IOException {
         when(pricingService.priceSwapTrades(any(List.class))).thenReturn(pricingResults);
         when(processor.process(pricingResults)).thenReturn(Collections.emptyList());
-        service.uploadTradesFromExcel(excel.createInputStream());    }
+        List<String> tradeIds = service.uploadTradesFromExcel(excel.createInputStream());
+        assertThat(tradeIds).isNotEmpty().doesNotContainNull();
+    }
 
     @Test
     public void testHandleIRSOneRowUpdate() throws IOException {
         service.uploadTradesFromExcel(oneIRS.createInputStream());
         service.uploadTradesFromExcel(oneIRS.createInputStream());
-
         Iterable<IRS> irses = irsService.findAll();
-        int count = 0;
-        for (IRS irs : irses) {
-            log.debug(irs.getId() + " id of irs");
-            count ++;
-        }
-
-        Assert.assertTrue(count == 2);
+        assertThat(irses).isNotEmpty().hasSize(2);
     }
 }

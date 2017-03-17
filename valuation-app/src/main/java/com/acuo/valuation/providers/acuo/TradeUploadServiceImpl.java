@@ -4,8 +4,6 @@ import com.acuo.persist.entity.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
-import com.acuo.valuation.jackson.MarginCallDetail;
-import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
@@ -50,7 +48,6 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     }
 
     public List<String> uploadTradesFromExcel(InputStream fis) {
-        MarginCallDetail marginCallDetail = null;
         try {
             Workbook workbook = new XSSFWorkbook(fis);
             Sheet sheet = workbook.getSheet("IRS-Cleared");
