@@ -66,6 +66,10 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
 
                 Trade trade = tradeService.findById(tradeId);
 
+                if (trade == null) {
+                    log.warn("no trade with id {}", tradeId);
+                    continue;
+                }
 
                 Set<Valuation> valuations = trade.getValuations();
                 boolean found = false;
