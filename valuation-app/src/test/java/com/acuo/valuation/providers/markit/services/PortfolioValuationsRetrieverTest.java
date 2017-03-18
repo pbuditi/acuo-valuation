@@ -57,7 +57,7 @@ public class PortfolioValuationsRetrieverTest {
         server.enqueue(new MockResponse().setBody(response.getContent()));
 
         LocalDate asOf = new LocalDateAdapter().unmarshal("2016-06-10");
-        PricingResults pricingResults = retriever.retrieve(asOf, Arrays.asList("Test_IRS"));
+        PricingResults pricingResults = retriever.retrieve(asOf, Arrays.asList("Test_IRS", "TestFXOpt", "TestCDS", "ABC5"));
 
         RecordedRequest r = server.takeRequest();
         String body = r.getBody().readUtf8();

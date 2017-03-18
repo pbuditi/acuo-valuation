@@ -6,6 +6,7 @@ import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.*;
 import com.acuo.valuation.services.MarginCallGenService;
 import lombok.extern.slf4j.Slf4j;
+import org.neo4j.helpers.collection.Iterators;
 
 import javax.inject.Inject;
 import java.text.DecimalFormat;
@@ -16,6 +17,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Slf4j
 public class MarkitMarginCallGenerator implements MarginCallGenService {
@@ -44,16 +48,19 @@ public class MarkitMarginCallGenerator implements MarginCallGenService {
     }
 
     public List<MarginCall> marginCalls(Set<PortfolioId> portfolioSet, LocalDate date) {
+        log.info("generating margin calls for {}", portfolioSet);
         List<MarginCall> marginCalls = new ArrayList<MarginCall>();
         for (PortfolioId portfolioId : portfolioSet) {
-
             Portfolio portfolio = portfolioService.findById(portfolioId.toString());
-
-            Valuation valuation = valuationService.findById(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + portfolio.getPortfolioId());
-            MarginCall mc = geneareteMarginCall(portfolio.getAgreement(), portfolio, valuation);
+            Set<Valuation> valuations = portfolio.getValuations()
+                                                .stream()
+                                                .filter(valuation -> valuation.getDate().equals(date))
+                                                .collect(toSet());
+            MarginCall mc = geneareteMarginCall(portfolio.getAgreement(), portfolio, Iterators.single(valuations.iterator()));
             if (mc != null)
                 marginCalls.add(mc);
         }
+        log.info("{} margin calls generated", marginCalls.size());
         return marginCalls;
     }
 
