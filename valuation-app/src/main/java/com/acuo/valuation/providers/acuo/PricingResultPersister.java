@@ -47,8 +47,7 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
             return portfolioIds;
         }
 
-        log.debug("persistMarkitResult start :" + pricingResults.getDate());
-
+        log.info("persisting {} markit result of {}", pricingResults.getResults().size(), pricingResults.getDate());
 
         LocalDate date = pricingResults.getDate();
         Currency currency = pricingResults.getCurrency();
@@ -78,9 +77,8 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
                         if (valuation.getDate().equals(date)) {
                             //existing date, add or replace the value
                             if (valuation.getValues() == null)
-                                valuation.setValues(new HashSet<com.acuo.persist.entity.Value>());
+                                valuation.setValues(new HashSet<>());
                             Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
-
 
                             for (com.acuo.persist.entity.Value existedValue : existedValues) {
                                 if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit")) {
@@ -93,15 +91,8 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
                                 }
                             }
 
-
-                            com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
-
-                            newValue.setSource("Markit");
-                            newValue.setCurrency(currency);
-                            newValue.setPv(value.getPv());
-
+                            com.acuo.persist.entity.Value newValue = createValue(currency, value.getPv(), "Markit");
                             valuation.getValues().add(newValue);
-
                             valuationService.createOrUpdate(valuation);
                             trade.getValuations().add(valuation);
                             portfolioIds.add(PortfolioId.fromString(trade.getPortfolio().getPortfolioId()));
@@ -115,23 +106,10 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
                 if (!found) {
                     //new valutaion
 
-                    Valuation valuation = new Valuation();
-
-                    valuation.setValuationId(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + trade.getTradeId());
-
-                    valuation.setDate(date);
-
-
-                    com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
-
-                    newValue.setSource("Markit");
-                    newValue.setCurrency(currency);
-                    newValue.setPv(value.getPv());
-
-                    Set<com.acuo.persist.entity.Value> values = new HashSet<com.acuo.persist.entity.Value>();
-
+                    Valuation valuation = createValuation(date, trade.getTradeId());
+                    com.acuo.persist.entity.Value newValue = createValue(currency, value.getPv(), "Markit");
+                    Set<com.acuo.persist.entity.Value> values = new HashSet<>();
                     values.add(newValue);
-
                     valuation.setValues(values);
 
                     if (trade.getValuations() != null)
@@ -150,6 +128,23 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
             }
         }
         return portfolioIds;
+    }
+
+    private Valuation createValuation(LocalDate date, String tradeId) {
+        Valuation valuation = new Valuation();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String dateFormatted = date.format(formatter);
+        valuation.setValuationId(dateFormatted + "-" + tradeId);
+        valuation.setDate(date);
+        return valuation;
+    }
+
+    private com.acuo.persist.entity.Value createValue(Currency currency, Double pv, String source) {
+        com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
+        newValue.setSource(source);
+        newValue.setCurrency(currency);
+        newValue.setPv(pv);
+        return newValue;
     }
 
     private void addsumValuationOfPortfolio(Portfolio portfolio, LocalDate date, com.opengamma.strata.basics.currency.Currency currency, String source, Double pv) {
@@ -175,14 +170,9 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
 
 
         if (theValuation == null) {
-            theValuation = new Valuation();
-            theValuation.setValuationId(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + portfolio.getPortfolioId());
-            theValuation.setDate(date);
-            Set<com.acuo.persist.entity.Value> values = new HashSet<com.acuo.persist.entity.Value>();
-            theValue = new com.acuo.persist.entity.Value();
-            theValue.setPv(pv);
-            theValue.setCurrency(currency);
-            theValue.setSource(source);
+            theValuation = createValuation(date, portfolio.getPortfolioId());
+            theValue = createValue(currency, pv, "Markit");
+            Set<com.acuo.persist.entity.Value> values = new HashSet<>();
             values.add(theValue);
             theValuation.setValues(values);
 
@@ -193,14 +183,9 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
             portfolioService.createOrUpdate(portfolio);
         } else {
             if (theValue == null) {
-                theValue = new com.acuo.persist.entity.Value();
-                theValue.setPv(pv);
-                theValue.setCurrency(currency);
-                theValue.setSource(source);
-
+                theValue = createValue(currency, pv, source);
                 if (theValuation.getValues() == null)
-                    theValuation.setValues(new HashSet<com.acuo.persist.entity.Value>());
-
+                    theValuation.setValues(new HashSet<>());
                 theValuation.getValues().add(theValue);
                 valuationService.createOrUpdate(theValuation);
             } else {

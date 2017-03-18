@@ -24,7 +24,9 @@ public class MarkitClient extends OkHttpClient<MarkitEndPointConfig> {
             String result = null;
             while (result == null) {
                 String response = execute(call.getRequest());
-                log.info(response);
+                if (log.isTraceEnabled()) {
+                    log.trace(response);
+                }
                 if (call.getPredicate().test(response)) {
                     Thread.sleep(config().getRetryDelayInMilliseconds());
                 } else {

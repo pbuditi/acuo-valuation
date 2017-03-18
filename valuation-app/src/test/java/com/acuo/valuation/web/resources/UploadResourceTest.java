@@ -4,10 +4,21 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
-import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.core.ImportService;
+import com.acuo.persist.modules.*;
+import com.acuo.persist.services.PortfolioService;
+import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.modules.*;
+import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.providers.acuo.TradeUploadServiceImpl;
+import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
+import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
+import com.google.inject.AbstractModule;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
@@ -35,25 +46,101 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class, EncryptionModule.class, Neo4jPersistModule.class, MappingModule.class, EndPointModule.class, ServicesModule.class, ResourcesModule.class})
+@GuiceJUnitRunner.GuiceModules({
+        ConfigurationTestModule.class,
+        UploadResourceTest.MockServiceModule.class,
+        EncryptionModule.class,
+        Neo4jPersistModule.class,
+        DataImporterModule.class,
+        DataLoaderModule.class,
+        ImportServiceModule.class,
+        RepositoryModule.class,
+        MappingModule.class,
+        EndPointModule.class,
+        ServicesModule.class,
+        ResourcesModule.class})
 @Slf4j
-@Ignore
 public class UploadResourceTest implements WithResteasyFixtures {
 
     Dispatcher dispatcher;
 
     @Rule
+    public ResourceFile largeReport = new ResourceFile("/markit/reports/large.xml");
+
+    @Rule
+    public ResourceFile largeResponse = new ResourceFile("/markit/responses/large.xml");
+
+    @Rule
     public ResourceFile excel = new ResourceFile("/excel/TradePortfolio.xlsx");
 
     @Inject
-    UploadResource resource;
+    ImportService importService;
+
+    @Inject
+    UploadResource uploadResource;
+
+    @Inject
+    SwapValuationResource swapValuationResource;
+
+    @Inject
+    TradingAccountService accountService;
+
+    @Inject
+    PortfolioService portfolioService;
+
+    private static MockWebServer server;
+
+    public static class MockServiceModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            server = new MockWebServer();
+            MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/"), "", "",
+                    "username", "password", "0", "10000", "false");
+            ClarusEndPointConfig clarusEndPointConfig = new ClarusEndPointConfig("host", "key", "api", "10000", "false");
+            bind(MarkitEndPointConfig.class).toInstance(markitEndPointConfig);
+            bind(ClarusEndPointConfig.class).toInstance(clarusEndPointConfig);
+        }
+
+    }
 
     @Before
     public void setup() throws IOException {
         dispatcher = createDispatcher(JacksonObjectMapperProvider.class);
-        dispatcher.getRegistry().addSingletonResource(resource);
+        dispatcher.getRegistry().addSingletonResource(uploadResource);
+        dispatcher.getRegistry().addSingletonResource(swapValuationResource);
+        importService.reload();
+        TradeUploadService tradeUploadService = new TradeUploadServiceImpl(accountService, portfolioService);
+        tradeUploadService.uploadTradesFromExcel(excel.createInputStream());
     }
 
+    @Test
+    public void testValuationAll() throws URISyntaxException, IOException {
+        server.enqueue(new MockResponse().setBody("key"));
+        server.enqueue(new MockResponse().setBody(largeReport.getContent()));
+        server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
+
+        MockHttpRequest request = MockHttpRequest.get("/swaps/priceSwapTrades/allBilateralIRS");
+        MockHttpResponse response = new MockHttpResponse();
+
+        dispatcher.invoke(request, response);
+
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertThat(response.getContentAsString()).isNotNull();
+    }
+
+    @Test
+    @Ignore
+    public void testStress() {
+        while (true) {
+            try {
+                testValuationAll();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Ignore
     @Test
     public void testUploadExcelFile2() throws URISyntaxException, IOException {
         MockHttpRequest request = MockHttpRequest.post("/upload/test");
@@ -68,6 +155,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
         assertThat(response.getContentAsString()).isNotNull();
     }
 
+    @Ignore
     @Test
     public void testUploadExcelFile() throws URISyntaxException, IOException {
         Map parts = new HashMap();
@@ -84,6 +172,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
 
     /**
      * Return a multipart/form-data MockHttpRequest
+     *
      * @param parts Key is the name of the part, value is either a String or a File.
      * @return
      */
@@ -98,20 +187,20 @@ public class UploadResourceTest implements WithResteasyFixtures {
         writer.append("--").append(boundary);
 
         Set<Map.Entry> set = parts.entrySet();
-        for(Map.Entry entry : set) {
-            if(entry.getValue() instanceof String) {
+        for (Map.Entry entry : set) {
+            if (entry.getValue() instanceof String) {
                 writer.append("\n");
                 writer.append("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"").append("\n\n");
                 writer.append(entry.getValue().toString()).append("\n");
                 writer.append("--").append(boundary);
-            } else if(entry.getValue() instanceof InputStream) {
+            } else if (entry.getValue() instanceof InputStream) {
                 writer.append("\n");
                 InputStream val = (InputStream) entry.getValue();
                 writer.append("Content-Disposition: form-data; name=\"aFile\"; filename=\"file.bin\"").append("\n");
                 writer.append("Content-Type: application/octet-stream").append("\n\n");
 
                 int b = val.read();
-                while(b >= 0) {
+                while (b >= 0) {
                     writer.write(b);
                     writer.flush();
                     b = val.read();

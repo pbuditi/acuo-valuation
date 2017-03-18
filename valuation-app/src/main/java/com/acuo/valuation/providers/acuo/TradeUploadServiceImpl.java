@@ -24,27 +24,15 @@ import java.util.Map;
 public class TradeUploadServiceImpl implements TradeUploadService {
 
     final SwapExcelParser parser = new SwapExcelParser();
-    private final TradeService<IRS> irsService;
-    private final TradeService<FRA> fraService;
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
-    private final PricingService pricingService;
-    private final MarkitValautionsProcessor resultProcessor;
     private final List<String> tradeIdList = new ArrayList<String>();
 
     @Inject
-    public TradeUploadServiceImpl(TradeService<IRS> irsService,
-                                  TradeService<FRA> fraService,
-                                  TradingAccountService accountService,
-                                  PortfolioService portfolioService,
-                                  PricingService pricingService,
-                                  MarkitValautionsProcessor resultProcessor) {
-        this.irsService = irsService;
-        this.fraService = fraService;
+    public TradeUploadServiceImpl(TradingAccountService accountService,
+                                  PortfolioService portfolioService) {
         this.accountService = accountService;
         this.portfolioService = portfolioService;
-        this.pricingService = pricingService;
-        this.resultProcessor = resultProcessor;
     }
 
     public List<String> uploadTradesFromExcel(InputStream fis) {
@@ -78,17 +66,12 @@ public class TradeUploadServiceImpl implements TradeUploadService {
                 }
             }
 
-
-
             sheet = workbook.getSheet("IRS-Bilateral");
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
                     TradingAccount account = handleIRSBilateralRow(row);
-
                     accounts.putIfAbsent(account.getAccountId(), account);
-
-
                 }
             }
 
@@ -109,9 +92,10 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         return account;
     }
 
-    private void linkPortfolio(Trade trade, String portfolioId)
-    {
-        log.info("portfolioId:" + portfolioId);
+    private void linkPortfolio(Trade trade, String portfolioId) {
+        if(log.isDebugEnabled()) {
+            log.debug("linking to portfolioId:" + portfolioId);
+        }
         Portfolio portfolio = portfolioService.findById(portfolioId);
         trade.setPortfolio(portfolio);
     }
@@ -120,7 +104,9 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         IRS irs = parser.buildIRS(row);
         linkPortfolio(irs, row.getCell(47).getStringCellValue());
         TradingAccount account = addToAccount(row, irs);
-        log.debug("saved IRS {}", irs);
+        if(log.isDebugEnabled()) {
+            log.debug("saved IRS {}", irs);
+        }
         tradeIdList.add(irs.getTradeId());
         return account;
     }
