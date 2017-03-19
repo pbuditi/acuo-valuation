@@ -3,6 +3,7 @@ package com.acuo.valuation.modules;
 import com.acuo.common.app.Configuration;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.providers.reuters.services.ReutersEndPointConfig;
 import com.acuo.valuation.utils.PropertiesHelper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -24,6 +25,7 @@ public class ConfigurationModule extends AbstractModule {
         bind(Configuration.class).toProvider(SystemPropertiesConfigurationProvider.class);
         bind(MarkitEndPointConfig.class);
         bind(ClarusEndPointConfig.class);
+        bind(ReutersEndPointConfig.class);
     }
 
     public static class PropertiesModule extends AbstractModule {
