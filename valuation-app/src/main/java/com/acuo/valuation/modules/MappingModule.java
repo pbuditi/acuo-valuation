@@ -1,8 +1,10 @@
 package com.acuo.valuation.modules;
 
 import com.acuo.collateral.transform.Transformer;
+import com.acuo.collateral.transform.services.AssetsTransformer;
 import com.acuo.collateral.transform.services.ClarusTransformer;
 import com.acuo.collateral.transform.services.MarkitTransformer;
+import com.acuo.collateral.transform.trace.transformer_assets.Reuters;
 import com.acuo.collateral.transform.trace.transformer_valuations.Mapper;
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.marshal.MarshallerExecutor;
@@ -11,6 +13,7 @@ import com.acuo.common.marshal.jaxb.JaxbContextFactory;
 import com.acuo.common.marshal.jaxb.MoxyJaxbContextFactory;
 import com.acuo.common.marshal.json.JsonContextFactory;
 import com.acuo.common.marshal.json.MoxyJsonContextFactory;
+import com.acuo.common.model.assets.Assets;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportInput;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseInput;
@@ -41,6 +44,8 @@ public class MappingModule extends AbstractModule {
         MarkitTransformer<SwapTrade> markitTransformer = new MarkitTransformer<>(new Mapper());
         bind(new TypeLiteral<Transformer<SwapTrade>>() {
         }).annotatedWith(Names.named("markit")).toInstance(markitTransformer);
+        AssetsTransformer<Assets> assetsAssetsTransformer = new AssetsTransformer<>();
+        bind(new TypeLiteral<Transformer<Assets>>() {}).annotatedWith(Names.named("assets")).toInstance(assetsAssetsTransformer);
     }
 
     @Provides

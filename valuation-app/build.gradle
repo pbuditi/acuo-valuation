@@ -6,7 +6,7 @@ apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/ja
 ext.versions += [
         persist         : '0.3.7-SNAPSHOT',
         common          : '0.4.0-SNAPSHOT',
-        mapping         : '0.2.5'
+        mapping         : '0.3.0-SNAPSHOT'
 //        eclipselink     : '2.6.3',
 //        resteasy        : '3.0.20.Final',
 //        jackson         : '2.8.3'
