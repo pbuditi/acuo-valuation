@@ -4,7 +4,6 @@ import com.acuo.persist.entity.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
-import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +15,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class TradeUploadServiceImpl implements TradeUploadService {
@@ -26,25 +25,26 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     final SwapExcelParser parser = new SwapExcelParser();
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
-    private final List<String> tradeIdList = new ArrayList<String>();
+    private final TradeService<Trade> tradeService;
 
     @Inject
     public TradeUploadServiceImpl(TradingAccountService accountService,
-                                  PortfolioService portfolioService) {
+                                  PortfolioService portfolioService,
+                                  TradeService<Trade> tradeService) {
         this.accountService = accountService;
         this.portfolioService = portfolioService;
+        this.tradeService = tradeService;
     }
 
     public List<String> uploadTradesFromExcel(InputStream fis) {
+        List<Trade> tradeIdList = new ArrayList<>();
         try {
             Workbook workbook = new XSSFWorkbook(fis);
             Sheet sheet = workbook.getSheet("IRS-Cleared");
-            Map<String, TradingAccount> accounts = new HashMap<>();
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    TradingAccount account = handleIRSRow(row);
-                    accounts.putIfAbsent(account.getAccountId(), account);
+                    tradeIdList.add(handleIRSRow(row));
                 }
             }
 
@@ -52,8 +52,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    TradingAccount account = handleFRARow(row);
-                    accounts.putIfAbsent(account.getAccountId(), account);
+                    tradeIdList.add(handleFRARow(row));
                 }
             }
 
@@ -61,8 +60,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    TradingAccount account = handleOISRow(row);
-                    accounts.putIfAbsent(account.getAccountId(), account);
+                    tradeIdList.add(handleOISRow(row));
                 }
             }
 
@@ -70,70 +68,68 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             if (sheet != null) {
                 for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    TradingAccount account = handleIRSBilateralRow(row);
-                    accounts.putIfAbsent(account.getAccountId(), account);
+                    tradeIdList.add(handleIRSBilateralRow(row));
                 }
             }
-
-            for (TradingAccount account : accounts.values()) {
-                accountService.createOrUpdate(account);
-            }
-
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
 
-        return tradeIdList;
-    }
+        tradeService.createOrUpdate(tradeIdList);
 
-    private TradingAccount addToAccount(Row row, Trade trade) {
-        TradingAccount account = accountService.findById(row.getCell(1).getStringCellValue());
-        account.add(trade);
-        return account;
+        return tradeIdList.stream().map(Trade::getTradeId).collect(toList());
     }
 
     private void linkPortfolio(Trade trade, String portfolioId) {
         if(log.isDebugEnabled()) {
-            log.debug("linking to portfolioId:" + portfolioId);
+            log.debug("linking to portfolioId: {}", portfolioId);
         }
         Portfolio portfolio = portfolioService.findById(portfolioId);
         trade.setPortfolio(portfolio);
     }
 
-    private TradingAccount handleIRSRow(Row row) {
-        IRS irs = parser.buildIRS(row);
-        linkPortfolio(irs, row.getCell(47).getStringCellValue());
-        TradingAccount account = addToAccount(row, irs);
+    private void linkAccount(Trade trade, String accountId) {
         if(log.isDebugEnabled()) {
-            log.debug("saved IRS {}", irs);
+            log.debug("linking to accountId: {}", accountId);
         }
-        tradeIdList.add(irs.getTradeId());
-        return account;
+        TradingAccount account = accountService.findById(accountId);
+        trade.setAccount(account);
     }
 
-    private TradingAccount handleFRARow(Row row) {
+    private Trade handleIRSRow(Row row) {
+        IRS irs = parser.buildIRS(row);
+        String accountId = row.getCell(1).getStringCellValue();
+        String portfolioId = row.getCell(47).getStringCellValue();
+        return handleTrade(irs, accountId, portfolioId);
+    }
+
+    private Trade handleFRARow(Row row) {
         FRA fra = parser.buildFRA(row);
-        linkPortfolio(fra, row.getCell(34).getStringCellValue());
-        TradingAccount account = addToAccount(row, fra);
-        log.debug("saved FRA {}", fra);
-        return account;
+        String accountId = row.getCell(1).getStringCellValue();
+        String portfolioId = row.getCell(34).getStringCellValue();
+        return handleTrade(fra, accountId, portfolioId);
     }
 
-    private TradingAccount handleOISRow(Row row) {
+    private Trade handleOISRow(Row row) {
         IRS irs = parser.buildOIS(row);
-        linkPortfolio(irs, row.getCell(46).getStringCellValue());
-        TradingAccount account = addToAccount(row, irs);
-        log.debug("saved OIS {}", irs);
-        tradeIdList.add(irs.getTradeId());
-        return account;
+        String accountId = row.getCell(1).getStringCellValue();
+        String portfolioId = row.getCell(46).getStringCellValue();
+        return handleTrade(irs, accountId, portfolioId);
     }
 
-    private TradingAccount handleIRSBilateralRow(Row row) {
+    private Trade handleIRSBilateralRow(Row row) {
         IRS irs = parser.buildIRSBilateral(row);
-        linkPortfolio(irs, row.getCell(41).getStringCellValue());
-        TradingAccount account = addToAccount(row, irs);
-        log.debug("saved IRS-Bilateral {}", irs);
-        tradeIdList.add(irs.getTradeId());
-        return account;
+        String accountId = row.getCell(1).getStringCellValue();
+        String portfolioId = row.getCell(41).getStringCellValue();
+        return handleTrade(irs, accountId, portfolioId);
+    }
+
+    private Trade handleTrade(Trade trade, String accountId, String portfolioId) {
+        linkAccount(trade, accountId);
+        linkPortfolio(trade, portfolioId);
+        if(log.isDebugEnabled()) {
+            log.debug("saved trade {}", trade);
+        }
+        return trade;
     }
 }
