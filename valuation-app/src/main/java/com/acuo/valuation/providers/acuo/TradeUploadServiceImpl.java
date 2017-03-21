@@ -113,7 +113,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     private Trade handleOISRow(Row row) {
         IRS irs = parser.buildOIS(row);
         String accountId = row.getCell(1).getStringCellValue();
-        String portfolioId = row.getCell(46).getStringCellValue();
+        String portfolioId = row.getCell(48).getStringCellValue();
         return handleTrade(irs, accountId, portfolioId);
     }
 
