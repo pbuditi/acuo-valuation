@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.reuters.services;
 
+import com.acuo.common.model.assets.Assets;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.modules.Neo4jPersistModule;
@@ -35,33 +36,12 @@ public class ReutersServiceTest {
     @Ignore
     public void testSend()
     {
-        String json = "{\n" +
-                "\"AsOfDate\":\"2017-03-10\",\n" +
-                " \"Sections\" : {\n" +
-                "    \"Description\" :\"true\",\n" +
-                "    \"Quote\":\"true\",\n" +
-                "    \"PricingAnalysis\" :\"true\",\n" +
-                "    \"Valuation\":\"true\",\n" +
-                "    \"RiskMeasures\":\"true\"\n" +
-                "  },\n" +
-                "\t\"MtMItems\": {\n" +
-                "\t\t\"SecurityInputs\": [\n" +
-                "\t\t{\n" +
-                "\t\t\t\"Guid\": \"Id1\",\n" +
-                "\t\t\t\"SecurityId\": \"US38143U8G98\",\n" +
-                "\t\t\t\"Notional\": 2000000,\n" +
-                "\t\t\t\"PriceType\":\"Bid\"\n" +
-                "\t\t},\n" +
-                "\t\t{\n" +
-                "\t\t\t\"Guid\": \"Id2\",\n" +
-                "\t\t\t\"SecurityId\":\"PL106068=\",\n" +
-                "\t\t\t\"Notional\": 2000000,\n" +
-                "\t\t\t\"price\":103.45360000\n" +
-                "\t\t},\n" +
-                "\t\t]\n" +
-                "\t}\n" +
-                "}";
-        String resposne = reutersService.send(json);
+        Assets assets = new Assets();
+        assets.setAssetId("1231");
+        assets.setAvailableQuantities(11);
+        assets.setCurrency(java.util.Currency.getInstance("USD"));
+        assets.setFitchRating("1");
+        String resposne = reutersService.send(assets);
         log.info(resposne);
     }
 
