@@ -84,7 +84,7 @@ public class MarkitPricingService implements PricingService {
         Report report = sender.send(swaps);
         Predicate<? super String> errorReport = (Predicate<String>) tradeId -> {
             List<Report.Item> items = report.itemsPerTradeId().get(tradeId);
-            if (items.stream().anyMatch(item -> "ERROR".equals(item.getType()))) {
+            if (items == null || items.stream().anyMatch(item -> "ERROR".equals(item.getType()))) {
                 return false;
             }
             return true;
