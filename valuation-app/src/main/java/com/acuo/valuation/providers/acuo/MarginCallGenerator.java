@@ -77,8 +77,8 @@ public abstract class MarginCallGenerator {
         }
 
 
-        if (Math.abs(diff) <= MTA)
-            return null;
+        //if (Math.abs(diff) <= MTA)
+        //    return null;
 //
 //
         //new mc
