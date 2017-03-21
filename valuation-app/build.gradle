@@ -19,6 +19,7 @@ dependencies {
     compile("com.acuo.collateral:acuo-persist:${versions.persist}") { changing = true }
     compile("com.acuo.collateral:acuo-common:${versions.common}") { changing = true }
     compile("com.acuo.collateral:acuo-mapping:${versions.mapping}") { changing = true }
+
     compile(
             "org.codehaus.groovy:groovy-all:2.4.10",
             "org.apache.poi:poi:3.15",

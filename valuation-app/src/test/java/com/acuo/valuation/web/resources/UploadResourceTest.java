@@ -25,14 +25,12 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -41,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -75,6 +74,9 @@ public class UploadResourceTest implements WithResteasyFixtures {
 
     @Rule
     public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");
+
+    @Rule
+    public ResourceFile generatedllMC = new ResourceFile("/acuo/margincalls/upload-all-mc.json");
 
     @Inject
     ImportService importService;
@@ -117,14 +119,18 @@ public class UploadResourceTest implements WithResteasyFixtures {
         importService.reload();
     }
 
+    private void setMockMarkitResponse() throws IOException {
+        server.enqueue(new MockResponse().setBody("key"));
+        server.enqueue(new MockResponse().setBody(largeReport.getContent()));
+        server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
+    }
+
     @Test
     public void testValuationAll() throws URISyntaxException, IOException {
         TradeUploadService tradeUploadService = new TradeUploadServiceImpl(accountService, portfolioService, tradeService);
         tradeUploadService.uploadTradesFromExcel(one.createInputStream());
 
-        server.enqueue(new MockResponse().setBody("key"));
-        server.enqueue(new MockResponse().setBody(largeReport.getContent()));
-        server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
+        setMockMarkitResponse();
 
         MockHttpRequest request = MockHttpRequest.get("/swaps/priceSwapTrades/allBilateralIRS");
         MockHttpResponse response = new MockHttpResponse();
@@ -144,45 +150,34 @@ public class UploadResourceTest implements WithResteasyFixtures {
     }
 
     @Test
-    @Ignore
     public void testStress() {
-        while (true) {
+        IntStream.range(1, 10).forEach (x -> {
             try {
+                setMockMarkitResponse();
                 testValuationAll();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     @Test
-    @Ignore
-    public void testUploadExcelFile2() throws URISyntaxException, IOException {
-        MockHttpRequest request = MockHttpRequest.post("/upload");
-        request.contentType(MediaType.APPLICATION_OCTET_STREAM);
-        byte[] bytes = excel.getContent().getBytes();
-        request.content(excel.getInputStream());
-        MockHttpResponse response = new MockHttpResponse();
-
-        dispatcher.invoke(request, response);
-
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertThat(response.getContentAsString()).isNotNull();
-    }
-
-    @Test
-    @Ignore
     public void testUploadExcelFile() throws URISyntaxException, IOException {
+        setMockMarkitResponse();
+
         Map parts = new HashMap();
-        parts.put("file", excel.getContent());
-        MockHttpRequest request = multipartRequest("/upload", parts);
+        String charSet = "ISO-8859-1";
+        parts.put("file", excel.getContent(charSet));
+        MockHttpRequest request = multipartRequest("/upload", parts, charSet);
 
         MockHttpResponse response = new MockHttpResponse();
 
         dispatcher.invoke(request, response);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertThat(response.getContentAsString()).isNotNull();
+        assertThat(response.getContentAsString())
+                .isNotNull();
+                //.isEqualTo(generatedllMC.getContent());
     }
 
     /**
@@ -191,14 +186,11 @@ public class UploadResourceTest implements WithResteasyFixtures {
      * @param parts Key is the name of the part, value is either a String or a File.
      * @return
      */
-    private MockHttpRequest multipartRequest(String uri, Map parts) throws URISyntaxException, IOException {
+    private MockHttpRequest multipartRequest(String uri, Map parts, String charSet) throws URISyntaxException, IOException {
         MockHttpRequest req = MockHttpRequest.post(uri);
         String boundary = UUID.randomUUID().toString();
         req.contentType("multipart/form-data; boundary=" + boundary);
 
-        //File tmpMultipartFile = Files.createTempFile(null, null).toFile();
-        //System.out.println("Tmp file:" + tmpMultipartFile.getAbsolutePath());
-        //FileWriter writer = new FileWriter(tmpMultipartFile);
         StringWriter writer = new StringWriter();
         writer.append("--").append(boundary);
 
@@ -214,7 +206,6 @@ public class UploadResourceTest implements WithResteasyFixtures {
                 InputStream val = (InputStream) entry.getValue();
                 writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"file.bin\"").append("\n");
                 writer.append("Content-Type: application/octet-stream").append("\n\n");
-
                 int b = val.read();
                 while (b >= 0) {
                     writer.write(b);
@@ -222,17 +213,14 @@ public class UploadResourceTest implements WithResteasyFixtures {
                     b = val.read();
                 }
                 writer.append("\n").append("--").append(boundary);
-
             }
         }
         writer.append("--");
         writer.flush();
         writer.close();
         String body = writer.toString();
-        log.debug(body);
-        byte[] bytes = body.getBytes("UTF-8");
+        byte[] bytes = body.getBytes(charSet);
         req.content(bytes);
         return req;
     }
-
 }
