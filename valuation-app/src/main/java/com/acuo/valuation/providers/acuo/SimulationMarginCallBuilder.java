@@ -35,6 +35,7 @@ public class SimulationMarginCallBuilder extends MarginCallGenerator implements 
 
     @Override
     public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
+        log.info("processing item {}", processorItem);
         LocalDate date = processorItem.getResults().getDate();
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
         List<MarginCall> marginCalls = marginCalls(portfolioIds, date);

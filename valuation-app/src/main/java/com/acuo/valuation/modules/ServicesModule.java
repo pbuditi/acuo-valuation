@@ -30,6 +30,7 @@ public class ServicesModule extends AbstractModule {
         bind(MarkitMarginCallGenerator.class);
         bind(SimulationMarginCallBuilder.class);
         bind(MarkitValuationProcessor.class);
+        bind(PricingResultPersister.class);
         bind(MarginCalcService.class).to(ClarusMarginCalcService.class);
         bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
         bind(JobFactory.class).to(AcuoJobFactory.class);
