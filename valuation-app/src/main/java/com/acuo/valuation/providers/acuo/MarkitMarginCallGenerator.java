@@ -6,7 +6,6 @@ import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Valuation;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.*;
-import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.MarginCallGenService;
 import lombok.extern.slf4j.Slf4j;
 import org.neo4j.helpers.collection.Iterators;
@@ -39,6 +38,7 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator implements Ma
 
     @Override
     public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
+        log.info("processing item {}", processorItem);
         LocalDate date = processorItem.getResults().getDate();
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
         List<MarginCall> marginCalls = marginCalls(portfolioIds, date);

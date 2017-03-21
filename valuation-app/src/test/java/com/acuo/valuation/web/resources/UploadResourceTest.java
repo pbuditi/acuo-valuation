@@ -162,12 +162,22 @@ public class UploadResourceTest implements WithResteasyFixtures {
     }
 
     @Test
-    public void testUploadExcelFile() throws URISyntaxException, IOException {
+    public void testUploadBigFile() throws URISyntaxException, IOException {
+        testFileUpload(excel);
+    }
+
+    @Test
+    public void testUploadSmallFileMultipleTimes() throws URISyntaxException, IOException {
+        testFileUpload(one);
+        testFileUpload(one);
+    }
+
+    private void testFileUpload(ResourceFile resourceFile) throws IOException, URISyntaxException {
         setMockMarkitResponse();
 
         Map parts = new HashMap();
         String charSet = "ISO-8859-1";
-        parts.put("file", excel.getContent(charSet));
+        parts.put("file", resourceFile.getContent(charSet));
         MockHttpRequest request = multipartRequest("/upload", parts, charSet);
 
         MockHttpResponse response = new MockHttpResponse();
@@ -177,8 +187,9 @@ public class UploadResourceTest implements WithResteasyFixtures {
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertThat(response.getContentAsString())
                 .isNotNull();
-                //.isEqualTo(generatedllMC.getContent());
+        //.isEqualTo(generatedllMC.getContent());
     }
+
 
     /**
      * Return a multipart/form-data MockHttpRequest
