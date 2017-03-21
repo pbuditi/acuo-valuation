@@ -1,6 +1,8 @@
 package com.acuo.valuation.services;
 
+import com.acuo.common.model.assets.Assets;
+
 public interface ReutersService {
 
-    String send(String value);
+    String send(Assets assets);
 }
