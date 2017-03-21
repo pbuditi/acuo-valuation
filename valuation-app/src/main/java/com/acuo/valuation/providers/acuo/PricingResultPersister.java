@@ -121,7 +121,7 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
 
 
                     valuationService.createOrUpdate(valuation);
-                    tradeService.createOrUpdate(trade);
+                    tradeService.save(trade);
                     portfolioIds.add(PortfolioId.fromString(trade.getPortfolio().getPortfolioId()));
                     addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", value.getPv());
                 }

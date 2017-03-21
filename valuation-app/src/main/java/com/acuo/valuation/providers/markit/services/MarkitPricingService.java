@@ -39,6 +39,7 @@ public class MarkitPricingService implements PricingService {
         List<SwapTrade> swapTrades = swapIds.stream()
                 .map(id -> tradeService.findById(id))
                 .filter(trade -> trade != null)
+                .filter(trade -> trade instanceof IRS)
                 .map(trade -> (IRS) trade)
                 .map(trade -> SwapTradeBuilder.buildTrade(trade))
                 .collect(toList());
@@ -71,7 +72,7 @@ public class MarkitPricingService implements PricingService {
     public PricingResults priceTradesOfType(String type) {
         Iterable<Trade> trades = tradeService.findAllIRS();
         List<SwapTrade> tradeIds = StreamSupport.stream(trades.spliterator(), false)
-                .map(trade -> (IRS) tradeService.find(trade.getId(), 3))
+                .map(trade -> (IRS) tradeService.find(trade.getId()))
                 .map(irs -> SwapTradeBuilder.buildTrade(irs))
                 .collect(toList());
         return priceSwapTrades(tradeIds);

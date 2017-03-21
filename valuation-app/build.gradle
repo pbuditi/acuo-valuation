@@ -7,14 +7,12 @@ ext.versions += [
         persist         : '0.3.7-SNAPSHOT',
         common          : '0.4.0-SNAPSHOT',
         mapping         : '0.2.5'
-//        eclipselink     : '2.6.3',
-//        resteasy        : '3.0.20.Final',
-//        jackson         : '2.8.3'
 ]
 
 configurations {
     all*.exclude group: 'org.neo4j.3rdparty.javax.ws.rs' , module: 'jsr311-api'
     all*.exclude group: 'javax.ws.rs' , module: 'jsr311-api'
+    all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
 }
 
 dependencies {
@@ -22,18 +20,13 @@ dependencies {
     compile("com.acuo.collateral:acuo-common:${versions.common}") { changing = true }
     compile("com.acuo.collateral:acuo-mapping:${versions.mapping}") { changing = true }
     compile(
-            "org.codehaus.groovy:groovy-all:2.4.9",
+            "org.codehaus.groovy:groovy-all:2.4.10",
             "org.apache.poi:poi:3.15",
             "org.apache.poi:poi-ooxml:3.15",
             "org.apache.velocity:velocity:1.7",
             "org.modelmapper:modelmapper:0.7.5",
             "org.quartz-scheduler:quartz:2.2.1",
             "org.quartz-scheduler:quartz-jobs:2.2.1"
-
-            //"org.eclipse.persistence:eclipselink:${versions.eclipselink}",
-            //"com.sun.xml.bind:jaxb-xjc:2.2.11",
-            //"com.smokejumperit.guice:core:1.1",
-            //"org.jasypt:jasypt:1.9.2",
     )
 
     testCompile(
