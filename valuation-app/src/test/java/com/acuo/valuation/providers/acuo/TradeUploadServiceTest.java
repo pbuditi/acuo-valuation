@@ -64,7 +64,7 @@ public class TradeUploadServiceTest {
     ImportService importService;
 
     @Inject
-    TradeService<IRS> irsService;
+    TradeService<Trade> irsService;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -75,7 +75,7 @@ public class TradeUploadServiceTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        service = new TradeUploadServiceImpl(accountService, portfolioService);
+        service = new TradeUploadServiceImpl(accountService, portfolioService, irsService);
         importService.reload();
     }
 
@@ -95,7 +95,7 @@ public class TradeUploadServiceTest {
     public void testHandleIRSOneRowUpdate() throws IOException {
         service.uploadTradesFromExcel(oneIRS.createInputStream());
         service.uploadTradesFromExcel(oneIRS.createInputStream());
-        Iterable<IRS> irses = irsService.findAll();
+        Iterable<Trade> irses = irsService.findAll();
         assertThat(irses).isNotEmpty().hasSize(2);
     }
 }

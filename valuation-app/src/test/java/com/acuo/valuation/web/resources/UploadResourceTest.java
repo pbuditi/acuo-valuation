@@ -5,11 +5,13 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
 import com.acuo.persist.core.ImportService;
+import com.acuo.persist.entity.Trade;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
+import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
-import com.acuo.valuation.modules.*;
 import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.*;
 import com.acuo.valuation.providers.acuo.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
@@ -31,12 +33,10 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -73,6 +73,9 @@ public class UploadResourceTest implements WithResteasyFixtures {
     @Rule
     public ResourceFile excel = new ResourceFile("/excel/TradePortfolio.xlsx");
 
+    @Rule
+    public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");
+
     @Inject
     ImportService importService;
 
@@ -87,6 +90,9 @@ public class UploadResourceTest implements WithResteasyFixtures {
 
     @Inject
     PortfolioService portfolioService;
+
+    @Inject
+    TradeService<Trade> tradeService;
 
     private static MockWebServer server;
 
@@ -109,12 +115,13 @@ public class UploadResourceTest implements WithResteasyFixtures {
         dispatcher.getRegistry().addSingletonResource(uploadResource);
         dispatcher.getRegistry().addSingletonResource(swapValuationResource);
         importService.reload();
-        TradeUploadService tradeUploadService = new TradeUploadServiceImpl(accountService, portfolioService);
-        tradeUploadService.uploadTradesFromExcel(excel.createInputStream());
     }
 
     @Test
     public void testValuationAll() throws URISyntaxException, IOException {
+        TradeUploadService tradeUploadService = new TradeUploadServiceImpl(accountService, portfolioService, tradeService);
+        tradeUploadService.uploadTradesFromExcel(one.createInputStream());
+
         server.enqueue(new MockResponse().setBody("key"));
         server.enqueue(new MockResponse().setBody(largeReport.getContent()));
         server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
@@ -129,6 +136,14 @@ public class UploadResourceTest implements WithResteasyFixtures {
     }
 
     @Test
+    public void testOne() {
+        TradeUploadService tradeUploadService = new TradeUploadServiceImpl(accountService, portfolioService, tradeService);
+        tradeUploadService.uploadTradesFromExcel(one.createInputStream());
+        tradeUploadService.uploadTradesFromExcel(one.createInputStream());
+        tradeUploadService.uploadTradesFromExcel(one.createInputStream());
+    }
+
+    @Test
     @Ignore
     public void testStress() {
         while (true) {
@@ -140,10 +155,10 @@ public class UploadResourceTest implements WithResteasyFixtures {
         }
     }
 
-    @Ignore
     @Test
+    @Ignore
     public void testUploadExcelFile2() throws URISyntaxException, IOException {
-        MockHttpRequest request = MockHttpRequest.post("/upload/test");
+        MockHttpRequest request = MockHttpRequest.post("/upload");
         request.contentType(MediaType.APPLICATION_OCTET_STREAM);
         byte[] bytes = excel.getContent().getBytes();
         request.content(excel.getInputStream());
@@ -155,12 +170,12 @@ public class UploadResourceTest implements WithResteasyFixtures {
         assertThat(response.getContentAsString()).isNotNull();
     }
 
-    @Ignore
     @Test
+    @Ignore
     public void testUploadExcelFile() throws URISyntaxException, IOException {
         Map parts = new HashMap();
-        parts.put("aFile", excel.getInputStream());
-        MockHttpRequest request = multipartRequest("/upload/test2", parts);
+        parts.put("file", excel.getContent());
+        MockHttpRequest request = multipartRequest("/upload", parts);
 
         MockHttpResponse response = new MockHttpResponse();
 
@@ -181,9 +196,10 @@ public class UploadResourceTest implements WithResteasyFixtures {
         String boundary = UUID.randomUUID().toString();
         req.contentType("multipart/form-data; boundary=" + boundary);
 
-        File tmpMultipartFile = Files.createTempFile(null, null).toFile();
-        System.out.println("Tmp file:" + tmpMultipartFile.getAbsolutePath());
-        FileWriter writer = new FileWriter(tmpMultipartFile);
+        //File tmpMultipartFile = Files.createTempFile(null, null).toFile();
+        //System.out.println("Tmp file:" + tmpMultipartFile.getAbsolutePath());
+        //FileWriter writer = new FileWriter(tmpMultipartFile);
+        StringWriter writer = new StringWriter();
         writer.append("--").append(boundary);
 
         Set<Map.Entry> set = parts.entrySet();
@@ -196,7 +212,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
             } else if (entry.getValue() instanceof InputStream) {
                 writer.append("\n");
                 InputStream val = (InputStream) entry.getValue();
-                writer.append("Content-Disposition: form-data; name=\"aFile\"; filename=\"file.bin\"").append("\n");
+                writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"file.bin\"").append("\n");
                 writer.append("Content-Type: application/octet-stream").append("\n\n");
 
                 int b = val.read();
