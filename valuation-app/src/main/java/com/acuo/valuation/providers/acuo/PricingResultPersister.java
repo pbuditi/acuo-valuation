@@ -24,12 +24,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @Slf4j
-public class PricingResultPersister implements ResultPersister<PricingResults> {
+public class PricingResultPersister implements ResultPersister<PricingResults>, MarkitValuationProcessor.PricingResultProcessor {
 
     private final TradeService<Trade> tradeService;
     private final ValuationService valuationService;
     private final PortfolioService portfolioService;
     private final ValueService valueService;
+    private MarkitValuationProcessor.PricingResultProcessor nextProcessor;
 
     @Inject
     public PricingResultPersister(TradeService<Trade> tradeService, ValuationService valuationService, PortfolioService portfolioService, ValueService valueService) {
@@ -37,6 +38,22 @@ public class PricingResultPersister implements ResultPersister<PricingResults> {
         this.valuationService = valuationService;
         this.portfolioService = portfolioService;
         this.valueService = valueService;
+    }
+
+    @Override
+    public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
+        PricingResults results = processorItem.getResults();
+        Set<PortfolioId> portfolioIds = persist(results);
+        processorItem.setPortfolioIds(portfolioIds);
+        if (nextProcessor!= null)
+            return nextProcessor.process(processorItem);
+        else
+            return processorItem;
+    }
+
+    @Override
+    public void setNextProcessor(MarkitValuationProcessor.PricingResultProcessor nextProcessor) {
+        this.nextProcessor = nextProcessor;
     }
 
     public Set<PortfolioId> persist(PricingResults pricingResults) {
