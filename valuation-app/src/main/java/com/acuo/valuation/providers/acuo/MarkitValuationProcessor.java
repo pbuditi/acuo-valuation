@@ -5,6 +5,7 @@ import com.acuo.persist.ids.PortfolioId;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.MarginCallGenService;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Singleton
 public class MarkitValuationProcessor {
 
@@ -23,7 +25,9 @@ public class MarkitValuationProcessor {
     }
 
     public List<MarginCall> process(PricingResults results) {
+        log.info("starting pricing result processing");
         ProcessorItem processorItem = firstProcessor.process(new ProcessorItem(results));
+        log.info("pricing result processing ended");
         return processorItem.getExpected();
     }
 
