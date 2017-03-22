@@ -14,7 +14,6 @@ import com.opengamma.strata.collect.result.Result;
 
 import javax.inject.Inject;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -37,69 +36,52 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
 
         Portfolio portfolio = portfolioService.findById(portfolioId);
 
-        if(portfolio == null) return Collections.emptySet();
+        if (portfolio == null) return Collections.emptySet();
 
         //parse the result
         String currency = results.getCurrency();
         Iterator<Result<MarginValuation>> resultIterator = results.getResults().iterator();
-        Valuation newValuation = new Valuation();
-        newValuation.setDate(results.getValuationDate());
         com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
-        while(resultIterator.hasNext())
-        {
+        while (resultIterator.hasNext()) {
             Result<MarginValuation> result = resultIterator.next();
-            MarginValuation marginValuation= result.getValue();
-            if(marginValuation.getName().equals(currency))
-            {
+            MarginValuation marginValuation = result.getValue();
+            if (marginValuation.getName().equals(currency)) {
                 newValue.setPv(marginValuation.getMargin());
                 newValue.setSource("Clarus");
                 newValue.setCurrency(Currency.of(currency));
             }
         }
 
-
-
         Set<Valuation> valuations = portfolio.getValuations();
-        if(valuations == null)
-        {
-            valuations = new HashSet<Valuation>();
-
-
-        }
-
-        for(Valuation valuation : valuations)
-        {
-            valuation = valuationService.find(valuation.getId());
-            if(valuation.getDate().equals(results.getValuationDate()))
-            {
-                Set<com.acuo.persist.entity.Value> values = valuation.getValues();
-                if(values == null)
-                {
-                    values = new HashSet<com.acuo.persist.entity.Value>();
-                }
-                for(com.acuo.persist.entity.Value value : values)
-                {
-                    if(value.getCurrency().equals(currency) && value.getSource().equals("Clarus"))
-                    {
-                        //replace this value
-                        value.setPv(newValue.getPv());
-                        valueService.createOrUpdate(value);
+        boolean found = false;
+        if (valuations != null) {
+            for (Valuation valuation : valuations) {
+                valuation = valuationService.find(valuation.getId());
+                if (valuation.getDate().equals(results.getValuationDate())) {
+                    Set<com.acuo.persist.entity.Value> values = valuation.getValues();
+                    if (values != null) {
+                        for (com.acuo.persist.entity.Value value : values) {
+                            if (value.getCurrency().equals(currency) && value.getSource().equals("Clarus")) {
+                                valueService.delete(value.getId());
+                                values.remove(value);
+                            }
+                        }
                     }
+                    newValue.setValuation(valuation);
+                    valueService.createOrUpdate(newValue);
+                    found = true;
+                    break;
                 }
-
-                values.add(newValue);
-                valuation.setValues(values);
-                valuationService.createOrUpdate(valuation);
             }
         }
 
-        valuations.add(newValuation);
-        Set<com.acuo.persist.entity.Value> values = new HashSet<com.acuo.persist.entity.Value>();
-        values.add(newValue);
-        newValuation.setValues(values);
-        portfolio.setValuations(valuations);
-        valuationService.createOrUpdate(newValuation);
-        portfolioService.createOrUpdate(portfolio);
+        if (!found) {
+            com.acuo.persist.entity.MarginValuation newValuation = new com.acuo.persist.entity.MarginValuation();
+            newValuation.setDate(results.getValuationDate());
+            newValue.setValuation(newValuation);
+            newValuation.setPortfolio(portfolio);
+            valuationService.createOrUpdate(newValuation);
+        }
 
         return ImmutableSet.of(PortfolioId.fromString(portfolioId));
     }
