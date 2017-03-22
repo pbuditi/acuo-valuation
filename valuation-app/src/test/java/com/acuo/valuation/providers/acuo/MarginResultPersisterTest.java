@@ -81,8 +81,10 @@ public class MarginResultPersisterTest {
         for (Valuation valuation : valuationSet) {
             Assert.assertEquals(localDate, valuation.getDate());
             Set<Value> values = valuation.getValues();
-            for (Value value : values) {
-                Assert.assertEquals(value.getPv().doubleValue(), 1d, 0);
+            if(values != null) {
+                for (Value value : values) {
+                    Assert.assertEquals(value.getPv().doubleValue(), 1d, 0);
+                }
             }
         }
     }
