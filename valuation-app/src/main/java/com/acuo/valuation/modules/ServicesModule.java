@@ -40,10 +40,10 @@ public class ServicesModule extends AbstractModule {
     @Singleton
     MarkitValuationProcessor.PricingResultProcessor firstProcessor(Injector injector) {
         MarkitMarginCallGenerator markitProcessor = injector.getInstance(MarkitMarginCallGenerator.class);
-        SimulationMarginCallBuilder simulator = injector.getInstance(SimulationMarginCallBuilder.class);
+        //SimulationMarginCallBuilder simulator = injector.getInstance(SimulationMarginCallBuilder.class);
         PricingResultPersister resultPersister = injector.getInstance(PricingResultPersister.class);
         resultPersister.setNextProcessor(markitProcessor);
-        markitProcessor.setNextProcessor(simulator);
+        //markitProcessor.setNextProcessor(simulator);
         return resultPersister;
     }
 

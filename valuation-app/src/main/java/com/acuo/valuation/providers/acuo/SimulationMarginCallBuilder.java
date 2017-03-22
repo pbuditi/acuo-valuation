@@ -68,7 +68,7 @@ public class SimulationMarginCallBuilder extends MarginCallGenerator implements 
             Portfolio portfolio = portfolioService.findById(portfolioId.toString());
 
             Valuation valuation = valuationService.findById(date.format(dateTimeFormatter) + "-" + portfolio.getPortfolioId());
-            generateMarginCall(portfolio.getAgreement(), valuation, CallStatus.Unrecon);
+            generateMarginCall(valuation, CallStatus.Unrecon);
 
         }
         return marginCalls;

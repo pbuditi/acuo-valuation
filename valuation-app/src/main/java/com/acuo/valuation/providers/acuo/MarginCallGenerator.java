@@ -38,13 +38,16 @@ public abstract class MarginCallGenerator {
         this.currencyService = currencyService;
     }
 
-    protected MarginCall generateMarginCall(Agreement agreement, Valuation valuation, CallStatus callStatus) {
-        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> {
-            pv = value.getPv();
-            currencyOfValue = value.getCurrency();
-        });
+    protected MarginCall generateMarginCall(Valuation<TradeValuation> valuation, CallStatus callStatus) {
+        valuation.getValues()
+                .stream()
+                .filter(value -> value.getSource().equals("Markit"))
+                .forEach(value -> {
+                    pv = value.getPv();
+                    currencyOfValue = value.getCurrency();
+                });
         //reload the agreement object due to the depth fetch
-        agreement = agreementService.findById(agreement.getAgreementId(), 2);
+        Agreement agreement = valuation.getPortfolio().getAgreement();
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
 
