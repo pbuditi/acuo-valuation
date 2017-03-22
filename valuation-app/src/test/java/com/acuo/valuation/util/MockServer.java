@@ -29,10 +29,10 @@ public class MockServer implements Runnable {
                     return new MockResponse().setResponseCode(200).setBody("key");
                 }
                 if (body.contains("key=key")) {
-                    return new MockResponse().setResponseCode(200).setBody(file("/markit/reports/markit-test-01.xml"));
+                    return new MockResponse().setResponseCode(200).setBody(file("/markit/reports/large.xml"));
                 }
                 if (body.contains("asof")) {
-                    return new MockResponse().setResponseCode(200).setBody(file("/markit/responses/markit-test-01.xml"));
+                    return new MockResponse().setResponseCode(200).setBody(file("/markit/responses/large.xml"));
                 }
                 return new MockResponse().setResponseCode(404);
             } catch (Exception e) {
