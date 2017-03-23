@@ -38,6 +38,7 @@ public class MarkitPricingService implements PricingService {
     public PricingResults priceTradeIds(List<String> swapIds) {
         List<SwapTrade> swapTrades = swapIds.stream()
                 .map(id -> tradeService.findById(id))
+                .filter(trade -> trade != null)
                 .map(trade -> (IRS) trade)
                 .map(trade -> SwapTradeBuilder.buildTrade(trade))
                 .collect(toList());
