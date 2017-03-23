@@ -5,6 +5,9 @@ import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.acuo.*;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
 import com.acuo.valuation.providers.markit.services.*;
+import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
+import com.acuo.valuation.providers.reuters.services.AssetsPersistServiceImpl;
+import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.providers.reuters.services.ReutersServiceImpl;
 import com.acuo.valuation.quartz.AcuoJobFactory;
 import com.acuo.valuation.services.*;
@@ -27,6 +30,7 @@ public class ServicesModule extends AbstractModule {
         bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
         bind(JobFactory.class).to(AcuoJobFactory.class);
         bind(ReutersService.class).to(ReutersServiceImpl.class);
+        bind(AssetsPersistService.class).to(AssetsPersistServiceImpl.class);
     }
 
 }
