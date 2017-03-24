@@ -45,9 +45,9 @@ public class PortfolioValuationsSender implements Sender {
     }
 
     public Report send(List<SwapTrade> swaps) {
+        log.info("sending {} trades for valuation", swaps.size());
         try {
             String file = generateFile(swaps);
-            //FileUtils.writeStringToFile(File.createTempFile("PvRequest",".tmp"), file);
             if (log.isDebugEnabled()) log.debug(file);
             return send(file);
         } catch (Exception e) {
@@ -77,8 +77,10 @@ public class PortfolioValuationsSender implements Sender {
     }
 
     private String generateFile(List<SwapTrade> swaps) throws Exception {
+        log.info("generating valuation request with for {} trades",swaps.size());
         LocalDate valuationDate = LocalDate.now();
         valuationDate = LocalDateUtils.minus(valuationDate, 1);
+        log.info("with valuation date set to {}",valuationDate);
         TransformerContext context = new TransformerContext();
         context.setValueDate(valuationDate);
         String pvRequest = transformer.serialise(swaps, context);
