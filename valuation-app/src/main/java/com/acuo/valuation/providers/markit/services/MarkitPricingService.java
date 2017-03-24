@@ -9,10 +9,12 @@ import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.PricingService;
+import com.acuo.valuation.utils.LocalDateUtils;
 import com.acuo.valuation.utils.SwapTradeBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -96,6 +98,7 @@ public class MarkitPricingService implements PricingService {
                 .map(swap -> swap.getInfo().getTradeId())
                 .filter(errorReport)
                 .collect(Collectors.toList());
-        return retriever.retrieve(report.valuationDate().minusDays(1), tradeIds);
+
+        return retriever.retrieve(report.valuationDate(), tradeIds);
     }
 }
