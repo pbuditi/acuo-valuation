@@ -6,6 +6,7 @@ import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
+import com.acuo.valuation.utils.LocalDateUtils;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,10 @@ public class PortfolioValuationsRetriever implements Retriever {
     }
 
     @Override
-    public PricingResults retrieve(LocalDate valuationDate, List<String> tradeIds) {
+    public PricingResults retrieve(LocalDate reportDate, List<String> tradeIds) {
+        LocalDate valuationDate = LocalDateUtils.minus(reportDate, 1);
+        log.info("retrieving pricing results of {} trades", tradeIds.size());
+        log.info("with report date {} and valuation date set to {}", reportDate, valuationDate);
         final Response response = upload(valuationDate, tradeIds);
 
         printFailedTrades(tradeIds, response);
