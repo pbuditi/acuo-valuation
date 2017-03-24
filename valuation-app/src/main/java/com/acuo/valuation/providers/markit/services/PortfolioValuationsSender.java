@@ -58,16 +58,19 @@ public class PortfolioValuationsSender implements Sender {
 
     public Report send(String file) {
         try {
+            log.info("uploading the file to markit PV");
             String key = MarkitMultipartCall.of(client)
                                             .with("theFile", file)
                                             .create()
                                             .send();
+            log.info("retrieving the report with the key {}",key);
             String report = MarkitFormCall.of(client)
                                           .with("key", key)
                                           .with("version", "2")
                                           .retryWhile(s -> s.startsWith(STILL_PROCESSING_KEY))
                                           .create()
                                           .send();
+            log.info("parsing the report");
             if (log.isDebugEnabled()) log.debug(report);
             return reportParser.parse(report);
         } catch (Exception e) {
