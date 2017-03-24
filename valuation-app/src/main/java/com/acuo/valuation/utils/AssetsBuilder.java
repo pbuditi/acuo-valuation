@@ -11,7 +11,7 @@ public class AssetsBuilder {
     {
         Assets assets = new Assets();
         assets.setFitchRating(asset.getRating());
-        assets.setCurrency(Currency.getInstance(asset.getCurrency().getCode()));
+        assets.setCurrency(asset.getCurrency());
         assets.setAvailableQuantities(asset.getHolds().getAvailableQuantity());
         assets.setAssetId(asset.getAssetId());
         assets.setICADCode(asset.getICADCode());
