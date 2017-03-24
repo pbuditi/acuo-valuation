@@ -1,5 +1,8 @@
 package com.acuo.valuation.utils;
 
+import com.acuo.common.cache.manager.CacheManager;
+import com.acuo.common.cache.manager.Cacheable;
+import com.acuo.common.cache.manager.CachedObject;
 import com.acuo.common.model.AdjustableDate;
 import com.acuo.common.model.AdjustableSchedule;
 import com.acuo.common.model.BusinessDayAdjustment;
@@ -32,6 +35,8 @@ import static java.time.DayOfWeek.SUNDAY;
 
 @Slf4j
 public class SwapTradeBuilder {
+
+    static CacheManager cacheManager = CacheManager.getInstance();
 
     public static SwapTrade buildTrade(IRS trade) {
         SwapTrade swapTrade = new SwapTrade();
@@ -80,59 +85,59 @@ public class SwapTradeBuilder {
         result.setDaycount(leg.getDayCount());
         result.setType(leg.getType());
 
-        //if (entry.get("payStart") != null) {
-            AdjustableDate adjustableDate = new AdjustableDate();
-            adjustableDate.setDate(leg.getPayStart());
+        AdjustableDate adjustableDate = new AdjustableDate();
+        adjustableDate.setDate(leg.getPayStart());
         BusinessDayAdjustment adjustment = new BusinessDayAdjustment();
         adjustment.setBusinessDayConvention(leg.getBusinessDayConvention());
-        HolidayCalendarId holidays = HolidayCalendars.NO_HOLIDAYS.getId();
-        String refCalendar = leg.getRefCalendar();
-        try  {
-            holidays = HolidayCalendars.of(refCalendar).getId();
-        } catch(Exception e) {
-            log.warn(e.getMessage());
-            holidays = ImmutableHolidayCalendar.of(HolidayCalendarId.of(refCalendar), ImmutableList.of(), SATURDAY, SUNDAY ).getId();
-        }
+
+        HolidayCalendarId holidays = holidays(leg);
+
         adjustment.setHolidays(ImmutableSet.of(holidays));
         adjustableDate.setAdjustment(adjustment);
-            result.setStartDate(adjustableDate);
-        //}
+        result.setStartDate(adjustableDate);
 
-        //if (entry.get("payEnd") != null) {
-            adjustableDate = new AdjustableDate();
-            adjustableDate.setDate(leg.getPayEnd());
+        adjustableDate = new AdjustableDate();
+        adjustableDate.setDate(leg.getPayEnd());
         adjustableDate.setAdjustment(adjustment);
-            result.setMaturityDate(adjustableDate);
-        //}
+        result.setMaturityDate(adjustableDate);
 
-        //failuire at this time
-        //if (entry.get("paymentFrequency") != null) {
-             AdjustableSchedule adjustableSchedule = new AdjustableSchedule();
-             log.debug("paymentFrequency:" + leg.getPaymentFrequency());
-             adjustableSchedule.setFrequency(leg.getPaymentFrequency());
+        AdjustableSchedule adjustableSchedule = new AdjustableSchedule();
+        adjustableSchedule.setFrequency(leg.getPaymentFrequency());
         adjustableSchedule.setAdjustment(adjustment);
-             result.setPaymentSchedule(adjustableSchedule);
-        //}
-
+        result.setPaymentSchedule(adjustableSchedule);
 
         if ("FLOAT".equals(leg.getType())) {
             Swap.SwapLegFixing swapLegFixing = new Swap.SwapLegFixing();
             result.setFixing(swapLegFixing);
 
-            //if (entry.get("indexTenor") != null)
             swapLegFixing.setTenor(leg.getIndexTenor());
             if(swapLegFixing.getTenor() == null)
                 swapLegFixing.setTenor(Tenor.TENOR_1D);
 
-            //if (entry.get("index") != null)
             swapLegFixing.setFloatingRateName(leg.getIndex());
 
             swapLegFixing.setFixingRelativeTo(FixingRelativeTo.PERIOD_START);
         }
-
-
         return result;
     }
+
+    private static HolidayCalendarId holidays(Leg leg) {
+        String refCalendar = leg.getRefCalendar();
+        Cacheable value = cacheManager.getCache(refCalendar);
+        if (value == null) {
+            HolidayCalendarId holidays = HolidayCalendars.NO_HOLIDAYS.getId();
+            try {
+                holidays = HolidayCalendars.of(refCalendar).getId();
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+                holidays = ImmutableHolidayCalendar.of(HolidayCalendarId.of(refCalendar), ImmutableList.of(), SATURDAY, SUNDAY).getId();
+            }
+            value = new CachedObject(holidays, refCalendar, 0);
+            cacheManager.putCache(value);
+        }
+        return (HolidayCalendarId)value.getObject();
+    }
+
     public static Swap.SwapLeg buildLeg(Map<String, Object> entry) {
         Swap.SwapLeg leg = new Swap.SwapLeg();
 
@@ -158,7 +163,6 @@ public class SwapTradeBuilder {
             leg.setMaturityDate(adjustableDate);
         }
 
-        //failuire at this time
         try {
             if (entry.get("paymentFrequency") != null) {
                 AdjustableSchedule adjustableSchedule = new AdjustableSchedule();
@@ -169,7 +173,6 @@ public class SwapTradeBuilder {
             log.error(e.getMessage(), e);
         }
 
-
         Swap.SwapLegFixing swapLegFixing = new Swap.SwapLegFixing();
         leg.setFixing(swapLegFixing);
 
@@ -179,39 +182,53 @@ public class SwapTradeBuilder {
         if (entry.get("index") != null)
             swapLegFixing.setFloatingRateName(FloatingRateName.of((String) entry.get("index")));
 
-
         return leg;
     }
 
     public static LocalDate StringToLocalDate(String s) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yy");
-            Date date = sdf.parse(s);
-            Instant instant = date.toInstant();
-            ZoneId zone = ZoneId.systemDefault();
-            LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
-            return localDateTime.toLocalDate();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        Cacheable value = cacheManager.getCache(s);
+        if (value != null) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yy");
+                Date date = sdf.parse(s);
+                Instant instant = date.toInstant();
+                ZoneId zone = ZoneId.systemDefault();
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
+                value = new CachedObject(localDateTime.toLocalDate(), s, 0);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                value = new CachedObject(null, s, 0);
+            }
         }
-        return null;
+        return (LocalDate)value.getObject();
     }
 
     public static Frequency parseFrequency(String s) {
+
         if (s == null)
             return null;
 
-        if (s.contains("M"))
-            return Frequency.ofMonths(Integer.parseInt(s.substring(0, s.length() - 1)));
+        Cacheable value = cacheManager.getCache(s);
+        if (value != null) {
+            Frequency frequency = null;
+            if (s.contains("M")) {
+                frequency = Frequency.ofMonths(Integer.parseInt(s.substring(0, s.length() - 1)));
+            }
 
-        if (s.contains("T"))
-            return Frequency.ofYears(Integer.parseInt(s.substring(0, s.length() - 1)));
+            if (s.contains("T")) {
+                frequency = Frequency.ofYears(Integer.parseInt(s.substring(0, s.length() - 1)));
+            }
 
-        if (s.contains("W"))
-            return Frequency.ofWeeks(Integer.parseInt(s.substring(0, s.length() - 1)));
+            if (s.contains("W")) {
+                frequency = Frequency.ofWeeks(Integer.parseInt(s.substring(0, s.length() - 1)));
+            }
 
-        if (s.contains("D"))
-            return Frequency.ofDays(Integer.parseInt(s.substring(0, s.length() - 1)));
-        return null;
+            if (s.contains("D")) {
+                frequency = Frequency.ofDays(Integer.parseInt(s.substring(0, s.length() - 1)));
+            }
+
+            value = new CachedObject(frequency, s, 0);
+        }
+        return (Frequency)value.getObject();
     }
 }

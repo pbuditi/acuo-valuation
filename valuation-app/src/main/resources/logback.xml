@@ -3,32 +3,29 @@
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-			</Pattern>
+			<Pattern>%d %5p %40.40c:%4L - %m%n</Pattern>
 		</layout>
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
 		<file>valuation-app.log</file>
 		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-			</Pattern>
+			<Pattern>%d %5p %40.40c:%4L - %m%n</Pattern>
 		</layout>
 	</appender>
 
 	<appender name="METRICS" class="ch.qos.logback.core.FileAppender">
 		<file>metrics.log</file>
 		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-			</Pattern>
+			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
 		</layout>
 	</appender>
 	
-	<logger name="com.acuo" level="debug"/>
+	<logger name="com.acuo" level="info"/>
 
-	<logger name="org.neo4j.ogm.drivers.bolt.request" level="info"/>
-	<logger name="org.neo4j.ogm.drivers.bolt.response" level="info"/>
-	<logger name="org.neo4j.ogm.context" level="info"/>
+	<logger name="org.neo4j.ogm.drivers.bolt.request" level="error"/>
+	<logger name="org.neo4j.ogm.drivers.bolt.response" level="error"/>
+	<logger name="org.neo4j.ogm.context" level="error"/>
 
 	<logger name="com.acuo.metrics" level="DEBUG" additivity="false">
 		<appender-ref ref="METRICS"/>
