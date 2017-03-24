@@ -1,0 +1,363 @@
+{
+  "uploadMarginCallDetails" : [ {
+    "currency" : "USD",
+    "exposure" : 984238.48,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B5",
+    "marginAgreement" : "a10",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "984500.00",
+    "referenceIdentifier" : "2017/03/21-a10-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "984500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 664660.25,
+    "legalEntity" : "ACUO US LLC",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A1",
+    "marginAgreement" : "a11",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "665000.00",
+    "referenceIdentifier" : "2017/03/21-a11-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "665000.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 908395.15,
+    "legalEntity" : "ACUO UK PLC",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A2",
+    "marginAgreement" : "a12",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "908500.00",
+    "referenceIdentifier" : "2017/03/21-a12-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "908500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 1318798.46,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A3",
+    "marginAgreement" : "a13",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "1319000.00",
+    "referenceIdentifier" : "2017/03/21-a13-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "1319000.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 984238.48,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B1",
+    "marginAgreement" : "a16",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "984500.00",
+    "referenceIdentifier" : "2017/03/21-a16-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "984500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 664660.25,
+    "legalEntity" : "ACUO US LLC",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B2",
+    "marginAgreement" : "a17",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "665000.00",
+    "referenceIdentifier" : "2017/03/21-a17-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "665000.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 908395.15,
+    "legalEntity" : "ACUO UK PLC",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B3",
+    "marginAgreement" : "a18",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "908500.00",
+    "referenceIdentifier" : "2017/03/21-a18-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "908500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 1318798.46,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B4",
+    "marginAgreement" : "a19",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "1319000.00",
+    "referenceIdentifier" : "2017/03/21-a19-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "1319000.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 1318798.46,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A1",
+    "marginAgreement" : "a1",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "1319000.00",
+    "referenceIdentifier" : "2017/03/21-a1-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "1319000.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 984238.48,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A2",
+    "marginAgreement" : "a22",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "984500.00",
+    "referenceIdentifier" : "2017/03/21-a22-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "984500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 664660.25,
+    "legalEntity" : "ACUO US LLC",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A3",
+    "marginAgreement" : "a23",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "665000.00",
+    "referenceIdentifier" : "2017/03/21-a23-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "665000.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 908395.15,
+    "legalEntity" : "ACUO UK PLC",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A4",
+    "marginAgreement" : "a24",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "908500.00",
+    "referenceIdentifier" : "2017/03/21-a24-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "908500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 1318798.46,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A5",
+    "marginAgreement" : "a25",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "1319000.00",
+    "referenceIdentifier" : "2017/03/21-a25-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "1319000.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 984238.48,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B3",
+    "marginAgreement" : "a28",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "984500.00",
+    "referenceIdentifier" : "2017/03/21-a28-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "984500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 664660.25,
+    "legalEntity" : "ACUO US LLC",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B4",
+    "marginAgreement" : "a29",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "665000.00",
+    "referenceIdentifier" : "2017/03/21-a29-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "665000.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 908395.15,
+    "legalEntity" : "ACUO UK PLC",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B5",
+    "marginAgreement" : "a30",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "908500.00",
+    "referenceIdentifier" : "2017/03/21-a30-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "908500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 984238.48,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A4",
+    "marginAgreement" : "a4",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "984500.00",
+    "referenceIdentifier" : "2017/03/21-a4-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "984500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 664660.25,
+    "legalEntity" : "ACUO US LLC",
+    "cptyOrg" : "Counterpart A",
+    "cptyEntity" : "Counterpart A5",
+    "marginAgreement" : "a5",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "665000.00",
+    "referenceIdentifier" : "2017/03/21-a5-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "665000.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 908395.15,
+    "legalEntity" : "ACUO UK PLC",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B1",
+    "marginAgreement" : "a6",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "908500.00",
+    "referenceIdentifier" : "2017/03/21-a6-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "908500.00"
+    }
+  }, {
+    "currency" : "USD",
+    "exposure" : 1318798.46,
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B2",
+    "marginAgreement" : "a7",
+    "valuationDate" : "2017/03/21",
+    "callDate" : "2017/03/22",
+    "callType" : "Variation",
+    "totalCallAmount" : "1319000.00",
+    "referenceIdentifier" : "2017/03/21-a7-Variation",
+    "pendingCollateral" : 0.0,
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "minTransfer" : "500000.00",
+      "netRequired" : "1319000.00"
+    }
+  } ]
+}

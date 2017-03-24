@@ -8,6 +8,10 @@ import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
+import com.acuo.valuation.utils.LocalDateUtils;
+import com.opengamma.strata.basics.date.HolidayCalendar;
+import com.opengamma.strata.basics.date.HolidayCalendarId;
+import com.opengamma.strata.basics.date.HolidayCalendarIds;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -16,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -73,7 +78,7 @@ public class PortfolioValuationsSender implements Sender {
 
     private String generateFile(List<SwapTrade> swaps) throws Exception {
         LocalDate valuationDate = LocalDate.now();
-        valuationDate = valuationDate.minusDays(1);
+        valuationDate = LocalDateUtils.minus(valuationDate, 1);
         TransformerContext context = new TransformerContext();
         context.setValueDate(valuationDate);
         String pvRequest = transformer.serialise(swaps, context);

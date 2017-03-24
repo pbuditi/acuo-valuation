@@ -10,6 +10,10 @@ public class MarkitValuation {
 
     private final List<Value> values;
 
+    public MarkitValuation(List<Value> values) {
+        this.values = values;
+    }
+
     public MarkitValuation(Value... values) {
         this.values = Arrays.asList(values);
     }

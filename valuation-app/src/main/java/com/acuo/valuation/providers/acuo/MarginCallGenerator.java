@@ -1,14 +1,10 @@
-package com.acuo.valuation.providers.clarus.services;
+package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.*;
-import com.acuo.persist.services.AgreementService;
-import com.acuo.persist.services.CurrencyService;
-import com.acuo.persist.services.MarginStatementService;
-import com.acuo.valuation.services.ClearedMarginCallGenService;
+import com.acuo.persist.services.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,82 +12,90 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 
 @Slf4j
-public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
+public abstract class MarginCallGenerator {
 
-    private final MarginStatementService marginStatementService;
-    private final AgreementService agreementService;
+    protected static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+    protected final ValuationService valuationService;
+    protected final PortfolioService portfolioService;
+    protected final MarginStatementService marginStatementService;
+    protected final AgreementService agreementService;
+    protected Double pv = null;
+
     private final CurrencyService currencyService;
+    private DecimalFormat df = new DecimalFormat("#.##");
+    protected com.opengamma.strata.basics.currency.Currency currencyOfValue = null;
 
-
-    DecimalFormat df = new DecimalFormat("#.##");
-    Double pv = null;
-    com.opengamma.strata.basics.currency.Currency currencyOfValue = null;
-
-    @Inject
-    public ClarusMarginCallGenService(MarginStatementService marginStatementService, AgreementService agreementService, CurrencyService currencyService) {
-
+    public MarginCallGenerator(ValuationService valuationService,
+                                       PortfolioService portfolioService,
+                                       MarginStatementService marginStatementService,
+                                       AgreementService agreementService,
+                                       CurrencyService currencyService) {
+        this.valuationService = valuationService;
+        this.portfolioService = portfolioService;
         this.marginStatementService = marginStatementService;
         this.agreementService = agreementService;
         this.currencyService = currencyService;
     }
 
-    @Override
-    public MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation<MarginValuation> valuation) {
-        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> {
-            pv = value.getPv();
-            currencyOfValue = value.getCurrency();
-        });
-
-
+    protected MarginCall generateMarginCall(Valuation<TradeValuation> valuation, CallStatus callStatus) {
+        valuation.getValues()
+                .stream()
+                .filter(value -> value.getSource().equals("Markit"))
+                .forEach(value -> {
+                    pv = value.getPv();
+                    currencyOfValue = value.getCurrency();
+                });
+        //reload the agreement object due to the depth fetch
+        Agreement agreement = valuation.getPortfolio().getAgreement();
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
 
-
-        Double balance = clientSignsRelation.getInitialMarginBalance() != null ? clientSignsRelation.getInitialMarginBalance() : 0;
-        Double pendingCollateral = clientSignsRelation.getInitialPending() != null ? clientSignsRelation.getInitialPending() : 0;
+        Double balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
+        Double pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
 
         if (!currencyOfValue.equals(agreement.getCurrency()))
             pv = getFXValue(currencyOfValue, agreement.getCurrency(), pv);
 
+        if (clientSignsRelation.getThreshold() != null && Math.abs(pv) <= clientSignsRelation.getThreshold())
+            return null;
 
         Double diff = pv - (balance + pendingCollateral);
 
 
-        Double exposure;
+        double MTA;
+        double rounding;
+
 
         if (diff > 0) {
-            exposure = pv;
+            MTA = clientSignsRelation.getMTA() != null ? clientSignsRelation.getMTA() : 0;
+            rounding = clientSignsRelation.getRounding() != null ? clientSignsRelation.getRounding() : 0;
+            balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
+            pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
         } else {
-
-            balance = 0 - balance;
-            pendingCollateral = 0 - pendingCollateral;
-            exposure = 0 - pv;
+            MTA = counterpartSignsRelation.getMTA() != null ? counterpartSignsRelation.getMTA() : 0;
+            rounding = counterpartSignsRelation.getRounding() != null ? counterpartSignsRelation.getRounding() : 0;
+            balance = counterpartSignsRelation.getVariationMarginBalance() != null ? counterpartSignsRelation.getVariationMarginBalance() : 0;
+            pendingCollateral = counterpartSignsRelation.getVariationPending() != null ? counterpartSignsRelation.getVariationPending() : 0;
         }
 
 
-        double initialBalanceCashToVariation = 1;
-        double initialBalanceCash = 1000;
-        if (initialBalanceCashToVariation == 1 && diff > 0 && initialBalanceCash > 0) {
-            if (initialBalanceCash >= diff) {
-                //set some value in client sign,and return
-                return null;
-            } else {
-                //step 5
-            }
-        }
-
+        //if (Math.abs(diff) <= MTA)
+        //    return null;
+//
+//
         //new mc
         LocalDate valuationDate = LocalDate.now();
         LocalDate callDate = valuationDate.plusDays(1);
         Types.MarginType marginType = Types.MarginType.Variation;
-        String todayFormatted = valuationDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        String todayFormatted = valuationDate.format(dateTimeFormatter);
         String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-" + marginType.name().toString();
         String direction;
         Double deliverAmount = 0d;
         Double returnAmount = 0d;
         Double excessAmount = diff;
         Double marginAmount = diff;
-
+        Double exposure;
 
         double amount = balance + pendingCollateral;
         if (diff < 0) {
@@ -116,16 +120,16 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
 
 
         //round amount
-//        if(rounding != 0) {
-//            if(deliverAmount != null && deliverAmount.doubleValue() != 0)
-//                deliverAmount = deliverAmount/Math.abs(deliverAmount)*Math.ceil(Math.abs(deliverAmount) / rounding) * rounding;
-//            if(returnAmount != null && returnAmount.doubleValue() != 0)
-//                returnAmount = returnAmount/Math.abs(returnAmount)*Math.floor(Math.abs(returnAmount) / rounding) * rounding;
-//        }
+        if (rounding != 0) {
+            if (deliverAmount != null && deliverAmount.doubleValue() != 0)
+                deliverAmount = deliverAmount / Math.abs(deliverAmount) * Math.ceil(Math.abs(deliverAmount) / rounding) * rounding;
+            if (returnAmount != null && returnAmount.doubleValue() != 0)
+                returnAmount = returnAmount / Math.abs(returnAmount) * Math.floor(Math.abs(returnAmount) / rounding) * rounding;
+        }
         marginAmount = deliverAmount + returnAmount;
 
 
-        MarginCall marginCall = new MarginCall(mcId,
+        MarginCall marginCall = new InitialMargin(mcId,
                 callDate,
                 marginType,
                 direction,
@@ -140,19 +144,16 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
                 0,
                 callDate.atTime(agreement.getNotificationTime()),
                 format(marginAmount),
-                CallStatus.Expected.name());
-
+                callStatus.name());
 
         Step step = new Step();
-        step.setStatus(CallStatus.Expected);
+        step.setStatus(callStatus);
         marginCall.setFirstStep(step);
         marginCall.setLastStep(step);
 
         //get ms
         String msId = todayFormatted + "-" + agreement.getAgreementId();
         MarginStatement marginStatement = marginStatementService.findById(msId);
-
-        log.info("msid:" + msId);
 
         if (marginStatement == null) {
             //create ms
@@ -176,17 +177,11 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
             }
 
             marginStatement.setAgreement(agreement);
-
-        } else {
-            marginStatement.getMarginCalls().add(marginCall);
+            marginStatementService.createOrUpdate(marginStatement);
         }
 
-        marginStatementService.createOrUpdate(marginStatement);
-
-
+        marginCall.setMarginStatement(marginStatement);
         return marginCall;
-
-
     }
 
     private Double getFXValue(com.opengamma.strata.basics.currency.Currency from, com.opengamma.strata.basics.currency.Currency to, Double value) {
@@ -200,17 +195,7 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
         return value * toRate / fromRate;
     }
 
-    private Double round(Double deliverAmount, Double returnAmount, Double rounding) {
-        if (rounding != null && rounding.doubleValue() != 0) {
-            deliverAmount = Math.floor(deliverAmount / rounding) * rounding;
-            returnAmount = Math.ceil(returnAmount / rounding) * rounding;
-        }
-        return deliverAmount + returnAmount;
-    }
-
-
-    private double format(double d) {
-
+    protected double format(double d) {
         return Double.parseDouble(df.format(d));
     }
 

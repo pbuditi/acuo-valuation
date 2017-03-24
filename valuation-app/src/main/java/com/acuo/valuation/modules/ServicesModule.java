@@ -12,8 +12,12 @@ import com.acuo.valuation.providers.reuters.services.ReutersServiceImpl;
 import com.acuo.valuation.quartz.AcuoJobFactory;
 import com.acuo.valuation.services.*;
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
+import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import org.quartz.spi.JobFactory;
+
+import javax.inject.Singleton;
 
 public class ServicesModule extends AbstractModule {
 
@@ -24,13 +28,26 @@ public class ServicesModule extends AbstractModule {
         bind(PricingService.class).to(MarkitPricingService.class);
         bind(new TypeLiteral<ResultPersister<PricingResults>>(){}).to(PricingResultPersister.class);
         bind(new TypeLiteral<ResultPersister<MarginResults>>(){}).to(MarginResultPersister.class);
-        bind(MarginCallGenService.class).to(MarkitMarginCallGenerator.class);
-        bind(MarkitValautionsProcessor.class);
+        bind(MarkitMarginCallGenerator.class);
+        bind(SimulationMarginCallBuilder.class);
+        bind(MarkitValuationProcessor.class);
+        bind(PricingResultPersister.class);
         bind(MarginCalcService.class).to(ClarusMarginCalcService.class);
         bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
         bind(JobFactory.class).to(AcuoJobFactory.class);
         bind(ReutersService.class).to(ReutersServiceImpl.class);
         bind(AssetsPersistService.class).to(AssetsPersistServiceImpl.class);
+    }
+
+    @Provides
+    @Singleton
+    MarkitValuationProcessor.PricingResultProcessor firstProcessor(Injector injector) {
+        MarkitMarginCallGenerator markitProcessor = injector.getInstance(MarkitMarginCallGenerator.class);
+        //SimulationMarginCallBuilder simulator = injector.getInstance(SimulationMarginCallBuilder.class);
+        PricingResultPersister resultPersister = injector.getInstance(PricingResultPersister.class);
+        resultPersister.setNextProcessor(markitProcessor);
+        //markitProcessor.setNextProcessor(simulator);
+        return resultPersister;
     }
 
 }
