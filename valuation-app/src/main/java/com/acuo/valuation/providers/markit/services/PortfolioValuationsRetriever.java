@@ -8,23 +8,22 @@ import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
+@Slf4j
 public class PortfolioValuationsRetriever implements Retriever {
 
     private static final String ERROR_MSG = "Error occurred while retrieving markit results for the date {}";
+    private static final DateTimeFormatter VALUATION_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    private static final Logger LOG = LoggerFactory.getLogger(PortfolioValuationsRetriever.class);
-
-    private final ClientEndPoint client;
+    private final ClientEndPoint<MarkitEndPointConfig> client;
     private final ResponseParser parser;
 
     @Inject
@@ -35,76 +34,63 @@ public class PortfolioValuationsRetriever implements Retriever {
 
     @Override
     public PricingResults retrieve(LocalDate valuationDate, List<String> tradeIds) {
-        //return PricingResults.of(tradeIds.stream().map(id -> retrieve(valuationDate, id)).collect(Collectors.toList()));
-        Response results = retrieve(valuationDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), tradeIds);
-        List<Value> values = new ArrayList<Value>();
-        for(Value value : results.values())
-        {
-            for(String tradeId : tradeIds)
-            {
-                if(value.getTradeId().equals(tradeId))
-                {
-                    values.add(value);
-                    break;
-                }
-            }
-        }
-        Result<MarkitValuation> result = Result.success(new MarkitValuation(values.toArray(new Value[values.size()])));
-        List<Result<MarkitValuation>> resultList = new ArrayList<>();
-        resultList.add(result);
+        final Response response = upload(valuationDate, tradeIds);
+
+        printFailedTrades(tradeIds, response);
+
+        List<Result<MarkitValuation>> results = tradeIds.stream()
+                .map(tradeId -> response.values()
+                        .stream()
+                        .filter(value -> tradeId.equals(value.getTradeId()))
+                        .filter(value -> !"Failed".equalsIgnoreCase(value.getStatus()))
+                        .collect(toList()))
+                .map(MarkitValuation::new)
+                .map(Result::success)
+                .collect(toList());
 
         PricingResults pricingResults = new PricingResults();
-        pricingResults.setResults(resultList);
-        pricingResults.setDate(results.header().getDate());
-        pricingResults.setCurrency(Currency.parse(results.header().getValuationCurrency()));
+        pricingResults.setResults(results);
+        pricingResults.setDate(response.header().getDate());
+        pricingResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
 
-        return  pricingResults;
-
+        return pricingResults;
     }
 
-    private Result<MarkitValuation> retrieve(LocalDate valuationDate, String tradeId) {
-        List<String> tradeIds = new ArrayList<String>();
-        tradeIds.add(tradeId);
-        Response results = retrieve(valuationDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), tradeIds);
-        List<Value> resultList = results.values().stream().filter(v -> tradeId.equals(v.getTradeId())).collect(Collectors.toList());
-        return Result.success(new MarkitValuation(resultList.toArray(new Value[resultList.size()])));
+    private void printFailedTrades(List<String> tradeIds, Response response) {
+        List<String> values = response.values()
+                .stream()
+                .filter(value -> tradeIds.contains(value.getTradeId()))
+                .filter(value -> "Failed".equalsIgnoreCase(value.getStatus()))
+                .map(Value::getTradeId)
+                .collect(toList());
+        log.warn("valuation for the following trades has failed: {}",values);
     }
 
-
-
-    /**
-     * Retrieve the results for a given valuation date
-     *
-     * @param asOfDate, date in DDMONYY or YYYY-MM-DD format
-     * @return response, parser from the markit report
-     */
-    Response retrieve(String asOfDate, List<String> tradeIds) {
+    private Response upload(LocalDate valuationDate, List<String> tradeIds) {
+        String asOfDate = valuationDate.format(VALUATION_DATE_FORMAT);
         try {
             String result = MarkitFormCall.of(client)
-                                          .with("asof", asOfDate)
-                                          .with("format", "xml")
-                                          .retryWhile(s -> !isValuationDone(s, tradeIds))
-                                          .create()
-                                          .send();
-            if (LOG.isDebugEnabled()) LOG.debug(result);
+                    .with("asof", asOfDate)
+                    .with("format", "xml")
+                    .retryWhile(s -> !isValuationDone(s, tradeIds))
+                    .create()
+                    .send();
+            if (log.isTraceEnabled()) {
+                log.trace(result);
+            }
             return parser.parse(result);
         } catch (Exception e) {
-            LOG.error(ERROR_MSG, asOfDate, e);
+            log.error(ERROR_MSG, asOfDate, e);
             throw new RuntimeException(String.format(ERROR_MSG, asOfDate), e);
         }
     }
 
-    private boolean isValuationDone(String s, List<String> tradeIds)
-    {
-        for(String tradeId : tradeIds)
-        {
-            if(!s.contains("<TradeId>" + tradeId + "</TradeId>"))
+    private boolean isValuationDone(String s, List<String> tradeIds) {
+        for (String tradeId : tradeIds) {
+            if (!s.contains("<TradeId>" + tradeId + "</TradeId>"))
                 return false;
         }
-        LOG.debug("valuation done :" + s);
-        LOG.debug(tradeIds.toString());
+        log.info("valuation done for {}", tradeIds);
         return true;
     }
-
-
 }
