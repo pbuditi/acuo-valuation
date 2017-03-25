@@ -5,6 +5,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.Trade;
+import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.entity.Valuation;
 import com.acuo.persist.entity.Value;
 import com.acuo.persist.modules.*;
@@ -109,25 +110,19 @@ public class PricingResultPersisterTest {
         persister.persist(pricingResults);
 
         Trade trade = tradeService.findById(tradeId);
-        Set<Valuation> valuations = trade.getValuations();
-        boolean foundValuation = false;
+        Valuation valuation = trade.getValuation();
         boolean foundValue = false;
-        for (Valuation valuation : valuations) {
-            if (valuation.getDate().equals(myDate1)) {
-                foundValuation = true;
-                Set<Value> values = valuation.getValues();
-                if (values != null) {
-                    for (Value value : values) {
-                        if (value.getCurrency().equals(Currency.USD) && value.getSource().equals("Markit") && value.getPv().doubleValue() == 5.98) {
-                            foundValue = true;
-                        }
-                    }
-                }
-            }
 
+        Set<Value> values = valuation.getValues();
+        for(Value value : values)
+        {
+            TradeValue tradeValue = (TradeValue)value;
+            if(tradeValue.getDate().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().doubleValue() == 5.98)
+                foundValue = true;
         }
 
-        Assert.assertTrue(foundValuation);
+
+        Assert.assertTrue(foundValue);
     }
 
     @Test
