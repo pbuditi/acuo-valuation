@@ -52,6 +52,7 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
                 newValue.setPv(marginValuation.getMargin());
                 newValue.setSource("Clarus");
                 newValue.setCurrency(Currency.of(currency));
+                newValue.setDate(results.getValuationDate());
             }
         }
 
