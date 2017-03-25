@@ -19,13 +19,15 @@ public class ReutersServiceImpl implements ReutersService {
     private final ClientEndPoint<ReutersEndPointConfig> client;
     private final Transformer<Assets> transformer;
     private final AssetService assetService;
+    private final AssetsPersistService assetsPersistService;
 
     @Inject
-    public ReutersServiceImpl(ClientEndPoint<ReutersEndPointConfig> client, @Named("assets") Transformer<Assets> transformer, AssetService assetService)
+    public ReutersServiceImpl(ClientEndPoint<ReutersEndPointConfig> client, @Named("assets") Transformer<Assets> transformer, AssetService assetService,AssetsPersistService assetsPersistService)
     {
         this.client = client;
         this.transformer = transformer;
         this.assetService = assetService;
+        this.assetsPersistService = assetsPersistService;
     }
 
     public List<Assets> send(Assets assets)
@@ -41,6 +43,8 @@ public class ReutersServiceImpl implements ReutersService {
     {
         Asset asset = assetService.findById(assetId);
         List<Assets> assetsList = send(AssetsBuilder.buildAssets(asset));
+        assetsList.stream().forEach(assets -> assetsPersistService.persist(assets));
+
     }
 
 
