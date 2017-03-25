@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.TradeValuation;
+import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.entity.Valuation;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -80,50 +82,44 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
                     continue;
                 }
 
-                Set<Valuation> valuations = trade.getValuations();
-                boolean found = false;
-                if (valuations != null) {
-                    for (Valuation valuation : valuations) {
-                        if (valuation.getDate().equals(date)) {
-                            //existing date, add or replace the value
+                Valuation valuation = trade.getValuation();
 
-                            Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
-                            if (existedValues != null) {
-                                for (com.acuo.persist.entity.Value existedValue : existedValues) {
-                                    if (existedValue.getCurrency().equals(currency) && existedValue.getSource().equalsIgnoreCase("Markit")) {
-                                        log.debug("deleting value id [{}]", existedValue.getId());
-                                        try {
-                                            valueService.delete(existedValue.getId());
-                                            existedValues.remove(existedValue);
-                                        } catch (Exception e) {
-                                        }
-                                    }
-                                }
-                            }
+                if(valuation == null)
+                {
+                    TradeValuation tradeValuation = createValuation(date, trade.getTradeId());
+                    tradeValuation.setTrade(trade);
+                    tradeValuation.setPortfolio(trade.getPortfolio());
 
-                            com.acuo.persist.entity.Value newValue = createValue(currency, value.getPv(), "Markit");
-                            newValue.setValuation(valuation);
-                            valueService.createOrUpdate(newValue);
-                            portfolioIds.add(PortfolioId.fromString(trade.getPortfolio().getPortfolioId()));
-                            found = true;
-                            break;
+                    valuationService.createOrUpdate(tradeValuation);
+                    valuation = tradeValuation;
+                }
+
+                if(valuation.getValues() == null)
+                    valuation.setValues(new HashSet<>());
+
+
+                Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
+                for(com.acuo.persist.entity.Value existedValue: existedValues)
+                {
+                    TradeValue tradeValue = (TradeValue)existedValue;
+                    if(tradeValue.getDate().equals(date) && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equalsIgnoreCase("Markit"))
+                    {
+                        log.debug("deleting value id [{}]", tradeValue.getId());
+                        try {
+                            valueService.delete(tradeValue.getId());
+                            existedValues.remove(tradeValue);
+                        } catch (Exception e) {
                         }
                     }
                 }
 
-                if (!found) {
-                    //new valutaion
+                TradeValue newValue = createValue(currency, value.getPv(), "Markit", date);
+                newValue.setValuation(valuation);
+                valueService.createOrUpdate(newValue);
+                portfolioIds.add(PortfolioId.fromString(trade.getPortfolio().getPortfolioId()));
 
-                    TradeValuation valuation = createValuation(date, trade.getTradeId());
-                    com.acuo.persist.entity.Value newValue = createValue(currency, value.getPv(), "Markit");
-                    newValue.setValuation(valuation);
 
-                    valuation.setTrade(trade);
-                    valuation.setPortfolio(trade.getPortfolio());
 
-                    valuationService.createOrUpdate(valuation);
-                    portfolioIds.add(PortfolioId.fromString(trade.getPortfolio().getPortfolioId()));
-                }
             }
         }
         return portfolioIds;
@@ -134,15 +130,16 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String dateFormatted = date.format(formatter);
         valuation.setValuationId(dateFormatted + "-" + tradeId);
-        valuation.setDate(date);
+        //valuation.setDate(date);
         return valuation;
     }
 
-    private com.acuo.persist.entity.Value createValue(Currency currency, Double pv, String source) {
-        com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
+    private TradeValue createValue(Currency currency, Double pv, String source, LocalDate date) {
+        TradeValue newValue = new TradeValue();
         newValue.setSource(source);
         newValue.setCurrency(currency);
         newValue.setPv(pv);
+        newValue.setDate(date);
         return newValue;
     }
 }

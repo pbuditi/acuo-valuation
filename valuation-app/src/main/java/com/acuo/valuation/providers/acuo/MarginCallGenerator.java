@@ -38,10 +38,11 @@ public abstract class MarginCallGenerator {
         this.currencyService = currencyService;
     }
 
-    protected MarginCall generateMarginCall(Valuation<TradeValuation> valuation, CallStatus callStatus) {
+    protected MarginCall generateMarginCall(TradeValuation valuation, LocalDate date,  CallStatus callStatus) {
         valuation.getValues()
                 .stream()
-                .filter(value -> value.getSource().equals("Markit"))
+                .map(value -> (TradeValue)value)
+                .filter(value -> value.getSource().equals("Markit") && value.getDate().equals(date))
                 .forEach(value -> {
                     pv = value.getPv();
                     currencyOfValue = value.getCurrency();
