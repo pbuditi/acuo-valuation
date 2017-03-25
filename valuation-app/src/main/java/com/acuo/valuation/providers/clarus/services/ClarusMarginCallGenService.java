@@ -36,8 +36,8 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
     }
 
     @Override
-    public MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation<MarginValuation> valuation) {
-        valuation.getValues().stream().filter(value -> value.getSource().equals("Markit")).forEach(value -> {
+    public MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation<MarginValuation> valuation, LocalDate date) {
+        valuation.getValues().stream().map(value -> (TradeValue)value).filter(value -> value.getSource().equals("Markit") && value.getDate().equals(date)).forEach(value -> {
             pv = value.getPv();
             currencyOfValue = value.getCurrency();
         });

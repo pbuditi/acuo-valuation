@@ -1,6 +1,8 @@
 package com.acuo.valuation.providers.acuo;
 
 import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.TradeValuation;
+import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.entity.Valuation;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
@@ -14,6 +16,7 @@ import com.opengamma.strata.collect.result.Result;
 
 import javax.inject.Inject;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -41,7 +44,7 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
         //parse the result
         String currency = results.getCurrency();
         Iterator<Result<MarginValuation>> resultIterator = results.getResults().iterator();
-        com.acuo.persist.entity.Value newValue = new com.acuo.persist.entity.Value();
+        TradeValue newValue = new TradeValue();
         while (resultIterator.hasNext()) {
             Result<MarginValuation> result = resultIterator.next();
             MarginValuation marginValuation = result.getValue();
@@ -52,36 +55,33 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
             }
         }
 
-        Set<Valuation> valuations = portfolio.getValuations();
-        boolean found = false;
-        if (valuations != null) {
-            for (Valuation valuation : valuations) {
-                valuation = valuationService.find(valuation.getId());
-                if (valuation.getDate().equals(results.getValuationDate())) {
-                    Set<com.acuo.persist.entity.Value> values = valuation.getValues();
-                    if (values != null) {
-                        for (com.acuo.persist.entity.Value value : values) {
-                            if (value.getCurrency().equals(currency) && value.getSource().equals("Clarus")) {
-                                valueService.delete(value.getId());
-                                values.remove(value);
-                            }
-                        }
-                    }
-                    newValue.setValuation(valuation);
-                    valueService.createOrUpdate(newValue);
-                    found = true;
-                    break;
-                }
+        Valuation valuation = portfolio.getValuation();
+
+        if(valuation == null)
+        {
+            com.acuo.persist.entity.MarginValuation marginValuation = new com.acuo.persist.entity.MarginValuation();
+            marginValuation.setPortfolio(portfolio);
+            valuationService.createOrUpdate(marginValuation);
+            valuation = marginValuation;
+        }
+
+        if(valuation.getValues() == null)
+            valuation.setValues(new HashSet<>());
+
+
+        Set<com.acuo.persist.entity.Value> values = valuation.getValues();
+        for(com.acuo.persist.entity.Value existedValue : values)
+        {
+            TradeValue tradeValue = (TradeValue)existedValue;
+            if(tradeValue.getDate().equals(results.getValuationDate()) && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equals("Clarus"))
+            {
+                valueService.delete(tradeValue.getId());
+                values.remove(tradeValue);
             }
         }
 
-        if (!found) {
-            com.acuo.persist.entity.MarginValuation newValuation = new com.acuo.persist.entity.MarginValuation();
-            newValuation.setDate(results.getValuationDate());
-            newValue.setValuation(newValuation);
-            newValuation.setPortfolio(portfolio);
-            valuationService.createOrUpdate(newValuation);
-        }
+        newValue.setValuation(valuation);
+        valueService.createOrUpdate(newValue);
 
         return ImmutableSet.of(PortfolioId.fromString(portfolioId));
     }
