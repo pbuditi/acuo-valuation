@@ -111,13 +111,14 @@ public class PricingResultPersisterTest {
 
         Trade trade = tradeService.findById(tradeId);
         Valuation valuation = trade.getValuation();
+        valuation = valuationService.find(valuation.getId());
         boolean foundValue = false;
 
         Set<Value> values = valuation.getValues();
         for(Value value : values)
         {
             TradeValue tradeValue = (TradeValue)value;
-            if(tradeValue.getDate().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().doubleValue() == 5.98)
+            if(tradeValue.getDate().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().equals(new Double(-30017690)))
                 foundValue = true;
         }
 

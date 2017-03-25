@@ -75,6 +75,7 @@ public class MarginResultPersisterTest {
         Portfolio portfolio = portfolioService.findById("p2");
         Valuation valuation = portfolio.getValuation();
         Assert.assertTrue(valuation!= null);
+        valuation = valuationService.find(valuation.getId());
         Set<Value> values = valuation.getValues();
         Assert.assertTrue(values != null && values.size() > 0);
         for (Value value : values) {
