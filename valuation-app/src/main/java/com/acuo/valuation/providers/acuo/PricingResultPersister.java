@@ -1,9 +1,6 @@
 package com.acuo.valuation.providers.acuo;
 
-import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.TradeValuation;
-import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.*;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
@@ -31,12 +28,14 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
     private final ValuationService valuationService;
     private final ValueService valueService;
     private MarkitValuationProcessor.PricingResultProcessor nextProcessor;
+    private final PortfolioService portfolioService;
 
     @Inject
-    public PricingResultPersister(TradeService<Trade> tradeService, ValuationService valuationService, ValueService valueService) {
+    public PricingResultPersister(TradeService<Trade> tradeService, ValuationService valuationService, ValueService valueService, PortfolioService portfolioService) {
         this.tradeService = tradeService;
         this.valuationService = valuationService;
         this.valueService = valueService;
+        this.portfolioService = portfolioService;
     }
 
     @Override
@@ -88,34 +87,42 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
                 {
                     TradeValuation tradeValuation = createValuation(date, trade.getTradeId());
                     tradeValuation.setTrade(trade);
-                    tradeValuation.setPortfolio(trade.getPortfolio());
+                    //tradeValuation.setPortfolio(trade.getPortfolio());
 
                     valuationService.createOrUpdate(tradeValuation);
                     valuation = tradeValuation;
                 }
+                else
+                {
+                    valuation = valuationService.find(valuation.getId());
+                }
 
                 if(valuation.getValues() == null)
                     valuation.setValues(new HashSet<>());
+
+                double existedPv = 0;
 
 
                 Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
                 for(com.acuo.persist.entity.Value existedValue: existedValues)
                 {
                     TradeValue tradeValue = (TradeValue)existedValue;
-                    if(tradeValue.getDate().equals(date) && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equalsIgnoreCase("Markit"))
+                    if(tradeValue.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+                            && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equalsIgnoreCase("Markit"))
                     {
                         log.debug("deleting value id [{}]", tradeValue.getId());
-                        try {
-                            valueService.delete(tradeValue.getId());
-                            existedValues.remove(tradeValue);
-                        } catch (Exception e) {
-                        }
+                        existedPv = tradeValue.getPv();
+                        valueService.delete(tradeValue.getId());
+                        //existedValues.remove(tradeValue);
+                        break;
+
                     }
                 }
 
                 TradeValue newValue = createValue(currency, value.getPv(), "Markit", date);
                 newValue.setValuation(valuation);
                 valueService.createOrUpdate(newValue);
+                addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", newValue.getPv(), existedPv);
                 portfolioIds.add(PortfolioId.fromString(trade.getPortfolio().getPortfolioId()));
 
 
@@ -141,5 +148,62 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
         newValue.setPv(pv);
         newValue.setDate(date);
         return newValue;
+    }
+
+    private void addsumValuationOfPortfolio(Portfolio portfolio, LocalDate date, com.opengamma.strata.basics.currency.Currency currency, String source, Double newPv, Double existedPv)
+    {
+
+        portfolio = portfolioService.findById(portfolio.getPortfolioId(), 2);
+
+        TradeValuation theValuation = null;
+        TradeValue theValue = null;
+
+
+        if(portfolio.getValuation() == null)
+        {
+            theValuation = new TradeValuation();
+            theValuation.setValuationId(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "-" + portfolio.getPortfolioId());
+            theValuation.setPortfolio(portfolio);
+            valuationService.createOrUpdate(theValuation);
+        }
+        else
+        {
+            theValuation = (TradeValuation) portfolio.getValuation();
+        }
+
+        if(theValuation.getValues() == null)
+            theValuation.setValues(new HashSet<>());
+
+        Set<com.acuo.persist.entity.Value> values = theValuation.getValues();
+
+        for(com.acuo.persist.entity.Value value : values)
+        {
+            TradeValue tradeValue = (TradeValue)value;
+            if(tradeValue.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+                    && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equals(source))
+            {
+                theValue = tradeValue;
+            }
+        }
+
+
+
+
+        if(theValue == null)
+        {
+            theValue = new TradeValue();
+            theValue.setPv(newPv);
+            theValue.setCurrency(currency);
+            theValue.setSource(source);
+            theValue.setValuation(theValuation);
+            theValue.setDate(date);
+
+        }
+        else
+        {
+            theValue.setPv(theValue.getPv() - existedPv + newPv);
+        }
+        valueService.createOrUpdate(theValue);
+
     }
 }

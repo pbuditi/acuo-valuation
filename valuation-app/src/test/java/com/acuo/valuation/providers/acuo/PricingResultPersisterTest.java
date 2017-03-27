@@ -81,7 +81,7 @@ public class PricingResultPersisterTest {
         MockitoAnnotations.initMocks(this);
         importService.reload();
         tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
-        persister = new PricingResultPersister(tradeService, valuationService, valueService);
+        persister = new PricingResultPersister(tradeService, valuationService, valueService, portfolioService);
     }
     @Test
     public void testPersistValidPricingResult() throws ParseException {
