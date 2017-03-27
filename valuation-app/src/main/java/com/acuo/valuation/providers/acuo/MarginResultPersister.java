@@ -15,6 +15,7 @@ import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 
 import javax.inject.Inject;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -65,6 +66,8 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
             valuationService.createOrUpdate(marginValuation);
             valuation = marginValuation;
         }
+        else
+            valuation = valuationService.find(valuation.getId());
 
         if(valuation.getValues() == null)
             valuation.setValues(new HashSet<>());
@@ -74,10 +77,10 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
         for(com.acuo.persist.entity.Value existedValue : values)
         {
             TradeValue tradeValue = (TradeValue)existedValue;
-            if(tradeValue.getDate().equals(results.getValuationDate()) && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equals("Clarus"))
+            if(tradeValue.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(results.getValuationDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))) && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equals("Clarus"))
             {
                 valueService.delete(tradeValue.getId());
-                values.remove(tradeValue);
+                break;
             }
         }
 
