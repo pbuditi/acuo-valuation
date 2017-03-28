@@ -1,9 +1,6 @@
 package com.acuo.valuation.providers.acuo;
 
-import com.acuo.persist.entity.Portfolio;
-import com.acuo.persist.entity.TradeValuation;
-import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.*;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
@@ -46,6 +43,7 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
         String currency = results.getCurrency();
         Iterator<Result<MarginValuation>> resultIterator = results.getResults().iterator();
         TradeValue newValue = new TradeValue();
+        ValueRelation valueRelation = new ValueRelation();
         while (resultIterator.hasNext()) {
             Result<MarginValuation> result = resultIterator.next();
             MarginValuation marginValuation = result.getValue();
@@ -53,7 +51,9 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
                 newValue.setPv(marginValuation.getMargin());
                 newValue.setSource("Clarus");
                 newValue.setCurrency(Currency.of(currency));
-                newValue.setDate(results.getValuationDate());
+                //newValue.setDate(results.getValuationDate());
+                valueRelation.setValue(newValue);
+                valueRelation.setDateTime(results.getValuationDate());
             }
         }
 
@@ -73,18 +73,19 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
             valuation.setValues(new HashSet<>());
 
 
-        Set<com.acuo.persist.entity.Value> values = valuation.getValues();
-        for(com.acuo.persist.entity.Value existedValue : values)
+        Set<com.acuo.persist.entity.ValueRelation> values = valuation.getValues();
+        for(com.acuo.persist.entity.ValueRelation existedValue : values)
         {
-            TradeValue tradeValue = (TradeValue)existedValue;
-            if(tradeValue.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(results.getValuationDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))) && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equals("Clarus"))
+            TradeValue tradeValue = (TradeValue)existedValue.getValue();
+            if(existedValue.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(results.getValuationDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))) && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equals("Clarus"))
             {
                 valueService.delete(tradeValue.getId());
                 break;
             }
         }
+        valueRelation.setValuation(valuation);
 
-        newValue.setValuation(valuation);
+        newValue.setValuation(valueRelation);
         valueService.createOrUpdate(newValue);
 
         return ImmutableSet.of(PortfolioId.fromString(portfolioId));

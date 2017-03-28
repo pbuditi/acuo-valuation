@@ -103,11 +103,11 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
                 double existedPv = 0;
 
 
-                Set<com.acuo.persist.entity.Value> existedValues = valuation.getValues();
-                for(com.acuo.persist.entity.Value existedValue: existedValues)
+                Set<com.acuo.persist.entity.ValueRelation> existedValues = valuation.getValues();
+                for(com.acuo.persist.entity.ValueRelation existedValue: existedValues)
                 {
-                    TradeValue tradeValue = (TradeValue)existedValue;
-                    if(tradeValue.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+                    TradeValue tradeValue = (TradeValue)existedValue.getValue();
+                    if(existedValue.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
                             && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equalsIgnoreCase("Markit"))
                     {
                         log.debug("deleting value id [{}]", tradeValue.getId());
@@ -119,8 +119,13 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
                     }
                 }
 
-                TradeValue newValue = createValue(currency, value.getPv(), "Markit", date);
-                newValue.setValuation(valuation);
+                TradeValue newValue = createValue(currency, value.getPv(), "Markit");
+                ValueRelation valueRelation = new ValueRelation();
+                valueRelation.setValuation(valuation);
+                valueRelation.setDateTime(date);
+                valueRelation.setValue(newValue);
+
+                newValue.setValuation(valueRelation);
                 valueService.createOrUpdate(newValue);
                 addsumValuationOfPortfolio(trade.getPortfolio(), date, currency, "Markit", newValue.getPv(), existedPv);
                 portfolioIds.add(PortfolioId.fromString(trade.getPortfolio().getPortfolioId()));
@@ -141,12 +146,11 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
         return valuation;
     }
 
-    private TradeValue createValue(Currency currency, Double pv, String source, LocalDate date) {
+    private TradeValue createValue(Currency currency, Double pv, String source) {
         TradeValue newValue = new TradeValue();
         newValue.setSource(source);
         newValue.setCurrency(currency);
         newValue.setPv(pv);
-        newValue.setDate(date);
         return newValue;
     }
 
@@ -174,12 +178,12 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
         if(theValuation.getValues() == null)
             theValuation.setValues(new HashSet<>());
 
-        Set<com.acuo.persist.entity.Value> values = theValuation.getValues();
+        Set<com.acuo.persist.entity.ValueRelation> values = theValuation.getValues();
 
-        for(com.acuo.persist.entity.Value value : values)
+        for(com.acuo.persist.entity.ValueRelation value : values)
         {
-            TradeValue tradeValue = (TradeValue)value;
-            if(tradeValue.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+            TradeValue tradeValue = (TradeValue)value.getValue();
+            if(value.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
                     && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equals(source))
             {
                 theValue = tradeValue;
@@ -195,8 +199,11 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
             theValue.setPv(newPv);
             theValue.setCurrency(currency);
             theValue.setSource(source);
-            theValue.setValuation(theValuation);
-            theValue.setDate(date);
+            ValueRelation valueRelation = new ValueRelation();
+            valueRelation.setValue(theValue);
+            valueRelation.setDateTime(date);
+            valueRelation.setValuation(theValuation);
+            theValue.setValuation(valueRelation);
 
         }
         else

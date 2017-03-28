@@ -8,6 +8,7 @@ import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
 
 import javax.inject.Inject;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,14 +43,14 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
 
 
 
-        Set<Value> values = assetValuation.getValues();
+        Set<ValueRelation> values = assetValuation.getValues();
         if(values == null)
             values = new HashSet<>();
 
-        for(Value value : values)
+        for(ValueRelation value : values)
         {
-            AssetValue assetValue = (AssetValue)value;
-            if(assetValue.getDate().equals(assets.getAssetValuation().getValuationDateTime()))
+            AssetValue assetValue = (AssetValue)value.getValue();
+            if(value.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(assets.getAssetValuation().getValuationDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
             {
                 valueService.delete(assetValue);
                 break;
@@ -58,7 +59,7 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
 
         AssetValue assetValue = new AssetValue();
         com.acuo.common.model.assets.AssetValuation valuation = assets.getAssetValuation();
-        assetValue.setDate(valuation.getValuationDateTime());
+        //assetValue.setDate(valuation.getValuationDateTime());
         assetValue.setCoupon(valuation.getCoupon());
         assetValue.setNominalCurrency(valuation.getNominalCurrency());
         assetValue.setPrice(valuation.getPrice());
@@ -66,7 +67,11 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
         assetValue.setReportCurrency(valuation.getReportCurrency());
         assetValue.setValuationDateTime(valuation.getValuationDateTime());
         assetValue.setYield(valuation.getYield());
-        assetValue.setValuation(assetValuation);
+        ValueRelation valueRelation = new ValueRelation();
+        valueRelation.setValuation(assetValuation);
+        valueRelation.setDateTime(valuation.getValuationDateTime());
+        valueRelation.setValue(assetValue);
+        assetValue.setValuation(valueRelation);
         valueService.createOrUpdate(assetValue);
 
 
