@@ -76,12 +76,12 @@ public class MarginResultPersisterTest {
         Valuation valuation = portfolio.getValuation();
         Assert.assertTrue(valuation!= null);
         valuation = valuationService.find(valuation.getId());
-        Set<Value> values = valuation.getValues();
+        Set<ValueRelation> values = valuation.getValues();
         Assert.assertTrue(values != null && values.size() > 0);
-        for (Value value : values) {
-            if(value.getDate().equals(localDate))
+        for (ValueRelation value : values) {
+            if(value.getDateTime().equals(localDate))
             {
-                TradeValue tradeValue = (TradeValue)value;
+                TradeValue tradeValue = (TradeValue)value.getValue();
                 Assert.assertEquals(tradeValue.getPv().doubleValue(), 1d, 0);
             }
 
