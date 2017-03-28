@@ -4,10 +4,7 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.Valuation;
-import com.acuo.persist.entity.Value;
+import com.acuo.persist.entity.*;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
@@ -114,11 +111,11 @@ public class PricingResultPersisterTest {
         valuation = valuationService.find(valuation.getId());
         boolean foundValue = false;
 
-        Set<Value> values = valuation.getValues();
-        for(Value value : values)
+        Set<ValueRelation> values = valuation.getValues();
+        for(ValueRelation value : values)
         {
-            TradeValue tradeValue = (TradeValue)value;
-            if(tradeValue.getDate().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().equals(new Double(-30017690)))
+            TradeValue tradeValue = (TradeValue)value.getValue();
+            if(value.getDateTime().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().equals(new Double(-30017690)))
                 foundValue = true;
         }
 
