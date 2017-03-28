@@ -40,9 +40,9 @@ public abstract class MarginCallGenerator {
 
     protected MarginCall generateMarginCall(TradeValuation valuation, LocalDate date,  CallStatus callStatus) {
         valuation.getValues()
-                .stream()
-                .map(value -> (TradeValue)value)
-                .filter(value -> value.getSource().equals("Markit") && value.getDate().equals(date))
+                .stream().filter(valueRelation -> valueRelation.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
+                .map(valueRelation -> (TradeValue)valueRelation.getValue())
+                .filter(value -> value.getSource().equals("Markit"))
                 .forEach(value -> {
                     pv = value.getPv();
                     currencyOfValue = value.getCurrency();
