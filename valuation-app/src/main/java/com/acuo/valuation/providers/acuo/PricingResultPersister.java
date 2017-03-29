@@ -89,7 +89,7 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
                     tradeValuation.setTrade(trade);
                     //tradeValuation.setPortfolio(trade.getPortfolio());
 
-                    valuationService.createOrUpdate(tradeValuation);
+                    tradeValuation = valuationService.createOrUpdate(tradeValuation);
                     valuation = tradeValuation;
                 }
                 else
@@ -114,6 +114,7 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
                         existedPv = tradeValue.getPv();
                         valueService.delete(tradeValue.getId());
                         //existedValues.remove(tradeValue);
+                        valuation = valuationService.find(valuation.getId());
                         break;
 
                     }
