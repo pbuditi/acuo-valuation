@@ -34,18 +34,13 @@ public class ReutersServiceImpl implements ReutersService {
     {
         TransformerContext context = new TransformerContext();
         String json = transformer.serialise(assets, context);
+        log.info(json);
         String response =  ReutersCall.of(client).with("josn", json).create().send();
+        log.info(response);
         List<Assets> returnAssets = transformer.deserialiseToList(response.substring(1));
         return returnAssets;
     }
 
-    public void valuate(String assetId)
-    {
-        Asset asset = assetService.findById(assetId);
-        List<Assets> assetsList = send(AssetsBuilder.buildAssets(asset));
-        assetsList.stream().forEach(assets -> assetsPersistService.persist(assets));
-
-    }
 
 
 }

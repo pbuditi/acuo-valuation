@@ -8,5 +8,4 @@ public interface ReutersService {
 
     List<Assets> send(Assets assets);
 
-    public void valuate(String assetId);
 }
