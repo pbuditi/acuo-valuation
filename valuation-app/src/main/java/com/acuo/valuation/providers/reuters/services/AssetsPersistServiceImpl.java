@@ -6,12 +6,14 @@ import com.acuo.persist.entity.AssetValuation;
 import com.acuo.persist.services.AssetService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 public class AssetsPersistServiceImpl implements AssetsPersistService {
 
     private final AssetService assetService;
@@ -73,6 +75,8 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
         valueRelation.setValue(assetValue);
         assetValue.setValuation(valueRelation);
         valueService.createOrUpdate(assetValue);
+        log.info("value created :" + assetValue.toString());
+
 
 
     }
