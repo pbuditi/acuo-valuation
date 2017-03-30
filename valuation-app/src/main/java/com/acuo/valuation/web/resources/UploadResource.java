@@ -43,8 +43,8 @@ public class UploadResource {
         ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
         List<String> trades = irsService.uploadTradesFromExcel(fis);
         final UploadResponse response = new UploadResponse();
-        final UploadResponse.Status success = new UploadResponse.Status(UploadResponse.StatusType.success, "test");
-        final UploadResponse.Status failure = new UploadResponse.Status(UploadResponse.StatusType.success, "test");
+        final UploadResponse.Status success = new UploadResponse.Status(UploadResponse.StatusType.success, "500 trades have been uploaded");
+        final UploadResponse.Status failure = new UploadResponse.Status(UploadResponse.StatusType.failure, "20 trades have failed to upload");
         response.setStatuses(ImmutableList.of(success, failure));
         String tnxId = cacheService.put(trades);
         response.setTxnID(tnxId);
