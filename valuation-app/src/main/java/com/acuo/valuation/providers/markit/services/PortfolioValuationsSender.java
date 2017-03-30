@@ -8,6 +8,10 @@ import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
+import com.acuo.valuation.utils.LocalDateUtils;
+import com.opengamma.strata.basics.date.HolidayCalendar;
+import com.opengamma.strata.basics.date.HolidayCalendarId;
+import com.opengamma.strata.basics.date.HolidayCalendarIds;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -16,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -40,9 +45,9 @@ public class PortfolioValuationsSender implements Sender {
     }
 
     public Report send(List<SwapTrade> swaps) {
+        log.info("sending {} trades for valuation", swaps.size());
         try {
             String file = generateFile(swaps);
-            //FileUtils.writeStringToFile(File.createTempFile("PvRequest",".tmp"), file);
             if (log.isDebugEnabled()) log.debug(file);
             return send(file);
         } catch (Exception e) {
@@ -53,16 +58,19 @@ public class PortfolioValuationsSender implements Sender {
 
     public Report send(String file) {
         try {
+            log.info("uploading the file to markit PV");
             String key = MarkitMultipartCall.of(client)
                                             .with("theFile", file)
                                             .create()
                                             .send();
+            log.info("retrieving the report with the key {}",key);
             String report = MarkitFormCall.of(client)
                                           .with("key", key)
                                           .with("version", "2")
                                           .retryWhile(s -> s.startsWith(STILL_PROCESSING_KEY))
                                           .create()
                                           .send();
+            log.info("parsing the report");
             if (log.isDebugEnabled()) log.debug(report);
             return reportParser.parse(report);
         } catch (Exception e) {
@@ -72,8 +80,10 @@ public class PortfolioValuationsSender implements Sender {
     }
 
     private String generateFile(List<SwapTrade> swaps) throws Exception {
+        log.info("generating valuation request with for {} trades",swaps.size());
         LocalDate valuationDate = LocalDate.now();
-        valuationDate = valuationDate.minusDays(1);
+        valuationDate = LocalDateUtils.minus(valuationDate, 1);
+        log.info("with valuation date set to {}",valuationDate);
         TransformerContext context = new TransformerContext();
         context.setValueDate(valuationDate);
         String pvRequest = transformer.serialise(swaps, context);

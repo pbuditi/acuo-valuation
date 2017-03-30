@@ -9,10 +9,12 @@ import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.PricingService;
+import com.acuo.valuation.utils.LocalDateUtils;
 import com.acuo.valuation.utils.SwapTradeBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -38,6 +40,8 @@ public class MarkitPricingService implements PricingService {
     public PricingResults priceTradeIds(List<String> swapIds) {
         List<SwapTrade> swapTrades = swapIds.stream()
                 .map(id -> tradeService.findById(id))
+                .filter(trade -> trade != null)
+                .filter(trade -> trade instanceof IRS)
                 .map(trade -> (IRS) trade)
                 .map(trade -> SwapTradeBuilder.buildTrade(trade))
                 .collect(toList());
@@ -70,7 +74,7 @@ public class MarkitPricingService implements PricingService {
     public PricingResults priceTradesOfType(String type) {
         Iterable<Trade> trades = tradeService.findAllIRS();
         List<SwapTrade> tradeIds = StreamSupport.stream(trades.spliterator(), false)
-                .map(trade -> (IRS) trade)
+                .map(trade -> (IRS) tradeService.find(trade.getId()))
                 .map(irs -> SwapTradeBuilder.buildTrade(irs))
                 .collect(toList());
         return priceSwapTrades(tradeIds);
@@ -82,7 +86,7 @@ public class MarkitPricingService implements PricingService {
         Report report = sender.send(swaps);
         Predicate<? super String> errorReport = (Predicate<String>) tradeId -> {
             List<Report.Item> items = report.itemsPerTradeId().get(tradeId);
-            if (items.stream().anyMatch(item -> "ERROR".equals(item.getType()))) {
+            if (items == null || items.stream().anyMatch(item -> "ERROR".equals(item.getType()))) {
                 return false;
             }
             return true;
@@ -94,6 +98,7 @@ public class MarkitPricingService implements PricingService {
                 .map(swap -> swap.getInfo().getTradeId())
                 .filter(errorReport)
                 .collect(Collectors.toList());
-        return retriever.retrieve(report.valuationDate().minusDays(1), tradeIds);
+
+        return retriever.retrieve(report.valuationDate(), tradeIds);
     }
 }

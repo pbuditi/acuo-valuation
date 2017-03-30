@@ -3,6 +3,7 @@ package com.acuo.valuation.providers.acuo;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.core.ImportService;
+import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Valuation;
 import com.acuo.persist.entity.Value;
@@ -76,11 +77,14 @@ public class MarginResultPersisterTest {
         persister.persist(marginResults);
         Portfolio portfolio = portfolioService.findById("p2");
         Set<Valuation> valuationSet = portfolio.getValuations();
+        Assert.assertTrue(valuationSet != null && valuationSet.size() > 0);
         for (Valuation valuation : valuationSet) {
             Assert.assertEquals(localDate, valuation.getDate());
             Set<Value> values = valuation.getValues();
-            for (Value value : values) {
-                Assert.assertEquals(value.getPv().doubleValue(), 1d, 0);
+            if(values != null) {
+                for (Value value : values) {
+                    Assert.assertEquals(value.getPv().doubleValue(), 1d, 0);
+                }
             }
         }
     }
