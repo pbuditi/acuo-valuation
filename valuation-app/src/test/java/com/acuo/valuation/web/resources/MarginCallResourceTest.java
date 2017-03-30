@@ -1,68 +1,60 @@
 package com.acuo.valuation.web.resources;
 
+import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
-import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
+import com.acuo.persist.core.ImportService;
 import com.acuo.persist.modules.*;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.*;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.services.TradeCacheService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
 import com.google.inject.AbstractModule;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.parboiled.common.ImmutableList;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.stream.IntStream;
 
-import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({
+@GuiceJUnitRunner.GuiceModules({
         ConfigurationTestModule.class,
-        SwapValuationResourceTest.MockServiceModule.class,
+        MarginCallResourceTest.MockServiceModule.class,
+        EncryptionModule.class,
         Neo4jPersistModule.class,
         DataImporterModule.class,
         DataLoaderModule.class,
         ImportServiceModule.class,
+        RepositoryModule.class,
         MappingModule.class,
         EndPointModule.class,
-        RepositoryModule.class,
         ServicesModule.class,
         ResourcesModule.class})
-public class SwapValuationResourceTest implements WithResteasyFixtures {
+@Slf4j
+public class MarginCallResourceTest implements WithResteasyFixtures {
+
+    private static MockWebServer server;
+    private Dispatcher dispatcher;
 
     @Rule
     public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");
-
-    @Rule
-    public ResourceFile jsonRequest = new ResourceFile("/json/swaps/swap-request.json");
-
-    @Rule
-    public ResourceFile jsonResponse = new ResourceFile("/json/swaps/swap-response.json");
-
-    @Rule
-    public ResourceFile report = new ResourceFile("/markit/reports/markit-test-01.xml");
-
-    @Rule
-    public ResourceFile response = new ResourceFile("/markit/responses/markit-test-01.xml");
 
     @Rule
     public ResourceFile largeReport = new ResourceFile("/markit/reports/large.xml");
@@ -70,10 +62,11 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
     @Rule
     public ResourceFile largeResponse = new ResourceFile("/markit/responses/large.xml");
 
-    @Inject
-    TradeUploadService tradeUploadService;
+    @Rule
+    public ResourceFile generateRequest = new ResourceFile("/json/calls/trades-request.json");
 
-    private static MockWebServer server;
+    @Rule
+    public ResourceFile generateResponse = new ResourceFile("/json/calls/calls-response.json");
 
     public static class MockServiceModule extends AbstractModule {
         @Override
@@ -85,18 +78,27 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
             bind(MarkitEndPointConfig.class).toInstance(markitEndPointConfig);
             bind(ClarusEndPointConfig.class).toInstance(clarusEndPointConfig);
         }
-
     }
 
-    private Dispatcher dispatcher;
+    @Inject
+    ImportService importService;
 
     @Inject
-    SwapValuationResource resource;
+    MarginCallResource resource;
+
+    @Inject
+    TradeUploadService tradeUploadService;
+
+    @Inject
+    TradeCacheService cacheService;
 
     @Before
     public void setup() throws IOException {
         dispatcher = createDispatcher(JacksonObjectMapperProvider.class);
         dispatcher.getRegistry().addSingletonResource(resource);
+        setMockMarkitResponse();
+        importService.reload();
+        tradeUploadService.uploadTradesFromExcel(one.createInputStream());
     }
 
     private void setMockMarkitResponse() throws IOException {
@@ -106,61 +108,19 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
     }
 
     @Test
-    public void testWelcomPage() throws URISyntaxException {
-        MockHttpRequest request = MockHttpRequest.get("/swaps");
-        MockHttpResponse response = new MockHttpResponse();
-
-        dispatcher.invoke(request, response);
-
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertThat(response.getContentAsString()).isNotNull();
-    }
-
-    @Test
-    public void testSwapValuation() throws URISyntaxException, IOException {
-        server.enqueue(new MockResponse().setBody("key"));
-        server.enqueue(new MockResponse().setBody(report.getContent()));
-        server.enqueue(new MockResponse().setBody(response.getContent()));
-
-        MockHttpRequest request = MockHttpRequest.post("/swaps/value");
-        MockHttpResponse response = new MockHttpResponse();
-
+    public void testGenerate() throws Exception {
+        String tnxId = cacheService.put(ImmutableList.of("455820"));
+        MockHttpRequest request = MockHttpRequest.get("/calls/generate/"+tnxId);
         request.contentType(MediaType.APPLICATION_JSON);
-        request.content(jsonRequest.getInputStream());
-
-        dispatcher.invoke(request, response);
-
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        String actual = response.getContentAsString();
-        assertThat(actual).isNotNull();
-        assertThatJson(actual).isEqualTo(jsonResponse.getContent());
-    }
-
-    @Test
-    public void testValuationAll() throws URISyntaxException, IOException {
-        tradeUploadService.uploadTradesFromExcel(one.createInputStream());
-
-        setMockMarkitResponse();
-
-        MockHttpRequest request = MockHttpRequest.get("/swaps/priceSwapTrades/allBilateralIRS");
         MockHttpResponse response = new MockHttpResponse();
 
         dispatcher.invoke(request, response);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertThat(response.getContentAsString()).isNotNull();
-    }
-
-    @Test
-    public void testStress() {
-        IntStream.range(1, 10).forEach (x -> {
-            try {
-                setMockMarkitResponse();
-                testValuationAll();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        String json = response.getContentAsString();
+        Assert.assertThat(json, isJson());
+        assertEquals(generateResponse.getContent(), json);
     }
 
     @AfterClass
