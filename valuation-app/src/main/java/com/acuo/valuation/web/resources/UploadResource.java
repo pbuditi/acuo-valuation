@@ -1,10 +1,6 @@
 package com.acuo.valuation.web.resources;
 
-import com.acuo.persist.entity.MarginCall;
-import com.acuo.valuation.jackson.MarginCallDetail;
-import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.providers.acuo.MarkitValuationProcessor;
-import com.acuo.valuation.services.PricingService;
+import com.acuo.valuation.services.TradeCacheService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.web.entities.UploadForm;
 import com.acuo.valuation.web.entities.UploadResponse;
@@ -25,23 +21,18 @@ import java.io.IOException;
 import java.util.List;
 
 import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.OK;
 
 @Slf4j
 @Path("/upload")
 public class UploadResource {
 
     private final TradeUploadService irsService;
-    private final PricingService pricingService;
-    private final MarkitValuationProcessor resultProcessor;
+    private final TradeCacheService cacheService;
 
     @Inject
-    public UploadResource(TradeUploadService irsService,
-                          PricingService pricingService,
-                          MarkitValuationProcessor resultProcessor) {
+    public UploadResource(TradeUploadService irsService, TradeCacheService cacheService) {
         this.irsService = irsService;
-        this.pricingService = pricingService;
-        this.resultProcessor = resultProcessor;
+        this.cacheService = cacheService;
     }
 
     @POST
@@ -55,17 +46,8 @@ public class UploadResource {
         final UploadResponse.Status success = new UploadResponse.Status(UploadResponse.StatusType.success, "test");
         final UploadResponse.Status failure = new UploadResponse.Status(UploadResponse.StatusType.success, "test");
         response.setStatuses(ImmutableList.of(success, failure));
-        response.setTrades(trades);
+        String tnxId = cacheService.put(trades);
+        response.setTxnID(tnxId);
         return Response.status(CREATED).entity(response).build();
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces({MediaType.APPLICATION_JSON})
-    @Timed
-    public Response generate(List<String> trades) {
-        PricingResults results = pricingService.priceTradeIds(trades);
-        List<MarginCall> marginCalls = resultProcessor.process(results);
-        return Response.status(OK).entity(MarginCallDetail.of(marginCalls)).build();
     }
 }

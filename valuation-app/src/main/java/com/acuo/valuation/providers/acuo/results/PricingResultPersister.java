@@ -1,10 +1,9 @@
-package com.acuo.valuation.providers.acuo;
+package com.acuo.valuation.providers.acuo.results;
 
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.Valuation;
 import com.acuo.persist.ids.PortfolioId;
-import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;

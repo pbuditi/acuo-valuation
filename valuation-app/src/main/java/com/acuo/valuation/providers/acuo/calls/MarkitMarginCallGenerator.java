@@ -1,21 +1,18 @@
-package com.acuo.valuation.providers.acuo;
+package com.acuo.valuation.providers.acuo.calls;
 
 import com.acuo.persist.entity.*;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.*;
+import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.services.MarginCallGenService;
 import lombok.extern.slf4j.Slf4j;
-import org.neo4j.helpers.collection.Iterators;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 @Slf4j
 public class MarkitMarginCallGenerator extends MarginCallGenerator implements MarginCallGenService, MarkitValuationProcessor.PricingResultProcessor {

@@ -9,7 +9,6 @@ public class UploadResponse {
 
     private String txnID;
     private List<Status> statuses;
-    private List<String> trades;
 
     public enum StatusType {
         success, failure
