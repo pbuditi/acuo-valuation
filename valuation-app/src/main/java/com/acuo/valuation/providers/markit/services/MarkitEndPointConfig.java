@@ -60,7 +60,7 @@ public class MarkitEndPointConfig implements EndPointConfig {
                                 @Named(ACUO_VALUATION_MARKIT_DOWNLOAD_PATH) String downloadPath,
                                 @Named(ACUO_VALUATION_MARKIT_USERNAME) String username,
                                 @Named(ACUO_VALUATION_MARKIT_PASSWORD) String password,
-                                @Named(ACUO_VALUATION_MARKIT_RETRY_DELAY) String retryDelayInMinute,
+                                @Named(ACUO_VALUATION_MARKIT_RETRY_DELAY) String retryDelayInSeconds,
                                 @Named(ACUO_VALUATION_MARKIT_CONNECTION_TIMEOUT) String connectionTimeOutInMilli,
                                 @Named(PropertiesHelper.ACUO_VALUATION_MARKIT_USE_PROXY) String useProxy,
                                 PBEStringEncryptor encryptor) {
@@ -68,7 +68,7 @@ public class MarkitEndPointConfig implements EndPointConfig {
         ArgChecker.notEmpty(host, "host");
         ArgChecker.notEmpty(username, "username");
         ArgChecker.notEmpty(password, "password");
-        ArgChecker.notEmpty(password, "retryDelayInMinute");
+        ArgChecker.notEmpty(password, "retryDelayInSeconds");
         ArgChecker.notEmpty(connectionTimeOutInMilli, "connectionTimeOutInMilli");
         ArgChecker.notEmpty(useProxy, "useProxy");
         this.scheme = scheme;
@@ -78,7 +78,7 @@ public class MarkitEndPointConfig implements EndPointConfig {
         this.downloadPath = downloadPath;
         this.username = username;
         this.password = (encryptor == null) ? password : encryptor.decrypt(password);
-        this.retryDelayInMilliseconds = TimeUnit.MINUTES.toMillis(Long.parseLong(retryDelayInMinute));
+        this.retryDelayInMilliseconds = TimeUnit.SECONDS.toMillis(Long.parseLong(retryDelayInSeconds));
         this.connectionTimeOut = Integer.valueOf(connectionTimeOutInMilli);
         this.connectionTimeOutUnit = TimeUnit.MILLISECONDS;
         this.useProxy = Boolean.valueOf(useProxy);

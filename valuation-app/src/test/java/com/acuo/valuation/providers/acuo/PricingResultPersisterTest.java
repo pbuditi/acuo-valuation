@@ -80,7 +80,7 @@ public class PricingResultPersisterTest {
         MockitoAnnotations.initMocks(this);
         importService.reload();
         tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
-        persister = new PricingResultPersister(tradeService, valuationService, portfolioService, valueService);
+        persister = new PricingResultPersister(tradeService, valuationService, valueService);
     }
     @Test
     public void testPersistValidPricingResult() throws ParseException {
@@ -116,11 +116,12 @@ public class PricingResultPersisterTest {
             if (valuation.getDate().equals(myDate1)) {
                 foundValuation = true;
                 Set<Value> values = valuation.getValues();
-                for (Value value : values) {
-                    if (value.getCurrency().equals(Currency.USD) && value.getSource().equals("Markit") && value.getPv().doubleValue() == 5.98) {
-                        foundValue = true;
+                if (values != null) {
+                    for (Value value : values) {
+                        if (value.getCurrency().equals(Currency.USD) && value.getSource().equals("Markit") && value.getPv().doubleValue() == 5.98) {
+                            foundValue = true;
+                        }
                     }
-
                 }
             }
 
