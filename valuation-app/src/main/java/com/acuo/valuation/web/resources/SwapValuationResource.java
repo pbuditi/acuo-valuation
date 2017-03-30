@@ -6,7 +6,7 @@ import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.providers.acuo.MarkitValautionsProcessor;
+import com.acuo.valuation.providers.acuo.MarkitValuationProcessor;
 import com.acuo.valuation.services.PricingService;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
@@ -27,13 +27,13 @@ import java.util.List;
 public class SwapValuationResource {
 
     private final PricingService pricingService;
-    private final MarkitValautionsProcessor resultProcessor;
+    private final MarkitValuationProcessor resultProcessor;
     private final VelocityEngine velocityEngine;
     private final ModelMapper mapper;
 
     @Inject
     public SwapValuationResource(PricingService pricingService,
-                                 MarkitValautionsProcessor resultProcessor,
+                                 MarkitValuationProcessor resultProcessor,
                                  VelocityEngine velocityEngine,
                                  ModelMapper mapper) {
         this.pricingService = pricingService;

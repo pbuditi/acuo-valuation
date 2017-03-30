@@ -1,11 +1,13 @@
 package com.acuo.valuation.providers.acuo;
 
+import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Trade;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
@@ -14,10 +16,11 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
-import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
+import com.acuo.valuation.providers.markit.services.*;
 import com.acuo.valuation.services.PricingService;
+import com.acuo.valuation.util.ReportHelper;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +34,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -51,12 +55,6 @@ public class TradeUploadServiceTest {
     TradeUploadServiceImpl service;
 
     @Inject
-    TradeService<IRS> irsService;
-
-    @Inject
-    TradeService<FRA> fraService;
-
-    @Inject
     TradingAccountService accountService;
 
     @Inject
@@ -65,14 +63,8 @@ public class TradeUploadServiceTest {
     @Inject
     ImportService importService;
 
-    @Mock
-    PricingService pricingService;
-
-    @Mock
-    MarkitValautionsProcessor processor;
-
-    @Mock
-    PricingResults pricingResults;
+    @Inject
+    TradeService<Trade> irsService;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -81,36 +73,29 @@ public class TradeUploadServiceTest {
     public ResourceFile excel = new ResourceFile("/excel/TradePortfolio.xlsx");
 
     @Before
-    public void setup() throws FileNotFoundException {
+    public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        service = new TradeUploadServiceImpl(irsService, fraService, accountService, portfolioService, pricingService, processor);
+        service = new TradeUploadServiceImpl(accountService, portfolioService, irsService);
         importService.reload();
-
     }
 
     @Test
     public void testUploadOneIRS() {
-        service.uploadTradesFromExcel(oneIRS.createInputStream());
+        List<String> tradeIds = service.uploadTradesFromExcel(oneIRS.createInputStream());
+        assertThat(tradeIds).isNotEmpty();
     }
 
     @Test
     public void testUploadAll() throws IOException {
-        when(pricingService.priceSwapTrades(any(List.class))).thenReturn(pricingResults);
-        when(processor.process(pricingResults)).thenReturn(Collections.emptyList());
-        service.uploadTradesFromExcel(excel.createInputStream());    }
+        List<String> tradeIds = service.uploadTradesFromExcel(excel.createInputStream());
+        assertThat(tradeIds).isNotEmpty().doesNotContainNull();
+    }
 
     @Test
     public void testHandleIRSOneRowUpdate() throws IOException {
         service.uploadTradesFromExcel(oneIRS.createInputStream());
         service.uploadTradesFromExcel(oneIRS.createInputStream());
-
-        Iterable<IRS> irses = irsService.findAll();
-        int count = 0;
-        for (IRS irs : irses) {
-            log.debug(irs.getId() + " id of irs");
-            count ++;
-        }
-
-        Assert.assertTrue(count == 2);
+        Iterable<Trade> irses = irsService.findAll();
+        assertThat(irses).isNotEmpty().hasSize(2);
     }
 }

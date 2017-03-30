@@ -3,7 +3,7 @@ package com.acuo.valuation.web.resources;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.providers.acuo.MarkitValautionsProcessor;
+import com.acuo.valuation.providers.acuo.MarkitValuationProcessor;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.web.entities.UploadForm;
@@ -16,7 +16,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -27,12 +26,12 @@ public class UploadResource {
 
     private final TradeUploadService irsService;
     private final PricingService pricingService;
-    private final MarkitValautionsProcessor resultProcessor;
+    private final MarkitValuationProcessor resultProcessor;
 
     @Inject
     public UploadResource(TradeUploadService irsService,
                           PricingService pricingService,
-                          MarkitValautionsProcessor resultProcessor) {
+                          MarkitValuationProcessor resultProcessor) {
         this.irsService = irsService;
         this.pricingService = pricingService;
         this.resultProcessor = resultProcessor;

@@ -1,10 +1,7 @@
 package com.acuo.valuation.protocol.results;
 
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
-import nl.jqno.equalsverifier.EqualsVerifier;
-import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
-import org.meanbean.test.BeanTester;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +44,5 @@ public class MarkitValuationTest {
         MarkitValuation valuation = new MarkitValuation(values.toArray(new MarkitValue[values.size()]));
 
         assertThat(valuation.getPv()).isEqualTo(6.0d);
-    }
-
-    @Test
-    public void equalsAndHashCodeContract() throws Exception {
-        EqualsVerifier.forClass(MarkitValuation.class)
-                      .suppress(Warning.STRICT_INHERITANCE, Warning.NONFINAL_FIELDS)
-                      .verify();
     }
 }
