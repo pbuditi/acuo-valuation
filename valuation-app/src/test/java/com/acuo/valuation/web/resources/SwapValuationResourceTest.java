@@ -4,6 +4,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
+import com.acuo.persist.core.ImportService;
 import com.acuo.persist.modules.*;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.*;
@@ -93,10 +94,14 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
     @Inject
     SwapValuationResource resource;
 
+    @Inject
+    ImportService importService;
+
     @Before
     public void setup() throws IOException {
         dispatcher = createDispatcher(JacksonObjectMapperProvider.class);
         dispatcher.getRegistry().addSingletonResource(resource);
+        importService.reload();
     }
 
     private void setMockMarkitResponse() throws IOException {
