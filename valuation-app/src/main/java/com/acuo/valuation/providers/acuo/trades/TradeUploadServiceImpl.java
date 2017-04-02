@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.acuo;
+package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.persist.entity.*;
 import com.acuo.persist.services.PortfolioService;
