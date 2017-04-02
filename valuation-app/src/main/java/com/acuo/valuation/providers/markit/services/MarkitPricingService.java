@@ -62,6 +62,7 @@ public class MarkitPricingService implements PricingService {
     public PricingResults priceTradesUnder(PortfolioId portfolioId) {
         Iterable<Trade> all = tradeService.findByPortfolioId(portfolioId);
         List<SwapTrade> filtered = StreamSupport.stream(all.spliterator(), false)
+                .map(trade -> tradeService.findById(trade.getTradeId(), 2))
                 .filter(trade -> trade instanceof IRS)
                 .map(trade -> (IRS) trade)
                 .filter(irs -> "Bilateral".equalsIgnoreCase(irs.getTradeType()))
