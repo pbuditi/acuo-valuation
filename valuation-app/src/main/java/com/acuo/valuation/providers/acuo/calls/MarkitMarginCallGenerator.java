@@ -54,9 +54,8 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator implements Ma
         log.info("generating margin calls for {}", portfolioSet);
         List<MarginCall> marginCalls = portfolioSet.stream()
                 .map(portfolioId -> portfolioService.findById(portfolioId.toString(), 2))
-                .flatMap(portfolio -> portfolio.getValuations().stream())
-                .filter(valuation -> valuation.getDate().equals(date))
-                .map(valuation -> generateMarginCall((TradeValuation)valuation, CallStatus.Expected))
+                .map(portfolio -> portfolio.getValuation())
+                .map(valuation -> generateMarginCall((TradeValuation)valuation, date, CallStatus.Expected))
                 .collect(toList());
         log.info("{} margin calls generated", marginCalls.size());
         return marginCalls;

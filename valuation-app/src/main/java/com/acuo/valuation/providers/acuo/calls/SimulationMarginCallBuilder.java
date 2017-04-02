@@ -1,9 +1,6 @@
 package com.acuo.valuation.providers.acuo.calls;
 
-import com.acuo.persist.entity.CallStatus;
-import com.acuo.persist.entity.MarginCall;
-import com.acuo.persist.entity.Portfolio;
-import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.*;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.*;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
@@ -69,7 +66,7 @@ public class SimulationMarginCallBuilder extends MarginCallGenerator implements 
             Portfolio portfolio = portfolioService.findById(portfolioId.toString());
 
             Valuation valuation = valuationService.findById(date.format(dateTimeFormatter) + "-" + portfolio.getPortfolioId());
-            generateMarginCall(valuation, CallStatus.Unrecon);
+            generateMarginCall((TradeValuation) valuation, date, CallStatus.Unrecon);
 
         }
         return marginCalls;

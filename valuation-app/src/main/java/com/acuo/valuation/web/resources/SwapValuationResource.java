@@ -1,13 +1,19 @@
 package com.acuo.valuation.web.resources;
 
+import com.acuo.common.model.assets.Assets;
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
+import com.acuo.persist.services.AssetService;
 import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
+import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.services.PricingService;
+import com.acuo.valuation.utils.AssetsBuilder;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -32,16 +39,25 @@ public class SwapValuationResource {
     private final MarkitValuationProcessor resultProcessor;
     private final VelocityEngine velocityEngine;
     private final ModelMapper mapper;
+    private final ReutersService reutersService;
+    private final AssetsPersistService assetsPersistService;
+    private final AssetService assetService;
 
     @Inject
     public SwapValuationResource(PricingService pricingService,
                                  MarkitValuationProcessor resultProcessor,
                                  VelocityEngine velocityEngine,
-                                 ModelMapper mapper) {
+                                 ModelMapper mapper,
+                                 ReutersService reutersService,
+                                 AssetsPersistService assetsPersistService,
+                                 AssetService assetService) {
         this.pricingService = pricingService;
         this.resultProcessor = resultProcessor;
         this.velocityEngine = velocityEngine;
         this.mapper = mapper;
+        this.reutersService = reutersService;
+        this.assetsPersistService  = assetsPersistService;
+        this.assetService = assetService;
     }
 
     @GET
@@ -108,5 +124,17 @@ public class SwapValuationResource {
         List<MarginCall> marginCalls = resultProcessor.process(results);
         MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
+    }
+
+    @GET
+    @Path("/priceAsset/{id}")
+    @Timed
+    public Response priceAssets(@PathParam("id") String assetId) throws Exception
+    {
+        Asset asset = assetService.findById(assetId);
+        Assets assets = AssetsBuilder.buildAssets(asset);
+        List<Assets> assetsList = reutersService.send(assets);
+        assetsList.stream().forEach(a -> assetsPersistService.persist(a));
+        return Response.ok().build();
     }
 }
