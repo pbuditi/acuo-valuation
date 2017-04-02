@@ -1,12 +1,9 @@
 package com.acuo.valuation.providers.acuo;
 
-import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.FRA;
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
@@ -16,27 +13,20 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
-import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
-import com.acuo.valuation.providers.markit.services.*;
-import com.acuo.valuation.services.PricingService;
-import com.acuo.valuation.util.ReportHelper;
+import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.inject.Inject;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
