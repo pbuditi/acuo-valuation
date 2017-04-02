@@ -34,6 +34,23 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_VALUATION_CLARUS_CONNECTION_TIMEOUT = "acuo.clarus.connection.timeout";
     public static final String ACUO_VALUATION_CLARUS_USE_PROXY = "acuo.clarus.use.proxy";
 
+    public static final String ACUO_VALUATION_REUTERS_SCHEME = "acuo.reuters.scheme";
+    public static final String ACUO_VALUATION_REUTERS_HOST = "acuo.reuters.host";
+    public static final String ACUO_VALUATION_REUTERS_PORT = "acuo.reuters.port";
+    public static final String ACUO_VALUATION_REUTERS_UPLOAD_PATH = "acuo.reuters.upload.path";
+    public static final String ACUO_VALUATION_REUTERS_API_KEY = "acuo.reuters.api.key";
+    public static final String ACUO_VALUATION_REUTERS_HEADER_POSITION = "acuo.reuters.header.position";
+    public static final String ACUO_VALUATION_REUTERS_HEADER_APPLICATION_ID = "acuo.reuters.header.application.id";
+    public static final String ACUO_VALUATION_REUTERS_CONNECTION_TIMEOUT = "acuo.reuters.connection.timeout";
+    public static final String ACUO_VALUATION_REUTERS_USE_PROXY = "acuo.reuters.use.proxy";
+
+
+    public static final String NEO4J_OGM_URL = "neo4j.ogm.url";
+    public static final String NEO4J_OGM_USERNAME = "neo4j.ogm.username";
+    public static final String NEO4J_OGM_PASSWORD = "neo4j.ogm.password";
+    public static final String NEO4J_OGM_DRIVER = "neo4j.ogm.driver";
+    public static final String NEO4J_OGM_PACKAGES = "neo4j.ogm.packages";
+
     private PropertiesHelper(Configuration configuration) {
         super(configuration);
     }
