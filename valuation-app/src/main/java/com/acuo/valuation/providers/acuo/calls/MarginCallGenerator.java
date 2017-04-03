@@ -172,9 +172,13 @@ public abstract class MarginCallGenerator {
             if (direction.equals("IN")) {
                 marginStatement.setDirectedTo(counterpart);
                 marginStatement.setSentFrom(client);
+                marginStatement.setPendingCash(agreement.getClientSignsRelation().getInitialPending() + agreement.getClientSignsRelation().getVariationPending());
+                marginStatement.setPendingNonCash(agreement.getClientSignsRelation().getInitialPendingNonCash() + agreement.getClientSignsRelation().getVariationPendingNonCash());
             } else {
                 marginStatement.setDirectedTo(client);
                 marginStatement.setSentFrom(counterpart);
+                marginStatement.setPendingCash(agreement.getCounterpartSignsRelation().getInitialPending() + agreement.getCounterpartSignsRelation().getVariationPending());
+                marginStatement.setPendingNonCash(agreement.getCounterpartSignsRelation().getInitialPendingNonCash() + agreement.getCounterpartSignsRelation().getVariationPendingNonCash());
             }
 
             marginStatement.setAgreement(agreement);
