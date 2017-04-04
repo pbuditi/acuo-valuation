@@ -36,7 +36,8 @@ dependencies {
             "org.xmlunit:xmlunit-matchers:2.2.0",
             "net.javacrumbs.json-unit:json-unit:1.12.1",
             "net.javacrumbs.json-unit:json-unit-fluent:1.12.1",
-            "com.jayway.jsonpath:json-path-assert:2.2.0"
+            "com.jayway.jsonpath:json-path-assert:2.2.0",
+            "com.googlecode.junit-toolbox:junit-toolbox:2.2"
     )
 }
 
