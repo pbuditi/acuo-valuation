@@ -14,6 +14,7 @@ import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
+import com.googlecode.junittoolbox.MultithreadingTester;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,7 +27,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
@@ -87,5 +87,14 @@ public class TradeUploadServiceTest {
         service.uploadTradesFromExcel(oneIRS.createInputStream());
         Iterable<Trade> irses = irsService.findAll();
         assertThat(irses).isNotEmpty().hasSize(2);
+    }
+
+    @Test
+    public void testConcurrentUpload() {
+        new MultithreadingTester().numThreads(2).numRoundsPerThread(1).add(() -> {
+            service.uploadTradesFromExcel(oneIRS.createInputStream());
+            Thread.sleep(1000);
+            return null;
+        }).run();
     }
 }
