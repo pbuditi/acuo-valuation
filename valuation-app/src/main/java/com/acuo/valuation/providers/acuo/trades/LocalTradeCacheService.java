@@ -1,9 +1,9 @@
 package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.valuation.services.TradeCacheService;
-import groovy.lang.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
