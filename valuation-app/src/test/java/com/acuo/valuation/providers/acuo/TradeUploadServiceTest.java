@@ -91,7 +91,7 @@ public class TradeUploadServiceTest {
 
     @Test
     public void testConcurrentUpload() {
-        new MultithreadingTester().numThreads(2).numRoundsPerThread(1).add(() -> {
+        new MultithreadingTester().numThreads(10).numRoundsPerThread(1).add(() -> {
             service.uploadTradesFromExcel(oneIRS.createInputStream());
             Thread.sleep(1000);
             return null;

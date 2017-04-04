@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class TradeUploadServiceImpl implements TradeUploadService {
 
+    private static Object lock = new Object();
     final SwapExcelParser parser = new SwapExcelParser();
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
@@ -75,7 +76,9 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             log.error(e.getMessage(), e);
         }
 
-        tradeService.createOrUpdate(tradeIdList);
+        synchronized(lock){
+            tradeService.createOrUpdate(tradeIdList);
+        }
 
         return tradeIdList.stream().map(Trade::getTradeId).collect(toList());
     }
