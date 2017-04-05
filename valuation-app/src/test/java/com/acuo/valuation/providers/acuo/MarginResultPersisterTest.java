@@ -28,7 +28,7 @@ import org.mockito.MockitoAnnotations;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 @RunWith(GuiceJUnitRunner.class)
@@ -70,7 +70,7 @@ public class MarginResultPersisterTest {
         MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d, null);
         Result<MarginValuation> result = Result.success(marginValuation);
         MarginResults marginResults = new MarginResults();
-        marginResults.setResults(Arrays.asList(result));
+        marginResults.setResults(Collections.singletonList(result));
         marginResults.setPortfolioId("p2");
         LocalDate localDate = LocalDate.now();
         marginResults.setValuationDate(localDate);
@@ -88,9 +88,6 @@ public class MarginResultPersisterTest {
                 TradeValue tradeValue = (TradeValue)value.getValue();
                 Assert.assertEquals(tradeValue.getPv().doubleValue(), 1d, 0);
             }
-
         }
-
-
     }
 }

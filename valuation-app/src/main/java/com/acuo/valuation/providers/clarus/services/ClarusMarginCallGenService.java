@@ -1,7 +1,19 @@
 package com.acuo.valuation.providers.clarus.services;
 
 import com.acuo.common.model.margin.Types;
-import com.acuo.persist.entity.*;
+import com.acuo.persist.entity.Agreement;
+import com.acuo.persist.entity.CallStatus;
+import com.acuo.persist.entity.ClientSignsRelation;
+import com.acuo.persist.entity.CounterpartSignsRelation;
+import com.acuo.persist.entity.LegalEntity;
+import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.entity.MarginStatement;
+import com.acuo.persist.entity.MarginValuation;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.StatementItem;
+import com.acuo.persist.entity.Step;
+import com.acuo.persist.entity.TradeValue;
+import com.acuo.persist.entity.Valuation;
 import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginStatementService;
