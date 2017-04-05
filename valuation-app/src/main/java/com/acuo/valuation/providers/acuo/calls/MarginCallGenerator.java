@@ -52,7 +52,7 @@ public abstract class MarginCallGenerator {
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
 
-        Double balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
+        Double balance = clientSignsRelation.getVariationBalance() != null ? clientSignsRelation.getVariationBalance() : 0;
         Double pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
 
         if (!currencyOfValue.equals(agreement.getCurrency()))
@@ -71,7 +71,7 @@ public abstract class MarginCallGenerator {
         if (diff > 0) {
             MTA = clientSignsRelation.getMTA() != null ? clientSignsRelation.getMTA() : 0;
             rounding = clientSignsRelation.getRounding() != null ? clientSignsRelation.getRounding() : 0;
-            balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
+            balance = clientSignsRelation.getVariationBalance() != null ? clientSignsRelation.getVariationBalance() : 0;
             pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
         } else {
             MTA = counterpartSignsRelation.getMTA() != null ? counterpartSignsRelation.getMTA() : 0;
