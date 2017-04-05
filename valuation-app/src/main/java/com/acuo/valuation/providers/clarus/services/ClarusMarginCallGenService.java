@@ -47,7 +47,7 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
 
 
-        Double balance = clientSignsRelation.getInitialMarginBalance() != null ? clientSignsRelation.getInitialMarginBalance() : 0;
+        Double balance = clientSignsRelation.getInitialBalance() != null ? clientSignsRelation.getInitialBalance() : 0;
         Double pendingCollateral = clientSignsRelation.getInitialPending() != null ? clientSignsRelation.getInitialPending() : 0;
 
         if (!currencyOfValue.equals(agreement.getCurrency()))
