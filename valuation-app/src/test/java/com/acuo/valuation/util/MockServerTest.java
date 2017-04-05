@@ -25,9 +25,9 @@ public class MockServerTest {
     @Rule
     public ResourceFile result = new ResourceFile("/markit/responses/markit-test-01.xml");
 
-    MockServer server;
+    private MockServer server;
 
-    ClientEndPoint client;
+    ClientEndPoint<MarkitEndPointConfig> client;
 
     @Before
     public void setUp() throws Exception {

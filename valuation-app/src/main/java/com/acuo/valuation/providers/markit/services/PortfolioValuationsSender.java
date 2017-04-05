@@ -9,18 +9,10 @@ import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.utils.LocalDateUtils;
-import com.opengamma.strata.basics.date.HolidayCalendar;
-import com.opengamma.strata.basics.date.HolidayCalendarId;
-import com.opengamma.strata.basics.date.HolidayCalendarIds;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -29,7 +21,7 @@ public class PortfolioValuationsSender implements Sender {
 
     private static final String STILL_PROCESSING_KEY = "Markit upload still processing.";
 
-    private final ClientEndPoint client;
+    private final ClientEndPoint<MarkitEndPointConfig> client;
     private final Transformer<SwapTrade> transformer;
     private final ReportParser reportParser;
 
@@ -86,7 +78,6 @@ public class PortfolioValuationsSender implements Sender {
         log.info("with valuation date set to {}",valuationDate);
         TransformerContext context = new TransformerContext();
         context.setValueDate(valuationDate);
-        String pvRequest = transformer.serialise(swaps, context);
-        return pvRequest;
+        return transformer.serialise(swaps, context);
     }
 }
