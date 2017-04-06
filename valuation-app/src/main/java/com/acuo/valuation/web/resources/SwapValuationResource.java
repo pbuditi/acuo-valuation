@@ -1,6 +1,7 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.assets.Assets;
+import com.acuo.common.model.results.AssetValuation;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.MarginCall;
@@ -26,6 +27,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -129,12 +131,27 @@ public class SwapValuationResource {
     @GET
     @Path("/priceAsset/{id}")
     @Timed
-    public Response priceAssets(@PathParam("id") String assetId) throws Exception
+    public String priceAssets(@PathParam("id") String assetId) throws Exception
     {
         Asset asset = assetService.findById(assetId);
         Assets assets = AssetsBuilder.buildAssets(asset);
-        List<Assets> assetsList = reutersService.send(assets);
-        assetsList.stream().forEach(a -> assetsPersistService.persist(a));
-        return Response.ok().build();
+        List<Assets> assetsList = new ArrayList<>();
+        assetsList.add(assets);
+        List<AssetValuation> response = reutersService.send(assetsList);
+        response.stream().forEach(a -> assetsPersistService.persist(a));
+        return assetsList.size() + " asset(s) sent and " + response.size() + " valuation received";
+    }
+
+    @GET
+    @Path("/priceAllAsset")
+    @Timed
+    public String priceAllAssets() throws Exception
+    {
+        List<Assets> assetsList = new ArrayList<>();
+        Iterable<Asset> assetIterable = assetService.findAll();
+        assetIterable.forEach(asset -> assetsList.add(AssetsBuilder.buildAssets(asset)));
+        List<AssetValuation> response = reutersService.send(assetsList);
+        response.stream().forEach(a -> assetsPersistService.persist(a));
+        return assetsList.size() + " asset(s) sent and " + response.size() + " valuation received";
     }
 }

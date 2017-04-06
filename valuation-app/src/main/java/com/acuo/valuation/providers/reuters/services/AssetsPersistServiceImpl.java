@@ -1,6 +1,5 @@
 package com.acuo.valuation.providers.reuters.services;
 
-import com.acuo.common.model.assets.*;
 import com.acuo.persist.entity.*;
 import com.acuo.persist.entity.AssetValuation;
 import com.acuo.persist.services.AssetService;
@@ -28,9 +27,8 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
     }
 
 
-    public void persist(Assets assets) {
-
-        Asset asset = assetService.findById(assets.getAssetId());
+    public void persist(com.acuo.common.model.results.AssetValuation valuation) {
+        Asset asset = assetService.findById(valuation.getAssetId());
         AssetValuation assetValuation = null;
         if (asset.getValuation() == null) {
             assetValuation = new AssetValuation();
@@ -46,14 +44,13 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
 
         for (AssetValueRelation value : values) {
             AssetValue assetValue = value.getValue();
-            if (value.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(assets.getAssetValuation().getValuationDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))) {
+            if (value.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(valuation.getValuationDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))) {
                 valueService.delete(assetValue);
                 break;
             }
         }
 
         AssetValue assetValue = new AssetValue();
-        com.acuo.common.model.assets.AssetValuation valuation = assets.getAssetValuation();
         //assetValue.setDate(valuation.getValuationDateTime());
         assetValue.setCoupon(valuation.getCoupon());
         assetValue.setNominalCurrency(valuation.getNominalCurrency());
