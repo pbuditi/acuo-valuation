@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
@@ -70,17 +71,19 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
         Currency currency = pricingResults.getCurrency();
 
         List<Result<MarkitValuation>> results = pricingResults.getResults();
-        Set<PortfolioId> portfolioIds = results.stream()
+        List<TradeValue> values = results.stream()
                 .flatMap(markitValuationResult -> markitValuationResult.stream())
                 .flatMap(markitValuation -> markitValuation.getValues().stream())
-                .map(value -> {
-                    Valuation valuation = convert(date, currency, value);
-                    return valuation.getPortfolio().getPortfolioId();
-                }).collect(toSet());
+                .map(value -> convert(date, currency, value))
+                .collect(toList());
+        valueService.save(values);
+        Set<PortfolioId> portfolioIds = values.stream()
+                .map(value -> value.getValuation().getValuation().getPortfolio().getPortfolioId())
+                .collect(toSet());
         return portfolioIds;
     }
 
-    private Valuation convert(LocalDate date, Currency currency, Value value) {
+    private TradeValue convert(LocalDate date, Currency currency, Value value) {
         String tradeId = value.getTradeId();
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
 
@@ -105,9 +108,8 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
         valueRelation.setValue(newValue);
         newValue.setValuation(valueRelation);
 
-        valueService.createOrUpdate(newValue);
-        valuation = valuationService.getTradeValuationFor(TradeId.fromString(tradeId));
-        return valuation;
+        //valueService.createOrUpdate(newValue);
+        return newValue;//valuation.getPortfolio().getPortfolioId();
     }
 
 
