@@ -40,7 +40,7 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
 
     @Override
     public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
-        log.info("processing item {}", processorItem);
+        log.info("processing markit valuation items");
         PricingResults results = processorItem.getResults();
         Set<PortfolioId> portfolioIds = persist(results);
         processorItem.setPortfolioIds(portfolioIds);
