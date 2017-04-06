@@ -1,9 +1,6 @@
 package com.acuo.valuation.providers.acuo.calls;
 
-import com.acuo.persist.entity.Portfolio;
-import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.Valuation;
-import com.acuo.persist.entity.ValueRelation;
+import com.acuo.persist.entity.*;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
@@ -46,13 +43,13 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
         //parse the result
         String currency = results.getCurrency();
         Iterator<Result<MarginValuation>> resultIterator = results.getResults().iterator();
-        TradeValue newValue = new TradeValue();
-        ValueRelation valueRelation = new ValueRelation();
+        MarginValue newValue = new MarginValue();
+        MarginValueRelation valueRelation = new MarginValueRelation();
         while (resultIterator.hasNext()) {
             Result<MarginValuation> result = resultIterator.next();
             MarginValuation marginValuation = result.getValue();
             if (marginValuation.getName().equals(currency)) {
-                newValue.setPv(marginValuation.getMargin());
+                newValue.setAmount(marginValuation.getMargin());
                 newValue.setSource("Clarus");
                 newValue.setCurrency(Currency.of(currency));
                 //newValue.setDate(results.getValuationDate());
@@ -61,28 +58,23 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
             }
         }
 
-        Valuation valuation = portfolio.getValuation();
+        com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(PortfolioId.fromString(portfolioId));
 
-        if(valuation == null)
-        {
-            com.acuo.persist.entity.MarginValuation marginValuation = new com.acuo.persist.entity.MarginValuation();
-            marginValuation.setPortfolio(portfolio);
-            valuationService.createOrUpdate(marginValuation);
-            valuation = marginValuation;
+        if (valuation == null) {
+            valuation = new com.acuo.persist.entity.MarginValuation();
+            valuation.setPortfolio(portfolio);
+            valuationService.createOrUpdate(valuation);
         }
-        else
-            valuation = valuationService.find(valuation.getId());
 
-        if(valuation.getValues() == null)
+        if (valuation.getValues() == null)
             valuation.setValues(new HashSet<>());
 
 
-        Set<com.acuo.persist.entity.ValueRelation> values = valuation.getValues();
-        for(com.acuo.persist.entity.ValueRelation existedValue : values)
-        {
-            TradeValue tradeValue = (TradeValue)existedValue.getValue();
-            if(existedValue.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(results.getValuationDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))) && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equals("Clarus"))
-            {
+        Set<MarginValueRelation> values = valuation.getValues();
+        for (MarginValueRelation existedValue : values) {
+            MarginValue tradeValue = existedValue.getValue();
+            if (existedValue.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(results.getValuationDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+                    && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equals("Clarus")) {
                 valueService.delete(tradeValue.getId());
                 break;
             }

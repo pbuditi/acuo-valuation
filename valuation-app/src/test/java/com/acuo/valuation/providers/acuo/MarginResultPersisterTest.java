@@ -3,10 +3,8 @@ package com.acuo.valuation.providers.acuo;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.Portfolio;
-import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.Valuation;
-import com.acuo.persist.entity.ValueRelation;
+import com.acuo.persist.entity.*;
+import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
@@ -76,17 +74,15 @@ public class MarginResultPersisterTest {
         marginResults.setValuationDate(localDate);
         marginResults.setCurrency("USD");
         persister.persist(marginResults);
-        Portfolio portfolio = portfolioService.findById("p2");
-        Valuation valuation = portfolio.getValuation();
+        com.acuo.persist.entity.MarginValuation valuation = valuationService.getMarginValuationFor(PortfolioId.fromString("p2"));
         Assert.assertTrue(valuation!= null);
-        valuation = valuationService.find(valuation.getId());
-        Set<ValueRelation> values = valuation.getValues();
+        Set<MarginValueRelation> values = valuation.getValues();
         Assert.assertTrue(values != null && values.size() > 0);
-        for (ValueRelation value : values) {
+        for (MarginValueRelation value : values) {
             if(value.getDateTime().equals(localDate))
             {
-                TradeValue tradeValue = (TradeValue)value.getValue();
-                Assert.assertEquals(tradeValue.getPv().doubleValue(), 1d, 0);
+                MarginValue tradeValue = value.getValue();
+                Assert.assertEquals(tradeValue.getAmount().doubleValue(), 1d, 0);
             }
         }
     }
