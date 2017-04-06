@@ -10,27 +10,29 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 public abstract class MarginCallGenerator {
 
-    protected static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
-    protected final ValuationService valuationService;
-    protected final PortfolioService portfolioService;
-    protected final MarginStatementService marginStatementService;
-    protected final AgreementService agreementService;
+    final ValuationService valuationService;
+    final PortfolioService portfolioService;
+    private final MarginStatementService marginStatementService;
+    private final AgreementService agreementService;
     protected Double pv = null;
 
     private final CurrencyService currencyService;
     private DecimalFormat df = new DecimalFormat("#.##");
-    protected com.opengamma.strata.basics.currency.Currency currencyOfValue = null;
+    private com.opengamma.strata.basics.currency.Currency currencyOfValue = null;
 
-    public MarginCallGenerator(ValuationService valuationService,
-                                       PortfolioService portfolioService,
-                                       MarginStatementService marginStatementService,
-                                       AgreementService agreementService,
-                                       CurrencyService currencyService) {
+    MarginCallGenerator(ValuationService valuationService,
+                        PortfolioService portfolioService,
+                        MarginStatementService marginStatementService,
+                        AgreementService agreementService,
+                        CurrencyService currencyService) {
         this.valuationService = valuationService;
         this.portfolioService = portfolioService;
         this.marginStatementService = marginStatementService;
@@ -38,17 +40,22 @@ public abstract class MarginCallGenerator {
         this.currencyService = currencyService;
     }
 
-    protected MarginCall generateMarginCall(TradeValuation valuation, LocalDate date,  CallStatus callStatus) {
-        valuation.getValues()
-                .stream().filter(valueRelation -> valueRelation.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
-                .map(valueRelation -> (TradeValue)valueRelation.getValue())
+    MarginCall generateMarginCall(TradeValuation valuation, LocalDate date, CallStatus callStatus) {
+        Set<TradeValueRelation> values = valuation.getValues();
+        if (values != null) {
+            values
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(valueRelation -> valueRelation.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
+                .map(TradeValueRelation::getValue)
                 .filter(value -> value.getSource().equals("Markit"))
                 .forEach(value -> {
                     pv = value.getPv();
                     currencyOfValue = value.getCurrency();
                 });
+        }
         //reload the agreement object due to the depth fetch
-        Agreement agreement = valuation.getPortfolio().getAgreement();
+        Agreement agreement = agreementService.agreementFor(valuation.getPortfolio().getPortfolioId());
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
 
@@ -63,10 +70,8 @@ public abstract class MarginCallGenerator {
 
         Double diff = pv - (balance + pendingCollateral);
 
-
         double MTA;
         double rounding;
-
 
         if (diff > 0) {
             MTA = clientSignsRelation.getMTA() != null ? clientSignsRelation.getMTA() : 0;
@@ -80,21 +85,15 @@ public abstract class MarginCallGenerator {
             pendingCollateral = counterpartSignsRelation.getVariationPending() != null ? counterpartSignsRelation.getVariationPending() : 0;
         }
 
-
-        //if (Math.abs(diff) <= MTA)
-        //    return null;
-//
-//
         //new mc
         LocalDate valuationDate = LocalDate.now();
         LocalDate callDate = valuationDate.plusDays(1);
         Types.MarginType marginType = Types.MarginType.Variation;
         String todayFormatted = valuationDate.format(dateTimeFormatter);
-        String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-" + marginType.name().toString();
+        String mcId = todayFormatted + "-" + agreement.getAgreementId() + "-" + marginType.name();
         String direction;
         Double deliverAmount = 0d;
         Double returnAmount = 0d;
-        Double excessAmount = diff;
         Double marginAmount = diff;
         Double exposure;
 
@@ -122,9 +121,9 @@ public abstract class MarginCallGenerator {
 
         //round amount
         if (rounding != 0) {
-            if (deliverAmount != null && deliverAmount.doubleValue() != 0)
+            if (deliverAmount != 0)
                 deliverAmount = deliverAmount / Math.abs(deliverAmount) * Math.ceil(Math.abs(deliverAmount) / rounding) * rounding;
-            if (returnAmount != null && returnAmount.doubleValue() != 0)
+            if (returnAmount != 0)
                 returnAmount = returnAmount / Math.abs(returnAmount) * Math.floor(Math.abs(returnAmount) / rounding) * rounding;
         }
         marginAmount = deliverAmount + returnAmount;
@@ -136,7 +135,7 @@ public abstract class MarginCallGenerator {
                 direction,
                 valuationDate,
                 agreement.getCurrency().getCode(),
-                format(excessAmount),
+                format(diff),
                 format(balance),
                 format(deliverAmount),
                 format(returnAmount),

@@ -1,19 +1,7 @@
 package com.acuo.valuation.providers.clarus.services;
 
 import com.acuo.common.model.margin.Types;
-import com.acuo.persist.entity.Agreement;
-import com.acuo.persist.entity.CallStatus;
-import com.acuo.persist.entity.ClientSignsRelation;
-import com.acuo.persist.entity.CounterpartSignsRelation;
-import com.acuo.persist.entity.LegalEntity;
-import com.acuo.persist.entity.MarginCall;
-import com.acuo.persist.entity.MarginStatement;
-import com.acuo.persist.entity.MarginValuation;
-import com.acuo.persist.entity.Portfolio;
-import com.acuo.persist.entity.StatementItem;
-import com.acuo.persist.entity.Step;
-import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.Valuation;
+import com.acuo.persist.entity.*;
 import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginStatementService;
@@ -48,12 +36,15 @@ public class ClarusMarginCallGenService implements ClearedMarginCallGenService {
     }
 
     @Override
-    public MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation<MarginValuation> valuation, LocalDate date) {
-        valuation.getValues().stream().filter(valueRelation -> valueRelation.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))).map(valueRelation -> (TradeValue)valueRelation.getValue()).filter(value -> value.getSource().equals("Markit")).forEach(value -> {
-            pv = value.getPv();
-            currencyOfValue = value.getCurrency();
-        });
-
+    public MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, MarginValuation valuation, LocalDate date) {
+        valuation.getValues()
+                .stream()
+                .filter(valueRelation -> valueRelation.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
+                .map(valueRelation -> valueRelation.getValue())
+                .filter(value -> value.getSource().equals("Markit")).forEach(value -> {
+                    pv = value.getAmount();
+                    currencyOfValue = value.getCurrency();
+                });
 
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
