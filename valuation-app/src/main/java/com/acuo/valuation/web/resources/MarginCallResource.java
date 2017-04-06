@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -50,7 +51,7 @@ public class MarginCallResource {
     @Path("/generate/{tnxId}")
     public Response generate(@PathParam("tnxId") String tnxId) {
         log.info("Generating margin calls for transaction {}", tnxId);
-        List<String> trades = cacheService.get(tnxId);
+        List<String> trades = cacheService.remove(tnxId);
         PricingResults results = pricingService.priceTradeIds(trades);
         List<MarginCall> marginCalls = resultProcessor.process(results);
         return Response.status(OK).entity(MarginCallDetail.of(marginCalls)).build();
@@ -62,15 +63,25 @@ public class MarginCallResource {
     @Path("/async/generate/{tnxId}")
     public void asyncGenerate(@Suspended AsyncResponse asyncResp, @PathParam("tnxId") String tnxId) {
         log.info("Async generating margin calls for transaction {}", tnxId);
-        waiters.put(tnxId, asyncResp);
-        CompletableFuture.supplyAsync(() -> {
-            List<String> trades = cacheService.get(tnxId);
-            PricingResults results = pricingService.priceTradeIds(trades);
-            return resultProcessor.process(results);
-        })
-        .thenApply((result) -> {
-            final AsyncResponse asyncResponse = waiters.get(tnxId);
-            return asyncResponse.resume(Response.status(OK).entity(MarginCallDetail.of(result)).build());
-        });
+        if (cacheService.contains(tnxId)) {
+            waiters.put(tnxId, asyncResp);
+            CompletableFuture.supplyAsync(() -> {
+                List<String> trades = cacheService.remove(tnxId);
+                PricingResults results = pricingService.priceTradeIds(trades);
+                return resultProcessor.process(results);
+            })
+                    .thenApply((result) -> {
+                        final AsyncResponse asyncResponse = waiters.get(tnxId);
+                        return asyncResponse.resume(Response.status(OK).entity(MarginCallDetail.of(result)).build());
+                    })
+                    .exceptionally(exp -> {
+                                log.error("exception occured in async generate call ", exp);
+                                final AsyncResponse asyncResponse = waiters.get(tnxId);
+                                return asyncResponse.resume(exp);
+                            }
+                    );
+        } else {
+            asyncResp.resume(new NotFoundException("transaction [" + tnxId + "] not found"));
+        }
     }
 }
