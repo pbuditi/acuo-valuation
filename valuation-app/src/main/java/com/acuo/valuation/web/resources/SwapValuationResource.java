@@ -131,7 +131,7 @@ public class SwapValuationResource {
     @GET
     @Path("/priceAsset/{id}")
     @Timed
-    public Response priceAssets(@PathParam("id") String assetId) throws Exception
+    public String priceAssets(@PathParam("id") String assetId) throws Exception
     {
         Asset asset = assetService.findById(assetId);
         Assets assets = AssetsBuilder.buildAssets(asset);
@@ -139,19 +139,19 @@ public class SwapValuationResource {
         assetsList.add(assets);
         List<AssetValuation> response = reutersService.send(assetsList);
         response.stream().forEach(a -> assetsPersistService.persist(a));
-        return Response.ok().build();
+        return assetsList.size() + " asset(s) sent and " + response.size() + " valuation received";
     }
 
     @GET
     @Path("/priceAllAsset")
     @Timed
-    public Response priceAssets() throws Exception
+    public String priceAllAssets() throws Exception
     {
         List<Assets> assetsList = new ArrayList<>();
         Iterable<Asset> assetIterable = assetService.findAll();
         assetIterable.forEach(asset -> assetsList.add(AssetsBuilder.buildAssets(asset)));
         List<AssetValuation> response = reutersService.send(assetsList);
         response.stream().forEach(a -> assetsPersistService.persist(a));
-        return Response.ok().build();
+        return assetsList.size() + " asset(s) sent and " + response.size() + " valuation received";
     }
 }
