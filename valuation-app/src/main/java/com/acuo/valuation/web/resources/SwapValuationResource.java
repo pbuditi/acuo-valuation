@@ -26,6 +26,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -133,8 +134,23 @@ public class SwapValuationResource {
     {
         Asset asset = assetService.findById(assetId);
         Assets assets = AssetsBuilder.buildAssets(asset);
-        List<Assets> assetsList = reutersService.send(assets);
-        assetsList.stream().forEach(a -> assetsPersistService.persist(a));
+        List<Assets> assetsList = new ArrayList<>();
+        assetsList.add(assets);
+        List<Assets> response = reutersService.send(assetsList);
+        response.stream().forEach(a -> assetsPersistService.persist(a));
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/priceAllAsset")
+    @Timed
+    public Response priceAssets() throws Exception
+    {
+        List<Assets> assetsList = new ArrayList<>();
+        Iterable<Asset> assetIterable = assetService.findAll();
+        assetIterable.forEach(asset -> assetsList.add(AssetsBuilder.buildAssets(asset)));
+        List<Assets> response = reutersService.send(assetsList);
+        response.stream().forEach(a -> assetsPersistService.persist(a));
         return Response.ok().build();
     }
 }
