@@ -5,6 +5,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.*;
+import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
@@ -81,6 +82,7 @@ public class PricingResultPersisterTest {
         tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
         persister = new PricingResultPersister(tradeService, valuationService, valueService, portfolioService);
     }
+
     @Test
     public void testPersistValidPricingResult() throws ParseException {
         List<Result<MarkitValuation>> results = new ArrayList<Result<MarkitValuation>>();
@@ -107,20 +109,15 @@ public class PricingResultPersisterTest {
         pricingResults.setCurrency(Currency.USD);
         persister.persist(pricingResults);
 
-        Trade trade = tradeService.findById(tradeId);
-        Valuation valuation = trade.getValuation();
-        valuation = valuationService.find(valuation.getId());
+        TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
         boolean foundValue = false;
 
-        Set<ValueRelation> values = valuation.getValues();
-        for(ValueRelation value : values)
-        {
-            TradeValue tradeValue = (TradeValue)value.getValue();
-            if(value.getDateTime().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().equals(new Double(-30017690)))
+        Set<TradeValueRelation> values = valuation.getValues();
+        for (TradeValueRelation value : values) {
+            TradeValue tradeValue = value.getValue();
+            if (value.getDateTime().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().equals(new Double(-30017690)))
                 foundValue = true;
         }
-
-
         Assert.assertTrue(foundValue);
     }
 

@@ -10,5 +10,5 @@ import java.time.LocalDate;
 
 public interface ClearedMarginCallGenService {
 
-    MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, Valuation<MarginValuation> valuation, LocalDate date);
+    MarginCall geneareteMarginCall(Agreement agreement, Portfolio portfolio, MarginValuation valuation, LocalDate date);
 }
