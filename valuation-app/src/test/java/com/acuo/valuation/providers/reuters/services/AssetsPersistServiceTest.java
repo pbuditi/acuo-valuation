@@ -1,7 +1,7 @@
 package com.acuo.valuation.providers.reuters.services;
 
-import com.acuo.common.model.assets.AssetValuation;
 import com.acuo.common.model.assets.Assets;
+import com.acuo.common.model.results.AssetValuation;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.core.ImportService;
@@ -55,11 +55,10 @@ public class AssetsPersistServiceTest {
     @Test
     public void testPersist()
     {
-        Assets assets = new Assets();
-        assets.setAssetId("IT0001444378");
-        assets.setIdType("ISIN");
         AssetValuation assetValuation = new AssetValuation();
-        assets.setAssetValuation(assetValuation);
+        assetValuation.setAssetId("IT0001444378");
+        assetValuation.setIdType("ISIN");
+
         assetValuation.setYield(2.6415304243758504);
         assetValuation.setPrice(139.524);
         assetValuation.setValuationDateTime(LocalDate.now());
@@ -68,7 +67,7 @@ public class AssetsPersistServiceTest {
         assetValuation.setNominalCurrency(Currency.EUR);
         assetValuation.setReportCurrency(Currency.EUR);
         assetValuation.setCoupon(6);
-        assetsPersistService.persist(assets);
+        assetsPersistService.persist(assetValuation);
 
         Asset asset = assetService.findById("IT0001444378", 2);
 
