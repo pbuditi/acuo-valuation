@@ -30,10 +30,10 @@ public class ReutersServiceImpl implements ReutersService {
         this.assetsPersistService = assetsPersistService;
     }
 
-    public List<Assets> send(Assets assets)
+    public List<Assets> send(List<Assets> assetsList)
     {
         TransformerContext context = new TransformerContext();
-        String json = transformer.serialise(assets, context);
+        String json = transformer.serialise(assetsList, context);
         log.info(json);
         String response =  ReutersCall.of(client).with("josn", json).create().send();
         log.info(response);

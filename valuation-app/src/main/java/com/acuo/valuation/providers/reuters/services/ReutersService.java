@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ReutersService {
 
-    List<Assets> send(Assets assets);
+    List<Assets> send(List<Assets> assets);
 
 }
