@@ -5,6 +5,7 @@ import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.http.client.LoggingInterceptor;
 import com.acuo.common.http.client.OkHttpClient;
 import com.acuo.common.model.assets.Assets;
+import com.acuo.common.model.results.AssetValuation;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
@@ -52,6 +53,10 @@ public class ReutersServiceTest {
     @Named("assets")
     Transformer<Assets> transformer;
 
+    @com.google.inject.Inject
+    @Named("assetValuation")
+    Transformer<AssetValuation> valuationTransformer;
+
     @Inject
     private AssetService assetService;
 
@@ -71,7 +76,7 @@ public class ReutersServiceTest {
 
         ClientEndPoint<ReutersEndPointConfig> clientEndPoint = new OkHttpClient(httpClient, config);
 
-        reutersService = new ReutersServiceImpl(clientEndPoint, transformer, assetService, assetsPersistService);
+        reutersService = new ReutersServiceImpl(clientEndPoint, transformer, assetService, assetsPersistService, valuationTransformer);
 
     }
 
@@ -95,7 +100,7 @@ public class ReutersServiceTest {
         assets.setMinUnit(1d);
         assets.setInternalCost(0.002);
         assets.setAvailableQuantities(1000);
-        List<Assets> assetses = reutersService.send(assetsList);
+        List<AssetValuation> assetses = reutersService.send(assetsList);
         Assert.assertTrue(assetses.size() > 0);
 
     }

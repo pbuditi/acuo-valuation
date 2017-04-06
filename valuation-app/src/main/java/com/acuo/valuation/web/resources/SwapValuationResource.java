@@ -1,6 +1,7 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.assets.Assets;
+import com.acuo.common.model.results.AssetValuation;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.MarginCall;
@@ -136,7 +137,7 @@ public class SwapValuationResource {
         Assets assets = AssetsBuilder.buildAssets(asset);
         List<Assets> assetsList = new ArrayList<>();
         assetsList.add(assets);
-        List<Assets> response = reutersService.send(assetsList);
+        List<AssetValuation> response = reutersService.send(assetsList);
         response.stream().forEach(a -> assetsPersistService.persist(a));
         return Response.ok().build();
     }
@@ -149,7 +150,7 @@ public class SwapValuationResource {
         List<Assets> assetsList = new ArrayList<>();
         Iterable<Asset> assetIterable = assetService.findAll();
         assetIterable.forEach(asset -> assetsList.add(AssetsBuilder.buildAssets(asset)));
-        List<Assets> response = reutersService.send(assetsList);
+        List<AssetValuation> response = reutersService.send(assetsList);
         response.stream().forEach(a -> assetsPersistService.persist(a));
         return Response.ok().build();
     }
