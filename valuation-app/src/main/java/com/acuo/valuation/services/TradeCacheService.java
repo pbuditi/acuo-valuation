@@ -6,5 +6,7 @@ public interface TradeCacheService {
 
     String put(List<String> trades);
 
-    List<String> get(String tnxId);
+    List<String> remove(String tnxId);
+
+    boolean contains(String tnxId);
 }
