@@ -1,9 +1,6 @@
 package com.acuo.valuation.providers.acuo.results;
 
-import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.Valuation;
-import com.acuo.persist.entity.ValueRelation;
+import com.acuo.persist.entity.*;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.PortfolioService;
@@ -78,35 +75,38 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
                 .flatMap(markitValuation -> markitValuation.getValues().stream())
                 .map(value -> {
                     Valuation valuation = convert(date, currency, value);
-                    return PortfolioId.fromString(valuation.getPortfolio().getPortfolioId());
+                    return valuation.getPortfolio().getPortfolioId();
                 }).collect(toSet());
         return portfolioIds;
     }
 
     private Valuation convert(LocalDate date, Currency currency, Value value) {
         String tradeId = value.getTradeId();
-        Valuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
+        TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
 
-        Set<ValueRelation> existedValues = valuation.getValues();
-        for (ValueRelation existedValue : existedValues) {
-            TradeValue tradeValue = (TradeValue) existedValue.getValue();
-            if (existedValue.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
-                    && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equalsIgnoreCase("Markit")) {
-                log.debug("deleting value id [{}]", tradeValue.getId());
-                valueService.delete(tradeValue.getId());
-                existedValues.remove(tradeValue);
-                break;
+        /*Set<TradeValueRelation> existedValues = valuation.getValues();
+        if (existedValues != null) {
+            for (TradeValueRelation existedValue : existedValues) {
+                TradeValue tradeValue = existedValue.getValue();
+                if (existedValue.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+                        && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equalsIgnoreCase("Markit")) {
+                    log.debug("deleting value id [{}]", tradeValue.getId());
+                    valueService.delete(tradeValue.getId());
+                    existedValues.remove(tradeValue);
+                    break;
+                }
             }
-        }
+        }*/
 
         TradeValue newValue = createValue(currency, value.getPv(), "Markit");
-        ValueRelation valueRelation = new ValueRelation();
+        TradeValueRelation valueRelation = new TradeValueRelation();
         valueRelation.setValuation(valuation);
         valueRelation.setDateTime(date);
         valueRelation.setValue(newValue);
-
         newValue.setValuation(valueRelation);
+
         valueService.createOrUpdate(newValue);
+        valuation = valuationService.getTradeValuationFor(TradeId.fromString(tradeId));
         return valuation;
     }
 
