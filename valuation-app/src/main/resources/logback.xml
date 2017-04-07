@@ -23,9 +23,9 @@
 	
 	<logger name="com.acuo" level="info"/>
 
-	<logger name="org.neo4j.ogm.drivers.bolt.request" level="error"/>
-	<logger name="org.neo4j.ogm.drivers.bolt.response" level="error"/>
-	<logger name="org.neo4j.ogm.context" level="error"/>
+	<logger name="org.neo4j.ogm.drivers.bolt.request" level="info"/>
+	<logger name="org.neo4j.ogm.drivers.bolt.response" level="info"/>
+	<logger name="org.neo4j.ogm.context" level="info"/>
 
 	<logger name="com.acuo.metrics" level="DEBUG" additivity="false">
 		<appender-ref ref="METRICS"/>
