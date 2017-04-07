@@ -1,6 +1,5 @@
 package com.acuo.valuation.modules;
 
-import com.acuo.persist.core.Neo4jPersistService;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.acuo.calls.MarginResultPersister;
@@ -12,7 +11,11 @@ import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.providers.acuo.trades.LocalTradeCacheService;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
-import com.acuo.valuation.providers.markit.services.*;
+import com.acuo.valuation.providers.markit.services.MarkitPricingService;
+import com.acuo.valuation.providers.markit.services.PortfolioValuationsRetriever;
+import com.acuo.valuation.providers.markit.services.PortfolioValuationsSender;
+import com.acuo.valuation.providers.markit.services.Retriever;
+import com.acuo.valuation.providers.markit.services.Sender;
 import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
 import com.acuo.valuation.providers.reuters.services.AssetsPersistServiceImpl;
 import com.acuo.valuation.providers.reuters.services.ReutersService;
@@ -60,11 +63,11 @@ public class ServicesModule extends AbstractModule {
     @Provides
     @Singleton
     MarkitValuationProcessor.PricingResultProcessor firstProcessor(Injector injector) {
-        MarkitMarginCallGenerator markitProcessor = injector.getInstance(MarkitMarginCallGenerator.class);
-        //SimulationMarginCallBuilder simulator = injector.getInstance(SimulationMarginCallBuilder.class);
         PricingResultPersister resultPersister = injector.getInstance(PricingResultPersister.class);
+        MarkitMarginCallGenerator markitProcessor = injector.getInstance(MarkitMarginCallGenerator.class);
+        SimulationMarginCallBuilder simulator = injector.getInstance(SimulationMarginCallBuilder.class);
         resultPersister.setNextProcessor(markitProcessor);
-        //markitProcessor.setNextProcessor(simulator);
+        markitProcessor.setNextProcessor(simulator);
         return resultPersister;
     }
 
