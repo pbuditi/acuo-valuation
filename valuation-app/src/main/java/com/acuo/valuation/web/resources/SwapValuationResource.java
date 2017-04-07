@@ -5,6 +5,7 @@ import com.acuo.common.model.results.AssetValuation;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AssetService;
@@ -89,7 +90,7 @@ public class SwapValuationResource {
     public MarginCallDetail priceBySwapId(@PathParam("id") String id) throws Exception {
         log.info("Pricing the trade {}", id);
         PricingResults results = pricingService.priceTradeIds(ImmutableList.of(id));
-        List<MarginCall> marginCalls = resultProcessor.process(results);
+        List<VariationMargin> marginCalls = resultProcessor.process(results);
         MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
     }
@@ -101,7 +102,7 @@ public class SwapValuationResource {
     public MarginCallDetail priceByPortfolio(@PathParam("id") PortfolioId portfolioId) throws Exception {
         log.info("Pricing all trades under the portfolio {}", portfolioId);
         PricingResults results = pricingService.priceTradesUnder(portfolioId);
-        List<MarginCall> marginCalls = resultProcessor.process(results);
+        List<VariationMargin> marginCalls = resultProcessor.process(results);
         MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
     }
@@ -123,7 +124,7 @@ public class SwapValuationResource {
     public MarginCallDetail priceallBilateralIRS() throws Exception {
         log.info("Pricing all bilateral trades");
         PricingResults results = pricingService.priceTradesOfType("Bilateral");
-        List<MarginCall> marginCalls = resultProcessor.process(results);
+        List<VariationMargin> marginCalls = resultProcessor.process(results);
         MarginCallDetail result = MarginCallDetail.of(marginCalls);
         return result;
     }

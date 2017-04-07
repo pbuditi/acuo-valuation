@@ -1,6 +1,7 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.entity.VariationMargin;
 import com.acuo.valuation.jackson.MarginCallDetail;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
@@ -53,7 +54,7 @@ public class MarginCallResource {
         log.info("Generating margin calls for transaction {}", tnxId);
         List<String> trades = cacheService.remove(tnxId);
         PricingResults results = pricingService.priceTradeIds(trades);
-        List<MarginCall> marginCalls = resultProcessor.process(results);
+        List<VariationMargin> marginCalls = resultProcessor.process(results);
         return Response.status(OK).entity(MarginCallDetail.of(marginCalls)).build();
     }
 
