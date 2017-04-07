@@ -20,39 +20,31 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
     private final ValueService valueService;
 
     @Inject
-    public AssetsPersistServiceImpl(AssetService assetService, ValuationService valuationService,ValueService valueService)
-    {
+    public AssetsPersistServiceImpl(AssetService assetService, ValuationService valuationService, ValueService valueService) {
         this.assetService = assetService;
         this.valuationService = valuationService;
         this.valueService = valueService;
     }
 
 
-    public void persist(com.acuo.common.model.results.AssetValuation valuation)
-    {
-
+    public void persist(com.acuo.common.model.results.AssetValuation valuation) {
         Asset asset = assetService.findById(valuation.getAssetId());
         AssetValuation assetValuation = null;
-        if(asset.getValuation() == null)
-        {
+        if (asset.getValuation() == null) {
             assetValuation = new AssetValuation();
             assetValuation.setAsset(asset);
             valuationService.createOrUpdate(assetValuation);
-        }
-        else
+        } else
             assetValuation = (AssetValuation) asset.getValuation();
 
 
-
-        Set<ValueRelation> values = assetValuation.getValues();
-        if(values == null)
+        Set<AssetValueRelation> values = assetValuation.getValues();
+        if (values == null)
             values = new HashSet<>();
 
-        for(ValueRelation value : values)
-        {
-            AssetValue assetValue = (AssetValue)value.getValue();
-            if(value.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(valuation.getValuationDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
-            {
+        for (AssetValueRelation value : values) {
+            AssetValue assetValue = value.getValue();
+            if (value.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(valuation.getValuationDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))) {
                 valueService.delete(assetValue);
                 break;
             }
@@ -67,14 +59,13 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
         assetValue.setReportCurrency(valuation.getReportCurrency());
         assetValue.setValuationDateTime(valuation.getValuationDateTime());
         assetValue.setYield(valuation.getYield());
-        ValueRelation valueRelation = new ValueRelation();
+        AssetValueRelation valueRelation = new AssetValueRelation();
         valueRelation.setValuation(assetValuation);
         valueRelation.setDateTime(valuation.getValuationDateTime());
         valueRelation.setValue(assetValue);
         assetValue.setValuation(valueRelation);
         valueService.createOrUpdate(assetValue);
         log.info("value created :" + assetValue.toString());
-
 
 
     }

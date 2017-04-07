@@ -11,20 +11,27 @@ import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.providers.acuo.trades.LocalTradeCacheService;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
-import com.acuo.valuation.providers.markit.services.*;
+import com.acuo.valuation.providers.markit.services.MarkitPricingService;
+import com.acuo.valuation.providers.markit.services.PortfolioValuationsRetriever;
+import com.acuo.valuation.providers.markit.services.PortfolioValuationsSender;
+import com.acuo.valuation.providers.markit.services.Retriever;
+import com.acuo.valuation.providers.markit.services.Sender;
 import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
 import com.acuo.valuation.providers.reuters.services.AssetsPersistServiceImpl;
 import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.providers.reuters.services.ReutersServiceImpl;
 import com.acuo.valuation.quartz.AcuoJobFactory;
+import com.acuo.valuation.quartz.SchedulerService;
 import com.acuo.valuation.services.MarginCalcService;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeCacheService;
 import com.acuo.valuation.services.TradeUploadService;
+import com.google.common.util.concurrent.Service;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
+import com.google.inject.multibindings.Multibinder;
 import org.quartz.spi.JobFactory;
 
 import javax.inject.Singleton;
@@ -48,16 +55,19 @@ public class ServicesModule extends AbstractModule {
         bind(JobFactory.class).to(AcuoJobFactory.class);
         bind(ReutersService.class).to(ReutersServiceImpl.class);
         bind(AssetsPersistService.class).to(AssetsPersistServiceImpl.class);
+
+        Multibinder<Service> services = Multibinder.newSetBinder(binder(), Service.class);
+        services.addBinding().to(SchedulerService.class);
     }
 
     @Provides
     @Singleton
     MarkitValuationProcessor.PricingResultProcessor firstProcessor(Injector injector) {
-        MarkitMarginCallGenerator markitProcessor = injector.getInstance(MarkitMarginCallGenerator.class);
-        //SimulationMarginCallBuilder simulator = injector.getInstance(SimulationMarginCallBuilder.class);
         PricingResultPersister resultPersister = injector.getInstance(PricingResultPersister.class);
+        MarkitMarginCallGenerator markitProcessor = injector.getInstance(MarkitMarginCallGenerator.class);
+        SimulationMarginCallBuilder simulator = injector.getInstance(SimulationMarginCallBuilder.class);
         resultPersister.setNextProcessor(markitProcessor);
-        //markitProcessor.setNextProcessor(simulator);
+        markitProcessor.setNextProcessor(simulator);
         return resultPersister;
     }
 
