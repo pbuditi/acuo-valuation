@@ -4,7 +4,7 @@ apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/ja
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/sonarqube.gradle"
 
 ext.versions += [
-        persist         : '0.5.0-dev.22+OW-520.f28789b',
+        persist         : '0.5.0-dev.25+OW-520.0d4659c',
         common          : '0.5.0-SNAPSHOT',
         mapping         : '0.4.0-SNAPSHOT'
 ]
