@@ -69,10 +69,10 @@ public class Uploadmargincalldetails {
          uploadmargincalldetails.totalcallamount = marginCall.getMarginAmount();
          ClientSignsRelation r = agreement.getClientSignsRelation();
          if(marginCall.getMarginType().equals(Types.CallType.Variation) && r != null)
-             uploadmargincalldetails.collateralvalue = r.getVariationMarginBalance();
+             uploadmargincalldetails.collateralvalue = r.getVariationBalance();
          else
          if(marginCall.getMarginType().equals(Types.CallType.Initial) && r != null)
-             uploadmargincalldetails.collateralvalue = r.getInitialMarginBalance();
+             uploadmargincalldetails.collateralvalue = r.getInitialBalance();
 
          CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
          if (counterpartSignsRelation != null) {
