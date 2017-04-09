@@ -33,12 +33,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.codehaus.groovy.runtime.InvokerHelper.asList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -112,7 +111,7 @@ public class MarkitPricingServiceTest {
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
         PricingResults expectedResults = new PricingResults();
-        expectedResults.setResults(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
+        expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
         PricingResults results = service.priceSwapTrades(swaps);
@@ -131,7 +130,7 @@ public class MarkitPricingServiceTest {
         MarkitValue markitValue = new MarkitValue();
         markitValue.setPv(1.0d);
         PricingResults expectedResults = new PricingResults();
-        expectedResults.setResults(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
+        expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
         PricingResults results = service.priceSwapTrades(asList(SwapHelper.createTrade()));
@@ -153,7 +152,7 @@ public class MarkitPricingServiceTest {
         markitValue.setPv(1.0d);
 
         PricingResults expectedResults = new PricingResults();
-        expectedResults.setResults(Arrays.asList(Result.success(new MarkitValuation(markitValue))));
+        expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
         PricingResults results = service.priceTradesOf(ClientId.fromString("c1"));

@@ -1,8 +1,23 @@
-package com.acuo.valuation.providers.acuo;
+package com.acuo.valuation.providers.acuo.calls;
 
 import com.acuo.common.model.margin.Types;
-import com.acuo.persist.entity.*;
-import com.acuo.persist.services.*;
+import com.acuo.persist.entity.Agreement;
+import com.acuo.persist.entity.CallStatus;
+import com.acuo.persist.entity.ClientSignsRelation;
+import com.acuo.persist.entity.CounterpartSignsRelation;
+import com.acuo.persist.entity.InitialMargin;
+import com.acuo.persist.entity.LegalEntity;
+import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.entity.MarginStatement;
+import com.acuo.persist.entity.StatementItem;
+import com.acuo.persist.entity.Step;
+import com.acuo.persist.entity.TradeValuation;
+import com.acuo.persist.entity.TradeValue;
+import com.acuo.persist.services.AgreementService;
+import com.acuo.persist.services.CurrencyService;
+import com.acuo.persist.services.MarginStatementService;
+import com.acuo.persist.services.PortfolioService;
+import com.acuo.persist.services.ValuationService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.DecimalFormat;
@@ -10,6 +25,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.Objects;
+
+import static com.acuo.common.util.ArithmeticUtils.addition;
+import static java.util.Arrays.asList;
 
 @Slf4j
 public abstract class MarginCallGenerator {
@@ -38,9 +57,10 @@ public abstract class MarginCallGenerator {
         this.currencyService = currencyService;
     }
 
-    protected MarginCall generateMarginCall(Valuation<TradeValuation> valuation, CallStatus callStatus) {
+    protected MarginCall generateMarginCall(TradeValuation valuation, LocalDate date,  CallStatus callStatus) {
         valuation.getValues()
-                .stream()
+                .stream().filter(valueRelation -> valueRelation.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
+                .map(valueRelation -> (TradeValue)valueRelation.getValue())
                 .filter(value -> value.getSource().equals("Markit"))
                 .forEach(value -> {
                     pv = value.getPv();
@@ -51,7 +71,7 @@ public abstract class MarginCallGenerator {
         ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
 
-        Double balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
+        Double balance = clientSignsRelation.getVariationBalance() != null ? clientSignsRelation.getVariationBalance() : 0;
         Double pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
 
         if (!currencyOfValue.equals(agreement.getCurrency()))
@@ -70,7 +90,7 @@ public abstract class MarginCallGenerator {
         if (diff > 0) {
             MTA = clientSignsRelation.getMTA() != null ? clientSignsRelation.getMTA() : 0;
             rounding = clientSignsRelation.getRounding() != null ? clientSignsRelation.getRounding() : 0;
-            balance = clientSignsRelation.getVariationMarginBalance() != null ? clientSignsRelation.getVariationMarginBalance() : 0;
+            balance = clientSignsRelation.getVariationBalance() != null ? clientSignsRelation.getVariationBalance() : 0;
             pendingCollateral = clientSignsRelation.getVariationPending() != null ? clientSignsRelation.getVariationPending() : 0;
         } else {
             MTA = counterpartSignsRelation.getMTA() != null ? counterpartSignsRelation.getMTA() : 0;
@@ -171,9 +191,13 @@ public abstract class MarginCallGenerator {
             if (direction.equals("IN")) {
                 marginStatement.setDirectedTo(counterpart);
                 marginStatement.setSentFrom(client);
+                marginStatement.setPendingCash(addition(clientSignsRelation.getInitialPending(), clientSignsRelation.getVariationPending()));
+                marginStatement.setPendingNonCash(addition(clientSignsRelation.getInitialPendingNonCash(), clientSignsRelation.getVariationPendingNonCash()));
             } else {
                 marginStatement.setDirectedTo(client);
                 marginStatement.setSentFrom(counterpart);
+                marginStatement.setPendingCash(addition(counterpartSignsRelation.getInitialPending(), counterpartSignsRelation.getVariationPending()));
+                marginStatement.setPendingNonCash(addition(counterpartSignsRelation.getInitialPendingNonCash(), counterpartSignsRelation.getVariationPendingNonCash()));
             }
 
             marginStatement.setAgreement(agreement);
@@ -206,5 +230,11 @@ public abstract class MarginCallGenerator {
             return -1;
         else
             return 0;
+    }
+
+    private Double add(Double... values) {
+        return asList(values).stream()
+                .filter(Objects::nonNull)
+                .reduce(0.0d, (a, b) -> a + b);
     }
 }

@@ -3,6 +3,7 @@ package com.acuo.valuation.modules;
 import com.acuo.common.rest.GenericExceptionMapper;
 import com.acuo.persist.web.resources.ImportResource;
 import com.acuo.valuation.web.resources.ClarusValuationResource;
+import com.acuo.valuation.web.resources.MarginCallResource;
 import com.acuo.valuation.web.resources.SwapValuationResource;
 import com.acuo.valuation.web.resources.UploadResource;
 import com.google.inject.AbstractModule;
@@ -22,6 +23,7 @@ public class ResourcesModule extends AbstractModule {
         bind(ModelMapper.class);
         bind(ImportResource.class);
         bind(ClarusValuationResource.class);
+        bind(MarginCallResource.class);
         bind(GenericExceptionMapper.class);
     }
 

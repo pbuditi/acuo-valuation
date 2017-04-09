@@ -6,6 +6,8 @@ import com.acuo.valuation.providers.clarus.services.ClarusClient;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitClient;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.providers.reuters.services.ReutersClient;
+import com.acuo.valuation.providers.reuters.services.ReutersEndPointConfig;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 
@@ -19,6 +21,7 @@ public class EndPointModule extends AbstractModule {
         bind(okhttp3.OkHttpClient.class).toInstance(httpClient);
         bind(new TypeLiteral<ClientEndPoint<MarkitEndPointConfig>>(){}).to(MarkitClient.class);
         bind(new TypeLiteral<ClientEndPoint<ClarusEndPointConfig>>(){}).to(ClarusClient.class);
+        bind(new TypeLiteral<ClientEndPoint<ReutersEndPointConfig>>(){}).to(ReutersClient.class);
     }
 
 }
