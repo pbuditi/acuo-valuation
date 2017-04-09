@@ -4,9 +4,7 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.Valuation;
-import com.acuo.persist.entity.Value;
+import com.acuo.persist.entity.*;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
@@ -18,6 +16,7 @@ import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.valuation.providers.acuo.results.PricingResultPersister;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
 import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.basics.currency.Currency;
@@ -80,7 +79,7 @@ public class PricingResultPersisterTest {
         MockitoAnnotations.initMocks(this);
         importService.reload();
         tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
-        persister = new PricingResultPersister(tradeService, valuationService, valueService);
+        persister = new PricingResultPersister(tradeService, valuationService, valueService, portfolioService);
     }
     @Test
     public void testPersistValidPricingResult() throws ParseException {
@@ -109,25 +108,20 @@ public class PricingResultPersisterTest {
         persister.persist(pricingResults);
 
         Trade trade = tradeService.findById(tradeId);
-        Set<Valuation> valuations = trade.getValuations();
-        boolean foundValuation = false;
+        Valuation valuation = trade.getValuation();
+        valuation = valuationService.find(valuation.getId());
         boolean foundValue = false;
-        for (Valuation valuation : valuations) {
-            if (valuation.getDate().equals(myDate1)) {
-                foundValuation = true;
-                Set<Value> values = valuation.getValues();
-                if (values != null) {
-                    for (Value value : values) {
-                        if (value.getCurrency().equals(Currency.USD) && value.getSource().equals("Markit") && value.getPv().doubleValue() == 5.98) {
-                            foundValue = true;
-                        }
-                    }
-                }
-            }
 
+        Set<ValueRelation> values = valuation.getValues();
+        for(ValueRelation value : values)
+        {
+            TradeValue tradeValue = (TradeValue)value.getValue();
+            if(value.getDateTime().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().equals(new Double(-30017690)))
+                foundValue = true;
         }
 
-        Assert.assertTrue(foundValuation);
+
+        Assert.assertTrue(foundValue);
     }
 
     @Test

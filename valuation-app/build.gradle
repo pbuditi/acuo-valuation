@@ -4,9 +4,9 @@ apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/ja
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/sonarqube.gradle"
 
 ext.versions += [
-        persist         : '0.3.7-SNAPSHOT',
-        common          : '0.4.0-SNAPSHOT',
-        mapping         : '0.2.5'
+        persist         : '0.5.0-SNAPSHOT',
+        common          : '0.5.0-SNAPSHOT',
+        mapping         : '0.4.0-SNAPSHOT'
 ]
 
 configurations {
@@ -21,7 +21,6 @@ dependencies {
     compile("com.acuo.collateral:acuo-mapping:${versions.mapping}") { changing = true }
 
     compile(
-            "org.codehaus.groovy:groovy-all:2.4.10",
             "org.apache.poi:poi:3.15",
             "org.apache.poi:poi-ooxml:3.15",
             "org.apache.velocity:velocity:1.7",
@@ -37,7 +36,8 @@ dependencies {
             "org.xmlunit:xmlunit-matchers:2.2.0",
             "net.javacrumbs.json-unit:json-unit:1.12.1",
             "net.javacrumbs.json-unit:json-unit-fluent:1.12.1",
-            "com.jayway.jsonpath:json-path-assert:2.2.0"
+            "com.jayway.jsonpath:json-path-assert:2.2.0",
+            "com.googlecode.junit-toolbox:junit-toolbox:2.2"
     )
 }
 
