@@ -15,9 +15,8 @@ public class AcuoJobFactory implements JobFactory {
     private Injector injector;
 
     @Override
-    public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException
-    {
-        return (Job)injector.getInstance(bundle.getJobDetail().getJobClass());
+    public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
+        return injector.getInstance(bundle.getJobDetail().getJobClass());
     }
 
 }

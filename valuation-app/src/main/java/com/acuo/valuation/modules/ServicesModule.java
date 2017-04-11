@@ -20,19 +20,14 @@ import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
 import com.acuo.valuation.providers.reuters.services.AssetsPersistServiceImpl;
 import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.providers.reuters.services.ReutersServiceImpl;
-import com.acuo.valuation.quartz.AcuoJobFactory;
-import com.acuo.valuation.quartz.SchedulerService;
 import com.acuo.valuation.services.MarginCalcService;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeCacheService;
 import com.acuo.valuation.services.TradeUploadService;
-import com.google.common.util.concurrent.Service;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
-import com.google.inject.multibindings.Multibinder;
-import org.quartz.spi.JobFactory;
 
 import javax.inject.Singleton;
 
@@ -52,12 +47,8 @@ public class ServicesModule extends AbstractModule {
         bind(MarginCalcService.class).to(ClarusMarginCalcService.class);
         bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
         bind(TradeCacheService.class).to(LocalTradeCacheService.class);
-        bind(JobFactory.class).to(AcuoJobFactory.class);
         bind(ReutersService.class).to(ReutersServiceImpl.class);
         bind(AssetsPersistService.class).to(AssetsPersistServiceImpl.class);
-
-        Multibinder<Service> services = Multibinder.newSetBinder(binder(), Service.class);
-        services.addBinding().to(SchedulerService.class);
     }
 
     @Provides
@@ -70,5 +61,4 @@ public class ServicesModule extends AbstractModule {
         markitProcessor.setNextProcessor(simulator);
         return resultPersister;
     }
-
 }
