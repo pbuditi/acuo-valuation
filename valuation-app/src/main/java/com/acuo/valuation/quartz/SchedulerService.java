@@ -37,8 +37,14 @@ public class SchedulerService extends AbstractService {
                     .withIdentity("DailyPriceJob", "markitgroup")
                     .withSchedule(CronScheduleBuilder.cronSchedule("0 0 1 * * ?"))
                     .build();
+
+            JobDetail assetjob = JobBuilder.newJob(AssetPriceJob.class).withIdentity("AssetPriceJob", "reutersgroup").build();
+
+            Trigger assetTrigger = TriggerBuilder.newTrigger().withIdentity("AssetPriceJob", "reutersgroup").withSchedule(CronScheduleBuilder.cronSchedule("0 0/5 * * * ?")).build();
+
             scheduler.start();
             scheduler.scheduleJob(jobDetail, trigger);
+            scheduler.scheduleJob(assetjob, assetTrigger);
             notifyStarted();
         } catch (Exception e) {
             log.error("error in Scheduler:" + e.toString());
