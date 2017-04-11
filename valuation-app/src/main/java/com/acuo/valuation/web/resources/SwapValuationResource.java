@@ -4,12 +4,11 @@ import com.acuo.common.model.assets.Assets;
 import com.acuo.common.model.results.AssetValuation;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.entity.Asset;
-import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AssetService;
-import com.acuo.valuation.jackson.MarginCallDetail;
+import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
 import com.acuo.valuation.providers.reuters.services.ReutersService;
@@ -26,7 +25,6 @@ import org.modelmapper.ModelMapper;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,11 +85,11 @@ public class SwapValuationResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/priceSwapTrades/swapid/{id}")
     @Timed
-    public MarginCallDetail priceBySwapId(@PathParam("id") String id) throws Exception {
+    public MarginCallResponse priceBySwapId(@PathParam("id") String id) throws Exception {
         log.info("Pricing the trade {}", id);
         PricingResults results = pricingService.priceTradeIds(ImmutableList.of(id));
         List<VariationMargin> marginCalls = resultProcessor.process(results);
-        MarginCallDetail result = MarginCallDetail.of(marginCalls);
+        MarginCallResponse result = MarginCallResponse.of(marginCalls);
         return result;
     }
 
@@ -99,11 +97,11 @@ public class SwapValuationResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/priceSwapTrades/portfolioid/{id}")
     @Timed
-    public MarginCallDetail priceByPortfolio(@PathParam("id") PortfolioId portfolioId) throws Exception {
+    public MarginCallResponse priceByPortfolio(@PathParam("id") PortfolioId portfolioId) throws Exception {
         log.info("Pricing all trades under the portfolio {}", portfolioId);
         PricingResults results = pricingService.priceTradesUnder(portfolioId);
         List<VariationMargin> marginCalls = resultProcessor.process(results);
-        MarginCallDetail result = MarginCallDetail.of(marginCalls);
+        MarginCallResponse result = MarginCallResponse.of(marginCalls);
         return result;
     }
 
@@ -121,11 +119,11 @@ public class SwapValuationResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/priceSwapTrades/allBilateralIRS")
     @Timed
-    public MarginCallDetail priceallBilateralIRS() throws Exception {
+    public MarginCallResponse priceallBilateralIRS() throws Exception {
         log.info("Pricing all bilateral trades");
         PricingResults results = pricingService.priceTradesOfType("Bilateral");
         List<VariationMargin> marginCalls = resultProcessor.process(results);
-        MarginCallDetail result = MarginCallDetail.of(marginCalls);
+        MarginCallResponse result = MarginCallResponse.of(marginCalls);
         return result;
     }
 
