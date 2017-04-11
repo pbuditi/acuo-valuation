@@ -13,6 +13,7 @@ import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.HealthChecksModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ParsersModule;
+import com.acuo.valuation.modules.QuartzModule;
 import com.acuo.valuation.modules.ResourcesModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.web.ObjectMapperContextResolver;
@@ -51,7 +52,8 @@ public class ValuationApp extends ResteasyMain {
                     new DataLoaderModule(),
                     new DataImporterModule(),
                     new ImportServiceModule(),
-                    new RepositoryModule());
+                    new RepositoryModule(),
+                    new QuartzModule());
     }
 
     public static void main(String[] args) throws Exception {
