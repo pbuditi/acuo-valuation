@@ -1,8 +1,7 @@
 package com.acuo.valuation.web.resources;
 
-import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.VariationMargin;
-import com.acuo.valuation.jackson.MarginCallDetail;
+import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.services.PricingService;
@@ -55,7 +54,7 @@ public class MarginCallResource {
         List<String> trades = cacheService.remove(tnxId);
         PricingResults results = pricingService.priceTradeIds(trades);
         List<VariationMargin> marginCalls = resultProcessor.process(results);
-        return Response.status(OK).entity(MarginCallDetail.of(marginCalls)).build();
+        return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
     }
 
     @GET
@@ -73,7 +72,7 @@ public class MarginCallResource {
             })
                     .thenApply((result) -> {
                         final AsyncResponse asyncResponse = waiters.get(tnxId);
-                        return asyncResponse.resume(Response.status(OK).entity(MarginCallDetail.of(result)).build());
+                        return asyncResponse.resume(Response.status(OK).entity(MarginCallResponse.of(result)).build());
                     })
                     .exceptionally(exp -> {
                                 log.error("exception occured in async generate call ", exp);

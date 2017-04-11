@@ -1,7 +1,6 @@
 package com.acuo.valuation.jackson;
 
 import com.acuo.common.json.DoubleSerializer;
-import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.ClientSignsRelation;
 import com.acuo.persist.entity.CounterpartSignsRelation;
@@ -14,9 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 
+import static com.acuo.common.model.margin.Types.CallType.Initial;
+import static com.acuo.common.model.margin.Types.CallType.Variation;
+
 @lombok.Data
 @Slf4j
-public class Uploadmargincalldetails {
+public class MarginCallResult {
 
     @JsonProperty("legalEntity")
     private String legalentity;
@@ -27,10 +29,10 @@ public class Uploadmargincalldetails {
     @JsonProperty("marginAgreement")
     private String marginagreement;
     @JsonProperty("valuationDate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd", timezone = "CET")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
     private LocalDate valuationdate;
     @JsonProperty("callDate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd", timezone = "CET")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
     private LocalDate calldate;
     @JsonProperty("callType")
     private String calltype;
@@ -40,10 +42,13 @@ public class Uploadmargincalldetails {
     private Double totalcallamount;
     @JsonProperty("referenceIdentifier")
     private String referenceidentifier;
+    @JsonSerialize(using = DoubleSerializer.class)
     private Double exposure;
     @JsonProperty("collateralValue")
+    @JsonSerialize(using = DoubleSerializer.class)
     private Double collateralvalue;
     @JsonProperty("pendingCollateral")
+    @JsonSerialize(using = DoubleSerializer.class)
     private Double pendingcollateral;
     @JsonProperty("mgnCallUploadId")
     private String mgncalluploadid;
@@ -51,49 +56,48 @@ public class Uploadmargincalldetails {
     private Agreementdetails agreementdetails;
 
 
-    public static Uploadmargincalldetails of(VariationMargin marginCall) {
-        Uploadmargincalldetails uploadmargincalldetails = new Uploadmargincalldetails();
+    public static MarginCallResult of(VariationMargin marginCall) {
+        MarginCallResult marginCallResult = new MarginCallResult();
         Agreement agreement = marginCall.getMarginStatement().getAgreement();
-        uploadmargincalldetails.marginagreement = agreement.getAgreementId();
-        uploadmargincalldetails.valuationdate = marginCall.getValuationDate();
-        uploadmargincalldetails.calldate = marginCall.getCallDate();
-        uploadmargincalldetails.calltype = marginCall.getMarginType().name();
-        uploadmargincalldetails.currency = marginCall.getCurrency().getCode();
-        uploadmargincalldetails.totalcallamount = marginCall.getExcessAmount();
-        uploadmargincalldetails.referenceidentifier = marginCall.getMarginCallId();
-        uploadmargincalldetails.exposure = marginCall.getExposure();
-        uploadmargincalldetails.pendingcollateral = marginCall.getPendingCollateral();
-        uploadmargincalldetails.totalcallamount = marginCall.getMarginAmount();
+        marginCallResult.marginagreement = agreement.getAgreementId();
+        marginCallResult.valuationdate = marginCall.getValuationDate();
+        marginCallResult.calldate = marginCall.getCallDate();
+        marginCallResult.calltype = marginCall.getMarginType().name();
+        marginCallResult.currency = marginCall.getCurrency().getCode();
+        marginCallResult.totalcallamount = marginCall.getExcessAmount();
+        marginCallResult.referenceidentifier = marginCall.getMarginCallId();
+        marginCallResult.exposure = marginCall.getExposure();
+        marginCallResult.pendingcollateral = marginCall.getPendingCollateral();
+        marginCallResult.totalcallamount = marginCall.getMarginAmount();
         ClientSignsRelation r = agreement.getClientSignsRelation();
-        if (marginCall.getMarginType().equals(Types.CallType.Variation) && r != null)
-            uploadmargincalldetails.collateralvalue = r.getVariationBalance();
-        else if (marginCall.getMarginType().equals(Types.CallType.Initial) && r != null)
-            uploadmargincalldetails.collateralvalue = r.getInitialBalance();
+        if (Variation.equals(marginCall.getMarginType()) && r != null)
+            marginCallResult.collateralvalue = r.getVariationBalance();
+        else if (Initial.equals(marginCall.getMarginType()) && r != null)
+            marginCallResult.collateralvalue = r.getInitialBalance();
 
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
         if (counterpartSignsRelation != null) {
             LegalEntity legalEntity = counterpartSignsRelation.getLegalEntity();
-            uploadmargincalldetails.cptyentity = legalEntity.getName();
+            marginCallResult.cptyentity = legalEntity.getName();
             if (legalEntity.getFirm() != null) {
-                uploadmargincalldetails.cptyorg = legalEntity.getFirm().getName();
+                marginCallResult.cptyorg = legalEntity.getFirm().getName();
             } else {
                 log.debug("agreement[{}] le[{}] has firm set to null", agreement.getAgreementId(), legalEntity);
             }
         }
         if (r != null) {
-            uploadmargincalldetails.legalentity = r.getLegalEntity().getName();
+            marginCallResult.legalentity = r.getLegalEntity().getName();
         }
 
-        uploadmargincalldetails.agreementdetails = new Agreementdetails();
+        marginCallResult.agreementdetails = new Agreementdetails();
         if (r != null) {
-            uploadmargincalldetails.agreementdetails.setMintransfer(r.getMTA());
-            uploadmargincalldetails.agreementdetails.setRounding(r.getRounding());
-            uploadmargincalldetails.agreementdetails.setThreshold(r.getThreshold());
+            marginCallResult.agreementdetails.setMintransfer(r.getMTA());
+            marginCallResult.agreementdetails.setRounding(r.getRounding());
+            marginCallResult.agreementdetails.setThreshold(r.getThreshold());
 
         }
-        uploadmargincalldetails.agreementdetails.setNetrequired(marginCall.getMarginAmount());
+        marginCallResult.agreementdetails.setNetrequired(marginCall.getMarginAmount());
 
-        return uploadmargincalldetails;
+        return marginCallResult;
     }
-
 }
