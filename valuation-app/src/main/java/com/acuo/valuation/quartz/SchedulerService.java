@@ -2,7 +2,6 @@ package com.acuo.valuation.quartz;
 
 import com.google.common.util.concurrent.AbstractService;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -13,6 +12,8 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.spi.JobFactory;
 
 import javax.inject.Inject;
+
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 
 @Slf4j
 public class SchedulerService extends AbstractService {
@@ -29,22 +30,30 @@ public class SchedulerService extends AbstractService {
     protected void doStart() {
         try {
             JobDetail jobDetail = JobBuilder
-                    .newJob(DailyPriceJob.class)
-                    .withIdentity("DailyPriceJob", "markitgroup")
+                    .newJob(TradePriceJob.class)
+                    .withIdentity("TradePriceJob", "markitgroup")
                     .build();
             Trigger trigger = TriggerBuilder
                     .newTrigger()
-                    .withIdentity("DailyPriceJob", "markitgroup")
-                    .withSchedule(CronScheduleBuilder.cronSchedule("0 0 1 * * ?"))
+                    .withIdentity("TradePriceJob", "markitgroup")
+                    .withSchedule(cronSchedule("0 0 1 * * ?"))
                     .build();
 
-            JobDetail assetjob = JobBuilder.newJob(AssetPriceJob.class).withIdentity("AssetPriceJob", "reutersgroup").build();
+            JobDetail assetjob = JobBuilder
+                    .newJob(AssetPriceJob.class)
+                    .withIdentity("AssetPriceJob", "reutersgroup")
+                    .build();
 
-            Trigger assetTrigger = TriggerBuilder.newTrigger().withIdentity("AssetPriceJob", "reutersgroup").withSchedule(CronScheduleBuilder.cronSchedule("0 0/5 * * * ?")).build();
+            Trigger assetTrigger = TriggerBuilder
+                    .newTrigger()
+                    .withIdentity("AssetPriceJob", "reutersgroup")
+                    .withSchedule(cronSchedule("0 0/5 * * * ?"))
+                    .build();
 
-            scheduler.start();
             scheduler.scheduleJob(jobDetail, trigger);
             scheduler.scheduleJob(assetjob, assetTrigger);
+
+            scheduler.start();
             notifyStarted();
         } catch (Exception e) {
             log.error("error in Scheduler:" + e.toString());
