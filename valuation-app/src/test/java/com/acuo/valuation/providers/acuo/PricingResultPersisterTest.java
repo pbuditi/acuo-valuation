@@ -15,10 +15,12 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.protocol.responses.Response;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.acuo.results.PricingResultPersister;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
+import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
@@ -28,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.parboiled.common.ImmutableList;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -38,6 +41,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
@@ -70,8 +76,14 @@ public class PricingResultPersisterTest {
     @Inject
     ValueService valueService;
 
+    @Inject
+    ResponseParser parser;
+
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
+
+    @Rule
+    public ResourceFile large = new ResourceFile("/markit/responses/large.xml");
 
     PricingResultPersister persister;
 
@@ -103,7 +115,6 @@ public class PricingResultPersisterTest {
         PricingResults pricingResults = new PricingResults();
         pricingResults.setResults(results);
 
-        DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
         LocalDate myDate1 = LocalDate.now();
         pricingResults.setDate(myDate1);
         pricingResults.setCurrency(Currency.USD);
@@ -124,5 +135,33 @@ public class PricingResultPersisterTest {
     @Test
     public void testPersistNullPricingResult() throws ParseException {
         persister.persist(null);
+    }
+
+    @Test
+    public void testWithLargeResponse() throws Exception {
+        Response response = parser.parse(large.getContent());
+
+        List<String> tradeIds = ImmutableList.of("455820");
+
+        List<Result<MarkitValuation>> results = tradeIds.stream()
+                .map(tradeId -> response.values()
+                        .stream()
+                        .filter(value -> tradeId.equals(value.getTradeId()))
+                        .filter(value -> !"Failed".equalsIgnoreCase(value.getStatus()))
+                        .collect(toList()))
+                .map(MarkitValuation::new)
+                .map(Result::success)
+                .collect(toList());
+
+        PricingResults pricingResults = new PricingResults();
+        pricingResults.setResults(results);
+        pricingResults.setDate(response.header().getDate());
+        pricingResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
+
+        persister.persist(pricingResults);
+
+        TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString("455820"));
+        Set<TradeValueRelation> values = valuation.getValues();
+        assertThat(values).hasSize(1);
     }
 }

@@ -73,7 +73,6 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
         List<Result<MarkitValuation>> results = pricingResults.getResults();
         List<TradeValue> values = results.stream()
                 .flatMap(markitValuationResult -> markitValuationResult.stream())
-                .flatMap(markitValuation -> markitValuation.getValues().stream())
                 .map(value -> convert(date, currency, value))
                 .collect(toList());
         valueService.save(values);
@@ -83,23 +82,9 @@ public class PricingResultPersister implements ResultPersister<PricingResults>, 
         return portfolioIds;
     }
 
-    private TradeValue convert(LocalDate date, Currency currency, Value value) {
+    private TradeValue convert(LocalDate date, Currency currency, MarkitValuation value) {
         String tradeId = value.getTradeId();
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
-
-        /*Set<TradeValueRelation> existedValues = valuation.getValues();
-        if (existedValues != null) {
-            for (TradeValueRelation existedValue : existedValues) {
-                TradeValue tradeValue = existedValue.getValue();
-                if (existedValue.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")).equals(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
-                        && tradeValue.getCurrency().equals(currency) && tradeValue.getSource().equalsIgnoreCase("Markit")) {
-                    log.debug("deleting value id [{}]", tradeValue.getId());
-                    valueService.delete(tradeValue.getId());
-                    existedValues.remove(tradeValue);
-                    break;
-                }
-            }
-        }*/
 
         TradeValue newValue = createValue(currency, value.getPv(), "Markit");
         TradeValueRelation valueRelation = new TradeValueRelation();
