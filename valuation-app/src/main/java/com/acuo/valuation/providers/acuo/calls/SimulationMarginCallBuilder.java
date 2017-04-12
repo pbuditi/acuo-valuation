@@ -66,15 +66,9 @@ public class SimulationMarginCallBuilder extends MarkitMarginCallGenerator imple
         return () -> StatementStatus.Unrecon;
     }
 
-    protected VariationMargin process(TradeValue value, Agreement agreement, LocalDate date, StatementStatus statementStatus, Map<Currency, Double> rates) {
-        TradeValue newValue = new TradeValue();
-        newValue.setCurrency(value.getCurrency());
-        newValue.setSource(value.getSource());
-        newValue.setValuation(value.getValuation());
-        VariationMargin variationMargin = new VariationMargin(value, statementStatus, agreement, rates);
-        StatementDirection direction = variationMargin.getDirection();
-        MarginStatement marginStatement = marginStatementService.getOrCreateMarginStatement(agreement, date, direction);
-        variationMargin.setMarginStatement(marginStatement);
-        return variationMargin;
+    protected VariationMargin process(Double value, Currency currency, Agreement agreement, LocalDate date, StatementStatus statementStatus, Map<Currency, Double> rates) {
+        java.util.Random r = new java.util.Random();
+        double noise = r.nextGaussian() * Math.sqrt(2);
+        return super.process(value + noise, currency, agreement, date, statementStatus, rates);
     }
 }
