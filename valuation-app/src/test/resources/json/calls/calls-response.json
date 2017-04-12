@@ -1,33 +1,20 @@
 {
   "uploadMarginCallDetails" : [ {
     "currency" : "USD",
-    "exposure" : "303756.79",
+    "exposure" : "-238783.09",
     "legalEntity" : "ACUO SG Pte Ltd",
     "cptyEntity" : "Counterpart A1",
     "marginAgreement" : "a1",
     "valuationDate" : "2017/02/21",
     "callDate" : "2017/02/22",
     "callType" : "Variation",
-    "totalCallAmount" : "30731000.00",
+    "totalCallAmount" : "30188000.00",
     "referenceIdentifier" : "2017/02/21-a1-Variation",
     "pendingCollateral" : "0.00",
     "agreementDetails" : {
       "rounding" : "500.00",
       "minTransfer" : "500000.00",
-      "netRequired" : "30731000.00"
-    }
-  }, {
-    "currency" : "USD",
-    "exposure" : "-542539.88",
-    "marginAgreement" : "a1",
-    "valuationDate" : "2017/02/21",
-    "callDate" : "2017/02/22",
-    "callType" : "Variation",
-    "totalCallAmount" : "29884500.00",
-    "referenceIdentifier" : "2017/02/21-a1-Variation",
-    "pendingCollateral" : "0.00",
-    "agreementDetails" : {
-      "netRequired" : "29884500.00"
+      "netRequired" : "30188000.00"
     }
   } ]
 }
