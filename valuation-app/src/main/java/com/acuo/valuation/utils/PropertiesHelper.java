@@ -44,6 +44,13 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_VALUATION_REUTERS_CONNECTION_TIMEOUT = "acuo.reuters.connection.timeout";
     public static final String ACUO_VALUATION_REUTERS_USE_PROXY = "acuo.reuters.use.proxy";
 
+    public static final String ACUO_HOLIDAY_SCHEME = "acuo.holiday.scheme";
+    public static final String ACUO_HOLIDAY_HOST = "acuo.holiday.host";
+    public static final String ACUO_HOLIDAY_PORT = "acuo.holiday.port";
+    public static final String ACUO_HOLIDAY_PATH = "acuo.holiday.path";
+    public static final String ACUO_HOLIDAY_API_KEY = "acuo.holiday.api.key";
+    public static final String ACUO_HOLIDAY_CONNECTION_TIMEOUT = "acuo.holiday.connection.timeout";
+
 
     public static final String NEO4J_OGM_URL = "neo4j.ogm.url";
     public static final String NEO4J_OGM_USERNAME = "neo4j.ogm.username";
