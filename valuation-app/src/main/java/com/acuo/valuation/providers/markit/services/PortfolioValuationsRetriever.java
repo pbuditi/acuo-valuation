@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class PortfolioValuationsRetriever implements Retriever {
 
-    private static final String ERROR_MSG = "Error occurred while retrieving markit results for the date {}";
+    private static final String ERROR_MSG = "Error occurred while retrieving markit results for the date %s";
     private static final DateTimeFormatter VALUATION_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final ClientEndPoint<MarkitEndPointConfig> client;
@@ -48,6 +48,7 @@ public class PortfolioValuationsRetriever implements Retriever {
                         .filter(value -> tradeId.equals(value.getTradeId()))
                         .filter(value -> !"Failed".equalsIgnoreCase(value.getStatus()))
                         .collect(toList()))
+                .filter(values -> !values.isEmpty())
                 .map(MarkitValuation::new)
                 .map(Result::success)
                 .collect(toList());
@@ -84,8 +85,9 @@ public class PortfolioValuationsRetriever implements Retriever {
             }
             return parser.parse(result);
         } catch (Exception e) {
-            log.error(ERROR_MSG, asOfDate, e);
-            throw new RuntimeException(String.format(ERROR_MSG, asOfDate), e);
+            String error = String.format(ERROR_MSG, asOfDate);
+            log.error(error, e);
+            throw new RuntimeException(error, e);
         }
     }
 

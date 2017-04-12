@@ -109,6 +109,7 @@ public class MarkitPricingServiceTest {
     public void testPriceSwapWithNoErrorReport() {
         when(sender.send(any(List.class))).thenReturn(ReportHelper.report());
         MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId("id1");
         markitValue.setPv(1.0d);
         PricingResults expectedResults = new PricingResults();
         expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
@@ -128,6 +129,7 @@ public class MarkitPricingServiceTest {
     public void testPriceSwapWithReportFromFile() throws Exception {
         when(sender.send(any(List.class))).thenReturn(reportParser.parse(test02.getContent()));
         MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId("id1");
         markitValue.setPv(1.0d);
         PricingResults expectedResults = new PricingResults();
         expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
@@ -149,6 +151,7 @@ public class MarkitPricingServiceTest {
         when(sender.send(any(List.class))).thenReturn(reportParser.parse(test02.getContent()));
 
         MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId("id1");
         markitValue.setPv(1.0d);
 
         PricingResults expectedResults = new PricingResults();

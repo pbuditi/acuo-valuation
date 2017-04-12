@@ -13,22 +13,23 @@ public class MarkitValuationTest {
     @Test
     public void simpleChecks() {
         MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId("id1");
         markitValue.setPv(1.0d);
         MarkitValuation markitValuation = new MarkitValuation(markitValue);
 
-        assertThat(markitValuation.getValues()).hasSize(1);
+        assertThat(markitValuation.getTradeId()).isEqualTo("id1");
         assertThat(markitValuation.getPv()).isEqualTo(1.0d);
     }
 
     @Test
     public void testEquals() {
         MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId("id1");
         markitValue.setPv(1.0d);
         MarkitValuation m1 = new MarkitValuation(markitValue);
         MarkitValuation m2 = new MarkitValuation(markitValue);
 
         assertThat(m1).isEqualTo(m2);
-        assertThat(m1.canEqual(m2)).isTrue();
     }
 
     @Test
@@ -38,6 +39,7 @@ public class MarkitValuationTest {
         List<MarkitValue> values = new ArrayList<>();
         for (int i = 0; i < pvs.length; i++) {
             MarkitValue value = new MarkitValue();
+            value.setTradeId("id");
             value.setPv(pvs[i]);
             values.add(value);
         }
