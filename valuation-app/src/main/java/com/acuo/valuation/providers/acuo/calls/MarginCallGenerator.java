@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -52,7 +53,8 @@ public abstract class MarginCallGenerator<V extends Valuation> implements Margin
         List<VariationMargin> marginCalls = portfolioSet.stream()
                 .map(valuationsFunction())
                 .map(valuation -> createcalls(valuation, date, statementStatusSupplier().get()))
-                .flatMap(calls -> calls.stream())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(toList());
         log.info("{} margin calls generated", marginCalls.size());
         return marginCalls;
@@ -62,13 +64,13 @@ public abstract class MarginCallGenerator<V extends Valuation> implements Margin
 
     protected abstract Supplier<StatementStatus> statementStatusSupplier();
 
-    private List<VariationMargin> createcalls(V valuation, LocalDate date, StatementStatus statementStatus) {
+    private Optional<VariationMargin> createcalls(V valuation, LocalDate date, StatementStatus statementStatus) {
         final Agreement agreement = agreementService.agreementFor(valuation.getPortfolio().getPortfolioId());
         final Map<Currency, Double> rates = currencyService.getAllFX();
         return convert(valuation, date, statementStatus, agreement, rates);
     }
 
-    protected abstract List<VariationMargin> convert(V valuation, LocalDate date, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates);
+    protected abstract Optional<VariationMargin> convert(V valuation, LocalDate date, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates);
 
 
 }
