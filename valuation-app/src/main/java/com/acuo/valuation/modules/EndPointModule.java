@@ -4,6 +4,8 @@ import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.http.client.LoggingInterceptor;
 import com.acuo.valuation.providers.clarus.services.ClarusClient;
 import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
+import com.acuo.valuation.providers.holiday.services.HolidayClient;
+import com.acuo.valuation.providers.holiday.services.HolidayEndPointConfig;
 import com.acuo.valuation.providers.markit.services.MarkitClient;
 import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.providers.reuters.services.ReutersClient;
@@ -22,6 +24,7 @@ public class EndPointModule extends AbstractModule {
         bind(new TypeLiteral<ClientEndPoint<MarkitEndPointConfig>>(){}).to(MarkitClient.class);
         bind(new TypeLiteral<ClientEndPoint<ClarusEndPointConfig>>(){}).to(ClarusClient.class);
         bind(new TypeLiteral<ClientEndPoint<ReutersEndPointConfig>>(){}).to(ReutersClient.class);
+        bind(new TypeLiteral<ClientEndPoint<HolidayEndPointConfig>>(){}).to(HolidayClient.class);
     }
 
 }
