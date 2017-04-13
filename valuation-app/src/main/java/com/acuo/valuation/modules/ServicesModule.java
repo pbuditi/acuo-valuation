@@ -11,8 +11,6 @@ import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.providers.acuo.trades.LocalTradeCacheService;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
-import com.acuo.valuation.providers.holiday.services.HolidayService;
-import com.acuo.valuation.providers.holiday.services.HolidayServiceImpl;
 import com.acuo.valuation.providers.markit.services.MarkitPricingService;
 import com.acuo.valuation.providers.markit.services.PortfolioValuationsRetriever;
 import com.acuo.valuation.providers.markit.services.PortfolioValuationsSender;
@@ -51,7 +49,6 @@ public class ServicesModule extends AbstractModule {
         bind(TradeCacheService.class).to(LocalTradeCacheService.class);
         bind(ReutersService.class).to(ReutersServiceImpl.class);
         bind(AssetsPersistService.class).to(AssetsPersistServiceImpl.class);
-        bind(HolidayService.class).to(HolidayServiceImpl.class);
     }
 
     @Provides
