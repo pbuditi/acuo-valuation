@@ -1,10 +1,22 @@
 package com.acuo.valuation.providers.acuo.calls;
 
-import com.acuo.persist.entity.*;
+import com.acuo.persist.entity.Agreement;
+import com.acuo.persist.entity.ClientSignsRelation;
+import com.acuo.persist.entity.CounterpartSignsRelation;
+import com.acuo.persist.entity.LegalEntity;
+import com.acuo.persist.entity.MarginStatement;
+import com.acuo.persist.entity.TradeValuation;
+import com.acuo.persist.entity.TradeValueRelation;
+import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.entity.enums.StatementDirection;
 import com.acuo.persist.entity.enums.StatementStatus;
 import com.acuo.persist.ids.PortfolioId;
-import com.acuo.persist.services.*;
+import com.acuo.persist.services.AgreementService;
+import com.acuo.persist.services.CurrencyService;
+import com.acuo.persist.services.MarginCallService;
+import com.acuo.persist.services.MarginStatementService;
+import com.acuo.persist.services.PortfolioService;
+import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.utils.LocalDateUtils;
 import com.opengamma.strata.basics.currency.Currency;
@@ -13,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,8 +84,8 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
     }
 
     protected Optional<VariationMargin> convert(TradeValuation valuation, LocalDate date, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
-        Optional<TradeValueRelation> current = tradeValueRelation(valuation, date);
-        Optional<TradeValueRelation> previous = tradeValueRelation(valuation, LocalDateUtils.minus(date, 1));
+        Optional<List<TradeValueRelation>> current = tradeValueRelation(valuation, date);
+        Optional<List<TradeValueRelation>> previous = tradeValueRelation(valuation, LocalDateUtils.minus(date, 1));
         Optional<Double> amount = computeAmount(current, previous);
         if (amount.isPresent()) {
             VariationMargin margin = process(amount.get(), Currency.USD, agreement, date, statementStatus, rates);
@@ -108,23 +119,24 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
         return variationMargin;
     }
 
-    private Optional<TradeValueRelation> tradeValueRelation(TradeValuation valuation, LocalDate date) {
+    private Optional<List<TradeValueRelation>> tradeValueRelation(TradeValuation valuation, LocalDate date) {
         Set<TradeValueRelation> values = valuation.getValues();
         if (values != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            return valuation.getValues()
+            final List<TradeValueRelation> result = valuation.getValues()
                     .stream()
                     .filter(Objects::nonNull)
                     .filter(valueRelation -> formatter.format(valueRelation.getDateTime()).equals(formatter.format(date)))
-                    .findFirst();
+                    .collect(toList());
+            return Optional.of(result);
         }
         return Optional.empty();
     }
 
-    private Optional<Double> computeAmount(Optional<TradeValueRelation> current, Optional<TradeValueRelation> previous) {
+    private Optional<Double> computeAmount(Optional<List<TradeValueRelation>> current, Optional<List<TradeValueRelation>> previous) {
         if (current.isPresent() && previous.isPresent()) {
-            Double a = current.get().getValue().getPv();
-            Double b = previous.get().getValue().getPv();
+            Double a = current.get().stream().mapToDouble(value ->  value.getValue().getPv()).sum();
+            Double b = previous.get().stream().mapToDouble(value ->  value.getValue().getPv()).sum();
             return Optional.of(a - b);
         }
         return Optional.empty();
