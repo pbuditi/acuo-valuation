@@ -6,6 +6,7 @@ import com.acuo.persist.entity.CounterpartSignsRelation;
 import com.acuo.persist.entity.LegalEntity;
 import com.acuo.persist.entity.MarginStatement;
 import com.acuo.persist.entity.TradeValuation;
+import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.entity.TradeValueRelation;
 import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.entity.enums.StatementDirection;
@@ -126,6 +127,7 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
             final List<TradeValueRelation> result = valuation.getValues()
                     .stream()
                     .filter(Objects::nonNull)
+
                     .filter(valueRelation -> formatter.format(valueRelation.getDateTime()).equals(formatter.format(date)))
                     .collect(toList());
             return Optional.of(result);
@@ -135,10 +137,18 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
 
     private Optional<Double> computeAmount(Optional<List<TradeValueRelation>> current, Optional<List<TradeValueRelation>> previous) {
         if (current.isPresent() && previous.isPresent()) {
-            Double a = current.get().stream().mapToDouble(value ->  value.getValue().getPv()).sum();
-            Double b = previous.get().stream().mapToDouble(value ->  value.getValue().getPv()).sum();
+            Double a = summup(current.get());
+            Double b = summup(previous.get());
             return Optional.of(a - b);
         }
         return Optional.empty();
+    }
+
+    private Double summup(List<TradeValueRelation> relations) {
+        return relations.stream()
+                .map(value ->  value.getValue())
+                .filter(value -> "Markit".equals(value.getSource()))
+                .mapToDouble(TradeValue::getPv)
+                .sum();
     }
 }
