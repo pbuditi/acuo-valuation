@@ -2,8 +2,8 @@ package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.valuation.protocol.responses.Response;
+import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.MarkitValuation;
-import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.utils.LocalDateUtils;
@@ -34,7 +34,7 @@ public class PortfolioValuationsRetriever implements Retriever {
     }
 
     @Override
-    public PricingResults retrieve(LocalDate reportDate, List<String> tradeIds) {
+    public MarkitResults retrieve(LocalDate reportDate, List<String> tradeIds) {
         LocalDate valuationDate = LocalDateUtils.minus(reportDate, 1);
         log.info("retrieving pricing results of {} trades", tradeIds.size());
         log.info("with report date {} and valuation date set to {}", reportDate, valuationDate);
@@ -53,12 +53,12 @@ public class PortfolioValuationsRetriever implements Retriever {
                 .map(Result::success)
                 .collect(toList());
 
-        PricingResults pricingResults = new PricingResults();
-        pricingResults.setResults(results);
-        pricingResults.setDate(response.header().getDate());
-        pricingResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
+        MarkitResults markitResults = new MarkitResults();
+        markitResults.setResults(results);
+        markitResults.setDate(response.header().getDate());
+        markitResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
 
-        return pricingResults;
+        return markitResults;
     }
 
     private void printFailedTrades(List<String> tradeIds, Response response) {
