@@ -16,9 +16,9 @@ import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.responses.Response;
+import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.MarkitValuation;
-import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.providers.acuo.results.PricingResultPersister;
+import com.acuo.valuation.providers.acuo.results.MarkitResultPersister;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.services.TradeUploadService;
@@ -34,9 +34,7 @@ import org.parboiled.common.ImmutableList;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class PricingResultPersisterTest {
+public class MarkitResultPersisterTest {
 
     @Inject
     ImportService importService;
@@ -85,14 +83,14 @@ public class PricingResultPersisterTest {
     @Rule
     public ResourceFile large = new ResourceFile("/markit/responses/large.xml");
 
-    PricingResultPersister persister;
+    MarkitResultPersister persister;
 
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         importService.reload();
         tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
-        persister = new PricingResultPersister(tradeService, valuationService, valueService, portfolioService);
+        persister = new MarkitResultPersister(tradeService, valuationService, valueService, portfolioService);
     }
 
     @Test
@@ -112,13 +110,13 @@ public class PricingResultPersisterTest {
 
         results.add(result);
 
-        PricingResults pricingResults = new PricingResults();
-        pricingResults.setResults(results);
+        MarkitResults markitResults = new MarkitResults();
+        markitResults.setResults(results);
 
         LocalDate myDate1 = LocalDate.now();
-        pricingResults.setDate(myDate1);
-        pricingResults.setCurrency(Currency.USD);
-        persister.persist(pricingResults);
+        markitResults.setDate(myDate1);
+        markitResults.setCurrency(Currency.USD);
+        persister.persist(markitResults);
 
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
         boolean foundValue = false;
@@ -153,12 +151,12 @@ public class PricingResultPersisterTest {
                 .map(Result::success)
                 .collect(toList());
 
-        PricingResults pricingResults = new PricingResults();
-        pricingResults.setResults(results);
-        pricingResults.setDate(response.header().getDate());
-        pricingResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
+        MarkitResults markitResults = new MarkitResults();
+        markitResults.setResults(results);
+        markitResults.setDate(response.header().getDate());
+        markitResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
 
-        persister.persist(pricingResults);
+        persister.persist(markitResults);
 
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString("455820"));
         Set<TradeValueRelation> values = valuation.getValues();
