@@ -76,7 +76,7 @@ public class ReutersServiceTest {
 
         ClientEndPoint<ReutersEndPointConfig> clientEndPoint = new OkHttpClient<>(httpClient, config);
 
-        reutersService = new ReutersServiceImpl(clientEndPoint, transformer, assetService, assetsPersistService, valuationTransformer);
+        reutersService = new ReutersServiceImpl(clientEndPoint, transformer, valuationTransformer);
 
     }
 
