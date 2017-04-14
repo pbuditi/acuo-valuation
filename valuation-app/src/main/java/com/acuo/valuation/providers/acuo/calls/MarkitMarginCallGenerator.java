@@ -1,25 +1,19 @@
 package com.acuo.valuation.providers.acuo.calls;
 
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.Agreement;
-import com.acuo.persist.entity.ClientSignsRelation;
-import com.acuo.persist.entity.CounterpartSignsRelation;
-import com.acuo.persist.entity.LegalEntity;
-import com.acuo.persist.entity.MarginStatement;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.entity.TradeValueRelation;
 import com.acuo.persist.entity.VariationMargin;
-import com.acuo.persist.entity.enums.StatementDirection;
 import com.acuo.persist.entity.enums.StatementStatus;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
-import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
-import com.acuo.valuation.utils.LocalDateUtils;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +28,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.acuo.common.util.ArithmeticUtils.addition;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
@@ -44,14 +37,12 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
     private MarkitValuationProcessor.PricingResultProcessor nextProcessor;
 
     @Inject
-    public MarkitMarginCallGenerator(ValuationService valuationService,
-                                     PortfolioService portfolioService,
-                                     MarginStatementService marginStatementService,
-                                     AgreementService agreementService,
-                                     CurrencyService currencyService,
-                                     MarginCallService marginCallService) {
+    MarkitMarginCallGenerator(ValuationService valuationService,
+                              MarginStatementService marginStatementService,
+                              AgreementService agreementService,
+                              CurrencyService currencyService,
+                              MarginCallService marginCallService) {
         super(valuationService,
-                portfolioService,
                 marginStatementService,
                 agreementService,
                 currencyService);
@@ -60,10 +51,11 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
 
     @Override
     public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
-        log.info("processing markit valuation items");
-        LocalDate date = processorItem.getResults().getDate();
+        log.info("processing markit valuation items to generate expected calls");
+        LocalDate valuationDate = processorItem.getResults().getDate();
+        LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
-        List<VariationMargin> marginCalls = createCalls(portfolioIds, date);
+        List<VariationMargin> marginCalls = createCalls(portfolioIds, valuationDate, callDate);
         processorItem.setExpected(marginCalls);
         if (nextProcessor!= null)
             return nextProcessor.process(processorItem);
@@ -84,69 +76,32 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
         return () -> StatementStatus.Expected;
     }
 
-    protected Optional<VariationMargin> convert(TradeValuation valuation, LocalDate date, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
-        Optional<List<TradeValueRelation>> current = tradeValueRelation(valuation, date);
-        Optional<List<TradeValueRelation>> previous = tradeValueRelation(valuation, LocalDateUtils.minus(date, 1));
-        Optional<Double> amount = computeAmount(current, previous);
-        if (amount.isPresent()) {
-            VariationMargin margin = process(amount.get(), Currency.USD, agreement, date, statementStatus, rates);
-            marginCallService.save(margin);
-            return Optional.of(margin);
-        }
-        return Optional.empty();
+    protected Optional<VariationMargin> convert(TradeValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
+        Optional<List<TradeValueRelation>> current = tradeValueRelation(valuation, valuationDate);
+        Optional<Double> amount = current.map(this::sum);
+        return amount.map(aDouble -> {
+            VariationMargin margin = process(aDouble, Currency.USD, agreement, valuationDate, callDate, statementStatus, rates);
+            return marginCallService.save(margin);
+        });
     }
 
-    protected VariationMargin process(Double value, Currency currency, Agreement agreement, LocalDate date, StatementStatus statementStatus, Map<Currency, Double> rates) {
-        VariationMargin variationMargin = new VariationMargin(value, date, currency, statementStatus, agreement, rates);
-        StatementDirection direction = variationMargin.getDirection();
-        MarginStatement marginStatement = marginStatementService.getOrCreateMarginStatement(agreement, date, direction);
-        variationMargin.setMarginStatement(marginStatement);
-        ClientSignsRelation clientSignsRelation = agreement.getClientSignsRelation();
-        CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
-        LegalEntity client = clientSignsRelation.getLegalEntity();
-        LegalEntity counterpart = counterpartSignsRelation.getLegalEntity();
-        if (direction.equals(StatementDirection.IN)) {
-            marginStatement.setDirectedTo(counterpart);
-            marginStatement.setSentFrom(client);
-            marginStatement.setPendingCash(addition(clientSignsRelation.getInitialPending(), clientSignsRelation.getVariationPending()));
-            marginStatement.setPendingNonCash(addition(clientSignsRelation.getInitialPendingNonCash(), clientSignsRelation.getVariationPendingNonCash()));
-        } else {
-            marginStatement.setDirectedTo(client);
-            marginStatement.setSentFrom(counterpart);
-            marginStatement.setPendingCash(addition(counterpartSignsRelation.getInitialPending(), counterpartSignsRelation.getVariationPending()));
-            marginStatement.setPendingNonCash(addition(counterpartSignsRelation.getInitialPendingNonCash(), counterpartSignsRelation.getVariationPendingNonCash()));
-        }
-        marginStatementService.createOrUpdate(marginStatement);
-        return variationMargin;
-    }
-
-    private Optional<List<TradeValueRelation>> tradeValueRelation(TradeValuation valuation, LocalDate date) {
+    private Optional<List<TradeValueRelation>> tradeValueRelation(TradeValuation valuation, LocalDate valuationDate) {
         Set<TradeValueRelation> values = valuation.getValues();
         if (values != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
             final List<TradeValueRelation> result = valuation.getValues()
                     .stream()
                     .filter(Objects::nonNull)
-
-                    .filter(valueRelation -> formatter.format(valueRelation.getDateTime()).equals(formatter.format(date)))
+                    .filter(valueRelation -> formatter.format(valueRelation.getDateTime()).equals(formatter.format(valuationDate)))
                     .collect(toList());
             return Optional.of(result);
         }
         return Optional.empty();
     }
 
-    private Optional<Double> computeAmount(Optional<List<TradeValueRelation>> current, Optional<List<TradeValueRelation>> previous) {
-        if (current.isPresent() && previous.isPresent()) {
-            Double a = summup(current.get());
-            Double b = summup(previous.get());
-            return Optional.of(a - b);
-        }
-        return Optional.empty();
-    }
-
-    private Double summup(List<TradeValueRelation> relations) {
+    private Double sum(List<TradeValueRelation> relations) {
         return relations.stream()
-                .map(value ->  value.getValue())
+                .map(TradeValueRelation::getValue)
                 .filter(value -> "Markit".equals(value.getSource()))
                 .mapToDouble(TradeValue::getPv)
                 .sum();
