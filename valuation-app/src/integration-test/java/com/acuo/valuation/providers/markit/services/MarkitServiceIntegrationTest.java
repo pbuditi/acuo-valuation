@@ -12,8 +12,8 @@ import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.valuation.modules.*;
+import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.MarkitValuation;
-import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.collect.result.Result;
@@ -70,7 +70,7 @@ public class MarkitServiceIntegrationTest {
     @Ignore
     public void testPriceASwap() {
         SwapTrade swap = SwapHelper.createTrade();
-        PricingResults pricingResults = pricingService.priceSwapTrades(ImmutableList.of(swap));
+        MarkitResults pricingResults = pricingService.priceSwapTrades(ImmutableList.of(swap));
 
         assertThat(pricingResults).isNotNull();
         ImmutableList<Result<MarkitValuation>> results = pricingResults.getResults();
@@ -82,9 +82,9 @@ public class MarkitServiceIntegrationTest {
 
     @Test
     public void testPriceSwapFromClientId() {
-        PricingResults pricingResults = pricingService.priceTradesOf(ClientId.fromString("c1"));
-        assertThat(pricingResults).isNotNull();
-        List<Result<MarkitValuation>> results = pricingResults.getResults();
+        MarkitResults markitResults = pricingService.priceTradesOf(ClientId.fromString("c1"));
+        assertThat(markitResults).isNotNull();
+        List<Result<MarkitValuation>> results = markitResults.getResults();
         assertThat(results).isNotEmpty();
         for (Result result: results) {
             assertThat(result.isSuccess()).isTrue();
