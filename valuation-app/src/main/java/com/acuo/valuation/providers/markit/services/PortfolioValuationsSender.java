@@ -6,9 +6,9 @@ import com.acuo.collateral.transform.services.MarkitTransformer;
 import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.util.ArgChecker;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
-import com.acuo.valuation.utils.LocalDateUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
