@@ -3,7 +3,10 @@ package com.acuo.valuation.providers.reuters.services;
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
-import okhttp3.*;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class ReutersCall extends CallBuilder<ReutersCall> {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -11,8 +14,7 @@ public class ReutersCall extends CallBuilder<ReutersCall> {
 
     private final Request.Builder builder;
 
-    private ReutersCall(ClientEndPoint<ReutersEndPointConfig> client)
-    {
+    private ReutersCall(ClientEndPoint<ReutersEndPointConfig> client) {
         this.client = client;
         ReutersEndPointConfig config = client.config();
         HttpUrl uploadUrl = new HttpUrl.Builder()
@@ -29,8 +31,7 @@ public class ReutersCall extends CallBuilder<ReutersCall> {
                 .url(uploadUrl);
     }
 
-    public static ReutersCall of(ClientEndPoint<ReutersEndPointConfig> client)
-    {
+    public static ReutersCall of(ClientEndPoint<ReutersEndPointConfig> client) {
         return new ReutersCall(client);
     }
 
