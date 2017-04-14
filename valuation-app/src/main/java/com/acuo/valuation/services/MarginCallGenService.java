@@ -9,6 +9,6 @@ import java.util.Set;
 
 public interface MarginCallGenService {
 
-    List<VariationMargin> createCalls(Set<PortfolioId> portfolioSet, LocalDate date);
+    List<VariationMargin> createCalls(Set<PortfolioId> portfolioSet, LocalDate valuationDate, LocalDate callDate);
 
 }
