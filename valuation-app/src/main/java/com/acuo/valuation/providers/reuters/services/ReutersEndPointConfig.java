@@ -32,9 +32,7 @@ public class ReutersEndPointConfig implements EndPointConfig {
                                  @Named(ACUO_VALUATION_REUTERS_HEADER_POSITION) String headerPosition,
                                  @Named(ACUO_VALUATION_REUTERS_HEADER_APPLICATION_ID) String headerApplicationId,
                                  @Named(ACUO_VALUATION_REUTERS_CONNECTION_TIMEOUT) int connectionTimeOut,
-                                 @Named(ACUO_VALUATION_REUTERS_USE_PROXY) String useProxy
-                                 )
-    {
+                                 @Named(ACUO_VALUATION_REUTERS_USE_PROXY) String useProxy) {
         this.scheme = scheme;
         this.host = host;
         this.port = port;
@@ -45,7 +43,6 @@ public class ReutersEndPointConfig implements EndPointConfig {
         this.connectionTimeOut = connectionTimeOut;
         this.connectionTimeOutUnit = TimeUnit.MILLISECONDS;
         this.useProxy = Boolean.valueOf(useProxy);
-
     }
 
     @Override
