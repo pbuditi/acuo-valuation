@@ -29,7 +29,8 @@ public class DatascopeEndPointConfig implements EndPointConfig {
                                    @Named(ACUO_DATASCOPE_AUTHPATH) String authpath,
                                    @Named(ACUO_DATASCOPE_USERNAME) String username,
                                    @Named(ACUO_DATASCOPE_PASSWORD) String password,
-                                   @Named(ACUO_DATASCOPE_CONNECTION_TIMEOUT) int connectionTimeOut)
+                                   @Named(ACUO_DATASCOPE_CONNECTION_TIMEOUT) int connectionTimeOut,
+                                   @Named(ACUO_DATASCOPE_USE_PROXY) String useProxy)
     {
         this.scheme = scheme;
         this.host = host;
@@ -39,7 +40,7 @@ public class DatascopeEndPointConfig implements EndPointConfig {
         this.password = password;
         this.connectionTimeOut = connectionTimeOut;
         this.connectionTimeOutUnit = TimeUnit.MILLISECONDS;
-        this.useProxy = false;
+        this.useProxy = Boolean.valueOf(useProxy);
     }
 
     @Override
