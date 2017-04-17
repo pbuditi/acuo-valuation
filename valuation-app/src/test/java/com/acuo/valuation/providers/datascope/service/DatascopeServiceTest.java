@@ -31,6 +31,11 @@ public class DatascopeServiceTest {
     public void testGetToken()
     {
         //String token = datascopeService.getToken();
+    }
 
+    @Test
+    public void testSheduleExTraction()
+    {
+        datascopeService.sheduleExTraction();
     }
 }
