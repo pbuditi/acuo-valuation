@@ -20,8 +20,6 @@ public class DatascopeScheduleServiceImpl implements DatascopeScheduleService {
     private final ClientEndPoint<DatascopeEndPointConfig> client;
     private final ObjectMapper objectMapper;
 
-    private String token;
-
     @Inject
     public DatascopeScheduleServiceImpl(ClientEndPoint<DatascopeEndPointConfig> client)
     {
@@ -29,12 +27,8 @@ public class DatascopeScheduleServiceImpl implements DatascopeScheduleService {
         objectMapper = new ObjectMapper();
     }
 
-    public void setToken(String token)
-    {
-        this.token = token;
-    }
 
-    public String sheduleExtraction()
+    public String sheduleExtraction(String token)
     {
         String scheduleId = null;
         String response = DatascopeScheduleCall.of(client).with("token",token).with("body", buildScheduleRequestJson()).create().send();
