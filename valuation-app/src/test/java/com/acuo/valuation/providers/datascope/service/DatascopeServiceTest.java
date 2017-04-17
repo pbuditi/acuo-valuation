@@ -8,11 +8,14 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+@Slf4j
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({
         ConfigurationTestModule.class,
@@ -36,6 +39,8 @@ public class DatascopeServiceTest {
     @Test
     public void testSheduleExTraction()
     {
-        datascopeService.sheduleExTraction();
+        String scheduleId = datascopeService.sheduleExTraction();
+        log.info(scheduleId);
+        Assert.assertNotNull(scheduleId);
     }
 }
