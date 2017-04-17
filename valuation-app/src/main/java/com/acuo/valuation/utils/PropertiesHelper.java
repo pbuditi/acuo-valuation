@@ -48,10 +48,13 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_DATASCOPE_HOST = "acuo.datascope.host";
     public static final String ACUO_DATASCOPE_PORT = "acuo.datascope.port";
     public static final String ACUO_DATASCOPE_AUTHPATH = "acuo.datascope.authpath";
+    public static final String ACUO_DATASCOPE_SCHEDULEPATH = "acuo.datascope.schedulepath";
     public static final String ACUO_DATASCOPE_USERNAME = "acuo.datascope.username";
     public static final String ACUO_DATASCOPE_PASSWORD = "acuo.datascope.password";
     public static final String ACUO_DATASCOPE_CONNECTION_TIMEOUT = "acuo.datascope.connection.timeout";
     public static final String ACUO_DATASCOPE_USE_PROXY = "acuo.datascope.use.proxy";
+    public static final String ACUO_DATASCOPE_LIST_ID = "acuo.datascope.list.id";
+    public static final String ACUO_DATASCOPE_REPORT_TEMPLATE_ID = "acuo.datascope.report.template.id";
 
 
     public static final String ACUO_HOLIDAY_SCHEME = "acuo.holiday.scheme";
