@@ -4,29 +4,25 @@ import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
 import okhttp3.HttpUrl;
-import okhttp3.MediaType;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 
-public class DatascopExtractionStatusCall extends CallBuilder<DatascopExtractionStatusCall> {
+public class DatascopeExtractionReportCall extends CallBuilder<DatascopeExtractionReportCall> {
 
     private final ClientEndPoint<DatascopeEndPointConfig> client;
     private Request.Builder builder;
-    private HttpUrl statusUrl;
+    private HttpUrl reportUrl;
 
-    private DatascopExtractionStatusCall(ClientEndPoint<DatascopeEndPointConfig> client)
+    private DatascopeExtractionReportCall(ClientEndPoint<DatascopeEndPointConfig> client)
     {
         this.client = client;
         builder = new Request.Builder();
-
-
     }
 
-    public static DatascopExtractionStatusCall of(ClientEndPoint<DatascopeEndPointConfig> client) {
-        return new DatascopExtractionStatusCall(client);
+    public static DatascopeExtractionReportCall of(ClientEndPoint<DatascopeEndPointConfig> client) {
+        return new DatascopeExtractionReportCall(client);
     }
 
-    public DatascopExtractionStatusCall with(String key, String value) {
+    public DatascopeExtractionReportCall with(String key, String value) {
         if(key.equalsIgnoreCase("token"))
         {
             builder.header("Authorization", "Token " + value);
@@ -35,15 +31,15 @@ public class DatascopExtractionStatusCall extends CallBuilder<DatascopExtraction
         if(key.equalsIgnoreCase("id"))
         {
             DatascopeEndPointConfig config = client.config();
-            statusUrl = new HttpUrl.Builder()
+            reportUrl = new HttpUrl.Builder()
                     .scheme(config.getScheme())
                     .host(config.getHost())
                     .port(config.getPort())
-                    .addPathSegments(config.getStatuspath().replace("<id>", value))
+                    .addPathSegments(config.getReportpath().replace("<id>", value))
                     .build();
             builder.header("Prefer", "respond-async")
                     .header("Content-Type", "application/json")
-                    .url(statusUrl);
+                    .url(reportUrl);
         }
         return this;
     }
