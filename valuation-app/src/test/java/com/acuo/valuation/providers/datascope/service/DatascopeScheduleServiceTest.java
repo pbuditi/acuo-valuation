@@ -25,22 +25,21 @@ import javax.inject.Inject;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class DatascopeServiceTest {
+public class DatascopeScheduleServiceTest {
 
     @Inject
-    private DatascopeService datascopeService;
+    private DatascopeAuthService datascopeAuthService;
+
+    @Inject
+    private DatascopeScheduleService datascopeScheduleService;
 
     @Test
-    public void testGetToken()
+    public void testSheduleExtraction()
     {
-        //String token = datascopeService.getToken();
+//        String token = datascopeAuthService.getToken();
+//        datascopeScheduleService.setToken(token);
+//        String scheduleId = datascopeScheduleService.sheduleExtraction();
+//        Assert.assertNotNull(scheduleId);
     }
 
-    @Test
-    public void testSheduleExTraction()
-    {
-        String scheduleId = datascopeService.sheduleExTraction();
-        log.info(scheduleId);
-        Assert.assertNotNull(scheduleId);
-    }
 }
