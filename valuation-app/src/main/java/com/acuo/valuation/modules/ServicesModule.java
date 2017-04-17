@@ -11,10 +11,7 @@ import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.providers.acuo.trades.LocalTradeCacheService;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
-import com.acuo.valuation.providers.datascope.service.DatascopeAuthService;
-import com.acuo.valuation.providers.datascope.service.DatascopeAuthServiceImpl;
-import com.acuo.valuation.providers.datascope.service.DatascopeScheduleService;
-import com.acuo.valuation.providers.datascope.service.DatascopeScheduleServiceImpl;
+import com.acuo.valuation.providers.datascope.service.*;
 import com.acuo.valuation.providers.markit.services.MarkitPricingService;
 import com.acuo.valuation.providers.markit.services.PortfolioValuationsRetriever;
 import com.acuo.valuation.providers.markit.services.PortfolioValuationsSender;
@@ -55,6 +52,7 @@ public class ServicesModule extends AbstractModule {
         bind(AssetsPersistService.class).to(AssetsPersistServiceImpl.class);
         bind(DatascopeAuthService.class).to(DatascopeAuthServiceImpl.class);
         bind(DatascopeScheduleService.class).to(DatascopeScheduleServiceImpl.class);
+        bind(DatascopeExtractionService.class).to(DatascopeExtractionServiceImpl.class);
     }
 
     @Provides
