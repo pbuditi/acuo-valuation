@@ -26,6 +26,7 @@ public class DatascopeEndPointConfig implements EndPointConfig {
     private final String reportTemplateId;
     private final String statuspath;
     private final String reportpath;
+    private final String downloadpath;
 
     @Inject
     public DatascopeEndPointConfig(@Named(ACUO_DATASCOPE_SCHEME) String scheme,
@@ -40,7 +41,8 @@ public class DatascopeEndPointConfig implements EndPointConfig {
                                    @Named(ACUO_DATASCOPE_LIST_ID) String listId,
                                    @Named(ACUO_DATASCOPE_REPORT_TEMPLATE_ID) String reportTemplateId,
                                    @Named(ACUO_DATASCOPE_STATUSPATH) String statuspath,
-                                   @Named(ACUO_DATASCOPE_REPORTPATH) String reportpath
+                                   @Named(ACUO_DATASCOPE_REPORTPATH) String reportpath,
+                                   @Named(ACUO_DATASCOPE_DOWNLOADPATH) String downloadpath
                                    )
     {
         this.scheme = scheme;
@@ -57,6 +59,7 @@ public class DatascopeEndPointConfig implements EndPointConfig {
         this.reportTemplateId = reportTemplateId;
         this.statuspath = statuspath;
         this.reportpath = reportpath;
+        this.downloadpath = downloadpath;
     }
 
     @Override
