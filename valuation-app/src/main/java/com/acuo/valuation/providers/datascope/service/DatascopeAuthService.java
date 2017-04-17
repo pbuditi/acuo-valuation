@@ -1,8 +1,8 @@
 package com.acuo.valuation.providers.datascope.service;
 
-public interface DatascopeService {
+public interface DatascopeAuthService {
 
     String getToken();
 
-    String sheduleExTraction();
+
 }
