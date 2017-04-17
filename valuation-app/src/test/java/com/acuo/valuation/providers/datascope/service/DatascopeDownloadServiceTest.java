@@ -9,11 +9,11 @@ import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Slf4j
 @RunWith(GuiceJUnitRunner.class)
@@ -25,7 +25,7 @@ import javax.inject.Inject;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class DatascopeExtractionServiceTest {
+public class DatascopeDownloadServiceTest {
 
     @Inject
     private DatascopeAuthService datascopeAuthService;
@@ -36,11 +36,15 @@ public class DatascopeExtractionServiceTest {
     @Inject
     private DatascopeExtractionService datascopeExtractionService;
 
+    @Inject
+    private DatascopeDownloadService datascopeDownloadService;
+
     @Test
-    public void testGetExtractionFieldId()
+    public void testDownloadFile()
     {
 //        String token = datascopeAuthService.getToken();
 //        String scheduleId = datascopeScheduleService.sheduleExtraction(token);
-//        datascopeExtractionService.getExtractionFileId(token, scheduleId);
+//        List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
+//        ids.stream().forEach(fileId -> datascopeDownloadService.downloadFile(token, fileId));
     }
 }
