@@ -53,6 +53,7 @@ public class ServicesModule extends AbstractModule {
         bind(DatascopeAuthService.class).to(DatascopeAuthServiceImpl.class);
         bind(DatascopeScheduleService.class).to(DatascopeScheduleServiceImpl.class);
         bind(DatascopeExtractionService.class).to(DatascopeExtractionServiceImpl.class);
+        bind(DatascopeDownloadService.class).to(DatascopeDownloadServiceImpl.class);
     }
 
     @Provides
