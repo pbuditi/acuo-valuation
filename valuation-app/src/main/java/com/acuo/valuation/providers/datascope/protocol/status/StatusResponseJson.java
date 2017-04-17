@@ -8,6 +8,8 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class StatusResponseJson {
 
+    @JsonProperty("ReportExtractionId")
+    private String reportExtractionId;
     @JsonProperty("ScheduleId")
     private String scheduleid;
     @JsonProperty("Status")

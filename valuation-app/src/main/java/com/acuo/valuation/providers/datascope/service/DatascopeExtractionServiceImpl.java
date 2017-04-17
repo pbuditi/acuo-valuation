@@ -1,12 +1,15 @@
 package com.acuo.valuation.providers.datascope.service;
 
 import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.valuation.providers.datascope.protocol.report.ReportResponseJson;
 import com.acuo.valuation.providers.datascope.protocol.status.StatusResponseJson;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class DatascopeExtractionServiceImpl implements DatascopeExtractionService {
@@ -20,17 +23,20 @@ public class DatascopeExtractionServiceImpl implements DatascopeExtractionServic
         this.client = client;
         objectMapper = new ObjectMapper();
     }
-    public String getExtractionFileId(String token, String scheduleId)
+    public List<String> getExtractionFileId(String token, String scheduleId)
     {
         boolean statusReady = false;
+        String reportExtractionId = null;
         do {
             String response = DatascopExtractionStatusCall.of(client).with("token", token).with("id", scheduleId).create().send();
-            log.info(response);
+
             try
             {
-                String status = objectMapper.readValue(response, StatusResponseJson.class).getStatus();
-                if(status.equalsIgnoreCase("Completed"))
+                StatusResponseJson responseJson = objectMapper.readValue(response, StatusResponseJson.class);
+                if(responseJson.getStatus().equalsIgnoreCase("Completed")) {
                     statusReady = true;
+                    reportExtractionId = responseJson.getReportExtractionId();
+                }
                 Thread.sleep(5000);
             }
             catch (Exception ioe)
@@ -38,6 +44,19 @@ public class DatascopeExtractionServiceImpl implements DatascopeExtractionServic
                 log.error("error in getExtractionStatus:" + ioe);
             }
         }while(!statusReady);
-        return null;
+
+        String response = DatascopeExtractionReportCall.of(client).with("token", token).with("id", reportExtractionId).create().send();
+        log.info(response);
+        List<String> fileIds = new ArrayList<>();
+        try
+        {
+            ReportResponseJson reportResponseJson = objectMapper.readValue(response, ReportResponseJson.class);
+            reportResponseJson.getValue().stream().forEach(value -> fileIds.add(value.getExtractedfileid()));
+        }
+        catch(IOException ioe)
+        {
+            log.error("error in report:" + ioe);
+        }
+        return fileIds;
     }
 }
