@@ -1,6 +1,8 @@
 package com.acuo.valuation.providers.datascope.service;
 
+import java.util.List;
+
 public interface DatascopeExtractionService {
 
-    String getExtractionFileId(String token, String scheduleId);
+    List<String> getExtractionFileId(String token, String scheduleId);
 }
