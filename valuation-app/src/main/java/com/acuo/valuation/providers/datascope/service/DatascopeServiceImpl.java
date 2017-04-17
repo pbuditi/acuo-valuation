@@ -6,6 +6,7 @@ import com.acuo.valuation.providers.datascope.protocol.auth.Credentials;
 import com.acuo.valuation.providers.datascope.protocol.auth.TokenJson;
 import com.acuo.valuation.providers.datascope.protocol.schedule.Recurrence;
 import com.acuo.valuation.providers.datascope.protocol.schedule.ScheduleRequestJson;
+import com.acuo.valuation.providers.datascope.protocol.schedule.ScheduleResponseJson;
 import com.acuo.valuation.providers.datascope.protocol.schedule.Trigger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 public class DatascopeServiceImpl implements DatascopeService {
@@ -52,6 +56,15 @@ public class DatascopeServiceImpl implements DatascopeService {
             getToken();
         String response = DatascopeScheduleCall.of(client).with("token",token).with("body", buildScheduleRequestJson()).create().send();
         log.info(response);
+
+        try
+        {
+            scheduleId = objectMapper.readValue(response, ScheduleResponseJson.class).getScheduleId();
+        }
+        catch (IOException ioe)
+        {
+            log.error("error in sheduleExTraction:" + ioe);
+        }
         return scheduleId;
     }
 
@@ -59,7 +72,7 @@ public class DatascopeServiceImpl implements DatascopeService {
     {
         ScheduleRequestJson scheduleRequestJson = new ScheduleRequestJson();
         DatascopeEndPointConfig config = client.config();
-        scheduleRequestJson.setName("AcuoFXImmediateSchedule");
+        scheduleRequestJson.setName("AcuoFXImmediateSchedule_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss")));
         scheduleRequestJson.setListId(config.getListId());
         scheduleRequestJson.setReportTemplateId(config.getReportTemplateId());
         Recurrence recurrence = new Recurrence();
@@ -68,7 +81,7 @@ public class DatascopeServiceImpl implements DatascopeService {
         scheduleRequestJson.setRecurrence(recurrence);
         Trigger trigger = new Trigger();
         trigger.setOdataType("#ThomsonReuters.Dss.Api.Extractions.Schedules.ImmediateTrigger");
-        trigger.setLimitreporttotodaysdata(true);
+        trigger.setLimitReportToTodaysData(true);
         scheduleRequestJson.setTrigger(trigger);
 
         String value = null;
@@ -80,6 +93,7 @@ public class DatascopeServiceImpl implements DatascopeService {
         {
             log.error("error in schedule json :" + jpe);
         }
+        log.info("request json:" + value);
         return value;
     }
 

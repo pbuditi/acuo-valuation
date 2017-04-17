@@ -9,5 +9,5 @@ public class Trigger {
     @JsonProperty("@odata.type")
     private String odataType;
     @JsonProperty("LimitReportToTodaysData")
-    private boolean limitreporttotodaysdata;
+    private boolean limitReportToTodaysData;
 }
