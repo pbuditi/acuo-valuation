@@ -2,6 +2,9 @@ package com.acuo.valuation.modules;
 
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarkitResults;
+import com.acuo.valuation.providers.acuo.assets.AssetPricingProcessor;
+import com.acuo.valuation.providers.acuo.assets.CashAssetPricingProcessor;
+import com.acuo.valuation.providers.acuo.assets.ReutersAssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.calls.MarginResultPersister;
 import com.acuo.valuation.providers.acuo.calls.MarkitMarginCallGenerator;
 import com.acuo.valuation.providers.acuo.calls.SimulationMarginCallBuilder;
@@ -37,20 +40,32 @@ public class ServicesModule extends AbstractModule {
 
     @Override
     protected void configure() {
+
+        // common
+        bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
+        bind(TradeCacheService.class).to(LocalTradeCacheService.class);
+
+        // markit trade valuation and margin call generation
         bind(Sender.class).to(PortfolioValuationsSender.class);
         bind(Retriever.class).to(PortfolioValuationsRetriever.class);
         bind(PricingService.class).to(MarkitPricingService.class);
         bind(new TypeLiteral<ResultPersister<MarkitResults>>(){}).to(MarkitResultPersister.class);
-        bind(new TypeLiteral<ResultPersister<MarginResults>>(){}).to(MarginResultPersister.class);
         bind(MarkitMarginCallGenerator.class);
         bind(SimulationMarginCallBuilder.class);
         bind(MarkitValuationProcessor.class);
         bind(MarkitResultPersister.class);
+
+        // clarus portfolio valuation and margin call generation
         bind(MarginCalcService.class).to(ClarusMarginCalcService.class);
-        bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
-        bind(TradeCacheService.class).to(LocalTradeCacheService.class);
+        bind(new TypeLiteral<ResultPersister<MarginResults>>(){}).to(MarginResultPersister.class);
+
+        // asset valuation
         bind(ReutersService.class).to(ReutersServiceImpl.class);
         bind(AssetsPersistService.class).to(AssetsPersistServiceImpl.class);
+        bind(ReutersAssetPricingProcessor.class);
+        bind(CashAssetPricingProcessor.class);
+
+        // datascope
         bind(DatascopeAuthService.class).to(DatascopeAuthServiceImpl.class);
         bind(DatascopeScheduleService.class).to(DatascopeScheduleServiceImpl.class);
         bind(DatascopeExtractionService.class).to(DatascopeExtractionServiceImpl.class);
@@ -59,12 +74,21 @@ public class ServicesModule extends AbstractModule {
 
     @Provides
     @Singleton
-    MarkitResultProcessor firstProcessor(Injector injector) {
+    MarkitResultProcessor markitResultProcessor(Injector injector) {
         MarkitResultPersister resultPersister = injector.getInstance(MarkitResultPersister.class);
         MarkitMarginCallGenerator markitProcessor = injector.getInstance(MarkitMarginCallGenerator.class);
         SimulationMarginCallBuilder simulator = injector.getInstance(SimulationMarginCallBuilder.class);
         resultPersister.setNext(markitProcessor);
         markitProcessor.setNext(simulator);
         return resultPersister;
+    }
+
+    @Provides
+    @Singleton
+    AssetPricingProcessor assetPricingProcessor(Injector injector) {
+        ReutersAssetPricingProcessor reutersPricingProcessor = injector.getInstance(ReutersAssetPricingProcessor.class);
+        CashAssetPricingProcessor cashAssetPricingProcessor = injector.getInstance(CashAssetPricingProcessor.class);
+        reutersPricingProcessor.setNext(cashAssetPricingProcessor);
+        return reutersPricingProcessor;
     }
 }

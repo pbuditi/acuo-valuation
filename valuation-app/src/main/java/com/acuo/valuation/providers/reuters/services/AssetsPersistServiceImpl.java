@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -28,24 +29,39 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
         this.valueService = valueService;
     }
 
-    public void persist(com.acuo.common.model.results.AssetValuation valuation) {
-        final AssetId assetId = AssetId.fromString(valuation.getAssetId());
-        log.info("inserting asset value for asset id [{}]", assetId);
+    public AssetValue persist(AssetId assetId, AssetValue value) {
 
         AssetValuation assetValuation = valuationService.getOrCreateAssetValuationFor(assetId);
         if (assetValuation == null) {
             log.warn("unable to retrieve or create an asset valuation for the asset {}", assetId);
-            return;
+            return value;
         }
 
         deleteLatestValue(assetValuation);
 
-        final LocalDate valuationDateTime = valuation.getValuationDateTime();
+        final LocalDate valuationDateTime = value.getValuationDateTime();
 
+
+        createValueRelation(assetValuation, valuationDateTime, value);
+        return valueService.createOrUpdate(value);
+    }
+
+    public Collection<AssetValue> persist(List<com.acuo.common.model.results.AssetValuation> valuations) {
+        return valuations.stream().map(this::persist).collect(toList());
+    }
+
+    public AssetValue persist(com.acuo.common.model.results.AssetValuation valuation) {
+        final AssetId assetId = AssetId.fromString(valuation.getAssetId());
+        log.info("inserting asset valuation for asset id [{}]", assetId);
+
+        final LocalDate valuationDateTime = valuation.getValuationDateTime();
         AssetValue assetValue = createAssetValue(valuation, valuationDateTime);
-        createValueRelation(assetValuation, valuationDateTime, assetValue);
-        valueService.createOrUpdate(assetValue);
-        log.info("value inserted in the db with timestamp set to {}", assetValue.getValuationDateTime());
+
+        persist(assetId, assetValue);
+
+        final AssetValue value = valueService.createOrUpdate(assetValue);
+        log.info("valuation inserted in the db with timestamp set to {}", assetValue.getValuationDateTime());
+        return value;
     }
 
     private void createValueRelation(AssetValuation assetValuation, LocalDate valuationDateTime, AssetValue assetValue) {
