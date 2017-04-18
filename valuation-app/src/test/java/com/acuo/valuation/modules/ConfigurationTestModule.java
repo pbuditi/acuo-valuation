@@ -3,7 +3,6 @@ package com.acuo.valuation.modules;
 import com.acuo.common.app.AppId;
 import com.acuo.common.app.Configuration;
 import com.acuo.common.app.Environment;
-import com.acuo.common.app.SecurityKey;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
