@@ -47,8 +47,8 @@ public class AssetsPersistServiceImplTest {
 
     private static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                { "IT0001444378", "ISIN", 2.6415304243758504d, 139.524d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d },
-                { "IT0001444378", "ISIN", 2.6415304243758504d, 139.524d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d }
+                { "IT0001444378", "ISIN", 2.6415304243758504d, 139_000_000.524d, 1_000_000.0d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d },
+                { "IT0001444378", "ISIN", 2.6415304243758504d, 139_000_000.524d, 1_000_000.0d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d }
         });
     }
 
@@ -82,17 +82,19 @@ public class AssetsPersistServiceImplTest {
     private static List<AssetValuation> assetValuations() {
         return stream(data().spliterator(), true)
                 .map(objects -> {
+                    int i = 0;
                     AssetValuation assetValuation = new AssetValuation();
-                    assetValuation.setAssetId((String) objects[0]);
-                    assetValuation.setIdType((String) objects[1]);
-                    assetValuation.setYield((Double) objects[2]);
-                    assetValuation.setPrice((Double) objects[3]);
-                    assetValuation.setValuationDateTime((LocalDate) objects[4]);
-                    assetValuation.setPriceQuotationType((String) objects[5]);
-                    assetValuation.setSource((String) objects[6]);
-                    assetValuation.setNominalCurrency((Currency) objects[7]);
-                    assetValuation.setReportCurrency((Currency) objects[8]);
-                    assetValuation.setCoupon((Double) objects[9]);
+                    assetValuation.setAssetId((String) objects[i++]);
+                    assetValuation.setIdType((String) objects[i++]);
+                    assetValuation.setYield((Double) objects[i++]);
+                    assetValuation.setCleanMarketValue((Double) objects[i++]);
+                    assetValuation.setNotional((Double) objects[i++]);
+                    assetValuation.setValuationDateTime((LocalDate) objects[i++]);
+                    assetValuation.setPriceQuotationType((String) objects[i++]);
+                    assetValuation.setSource((String) objects[i++]);
+                    assetValuation.setNominalCurrency((Currency) objects[i++]);
+                    assetValuation.setReportCurrency((Currency) objects[i++]);
+                    assetValuation.setCoupon((Double) objects[i++]);
                     return assetValuation;
                 })
                 .collect(toList());

@@ -10,6 +10,7 @@ import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.ValuationService;
+import com.acuo.valuation.providers.acuo.results.MarkitResultProcessor;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +23,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @Slf4j
-public class SimulationMarginCallBuilder extends MarkitMarginCallGenerator implements MarkitValuationProcessor.PricingResultProcessor {
+public class SimulationMarginCallBuilder extends MarkitMarginCallGenerator implements MarkitResultProcessor {
 
-    private MarkitValuationProcessor.PricingResultProcessor nextProcessor;
+    private MarkitResultProcessor nextProcessor;
 
     @Inject
     public SimulationMarginCallBuilder(ValuationService valuationService,
@@ -54,7 +55,7 @@ public class SimulationMarginCallBuilder extends MarkitMarginCallGenerator imple
     }
 
     @Override
-    public void setNextProcessor(MarkitValuationProcessor.PricingResultProcessor nextProcessor) {
+    public void setNext(MarkitResultProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;
     }
 

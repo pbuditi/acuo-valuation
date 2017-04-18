@@ -13,6 +13,7 @@ import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.ValuationService;
+import com.acuo.valuation.providers.acuo.results.MarkitResultProcessor;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +32,10 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuation> implements MarkitValuationProcessor.PricingResultProcessor {
+public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuation> implements MarkitResultProcessor {
 
     private final MarginCallService marginCallService;
-    private MarkitValuationProcessor.PricingResultProcessor nextProcessor;
+    private MarkitResultProcessor nextProcessor;
 
     @Inject
     MarkitMarginCallGenerator(ValuationService valuationService,
@@ -64,7 +65,7 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
     }
 
     @Override
-    public void setNextProcessor(MarkitValuationProcessor.PricingResultProcessor nextProcessor) {
+    public void setNext(MarkitResultProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;
     }
 
