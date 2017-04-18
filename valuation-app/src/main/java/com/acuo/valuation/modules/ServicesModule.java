@@ -5,6 +5,7 @@ import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.providers.acuo.calls.MarginResultPersister;
 import com.acuo.valuation.providers.acuo.calls.MarkitMarginCallGenerator;
 import com.acuo.valuation.providers.acuo.calls.SimulationMarginCallBuilder;
+import com.acuo.valuation.providers.acuo.results.MarkitResultProcessor;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.providers.acuo.results.MarkitResultPersister;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
@@ -58,12 +59,12 @@ public class ServicesModule extends AbstractModule {
 
     @Provides
     @Singleton
-    MarkitValuationProcessor.PricingResultProcessor firstProcessor(Injector injector) {
+    MarkitResultProcessor firstProcessor(Injector injector) {
         MarkitResultPersister resultPersister = injector.getInstance(MarkitResultPersister.class);
         MarkitMarginCallGenerator markitProcessor = injector.getInstance(MarkitMarginCallGenerator.class);
         SimulationMarginCallBuilder simulator = injector.getInstance(SimulationMarginCallBuilder.class);
-        resultPersister.setNextProcessor(markitProcessor);
-        markitProcessor.setNextProcessor(simulator);
+        resultPersister.setNext(markitProcessor);
+        markitProcessor.setNext(simulator);
         return resultPersister;
     }
 }

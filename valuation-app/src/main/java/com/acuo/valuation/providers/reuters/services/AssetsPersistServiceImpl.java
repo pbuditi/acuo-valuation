@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import static com.acuo.common.util.ArithmeticUtils.divide;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
@@ -59,7 +60,8 @@ public class AssetsPersistServiceImpl implements AssetsPersistService {
         AssetValue assetValue = new AssetValue();
         assetValue.setCoupon(valuation.getCoupon());
         assetValue.setNominalCurrency(valuation.getNominalCurrency());
-        assetValue.setPrice(valuation.getPrice());
+        final Double division = divide(valuation.getCleanMarketValue(), valuation.getNotional());
+        assetValue.setUnitValue(division);
         assetValue.setPriceQuotationType(valuation.getPriceQuotationType());
         assetValue.setReportCurrency(valuation.getReportCurrency());
         assetValue.setValuationDateTime(valuationDateTime);

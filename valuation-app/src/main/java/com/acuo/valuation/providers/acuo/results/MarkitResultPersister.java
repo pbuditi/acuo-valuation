@@ -26,12 +26,12 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
-public class MarkitResultPersister implements ResultPersister<MarkitResults>, MarkitValuationProcessor.PricingResultProcessor {
+public class MarkitResultPersister implements ResultPersister<MarkitResults>, MarkitResultProcessor {
 
     private final TradeService<Trade> tradeService;
     private final ValuationService valuationService;
     private final ValueService valueService;
-    private MarkitValuationProcessor.PricingResultProcessor nextProcessor;
+    private MarkitResultProcessor nextProcessor;
     private final PortfolioService portfolioService;
 
     @Inject
@@ -55,7 +55,7 @@ public class MarkitResultPersister implements ResultPersister<MarkitResults>, Ma
     }
 
     @Override
-    public void setNextProcessor(MarkitValuationProcessor.PricingResultProcessor nextProcessor) {
+    public void setNext(MarkitResultProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;
     }
 
