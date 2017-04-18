@@ -26,7 +26,6 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class AssetValuationResource {
 
-    private final
     private final ReutersService reutersService;
     private final AssetsPersistService assetsPersistService;
     private final AssetService assetService;
