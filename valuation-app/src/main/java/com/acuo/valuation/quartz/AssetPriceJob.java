@@ -4,7 +4,7 @@ import com.acuo.common.model.assets.Assets;
 import com.acuo.common.model.results.AssetValuation;
 import com.acuo.persist.entity.Asset;
 import com.acuo.persist.services.AssetService;
-import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
+import com.acuo.persist.services.AssetValuationService;
 import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.utils.AssetsBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +20,11 @@ import java.util.List;
 public class AssetPriceJob implements Job {
 
     private final ReutersService reutersService;
-    private final AssetsPersistService assetsPersistService;
+    private final AssetValuationService assetsPersistService;
     private final AssetService assetService;
 
     @Inject
-    public AssetPriceJob(ReutersService reutersService, AssetsPersistService assetsPersistService, AssetService assetService) {
+    public AssetPriceJob(ReutersService reutersService, AssetValuationService assetsPersistService, AssetService assetService) {
         this.reutersService = reutersService;
         this.assetsPersistService = assetsPersistService;
         this.assetService = assetService;
