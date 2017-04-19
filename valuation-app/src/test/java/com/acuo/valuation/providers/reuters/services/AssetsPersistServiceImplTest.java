@@ -11,6 +11,7 @@ import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.AssetService;
+import com.acuo.persist.services.AssetValuationService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -56,7 +57,7 @@ public class AssetsPersistServiceImplTest {
     ImportService importService;
 
     @Inject
-    AssetsPersistService assetsPersistService;
+    AssetValuationService assetsPersistService;
 
     @Inject
     AssetService assetService;
