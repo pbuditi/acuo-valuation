@@ -37,11 +37,17 @@ public class DatascopeExtractionServiceImpl implements DatascopeExtractionServic
                     statusReady = true;
                     reportExtractionId = responseJson.getReportExtractionId();
                 }
-                Thread.sleep(10000);
             }
             catch (Exception ioe)
             {
-                log.error("error in getExtractionStatus:" + ioe);
+                try
+                {
+                    Thread.sleep(10000);
+                }
+                catch (InterruptedException ie)
+                {
+
+                }
             }
         }while(!statusReady);
 
