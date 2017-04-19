@@ -5,7 +5,7 @@ import com.acuo.common.model.results.AssetValuation;
 import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.AssetValue;
 import com.acuo.persist.entity.PricingSource;
-import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
+import com.acuo.persist.services.AssetValuationService;
 import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.utils.AssetsBuilder;
 
@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 public class ReutersAssetPricingProcessor extends AbstractAssetPricingProcessor {
 
     private final ReutersService reutersService;
-    private final AssetsPersistService assetsPersistService;
+    private final AssetValuationService assetsPersistService;
 
     private static final Predicate<Asset> reutersPredicate = asset -> {
         final PricingSource pricingSource = asset.getPricingSource();
@@ -30,7 +30,7 @@ public class ReutersAssetPricingProcessor extends AbstractAssetPricingProcessor 
 
     @Inject
     public ReutersAssetPricingProcessor(ReutersService reutersService,
-                                        AssetsPersistService assetsPersistService) {
+                                        AssetValuationService assetsPersistService) {
         this.reutersService = reutersService;
         this.assetsPersistService = assetsPersistService;
     }

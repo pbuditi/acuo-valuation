@@ -4,8 +4,8 @@ import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.AssetValue;
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.ids.AssetId;
+import com.acuo.persist.services.AssetValuationService;
 import com.acuo.persist.services.CurrencyService;
-import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
 import com.opengamma.strata.basics.currency.Currency;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 public class CashAssetPricingProcessor extends AbstractAssetPricingProcessor {
 
     private final CurrencyService currencyService;
-    private final AssetsPersistService persistService;
+    private final AssetValuationService persistService;
 
     private static final Predicate<Asset> cashAssets = asset -> {
         final PricingSource pricingSource = asset.getPricingSource();
@@ -30,7 +30,7 @@ public class CashAssetPricingProcessor extends AbstractAssetPricingProcessor {
 
     @Inject
     public CashAssetPricingProcessor(CurrencyService currencyService,
-                                     AssetsPersistService persistService) {
+                                     AssetValuationService persistService) {
         this.currencyService = currencyService;
         this.persistService = persistService;
     }

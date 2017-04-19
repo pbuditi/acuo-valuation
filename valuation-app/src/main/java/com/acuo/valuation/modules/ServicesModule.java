@@ -21,8 +21,6 @@ import com.acuo.valuation.providers.markit.services.PortfolioValuationsRetriever
 import com.acuo.valuation.providers.markit.services.PortfolioValuationsSender;
 import com.acuo.valuation.providers.markit.services.Retriever;
 import com.acuo.valuation.providers.markit.services.Sender;
-import com.acuo.valuation.providers.reuters.services.AssetsPersistService;
-import com.acuo.valuation.providers.reuters.services.AssetsPersistServiceImpl;
 import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.providers.reuters.services.ReutersServiceImpl;
 import com.acuo.valuation.services.MarginCalcService;
@@ -61,7 +59,6 @@ public class ServicesModule extends AbstractModule {
 
         // asset valuation
         bind(ReutersService.class).to(ReutersServiceImpl.class);
-        bind(AssetsPersistService.class).to(AssetsPersistServiceImpl.class);
         bind(ReutersAssetPricingProcessor.class);
         bind(CashAssetPricingProcessor.class);
 
