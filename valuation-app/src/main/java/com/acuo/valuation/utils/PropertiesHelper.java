@@ -53,11 +53,14 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_DATASCOPE_PASSWORD = "acuo.datascope.password";
     public static final String ACUO_DATASCOPE_CONNECTION_TIMEOUT = "acuo.datascope.connection.timeout";
     public static final String ACUO_DATASCOPE_USE_PROXY = "acuo.datascope.use.proxy";
-    public static final String ACUO_DATASCOPE_LIST_ID = "acuo.datascope.list.id";
-    public static final String ACUO_DATASCOPE_REPORT_TEMPLATE_ID = "acuo.datascope.report.template.id";
+    public static final String ACUO_DATASCOPE_LIST_ID_FX = "acuo.datascope.list.id.fx";
+    public static final String ACUO_DATASCOPE_REPORT_TEMPLATE_ID_FX = "acuo.datascope.report.template.id.fx";
     public static final String ACUO_DATASCOPE_STATUSPATH = "acuo.datascope.statuspath";
     public static final String ACUO_DATASCOPE_REPORTPATH = "acuo.datascope.reportpath";
     public static final String ACUO_DATASCOPE_DOWNLOADPATH = "acuo.datascope.downloadpath";
+    public static final String ACUO_DATASCOPE_LIST_ID_BOND = "acuo.datascope.list.id.bond";
+    public static final String ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND = "acuo.datascope.report.template.id.bond";
+
 
 
     public static final String ACUO_HOLIDAY_SCHEME = "acuo.holiday.scheme";
