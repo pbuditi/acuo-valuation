@@ -28,10 +28,22 @@ public class DatascopeScheduleServiceImpl implements DatascopeScheduleService {
     }
 
 
-    public String sheduleExtraction(String token)
+    public String scheduleFXRateExtraction(String token)
+    {
+        DatascopeEndPointConfig config = client.config();
+        return schedule(token, buildScheduleRequestJson(config.getListIdFX(), config.getReportTemplateIdFX()));
+    }
+
+    public String scheduleBondExtraction(String token)
+    {
+        DatascopeEndPointConfig config = client.config();
+        return schedule(token, buildScheduleRequestJson(config.getListIdBond(), config.getReportTemplateIdBond()));
+    }
+
+    private String schedule(String token, String json)
     {
         String scheduleId = null;
-        String response = DatascopeScheduleCall.of(client).with("token",token).with("body", buildScheduleRequestJson()).create().send();
+        String response = DatascopeScheduleCall.of(client).with("token",token).with("body", json).create().send();
         log.info(response);
 
         try
@@ -45,13 +57,13 @@ public class DatascopeScheduleServiceImpl implements DatascopeScheduleService {
         return scheduleId;
     }
 
-    private String buildScheduleRequestJson()
+    private String buildScheduleRequestJson(String listId, String reportTemplateId)
     {
         ScheduleRequestJson scheduleRequestJson = new ScheduleRequestJson();
-        DatascopeEndPointConfig config = client.config();
+
         scheduleRequestJson.setName("AcuoFXImmediateSchedule_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss")));
-        scheduleRequestJson.setListId(config.getListId());
-        scheduleRequestJson.setReportTemplateId(config.getReportTemplateId());
+        scheduleRequestJson.setListId(listId);
+        scheduleRequestJson.setReportTemplateId(reportTemplateId);
         Recurrence recurrence = new Recurrence();
         recurrence.setOdataType("#ThomsonReuters.Dss.Api.Extractions.Schedules.SingleRecurrence");
         recurrence.setIsimmediate(true);
@@ -73,4 +85,6 @@ public class DatascopeScheduleServiceImpl implements DatascopeScheduleService {
         log.info("request json:" + value);
         return value;
     }
+
+
 }

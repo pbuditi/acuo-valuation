@@ -40,7 +40,7 @@ public class DatascopeExtractionServiceTest {
     public void testGetExtractionFieldId()
     {
 //        String token = datascopeAuthService.getToken();
-//        String scheduleId = datascopeScheduleService.sheduleExtraction(token);
+//        String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
 //        datascopeExtractionService.getExtractionFileId(token, scheduleId);
     }
 }

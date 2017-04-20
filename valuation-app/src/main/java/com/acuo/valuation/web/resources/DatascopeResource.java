@@ -49,7 +49,7 @@ public class DatascopeResource {
     public Response getFx()
     {
         String token = datascopeAuthService.getToken();
-        String scheduleId = datascopeScheduleService.sheduleExtraction(token);
+        String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
         List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
         String csv = datascopeDownloadService.downloadFile(token, ids.get(1));
         BufferedReader br = new BufferedReader(new StringReader(csv));
@@ -71,6 +71,37 @@ public class DatascopeResource {
             log.error("error in getFx :" + e);
         }
         datascopePersistService.persistFxRate(lines);
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/getBond")
+    @Timed
+    public Response getBond()
+    {
+        String token = datascopeAuthService.getToken();
+        String scheduleId = datascopeScheduleService.scheduleBondExtraction(token);
+        List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
+        String csv = datascopeDownloadService.downloadFile(token, ids.get(1));
+        BufferedReader br = new BufferedReader(new StringReader(csv));
+        List<String> lines = new ArrayList<>();
+        try
+        {
+            //skipe the first two line
+            br.readLine();
+            br.readLine();
+            String line = null;
+            while ((line= br.readLine())!=null)
+            {
+                lines.add(line);
+            }
+
+        }
+        catch (Exception e)
+        {
+            log.error("error in getFx :" + e);
+        }
+        //datascopePersistService.persistFxRate(lines);
         return Response.ok().build();
     }
 }
