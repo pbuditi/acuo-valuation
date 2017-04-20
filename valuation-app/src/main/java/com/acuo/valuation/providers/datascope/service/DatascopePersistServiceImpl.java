@@ -1,7 +1,9 @@
 package com.acuo.valuation.providers.datascope.service;
 
+import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.CurrencyEntity;
 import com.acuo.persist.entity.FXRateRelation;
+import com.acuo.persist.services.AssetService;
 import com.acuo.persist.services.CurrencyService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,11 +16,13 @@ import java.util.List;
 public class DatascopePersistServiceImpl implements DatascopePersistService {
 
     private final CurrencyService currencyService;
+    private final AssetService assetService;
 
     @Inject
-    public DatascopePersistServiceImpl(CurrencyService currencyService)
+    public DatascopePersistServiceImpl(CurrencyService currencyService, AssetService assetService)
     {
         this.currencyService = currencyService;
+        this.assetService = assetService;
     }
 
 
@@ -51,5 +55,26 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
             currencyService.createOrUpdate(currencyEntity);
 
         }
+    }
+
+    public void persistBond(List<String> csvLine)
+    {
+       for(String line : csvLine)
+       {
+           String[] columns = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
+           String id = columns[3];
+           String parValue = columns[1];
+           Asset asset = assetService.findById(id);
+           if(asset != null && parValue!= null && parValue.trim().length() > 0)
+           {
+               parValue = parValue.replaceAll("\"", "");
+               parValue = parValue.replaceAll(",", "");
+               asset.setParValue(Double.parseDouble(parValue));
+               assetService.createOrUpdate(asset);
+           }
+
+
+       }
+
     }
 }
