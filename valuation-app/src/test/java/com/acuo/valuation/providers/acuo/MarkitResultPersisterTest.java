@@ -5,6 +5,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.*;
+import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.*;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
@@ -14,10 +15,12 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.protocol.responses.Response;
+import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.MarkitValuation;
-import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.providers.acuo.results.PricingResultPersister;
+import com.acuo.valuation.providers.acuo.results.MarkitResultPersister;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
+import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
@@ -27,16 +30,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.parboiled.common.ImmutableList;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
@@ -49,7 +54,7 @@ import java.util.Set;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class PricingResultPersisterTest {
+public class MarkitResultPersisterTest {
 
     @Inject
     ImportService importService;
@@ -69,18 +74,25 @@ public class PricingResultPersisterTest {
     @Inject
     ValueService valueService;
 
+    @Inject
+    ResponseParser parser;
+
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
-    PricingResultPersister persister;
+    @Rule
+    public ResourceFile large = new ResourceFile("/markit/responses/large.xml");
+
+    MarkitResultPersister persister;
 
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         importService.reload();
         tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
-        persister = new PricingResultPersister(tradeService, valuationService, valueService, portfolioService);
+        persister = new MarkitResultPersister(tradeService, valuationService, valueService, portfolioService);
     }
+
     @Test
     public void testPersistValidPricingResult() throws ParseException {
         List<Result<MarkitValuation>> results = new ArrayList<Result<MarkitValuation>>();
@@ -98,34 +110,56 @@ public class PricingResultPersisterTest {
 
         results.add(result);
 
-        PricingResults pricingResults = new PricingResults();
-        pricingResults.setResults(results);
+        MarkitResults markitResults = new MarkitResults();
+        markitResults.setResults(results);
 
-        DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
         LocalDate myDate1 = LocalDate.now();
-        pricingResults.setDate(myDate1);
-        pricingResults.setCurrency(Currency.USD);
-        persister.persist(pricingResults);
+        markitResults.setDate(myDate1);
+        markitResults.setCurrency(Currency.USD);
+        persister.persist(markitResults);
 
-        Trade trade = tradeService.findById(tradeId);
-        Valuation valuation = trade.getValuation();
-        valuation = valuationService.find(valuation.getId());
+        TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
         boolean foundValue = false;
 
-        Set<ValueRelation> values = valuation.getValues();
-        for(ValueRelation value : values)
-        {
-            TradeValue tradeValue = (TradeValue)value.getValue();
-            if(value.getDateTime().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().equals(new Double(-30017690)))
+        Set<TradeValueRelation> values = valuation.getValues();
+        for (TradeValueRelation value : values) {
+            TradeValue tradeValue = value.getValue();
+            if (value.getDateTime().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().equals(new Double(-30017690)))
                 foundValue = true;
         }
-
-
         Assert.assertTrue(foundValue);
     }
 
     @Test
     public void testPersistNullPricingResult() throws ParseException {
         persister.persist(null);
+    }
+
+    @Test
+    public void testWithLargeResponse() throws Exception {
+        Response response = parser.parse(large.getContent());
+
+        List<String> tradeIds = ImmutableList.of("455820");
+
+        List<Result<MarkitValuation>> results = tradeIds.stream()
+                .map(tradeId -> response.values()
+                        .stream()
+                        .filter(value -> tradeId.equals(value.getTradeId()))
+                        .filter(value -> !"Failed".equalsIgnoreCase(value.getStatus()))
+                        .collect(toList()))
+                .map(MarkitValuation::new)
+                .map(Result::success)
+                .collect(toList());
+
+        MarkitResults markitResults = new MarkitResults();
+        markitResults.setResults(results);
+        markitResults.setDate(response.header().getDate());
+        markitResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
+
+        persister.persist(markitResults);
+
+        TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString("455820"));
+        Set<TradeValueRelation> values = valuation.getValues();
+        assertThat(values).hasSize(1);
     }
 }

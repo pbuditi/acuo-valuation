@@ -9,19 +9,20 @@ import org.quartz.JobExecutionException;
 import javax.inject.Inject;
 
 @Slf4j
-public class DailyPriceJob implements Job {
+public class TradePriceJob implements Job {
 
     private final PricingService pricingService;
 
     @Inject
-    public DailyPriceJob(PricingService pricingService)
+    public TradePriceJob(PricingService pricingService)
     {
         this.pricingService = pricingService;
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-
+        log.info("starting trade pricing job");
         pricingService.priceTradesOfType("Bilateral");
+        log.info("trade pricing job complete");
     }
 }
