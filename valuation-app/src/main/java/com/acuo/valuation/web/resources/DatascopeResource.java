@@ -101,7 +101,7 @@ public class DatascopeResource {
         {
             log.error("error in getFx :" + e);
         }
-        //datascopePersistService.persistFxRate(lines);
+        datascopePersistService.persistBond(lines);
         return Response.ok().build();
     }
 }
