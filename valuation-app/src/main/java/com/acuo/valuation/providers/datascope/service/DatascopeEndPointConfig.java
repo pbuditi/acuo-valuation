@@ -22,11 +22,14 @@ public class DatascopeEndPointConfig implements EndPointConfig {
     private final int connectionTimeOut;
     private final TimeUnit connectionTimeOutUnit;
     private final boolean useProxy;
-    private final String listId;
-    private final String reportTemplateId;
+    private final String listIdFX;
+    private final String reportTemplateIdFX;
     private final String statuspath;
     private final String reportpath;
     private final String downloadpath;
+
+    private final String listIdBond;
+    private final String reportTemplateIdBond;
 
     @Inject
     public DatascopeEndPointConfig(@Named(ACUO_DATASCOPE_SCHEME) String scheme,
@@ -38,11 +41,13 @@ public class DatascopeEndPointConfig implements EndPointConfig {
                                    @Named(ACUO_DATASCOPE_PASSWORD) String password,
                                    @Named(ACUO_DATASCOPE_CONNECTION_TIMEOUT) int connectionTimeOut,
                                    @Named(ACUO_DATASCOPE_USE_PROXY) String useProxy,
-                                   @Named(ACUO_DATASCOPE_LIST_ID) String listId,
-                                   @Named(ACUO_DATASCOPE_REPORT_TEMPLATE_ID) String reportTemplateId,
+                                   @Named(ACUO_DATASCOPE_LIST_ID_FX) String listIdFX,
+                                   @Named(ACUO_DATASCOPE_REPORT_TEMPLATE_ID_FX) String reportTemplateIdFX,
                                    @Named(ACUO_DATASCOPE_STATUSPATH) String statuspath,
                                    @Named(ACUO_DATASCOPE_REPORTPATH) String reportpath,
-                                   @Named(ACUO_DATASCOPE_DOWNLOADPATH) String downloadpath
+                                   @Named(ACUO_DATASCOPE_DOWNLOADPATH) String downloadpath,
+                                   @Named(ACUO_DATASCOPE_LIST_ID_BOND) String listIdBond,
+                                   @Named(ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND) String reportTemplateIdBond
                                    )
     {
         this.scheme = scheme;
@@ -55,11 +60,13 @@ public class DatascopeEndPointConfig implements EndPointConfig {
         this.connectionTimeOut = connectionTimeOut;
         this.connectionTimeOutUnit = TimeUnit.MILLISECONDS;
         this.useProxy = Boolean.valueOf(useProxy);
-        this.listId = listId;
-        this.reportTemplateId = reportTemplateId;
+        this.listIdFX = listIdFX;
+        this.reportTemplateIdFX = reportTemplateIdFX;
         this.statuspath = statuspath;
         this.reportpath = reportpath;
         this.downloadpath = downloadpath;
+        this.listIdBond = listIdBond;
+        this.reportTemplateIdBond = reportTemplateIdBond;
     }
 
     @Override

@@ -43,7 +43,7 @@ public class DatascopeDownloadServiceTest {
     public void testDownloadFile()
     {
 //        String token = datascopeAuthService.getToken();
-//        String scheduleId = datascopeScheduleService.sheduleExtraction(token);
+//        String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
 //        List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
 //        ids.stream().forEach(fileId -> datascopeDownloadService.downloadFile(token, fileId));
     }
