@@ -15,8 +15,8 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.MarkitValuation;
-import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
 import com.acuo.valuation.util.ReportHelper;
@@ -96,11 +96,11 @@ public class MarkitPricingServiceTest {
     public void testPriceSwapWithErrorReport() {
         when(sender.send(any(List.class))).thenReturn(ReportHelper.reportError());
 
-        PricingResults pricingResults = new PricingResults();
-        pricingResults.setResults(Collections.EMPTY_LIST);
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(pricingResults);
+        MarkitResults markitResults = new MarkitResults();
+        markitResults.setResults(Collections.EMPTY_LIST);
+        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(markitResults);
 
-        PricingResults results = service.priceSwapTrades(swaps);
+        MarkitResults results = service.priceSwapTrades(swaps);
 
         assertThat(results).isNotNull();
     }
@@ -109,14 +109,15 @@ public class MarkitPricingServiceTest {
     public void testPriceSwapWithNoErrorReport() {
         when(sender.send(any(List.class))).thenReturn(ReportHelper.report());
         MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId("id1");
         markitValue.setPv(1.0d);
-        PricingResults expectedResults = new PricingResults();
+        MarkitResults expectedResults = new MarkitResults();
         expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
-        PricingResults results = service.priceSwapTrades(swaps);
+        MarkitResults results = service.priceSwapTrades(swaps);
 
-        assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
+        assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
         Result<MarkitValuation> swapResult = results.getResults().get(0);
         Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
@@ -128,14 +129,15 @@ public class MarkitPricingServiceTest {
     public void testPriceSwapWithReportFromFile() throws Exception {
         when(sender.send(any(List.class))).thenReturn(reportParser.parse(test02.getContent()));
         MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId("id1");
         markitValue.setPv(1.0d);
-        PricingResults expectedResults = new PricingResults();
+        MarkitResults expectedResults = new MarkitResults();
         expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
-        PricingResults results = service.priceSwapTrades(asList(SwapHelper.createTrade()));
+        MarkitResults results = service.priceSwapTrades(asList(SwapHelper.createTrade()));
 
-        assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
+        assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
         Result<MarkitValuation> swapResult = results.getResults().get(0);
         Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
@@ -149,15 +151,16 @@ public class MarkitPricingServiceTest {
         when(sender.send(any(List.class))).thenReturn(reportParser.parse(test02.getContent()));
 
         MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId("id1");
         markitValue.setPv(1.0d);
 
-        PricingResults expectedResults = new PricingResults();
+        MarkitResults expectedResults = new MarkitResults();
         expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
 
-        PricingResults results = service.priceTradesOf(ClientId.fromString("c1"));
+        MarkitResults results = service.priceTradesOf(ClientId.fromString("c1"));
 
-        assertThat(results).isNotNull().isInstanceOf(PricingResults.class);
+        assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
         Result<MarkitValuation> swapResult = results.getResults().get(0);
         Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");

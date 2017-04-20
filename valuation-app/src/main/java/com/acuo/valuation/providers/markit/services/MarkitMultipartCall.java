@@ -5,12 +5,9 @@ import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
 import okhttp3.*;
 
-import java.net.URI;
-import java.net.URL;
-
 public class MarkitMultipartCall extends CallBuilder<MarkitMultipartCall> {
 
-    private final ClientEndPoint client;
+    private final ClientEndPoint<MarkitEndPointConfig> client;
     private MultipartBody.Builder builder;
     private HttpUrl uploadUrl;
 
@@ -28,7 +25,7 @@ public class MarkitMultipartCall extends CallBuilder<MarkitMultipartCall> {
                 .addFormDataPart("password", config.getPassword());
     }
 
-    public static MarkitMultipartCall of(ClientEndPoint client) {
+    public static MarkitMultipartCall of(ClientEndPoint<MarkitEndPointConfig> client) {
         return new MarkitMultipartCall(client);
     }
 

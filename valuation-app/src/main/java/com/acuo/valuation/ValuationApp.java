@@ -3,19 +3,22 @@ package com.acuo.valuation;
 import com.acuo.common.app.ResteasyConfig;
 import com.acuo.common.app.ResteasyMain;
 import com.acuo.common.security.EncryptionModule;
-import com.acuo.persist.modules.*;
-import com.acuo.valuation.modules.*;
-import com.acuo.valuation.quartz.AcuoJobFactory;
-import com.acuo.valuation.quartz.DailyPriceJob;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.valuation.modules.ConfigurationModule;
+import com.acuo.valuation.modules.EndPointModule;
+import com.acuo.valuation.modules.HealthChecksModule;
+import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ParsersModule;
+import com.acuo.valuation.modules.QuartzModule;
+import com.acuo.valuation.modules.ResourcesModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.web.ObjectMapperContextResolver;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Module;
-import com.opengamma.strata.basics.schedule.Schedule;
-import com.opengamma.strata.basics.schedule.ScheduleException;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 
 import java.util.Collection;
 
@@ -49,32 +52,13 @@ public class ValuationApp extends ResteasyMain {
                     new DataLoaderModule(),
                     new DataImporterModule(),
                     new ImportServiceModule(),
-                    new RepositoryModule());
+                    new RepositoryModule(),
+                    new QuartzModule());
     }
 
     public static void main(String[] args) throws Exception {
 
         ValuationApp valuationApp = new ValuationApp();
         valuationApp.startAsync();
-        valuationApp.startCron();
-
-    }
-
-    public void startCron()
-    {
-        Injector injector = Guice.createInjector(modules());
-        JobDetail jobDetail = JobBuilder.newJob(DailyPriceJob.class).withIdentity("DailyPriceJob", "markitgroup").build();
-        try
-        {
-            Trigger trigger = TriggerBuilder.newTrigger().withIdentity("DailyPriceJob", "markitgroup").withSchedule(CronScheduleBuilder.cronSchedule("0 0 1 * * ?")).build();
-            Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-            scheduler.setJobFactory(injector.getInstance(AcuoJobFactory.class));
-            scheduler.start();
-            scheduler.scheduleJob(jobDetail, trigger);
-        }
-        catch (Exception e)
-        {
-            log.error("error in Scheduler:" + e.toString());
-        }
     }
 }
