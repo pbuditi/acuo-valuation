@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class PricingResults {
+public class MarkitResults {
 
     private LocalDate date;
     private Currency currency;

@@ -74,9 +74,9 @@ public class ReutersServiceTest {
 
         ReutersEndPointConfig config = new ReutersEndPointConfig("http", server.getHostName(), server.getPort(), "testUpload" ,"key", "secret", "10000", 10000,"false");
 
-        ClientEndPoint<ReutersEndPointConfig> clientEndPoint = new OkHttpClient(httpClient, config);
+        ClientEndPoint<ReutersEndPointConfig> clientEndPoint = new OkHttpClient<>(httpClient, config);
 
-        reutersService = new ReutersServiceImpl(clientEndPoint, transformer, assetService, assetsPersistService, valuationTransformer);
+        reutersService = new ReutersServiceImpl(clientEndPoint, transformer, valuationTransformer);
 
     }
 
