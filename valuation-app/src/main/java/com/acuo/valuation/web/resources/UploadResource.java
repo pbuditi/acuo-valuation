@@ -41,13 +41,15 @@ public class UploadResource {
     @Timed
     public Response upload(@MultipartForm UploadForm entity) throws IOException {
         ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
+        log.info("start uploading trade file ");
         List<String> trades = irsService.uploadTradesFromExcel(fis);
         final UploadResponse response = new UploadResponse();
-        final UploadResponse.Status success = new UploadResponse.Status(UploadResponse.StatusType.success, "500 trades have been uploaded");
-        final UploadResponse.Status failure = new UploadResponse.Status(UploadResponse.StatusType.failure, "20 trades have failed to upload");
+        final UploadResponse.Status success = new UploadResponse.Status(UploadResponse.StatusType.success, trades.size() +" trades have been uploaded");
+        final UploadResponse.Status failure = new UploadResponse.Status(UploadResponse.StatusType.failure, "no trade have failed to upload");
         response.setStatuses(ImmutableList.of(success, failure));
         String tnxId = cacheService.put(trades);
         response.setTxnID(tnxId);
+        log.info("uploading trade file complete, txnId [{}]", tnxId);
         return Response.status(CREATED).entity(response).build();
     }
 }

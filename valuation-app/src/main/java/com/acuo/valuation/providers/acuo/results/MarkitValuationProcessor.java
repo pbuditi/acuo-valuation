@@ -1,15 +1,13 @@
 package com.acuo.valuation.providers.acuo.results;
 
-import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.PortfolioId;
-import com.acuo.valuation.protocol.results.PricingResults;
-import com.acuo.valuation.services.MarginCallGenService;
+import com.acuo.valuation.protocol.results.MarkitResults;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +22,7 @@ public class MarkitValuationProcessor {
         this.firstProcessor = firstProcessor;
     }
 
-    public List<MarginCall> process(PricingResults results) {
+    public List<VariationMargin> process(MarkitResults results) {
         log.info("starting pricing result processing");
         ProcessorItem processorItem = firstProcessor.process(new ProcessorItem(results));
         log.info("pricing result processing ended");
@@ -34,12 +32,12 @@ public class MarkitValuationProcessor {
     @Data
     public static class ProcessorItem {
 
-        private final PricingResults results;
+        private final MarkitResults results;
         private Set<PortfolioId> portfolioIds;
-        private List<MarginCall> expected;
-        private List<MarginCall> simulated;
+        private List<VariationMargin> expected;
+        private List<VariationMargin> simulated;
 
-        public ProcessorItem(PricingResults results) {
+        public ProcessorItem(MarkitResults results) {
             this.results = results;
         }
     }

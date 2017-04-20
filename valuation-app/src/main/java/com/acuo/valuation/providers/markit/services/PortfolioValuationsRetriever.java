@@ -1,12 +1,12 @@
 package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.valuation.protocol.responses.Response;
+import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.MarkitValuation;
-import com.acuo.valuation.protocol.results.PricingResults;
 import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
-import com.acuo.valuation.utils.LocalDateUtils;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class PortfolioValuationsRetriever implements Retriever {
 
-    private static final String ERROR_MSG = "Error occurred while retrieving markit results for the date {}";
+    private static final String ERROR_MSG = "Error occurred while retrieving markit results for the date %s";
     private static final DateTimeFormatter VALUATION_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final ClientEndPoint<MarkitEndPointConfig> client;
@@ -34,7 +34,7 @@ public class PortfolioValuationsRetriever implements Retriever {
     }
 
     @Override
-    public PricingResults retrieve(LocalDate reportDate, List<String> tradeIds) {
+    public MarkitResults retrieve(LocalDate reportDate, List<String> tradeIds) {
         LocalDate valuationDate = LocalDateUtils.minus(reportDate, 1);
         log.info("retrieving pricing results of {} trades", tradeIds.size());
         log.info("with report date {} and valuation date set to {}", reportDate, valuationDate);
@@ -48,16 +48,17 @@ public class PortfolioValuationsRetriever implements Retriever {
                         .filter(value -> tradeId.equals(value.getTradeId()))
                         .filter(value -> !"Failed".equalsIgnoreCase(value.getStatus()))
                         .collect(toList()))
+                .filter(values -> !values.isEmpty())
                 .map(MarkitValuation::new)
                 .map(Result::success)
                 .collect(toList());
 
-        PricingResults pricingResults = new PricingResults();
-        pricingResults.setResults(results);
-        pricingResults.setDate(response.header().getDate());
-        pricingResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
+        MarkitResults markitResults = new MarkitResults();
+        markitResults.setResults(results);
+        markitResults.setDate(response.header().getDate());
+        markitResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
 
-        return pricingResults;
+        return markitResults;
     }
 
     private void printFailedTrades(List<String> tradeIds, Response response) {
@@ -84,8 +85,9 @@ public class PortfolioValuationsRetriever implements Retriever {
             }
             return parser.parse(result);
         } catch (Exception e) {
-            log.error(ERROR_MSG, asOfDate, e);
-            throw new RuntimeException(String.format(ERROR_MSG, asOfDate), e);
+            String error = String.format(ERROR_MSG, asOfDate);
+            log.error(error, e);
+            throw new RuntimeException(error, e);
         }
     }
 

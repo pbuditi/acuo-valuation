@@ -1,8 +1,8 @@
 package com.acuo.valuation.web.resources;
 
-import com.acuo.persist.entity.MarginCall;
-import com.acuo.valuation.jackson.MarginCallDetail;
-import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.persist.entity.VariationMargin;
+import com.acuo.valuation.jackson.MarginCallResponse;
+import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeCacheService;
@@ -52,9 +52,9 @@ public class MarginCallResource {
     public Response generate(@PathParam("tnxId") String tnxId) {
         log.info("Generating margin calls for transaction {}", tnxId);
         List<String> trades = cacheService.remove(tnxId);
-        PricingResults results = pricingService.priceTradeIds(trades);
-        List<MarginCall> marginCalls = resultProcessor.process(results);
-        return Response.status(OK).entity(MarginCallDetail.of(marginCalls)).build();
+        MarkitResults results = pricingService.priceTradeIds(trades);
+        List<VariationMargin> marginCalls = resultProcessor.process(results);
+        return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
     }
 
     @GET
@@ -67,12 +67,12 @@ public class MarginCallResource {
             waiters.put(tnxId, asyncResp);
             CompletableFuture.supplyAsync(() -> {
                 List<String> trades = cacheService.remove(tnxId);
-                PricingResults results = pricingService.priceTradeIds(trades);
+                MarkitResults results = pricingService.priceTradeIds(trades);
                 return resultProcessor.process(results);
             })
                     .thenApply((result) -> {
                         final AsyncResponse asyncResponse = waiters.get(tnxId);
-                        return asyncResponse.resume(Response.status(OK).entity(MarginCallDetail.of(result)).build());
+                        return asyncResponse.resume(Response.status(OK).entity(MarginCallResponse.of(result)).build());
                     })
                     .exceptionally(exp -> {
                                 log.error("exception occured in async generate call ", exp);

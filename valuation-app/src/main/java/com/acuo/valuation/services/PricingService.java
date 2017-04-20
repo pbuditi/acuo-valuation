@@ -1,23 +1,22 @@
 package com.acuo.valuation.services;
 
 import com.acuo.common.model.trade.SwapTrade;
-import com.acuo.common.model.trade.Trade;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
-import com.acuo.valuation.protocol.results.PricingResults;
+import com.acuo.valuation.protocol.results.MarkitResults;
 
 import java.util.List;
 
 public interface PricingService {
 
-    PricingResults priceSwapTrades(List<SwapTrade> swaps);
+    MarkitResults priceSwapTrades(List<SwapTrade> swaps);
 
-    PricingResults priceTradeIds(List<String> swapId);
+    MarkitResults priceTradeIds(List<String> swapId);
 
-    PricingResults priceTradesOf(ClientId clientId);
+    MarkitResults priceTradesOf(ClientId clientId);
 
-    PricingResults priceTradesUnder(PortfolioId portfolioId);
+    MarkitResults priceTradesUnder(PortfolioId portfolioId);
 
-    PricingResults priceTradesOfType(String type);
+    MarkitResults priceTradesOfType(String type);
 
 }
