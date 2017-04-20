@@ -38,7 +38,7 @@ public class DatascopeScheduleServiceTest {
     {
 //        String token = datascopeAuthService.getToken();
 //        datascopeScheduleService.setToken(token);
-//        String scheduleId = datascopeScheduleService.sheduleExtraction();
+//        String scheduleId = datascopeScheduleService.scheduleFXRateExtraction();
 //        Assert.assertNotNull(scheduleId);
     }
 
