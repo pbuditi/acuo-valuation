@@ -73,7 +73,7 @@ public class AssetsPersistServiceImplTest {
         final List<AssetValuation> assetValuations = assetValuations();
         assetValuations.stream().forEach(assetValuation -> {
             assetsPersistService.persist(assetValuation);
-            Asset asset = assetService.findById(assetValuation.getAssetId(), 2);
+            Asset asset = assetService.find(assetValuation.getAssetId(), 2);
             final com.acuo.persist.entity.AssetValuation valuation = asset.getValuation();
             assertThat(valuation).isNotNull();
             assertThat(valuation.getValues()).hasSize(1);
