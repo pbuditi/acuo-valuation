@@ -4,26 +4,24 @@ import com.acuo.collateral.transform.Transformer;
 import com.acuo.collateral.transform.TransformerContext;
 import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.model.trade.SwapTrade;
-import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.protocol.results.MarginResults;
-import com.acuo.valuation.protocol.results.MarkitValuation;
+import com.acuo.valuation.protocol.results.MarginValuation;
+import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import com.acuo.valuation.providers.clarus.protocol.RequestBuilder;
 import com.acuo.valuation.providers.clarus.protocol.Response;
 import com.acuo.valuation.services.MarginCalcService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.acuo.valuation.providers.clarus.protocol.Clarus.*;
+import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataModel;
 
 @Slf4j
 public class ClarusMarginCalcService implements MarginCalcService {
@@ -32,20 +30,18 @@ public class ClarusMarginCalcService implements MarginCalcService {
     private final ObjectMapper objectMapper;
     private final Transformer<SwapTrade> transformer;
 
-
     @Inject
     public ClarusMarginCalcService(ClientEndPoint<ClarusEndPointConfig> clientEndPoint, ObjectMapper objectMapper, @Named("clarus") Transformer<SwapTrade> dataMapper) {
         this.clientEndPoint = clientEndPoint;
         this.objectMapper = objectMapper;
         this.transformer = dataMapper;
-
     }
 
     @Override
-    public MarginResults send(List<SwapTrade> swaps, DataFormat format, DataType type) {
+    public MarginResults send(List<SwapTrade> swaps, DataModel model, MarginCallType callType) {
         try {
-            String request = makeRequest(swaps, format, type);
-            String response = sendRequest(request);
+            String request = makeRequest(swaps, model);
+            String response = sendRequest(request, callType);
             return makeResult(response);
         } catch (IOException e) {
             //TODO return an ErrorResult here instead of throwing an exception
@@ -53,23 +49,20 @@ public class ClarusMarginCalcService implements MarginCalcService {
         }
     }
 
-    String makeRequest(List<SwapTrade> swaps, DataFormat format, DataType type) {
+    String makeRequest(List<SwapTrade> swaps, DataModel model) {
         TransformerContext context = new TransformerContext();
         context.setValueDate(LocalDate.now());
-        String data = transformer.serialise(swaps,context);
+        String portfolios = transformer.serialise(swaps, context);
         String request = RequestBuilder
-                .create(objectMapper)
-                .addData(data)
-                .addFormat(format)
-                .addType(type)
-                .marginMethodology(MarginMethodology.CME)
+                .create(objectMapper, portfolios)
+                .addDataModel(model)
                 .build();
         log.debug(request);
         return request;
     }
 
-    private String sendRequest(String request) {
-        String response = ClarusCall.of(clientEndPoint)
+    private String sendRequest(String request, MarginCallType callType) {
+        String response = ClarusCall.of(clientEndPoint, callType)
                 .with("data", request)
                 .create()
                 .send();

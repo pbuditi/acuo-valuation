@@ -2,6 +2,14 @@ package com.acuo.valuation.providers.clarus.protocol;
 
 public interface Clarus {
 
+    enum DataModel {
+        LCH, CME;
+    }
+
+    enum MarginCallType {
+        IM, VM;
+    }
+
     enum MarginMethodology {
         LCH, CME;
     }
@@ -18,7 +26,7 @@ public interface Clarus {
 
     enum DataType {
         SwapRegister,
-        FraRegister ,
+        FraRegister,
         NotionalSchedule,
         CouponFlows,
         FeeSchedule,
