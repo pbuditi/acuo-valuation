@@ -7,8 +7,12 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
-import com.acuo.valuation.modules.*;
+import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.EndPointModule;
+import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import com.acuo.valuation.services.MarginCalcService;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -18,8 +22,7 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.util.List;
 
-import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataFormat;
-import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
+import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataModel;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
@@ -27,12 +30,12 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
-                                MappingModule.class,
-                                EncryptionModule.class,
-                                Neo4jPersistModule.class,
-                                RepositoryModule.class,
-                                EndPointModule.class,
-                                ServicesModule.class})
+        MappingModule.class,
+        EncryptionModule.class,
+        Neo4jPersistModule.class,
+        RepositoryModule.class,
+        EndPointModule.class,
+        ServicesModule.class})
 public class ClarusMarginCalcServiceIntegrationTest {
 
     @Rule
@@ -63,7 +66,7 @@ public class ClarusMarginCalcServiceIntegrationTest {
     @Ignore
     public void testWithMapper() throws IOException {
         List<SwapTrade> trades = transformer.deserialiseToList(cmeCsv.getContent());
-        MarginResults response = service.send(trades, DataFormat.CME, DataType.SwapRegister);
+        MarginResults response = service.send(trades, DataModel.CME, MarginCallType.VM);
         Assert.assertThat(response, isJson());
         Assert.assertThat(response, jsonEquals(cmeJsonResponse.getContent()).when(IGNORING_EXTRA_FIELDS));
     }
