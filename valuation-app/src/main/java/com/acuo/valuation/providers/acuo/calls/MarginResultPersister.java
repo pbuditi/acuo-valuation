@@ -36,7 +36,7 @@ public class MarginResultPersister implements ResultPersister<MarginResults> {
     public Set<PortfolioId> persist(MarginResults results) {
         String portfolioId = results.getPortfolioId();
 
-        Portfolio portfolio = portfolioService.findById(portfolioId);
+        Portfolio portfolio = portfolioService.find(PortfolioId.fromString(portfolioId));
 
         if (portfolio == null) return Collections.emptySet();
 
