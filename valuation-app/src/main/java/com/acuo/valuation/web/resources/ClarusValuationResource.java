@@ -25,8 +25,7 @@ public class ClarusValuationResource {
     private final TradeService<Trade> tradeService;
 
     @Inject
-    public ClarusValuationResource(MarginCalcService marginCalcService, TradeService<Trade> tradeService)
-    {
+    public ClarusValuationResource(MarginCalcService marginCalcService, TradeService<Trade> tradeService) {
         this.marginCalcService = marginCalcService;
         this.tradeService = tradeService;
     }
@@ -35,8 +34,7 @@ public class ClarusValuationResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/priceSwapTrades/swapid/{id}/{format}/{type}")
     @Timed
-    public MarginResults valuation(@PathParam("id") String id, @PathParam("format") String format, @PathParam("type") String type)
-    {
+    public MarginResults valuation(@PathParam("id") String id, @PathParam("format") String format, @PathParam("type") String type) {
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
 
         Trade trade = tradeService.find(id);
@@ -46,7 +44,7 @@ public class ClarusValuationResource {
             swapTrades.add(swapTrade);
         }
 
-        return marginCalcService.send(swapTrades, Clarus.DataFormat.valueOf(format), Clarus.DataType.valueOf(type));
+        return marginCalcService.send(swapTrades, Clarus.DataModel.valueOf(format), Clarus.MarginCallType.valueOf("VM"));
 
     }
 }
