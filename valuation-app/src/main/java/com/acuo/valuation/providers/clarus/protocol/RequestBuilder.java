@@ -1,8 +1,6 @@
 package com.acuo.valuation.providers.clarus.protocol;
 
-import com.acuo.valuation.providers.clarus.protocol.Clarus.DataFormat;
-import com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
-import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginMethodology;
+import com.acuo.valuation.providers.clarus.protocol.Clarus.DataModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -15,60 +13,38 @@ public class RequestBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(RequestBuilder.class);
 
     private final ObjectMapper objectMapper;
-
-    private String data;
-    private DataFormat format;
-    private DataType type;
-
     private LocalDate valueDate = LocalDate.now();
-    private MarginMethodology marginMethodology;
+    private String portfolios;
+    private String whatIfs;
+    private DataModel model;
 
-    private RequestBuilder(ObjectMapper objectMapper) {
+    private RequestBuilder(ObjectMapper objectMapper, String portfolios) {
         this.objectMapper = objectMapper;
+        this.portfolios = portfolios;
     }
 
-    public static RequestBuilder create(ObjectMapper objectMapper) {
-        return new RequestBuilder(objectMapper);
+    public static RequestBuilder create(ObjectMapper objectMapper, String portfolios) {
+        return new RequestBuilder(objectMapper, portfolios);
     }
 
-    public RequestBuilder addData(String data) {
-        this.data = data;
+    public RequestBuilder addDataModel(DataModel dataModel) {
+        this.model = dataModel;
         return this;
     }
 
-    public RequestBuilder addType(DataType type) {
-        this.type = type;
-        return this;
-    }
-
-    public RequestBuilder addFormat(DataFormat format) {
-        this.format = format;
-        return this;
-    }
-
-    public RequestBuilder marginMethodology(MarginMethodology marginMethodology) {
-        this.marginMethodology = marginMethodology;
-        return this;
-    }
-
-    public RequestBuilder valueDate(LocalDate valueDate) {
-        this.valueDate = valueDate;
+    public RequestBuilder addWhatIfs(String whatIfs) {
+        this.whatIfs = whatIfs;
         return this;
     }
 
     public String build() {
-        PortfolioData portfolioData = PortfolioDataBuilder
-                .create()
-                .addData(data)
-                .addFormat(format)
-                .addType(type)
-                .build();
-        EnvelopeBuilder envelopeBuilder = EnvelopeBuilder
-                .create(objectMapper)
-                .marginMethodology(MarginMethodology.CME)
-                .portfolioData(portfolioData);
         try {
-            String json = envelopeBuilder.asJson();
+            String json = objectMapper.writeValueAsString(new Request(
+                    this.valueDate,
+                    this.model,
+                    this.portfolios,
+                    this.whatIfs
+            ));
             LOG.debug("request: {}", json);
             return json;
         } catch (JsonProcessingException e) {
