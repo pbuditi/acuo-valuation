@@ -39,7 +39,7 @@ public class AssetValuationResource {
     @Path("/price/asset/{id}")
     @Timed
     public Collection<AssetValueResult> priceAssets(@PathParam("id") String assetId) throws Exception {
-        Asset asset = assetService.findById(assetId);
+        Asset asset = assetService.find(assetId);
         final Collection<AssetValue> results = assetPricingProcessor.process(ImmutableList.of(asset));
         return results.stream().map(AssetValueResult::new).collect(toList());
     }

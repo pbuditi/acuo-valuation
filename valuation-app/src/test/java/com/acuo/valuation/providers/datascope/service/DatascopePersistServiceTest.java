@@ -78,7 +78,7 @@ public class DatascopePersistServiceTest {
         lines.add("JP03560042=RRPS,\"50,000\",JPY,JP1023561F93,JAPAN (GOVERNMENT OF)");
         datascopePersistService.persistBond(lines);
 
-        Asset asset = assetService.findById("JP1023561F93");
+        Asset asset = assetService.find("JP1023561F93");
         Assert.assertEquals(asset.getParValue().doubleValue(), 50000, 0.1);
     }
 }

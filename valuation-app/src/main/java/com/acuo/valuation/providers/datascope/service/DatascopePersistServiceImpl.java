@@ -64,7 +64,7 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
            String[] columns = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
            String id = columns[3];
            String parValue = columns[1];
-           Asset asset = assetService.findById(id);
+           Asset asset = assetService.find(id);
            if(asset != null && parValue!= null && parValue.trim().length() > 0)
            {
                parValue = parValue.replaceAll("\"", "");
