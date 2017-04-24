@@ -6,7 +6,9 @@ import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.ids.AssetId;
 import com.acuo.persist.services.AssetValuationService;
 import com.acuo.persist.services.CurrencyService;
+import com.google.common.collect.Iterables;
 import com.opengamma.strata.basics.currency.Currency;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import javax.inject.Inject;
@@ -18,6 +20,7 @@ import java.util.stream.StreamSupport;
 import static com.acuo.persist.entity.enums.PricingProvider.DataScope;
 import static java.util.stream.Collectors.toList;
 
+@Slf4j
 public class CashAssetPricingProcessor extends AbstractAssetPricingProcessor {
 
     private final CurrencyService currencyService;
@@ -37,7 +40,9 @@ public class CashAssetPricingProcessor extends AbstractAssetPricingProcessor {
 
     @Override
     public Collection<AssetValue> process(Iterable<Asset> assets) {
+        log.info("processing {} assets", Iterables.size(assets));
         final Collection<AssetValue> results = internal(assets);
+        log.info("generated {} results", results.size());
         if (next != null) {
             results.addAll(next.process(assets));
         }
