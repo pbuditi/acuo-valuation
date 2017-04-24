@@ -8,6 +8,8 @@ import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.services.AssetValuationService;
 import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.utils.AssetsBuilder;
+import com.google.common.collect.Iterables;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -18,6 +20,7 @@ import java.util.stream.StreamSupport;
 import static com.acuo.persist.entity.enums.PricingProvider.Reuters;
 import static java.util.stream.Collectors.toList;
 
+@Slf4j
 public class ReutersAssetPricingProcessor extends AbstractAssetPricingProcessor {
 
     private final ReutersService reutersService;
@@ -37,11 +40,13 @@ public class ReutersAssetPricingProcessor extends AbstractAssetPricingProcessor 
 
     @Override
     public Collection<AssetValue> process(Iterable<Asset> assets) {
-        Collection<AssetValue> result = internal(assets);
+        log.info("processing {} assets", Iterables.size(assets));
+        Collection<AssetValue> results = internal(assets);
+        log.info("generated {} results", results.size());
         if (next != null) {
-            result.addAll(next.process(assets));
+            results.addAll(next.process(assets));
         }
-        return result;
+        return results;
     }
 
     private Collection<AssetValue> internal(Iterable<Asset> assets) {
