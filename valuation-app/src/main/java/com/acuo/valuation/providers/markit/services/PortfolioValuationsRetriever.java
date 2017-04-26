@@ -55,7 +55,7 @@ public class PortfolioValuationsRetriever implements Retriever {
 
         MarkitResults markitResults = new MarkitResults();
         markitResults.setResults(results);
-        markitResults.setDate(response.header().getDate());
+        markitResults.setDate(valuationDate/*response.header().getDate()*/);
         markitResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
 
         return markitResults;
