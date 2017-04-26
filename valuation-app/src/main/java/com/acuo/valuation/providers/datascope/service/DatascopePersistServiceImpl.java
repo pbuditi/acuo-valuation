@@ -50,7 +50,7 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
                 currencyEntity.setFxRateRelation(fxRateRelation);
             }
             if(rate!= null && rate.trim().length() > 0)
-                fxRateRelation.setFxRate(1/Double.parseDouble(rate));
+                fxRateRelation.setFxRate(Double.parseDouble(rate));
             fxRateRelation.setLastUpdate(LocalDateTime.parse(lastUpdate, DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")));
             currencyService.createOrUpdate(currencyEntity);
 
