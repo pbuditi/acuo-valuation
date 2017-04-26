@@ -6,6 +6,7 @@ import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.entity.TradeValueRelation;
 import com.acuo.persist.entity.VariationMargin;
+import com.acuo.persist.entity.enums.Side;
 import com.acuo.persist.entity.enums.StatementStatus;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
@@ -34,7 +35,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuation> implements MarkitResultProcessor {
 
-    private final MarginCallService marginCallService;
+    protected final MarginCallService marginCallService;
     private MarkitResultProcessor nextProcessor;
 
     @Inject
@@ -45,7 +46,7 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
                               MarginCallService marginCallService) {
         super(valuationService,
                 marginStatementService,
-                agreementService,
+                marginCallService, agreementService,
                 currencyService);
         this.marginCallService = marginCallService;
     }
@@ -77,13 +78,12 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
         return () -> StatementStatus.Expected;
     }
 
-    protected Optional<VariationMargin> convert(TradeValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
+    protected Supplier<Side> sideSupplier() {return () -> Side.Client;}
+
+    protected Optional<VariationMargin> convert(Side side, TradeValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
         Optional<List<TradeValueRelation>> current = tradeValueRelation(valuation, valuationDate);
         Optional<Double> amount = current.map(this::sum);
-        return amount.map(aDouble -> {
-            VariationMargin margin = process(aDouble, Currency.USD, agreement, valuationDate, callDate, statementStatus, rates);
-            return marginCallService.save(margin);
-        });
+        return amount.map(aDouble -> process(side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates));
     }
 
     private Optional<List<TradeValueRelation>> tradeValueRelation(TradeValuation valuation, LocalDate valuationDate) {
