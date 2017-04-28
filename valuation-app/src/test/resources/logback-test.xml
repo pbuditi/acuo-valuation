@@ -11,9 +11,9 @@
     <logger name="org.jboss" level="error" />
     <logger name="javax.ws" level="error" />
 
-    <logger name="org.neo4j.ogm.drivers.bolt.request" level="info"/>
-    <logger name="org.neo4j.ogm.drivers.bolt.response" level="info"/>
-    <logger name="org.neo4j.ogm.context" level="info"/>
+    <logger name="org.neo4j.ogm.drivers.bolt.request" level="warn"/>
+    <logger name="org.neo4j.ogm.drivers.bolt.response" level="warn"/>
+    <logger name="org.neo4j.ogm.context" level="warn"/>
 
     <root level="warn">
         <appender-ref ref="console" />

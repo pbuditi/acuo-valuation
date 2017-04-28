@@ -4,11 +4,13 @@ import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.MarginStatement;
 import com.acuo.persist.entity.Valuation;
 import com.acuo.persist.entity.VariationMargin;
+import com.acuo.persist.entity.enums.Side;
 import com.acuo.persist.entity.enums.StatementDirection;
 import com.acuo.persist.entity.enums.StatementStatus;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
+import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.services.MarginCallGenService;
@@ -29,17 +31,19 @@ import static java.util.stream.Collectors.toList;
 public abstract class MarginCallGenerator<V extends Valuation> implements MarginCallGenService {
 
     final ValuationService valuationService;
-    private final MarginStatementService marginStatementService;
+    protected final MarginStatementService marginStatementService;
+    protected final MarginCallService marginCallService;
     private final AgreementService agreementService;
 
     private final CurrencyService currencyService;
 
     MarginCallGenerator(ValuationService valuationService,
                         MarginStatementService marginStatementService,
-                        AgreementService agreementService,
+                        MarginCallService marginCallService, AgreementService agreementService,
                         CurrencyService currencyService) {
         this.valuationService = valuationService;
         this.marginStatementService = marginStatementService;
+        this.marginCallService = marginCallService;
         this.agreementService = agreementService;
         this.currencyService = currencyService;
     }
@@ -48,7 +52,7 @@ public abstract class MarginCallGenerator<V extends Valuation> implements Margin
         log.info("generating margin calls for {}", portfolioSet);
         List<VariationMargin> marginCalls = portfolioSet.stream()
                 .map(valuationsFunction())
-                .map(valuation -> createcalls(valuation, valuationDate, callDate, statementStatusSupplier().get()))
+                .map(valuation -> createcalls(sideSupplier().get(), valuation, valuationDate, callDate, statementStatusSupplier().get()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(toList());
@@ -60,19 +64,23 @@ public abstract class MarginCallGenerator<V extends Valuation> implements Margin
 
     protected abstract Supplier<StatementStatus> statementStatusSupplier();
 
-    private Optional<VariationMargin> createcalls(V valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus) {
+    protected abstract Supplier<Side> sideSupplier();
+
+    private Optional<VariationMargin> createcalls(Side side, V valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus) {
         final Agreement agreement = agreementService.agreementFor(valuation.getPortfolio().getPortfolioId());
         final Map<Currency, Double> rates = currencyService.getAllFX();
-        return convert(valuation, valuationDate, callDate, statementStatus, agreement, rates);
+        return convert(side, valuation, valuationDate, callDate, statementStatus, agreement, rates);
     }
 
-    protected abstract Optional<VariationMargin> convert(V valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates);
+    protected abstract Optional<VariationMargin> convert(Side side, V valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates);
 
-    protected VariationMargin process(Double amount, Currency currency, Agreement agreement, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Map<Currency, Double> rates) {
-        VariationMargin variationMargin = new VariationMargin(amount, valuationDate, callDate, currency, statementStatus, agreement, rates);
+    protected VariationMargin process(Side side, Double amount, Currency currency, StatementStatus statementStatus, Agreement agreement, LocalDate valuationDate, LocalDate callDate, Map<Currency, Double> rates) {
+        VariationMargin variationMargin = new VariationMargin(side, amount, valuationDate, callDate, currency, agreement, rates);
         StatementDirection direction = variationMargin.getDirection();
         MarginStatement marginStatement = marginStatementService.getOrCreateMarginStatement(agreement, callDate, direction);
         variationMargin.setMarginStatement(marginStatement);
+        variationMargin = marginCallService.save(variationMargin);
+        marginStatementService.setStatus(variationMargin.getItemId(), statementStatus);
         return variationMargin;
     }
 }

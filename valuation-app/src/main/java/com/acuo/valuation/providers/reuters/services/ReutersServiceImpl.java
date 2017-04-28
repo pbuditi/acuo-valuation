@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -28,6 +29,8 @@ public class ReutersServiceImpl implements ReutersService {
     }
 
     public List<AssetValuation> send(List<Assets> assetsList) {
+        if(assetsList.isEmpty())
+            return Collections.emptyList();
         TransformerContext context = new TransformerContext();
         String json = transformer.serialise(assetsList, context);
         if (log.isDebugEnabled()) {
