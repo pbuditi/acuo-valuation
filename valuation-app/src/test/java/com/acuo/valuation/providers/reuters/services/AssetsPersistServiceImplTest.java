@@ -11,6 +11,7 @@ import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.AssetService;
+import com.acuo.persist.services.AssetValuationService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -47,8 +48,8 @@ public class AssetsPersistServiceImplTest {
 
     private static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                { "IT0001444378", "ISIN", 2.6415304243758504d, 139.524d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d },
-                { "IT0001444378", "ISIN", 2.6415304243758504d, 139.524d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d }
+                { "IT0001444378", "ISIN", 2.6415304243758504d, 139_000_000.524d, 1_000_000.0d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d },
+                { "IT0001444378", "ISIN", 2.6415304243758504d, 139_000_000.524d, 1_000_000.0d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d }
         });
     }
 
@@ -56,7 +57,7 @@ public class AssetsPersistServiceImplTest {
     ImportService importService;
 
     @Inject
-    AssetsPersistService assetsPersistService;
+    AssetValuationService assetsPersistService;
 
     @Inject
     AssetService assetService;
@@ -72,7 +73,7 @@ public class AssetsPersistServiceImplTest {
         final List<AssetValuation> assetValuations = assetValuations();
         assetValuations.stream().forEach(assetValuation -> {
             assetsPersistService.persist(assetValuation);
-            Asset asset = assetService.findById(assetValuation.getAssetId(), 2);
+            Asset asset = assetService.find(assetValuation.getAssetId(), 2);
             final com.acuo.persist.entity.AssetValuation valuation = asset.getValuation();
             assertThat(valuation).isNotNull();
             assertThat(valuation.getValues()).hasSize(1);
@@ -82,17 +83,19 @@ public class AssetsPersistServiceImplTest {
     private static List<AssetValuation> assetValuations() {
         return stream(data().spliterator(), true)
                 .map(objects -> {
+                    int i = 0;
                     AssetValuation assetValuation = new AssetValuation();
-                    assetValuation.setAssetId((String) objects[0]);
-                    assetValuation.setIdType((String) objects[1]);
-                    assetValuation.setYield((Double) objects[2]);
-                    assetValuation.setPrice((Double) objects[3]);
-                    assetValuation.setValuationDateTime((LocalDate) objects[4]);
-                    assetValuation.setPriceQuotationType((String) objects[5]);
-                    assetValuation.setSource((String) objects[6]);
-                    assetValuation.setNominalCurrency((Currency) objects[7]);
-                    assetValuation.setReportCurrency((Currency) objects[8]);
-                    assetValuation.setCoupon((Double) objects[9]);
+                    assetValuation.setAssetId((String) objects[i++]);
+                    assetValuation.setIdType((String) objects[i++]);
+                    assetValuation.setYield((Double) objects[i++]);
+                    assetValuation.setCleanMarketValue((Double) objects[i++]);
+                    assetValuation.setNotional((Double) objects[i++]);
+                    assetValuation.setValuationDateTime((LocalDate) objects[i++]);
+                    assetValuation.setPriceQuotationType((String) objects[i++]);
+                    assetValuation.setSource((String) objects[i++]);
+                    assetValuation.setNominalCurrency((Currency) objects[i++]);
+                    assetValuation.setReportCurrency((Currency) objects[i++]);
+                    assetValuation.setCoupon((Double) objects[i++]);
                     return assetValuation;
                 })
                 .collect(toList());

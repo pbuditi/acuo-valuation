@@ -1,6 +1,7 @@
 package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.persist.entity.*;
+import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
@@ -87,7 +88,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         if(log.isDebugEnabled()) {
             log.debug("linking to portfolioId: {}", portfolioId);
         }
-        Portfolio portfolio = portfolioService.findById(portfolioId);
+        Portfolio portfolio = portfolioService.find(PortfolioId.fromString(portfolioId));
         trade.setPortfolio(portfolio);
     }
 
@@ -95,7 +96,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         if(log.isDebugEnabled()) {
             log.debug("linking to accountId: {}", accountId);
         }
-        TradingAccount account = accountService.findById(accountId);
+        TradingAccount account = accountService.find(accountId);
         trade.setAccount(account);
     }
 

@@ -15,10 +15,10 @@ import java.util.Set;
 @Singleton
 public class MarkitValuationProcessor {
 
-    private final PricingResultProcessor firstProcessor;
+    private final MarkitResultProcessor firstProcessor;
 
     @Inject
-    public MarkitValuationProcessor(PricingResultProcessor firstProcessor) {
+    public MarkitValuationProcessor(MarkitResultProcessor firstProcessor) {
         this.firstProcessor = firstProcessor;
     }
 
@@ -42,8 +42,4 @@ public class MarkitValuationProcessor {
         }
     }
 
-    public interface PricingResultProcessor {
-        ProcessorItem process(ProcessorItem processorItem);
-        void setNextProcessor(PricingResultProcessor nextProcessor);
-    }
 }

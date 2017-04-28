@@ -5,6 +5,7 @@ import com.acuo.persist.entity.MarginValuation;
 import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.entity.MarginValueRelation;
 import com.acuo.persist.entity.VariationMargin;
+import com.acuo.persist.entity.enums.Side;
 import com.acuo.persist.entity.enums.StatementStatus;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
@@ -41,7 +42,7 @@ public class ClarusMarginCallGenService extends MarginCallGenerator<MarginValuat
                                       MarginCallService marginCallService) {
         super(valuationService,
                 marginStatementService,
-                agreementService,
+                marginCallService, agreementService,
                 currencyService);
         this.marginCallService = marginCallService;
     }
@@ -56,13 +57,12 @@ public class ClarusMarginCallGenService extends MarginCallGenerator<MarginValuat
         return () -> StatementStatus.Expected;
     }
 
-    protected Optional<VariationMargin> convert(MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
+    protected Supplier<Side> sideSupplier() {return () -> Side.Client;}
+
+    protected Optional<VariationMargin> convert(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
         Optional<List<MarginValueRelation>> currents = marginValueRelation(valuation, valuationDate);
         Optional<Double> amount = currents.map(this::sum);
-        return amount.map(aDouble -> {
-            VariationMargin margin = process(aDouble, Currency.USD, agreement, valuationDate, callDate, statementStatus, rates);
-            return marginCallService.save(margin);
-        });
+        return amount.map(aDouble -> process(side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates));
     }
 
     private Optional<List<MarginValueRelation>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {

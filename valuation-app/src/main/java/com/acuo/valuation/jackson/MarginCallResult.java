@@ -65,7 +65,7 @@ public class MarginCallResult {
         marginCallResult.calltype = marginCall.getMarginType().name();
         marginCallResult.currency = marginCall.getCurrency().getCode();
         marginCallResult.totalcallamount = marginCall.getExcessAmount();
-        marginCallResult.referenceidentifier = marginCall.getMarginCallId();
+        marginCallResult.referenceidentifier = marginCall.getItemId();
         marginCallResult.exposure = marginCall.getExposure();
         marginCallResult.pendingcollateral = marginCall.getPendingCollateral();
         marginCallResult.totalcallamount = marginCall.getMarginAmount();
