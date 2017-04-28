@@ -12,6 +12,7 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.AssetService;
+import com.acuo.persist.services.AssetValuationService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -61,7 +62,7 @@ public class ReutersServiceTest {
     private AssetService assetService;
 
     @Inject
-    private AssetsPersistService assetsPersistService;
+    private AssetValuationService assetsPersistService;
 
     @Rule
     public ResourceFile response = new ResourceFile("/reuters/response/response.json");
