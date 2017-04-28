@@ -39,7 +39,7 @@ public class ClarusValuationResource {
     {
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
 
-        Trade trade = tradeService.findById(id);
+        Trade trade = tradeService.find(id);
         if(trade != null)
         {
             SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS)trade);
