@@ -35,11 +35,12 @@ public class ClarusValuationResource {
     @Path("/priceSwapTrades/swapid/{id}/{format}/{type}")
     @Timed
     public MarginResults valuation(@PathParam("id") String id, @PathParam("format") String format, @PathParam("type") String type) {
+        //TODO - type parameter is obsolete. Has to be removed.
+
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
 
         Trade trade = tradeService.find(id);
-        if(trade != null)
-        {
+        if(trade != null) {
             SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS)trade);
             swapTrades.add(swapTrade);
         }

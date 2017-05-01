@@ -10,32 +10,8 @@ public interface Clarus {
         IM, VM;
     }
 
-    enum MarginMethodology {
-        LCH, CME;
-    }
-
     enum CalculationMethod {
         Taylor​, Optimised​, FullReval;
-    }
-
-    enum DataFormat {
-        LCH,
-        CME,
-        CLARUS;
-    }
-
-    enum DataType {
-        SwapRegister,
-        FraRegister,
-        NotionalSchedule,
-        CouponFlows,
-        FeeSchedule,
-        TenorStubs,
-        FuturesRegister,
-        DeltaGamma,
-        FpML4_6,
-        FpMLConfirm,
-        FpMLRequestConsent;
     }
 
     enum ResultStats {
