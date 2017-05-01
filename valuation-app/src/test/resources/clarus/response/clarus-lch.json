@@ -1,41 +1,38 @@
 {
-  "messages": [],
-  "params": {
-    "calcAddons": "false",
-    "ccp": "LCH",
-    "closeOnResult": "true",
-    "houseClient": "Client",
-    "marginType": "IM",
-    "orgId": "Acuo",
-    "portfolioData": "[LCH:SwapRegister:charmapidata]",
-    "reportingCcy": "USD",
-    "userName": "apiuser:Acuo",
-    "valueDate": "2016-08-09"
-  },
   "results": {
-    "AUD_BBSW_EOD": {
-      "Account": 33626465.33207043,
-      "Change": 0.0,
-      "Margin": 33626465.33207043
+    "999/MEGA104": {
+      "Account": -63475.94281721115,
+      "Total": -63475.94281721115
     },
-    "Margin": {
-      "Account": 33626465.33207043,
-      "Change": 0.0,
-      "Margin": 33626465.33207043
+    "Total": {
+      "Account": -63475.94281721115,
+      "Total": -63475.94281721115
     }
   },
   "stats": {
-    "AvgMaturity": "9.49",
-    "CalcTime": "664",
-    "CurveSize": "3500",
-    "MTM/CPU/s": "103",
-    "MTM/s": "103",
-    "Memory%": "97",
-    "NumCPU": "1",
-    "NumMTM": "69",
-    "NumRequests": "1",
     "NumTrades": "1",
-    "ResponseTime": "896",
-    "TaskTime": "806"
-  }
+    "AvgMaturity": "6.64",
+    "MTM/CPU/s": "0",
+    "NumRequests": "1",
+    "Memory%": "16",
+    "MTM/s": "3",
+    "NumWarnings": "0",
+    "CalcTime": "284",
+    "GridTotal": "-63475.94281721115",
+    "TaskTime": "749",
+    "ResponseTime": "809",
+    "CurveSize": "3500",
+    "NumMTM": "1",
+    "NumCPU": "4"
+  },
+  "params": {
+    "marginType": "VM",
+    "portfolios": "Value Date,Position Account ID,Cleared Trade ID,Platform ID,Client ID,CME Swap Indicator,Currency...",
+    "LSOC": "false",
+    "model": "LCH",
+    "valueDate": "2017-04-22",
+    "userName": "hicham@acuo.com",
+    "orgId": "Acuo"
+  },
+  "messages": []
 }

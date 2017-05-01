@@ -42,7 +42,7 @@ public class ClarusMarginCalcService implements MarginCalcService {
         try {
             String request = makeRequest(swaps, model);
             String response = sendRequest(request, callType);
-            return makeResult(response);
+            return makeResult(response, callType);
         } catch (IOException e) {
             //TODO return an ErrorResult here instead of throwing an exception
             throw new RuntimeException("an error occurred while calculating margin: " + e.getMessage(), e);
@@ -70,18 +70,21 @@ public class ClarusMarginCalcService implements MarginCalcService {
         return response;
     }
 
-    private MarginResults makeResult(String response) throws IOException {
-        Response res = objectMapper.readValue(response, Response.class);
-        List<Result<MarginValuation>> results = res.getResults().entrySet().stream().map(map -> new MarginValuation(map.getKey(),
-                map.getValue().get("Account"),
-                map.getValue().get("Change"),
-                map.getValue().get("Margin"), null))
+    private MarginResults makeResult(String response, MarginCallType callType) throws IOException {
+        List<?> list = transformer.deserialiseToList(response);
+        List<Result<MarginValuation>> results = list.stream()
+                .map(map -> (com.acuo.common.model.results.MarginValuation)map)
+                .map(map -> new MarginValuation(map.getName(),
+                        map.getAccount(),
+                        map.getChange(),
+                        map.getMargin(),
+                        null))
                 .map(r -> Result.success(r))
                 .collect(Collectors.toList());
+
         MarginResults marginResults = new MarginResults();
+        marginResults.setMarginType(callType.name());
         marginResults.setResults(results);
         return marginResults;
     }
-
-
 }
