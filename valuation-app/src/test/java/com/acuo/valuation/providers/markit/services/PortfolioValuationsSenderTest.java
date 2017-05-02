@@ -3,13 +3,27 @@ package com.acuo.valuation.providers.markit.services;
 import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.http.client.LoggingInterceptor;
 import com.acuo.common.http.client.OkHttpClient;
-import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.core.ImportService;
+import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Trade;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.services.TradeService;
+import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
+import com.acuo.valuation.services.TradeUploadService;
+import com.acuo.valuation.utils.SwapTradeBuilder;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -24,16 +38,26 @@ import javax.inject.Named;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({MappingModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
+        MappingModule.class,
+        EncryptionModule.class,
+        Neo4jPersistModule.class,
+        DataLoaderModule.class,
+        DataImporterModule.class,
+        ImportServiceModule.class,
+        RepositoryModule.class,
+        EndPointModule.class,
+        ServicesModule.class})
 public class PortfolioValuationsSenderTest {
 
     private static final String STILL_PROCESSING_KEY = "Markit upload still processing.";
 
     @Rule
-    public ResourceFile cmeCsv = new ResourceFile("/clarus/request/clarus-cme.csv");
+    public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
     public ResourceFile report = new ResourceFile("/markit/reports/markit-test-01.xml");
@@ -42,16 +66,17 @@ public class PortfolioValuationsSenderTest {
     ReportParser reportParser;
 
     @Inject
-    @Named("clarus")
-    Transformer<SwapTrade> clarusTransformer;
-
-    @Inject
     @Named("markit")
     Transformer<SwapTrade> markitTransformer;
 
     @Inject
-    @Named("xml")
-    Marshaller marshaller;
+    ImportService importService;
+
+    @Inject
+    TradeUploadService tradeUploadService;
+
+    @Inject
+    TradeService<Trade> tradeService;
 
     MockWebServer server = new MockWebServer();
 
@@ -74,7 +99,14 @@ public class PortfolioValuationsSenderTest {
 
         sender = new PortfolioValuationsSender(client, reportParser, markitTransformer);
 
-        swaps = clarusTransformer.deserialiseToList(cmeCsv.getContent());
+        importService.reload();
+
+        final List<String> tradeIds = tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
+
+        swaps = tradeIds.stream()
+                .map(id -> (IRS) tradeService.find(id))
+                .map(irs -> SwapTradeBuilder.buildTrade(irs))
+                .collect(toList());
     }
 
     @Test
