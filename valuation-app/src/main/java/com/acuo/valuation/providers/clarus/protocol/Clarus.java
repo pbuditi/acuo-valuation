@@ -2,32 +2,16 @@ package com.acuo.valuation.providers.clarus.protocol;
 
 public interface Clarus {
 
-    enum MarginMethodology {
+    enum DataModel {
         LCH, CME;
+    }
+
+    enum MarginCallType {
+        IM, VM;
     }
 
     enum CalculationMethod {
         Taylor​, Optimised​, FullReval;
-    }
-
-    enum DataFormat {
-        LCH,
-        CME,
-        CLARUS;
-    }
-
-    enum DataType {
-        SwapRegister,
-        FraRegister ,
-        NotionalSchedule,
-        CouponFlows,
-        FeeSchedule,
-        TenorStubs,
-        FuturesRegister,
-        DeltaGamma,
-        FpML4_6,
-        FpMLConfirm,
-        FpMLRequestConsent;
     }
 
     enum ResultStats {
