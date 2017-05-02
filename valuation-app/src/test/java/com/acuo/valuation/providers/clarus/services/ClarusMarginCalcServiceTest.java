@@ -11,20 +11,21 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.modules.*;
-import com.acuo.persist.services.PortfolioService;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.TradeService;
-import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
-import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
+import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapTradeBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Inject;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Assert;
@@ -33,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,19 +74,14 @@ public class ClarusMarginCalcServiceTest {
     TradeService<Trade> irsService;
 
     @Inject
-    TradingAccountService accountService;
-
-    @Inject
-    PortfolioService portfolioService;
-
-    @Inject
     ImportService importService;
+
+    @Inject
+    TradeUploadService tradeUploadService;
 
     MockWebServer server = new MockWebServer();
 
     ClarusMarginCalcService service;
-
-    TradeUploadServiceImpl tradeUploadService;
 
     @Before
     public void setup() throws IOException {
@@ -98,8 +95,6 @@ public class ClarusMarginCalcServiceTest {
         service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer);
 
         importService.reload();
-
-        tradeUploadService = new TradeUploadServiceImpl(accountService, portfolioService, irsService);
         tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
     }
 
