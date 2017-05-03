@@ -4,6 +4,7 @@ import com.acuo.common.http.client.EndPointConfig;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.utils.PropertiesHelper;
 import lombok.Data;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,7 +25,8 @@ public class ClarusEndPointConfig implements EndPointConfig {
                                 @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_API_KEY) String key,
                                 @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_API_SECRET) String secret,
                                 @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_CONNECTION_TIMEOUT) String connectionTimeOutInMilli,
-                                @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_USE_PROXY) String useProxy) {
+                                @Named(PropertiesHelper.ACUO_VALUATION_CLARUS_USE_PROXY) String useProxy,
+                                PBEStringEncryptor encryptor) {
         ArgChecker.notEmpty(host, "host");
         ArgChecker.notEmpty(key, "key");
         ArgChecker.notEmpty(secret, "secret");
@@ -32,7 +34,7 @@ public class ClarusEndPointConfig implements EndPointConfig {
         ArgChecker.notEmpty(useProxy, "useProxy");
         this.host = host;
         this.key = key;
-        this.secret = secret;
+        this.secret = (encryptor == null) ? secret : encryptor.decrypt(secret);
         this.connectionTimeOut = Integer.valueOf(connectionTimeOutInMilli);
         this.connectionTimeOutUnit = TimeUnit.MILLISECONDS;
         this.useProxy = Boolean.valueOf(useProxy);
