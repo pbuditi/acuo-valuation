@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.reuters.services;
 
 import com.acuo.common.http.client.EndPointConfig;
 import lombok.Data;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,12 +33,13 @@ public class ReutersEndPointConfig implements EndPointConfig {
                                  @Named(ACUO_VALUATION_REUTERS_HEADER_POSITION) String headerPosition,
                                  @Named(ACUO_VALUATION_REUTERS_HEADER_APPLICATION_ID) String headerApplicationId,
                                  @Named(ACUO_VALUATION_REUTERS_CONNECTION_TIMEOUT) int connectionTimeOut,
-                                 @Named(ACUO_VALUATION_REUTERS_USE_PROXY) String useProxy) {
+                                 @Named(ACUO_VALUATION_REUTERS_USE_PROXY) String useProxy,
+                                 PBEStringEncryptor encryptor) {
         this.scheme = scheme;
         this.host = host;
         this.port = port;
         this.uploadPath = uploadPath;
-        this.apikey = apikey;
+        this.apikey = (encryptor == null) ? apikey : encryptor.decrypt(apikey);
         this.headerPosition = headerPosition;
         this.headerApplicationId = headerApplicationId;
         this.connectionTimeOut = connectionTimeOut;
