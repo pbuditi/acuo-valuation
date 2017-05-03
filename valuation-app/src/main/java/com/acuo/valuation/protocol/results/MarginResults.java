@@ -11,7 +11,6 @@ public class MarginResults {
 
     private String marginType;
     private LocalDate valuationDate;
-    private String portfolioId;
     private String currency;
     private List<Result<MarginValuation>> results;
 

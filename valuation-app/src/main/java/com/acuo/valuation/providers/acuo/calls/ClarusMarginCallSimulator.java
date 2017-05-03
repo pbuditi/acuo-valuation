@@ -11,8 +11,8 @@ import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.providers.acuo.results.MarkitResultProcessor;
-import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
+import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.providers.acuo.results.ProcessorItem;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,16 +24,14 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @Slf4j
-public class SimulationMarginCallBuilder extends MarkitMarginCallGenerator implements MarkitResultProcessor {
-
-    private MarkitResultProcessor nextProcessor;
+public class ClarusMarginCallSimulator extends ClarusMarginCallGenService {
 
     @Inject
-    public SimulationMarginCallBuilder(ValuationService valuationService,
-                                       MarginStatementService marginStatementService,
-                                       AgreementService agreementService,
-                                       CurrencyService currencyService,
-                                       MarginCallService marginCallService) {
+    public ClarusMarginCallSimulator(ValuationService valuationService,
+                                     MarginStatementService marginStatementService,
+                                     AgreementService agreementService,
+                                     CurrencyService currencyService,
+                                     MarginCallService marginCallService) {
         super(valuationService,
                 marginStatementService,
                 agreementService,
@@ -42,22 +40,17 @@ public class SimulationMarginCallBuilder extends MarkitMarginCallGenerator imple
     }
 
     @Override
-    public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
+    public ProcessorItem process(ProcessorItem<MarginResults> processorItem) {
         log.info("processing markit valuation items to generate simulated Unrecon calls");
-        LocalDate valuationDate = processorItem.getResults().getDate();
+        LocalDate valuationDate = processorItem.getResults().getValuationDate();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
         List<VariationMargin> marginCalls = createCalls(portfolioIds, valuationDate, callDate);
         processorItem.setSimulated(marginCalls);
-        if (nextProcessor!= null)
-            return nextProcessor.process(processorItem);
+        if (next != null)
+            return next.process(processorItem);
         else
             return processorItem;
-    }
-
-    @Override
-    public void setNext(MarkitResultProcessor nextProcessor) {
-        this.nextProcessor = nextProcessor;
     }
 
     protected Supplier<StatementStatus> statementStatusSupplier() {

@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.acuo.calls;
 
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.MarginValuation;
 import com.acuo.persist.entity.MarginValue;
@@ -13,6 +14,8 @@ import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.ValuationService;
+import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.providers.acuo.results.ProcessorItem;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,9 +33,9 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class ClarusMarginCallGenService extends MarginCallGenerator<MarginValuation> {
+public class ClarusMarginCallGenService extends MarginCallGenerator<MarginValuation, MarginResults> {
 
-    private final MarginCallService marginCallService;
+    protected final MarginCallService marginCallService;
 
     @Inject
     public ClarusMarginCallGenService(ValuationService valuationService,
@@ -45,6 +48,20 @@ public class ClarusMarginCallGenService extends MarginCallGenerator<MarginValuat
                 marginCallService, agreementService,
                 currencyService);
         this.marginCallService = marginCallService;
+    }
+
+    @Override
+    public ProcessorItem process(ProcessorItem<MarginResults> processorItem) {
+        log.info("processing markit valuation items to generate expected calls");
+        LocalDate valuationDate = processorItem.getResults().getValuationDate();
+        LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
+        Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
+        List<VariationMargin> marginCalls = createCalls(portfolioIds, valuationDate, callDate);
+        processorItem.setExpected(marginCalls);
+        if (next != null)
+            return next.process(processorItem);
+        else
+            return processorItem;
     }
 
     @Override
@@ -82,7 +99,7 @@ public class ClarusMarginCallGenService extends MarginCallGenerator<MarginValuat
     private Double sum(List<MarginValueRelation> relations) {
         return relations.stream()
                 .map(MarginValueRelation::getValue)
-                .filter(value -> "Markit".equals(value.getSource()))
+                .filter(value -> "Clarus".equals(value.getSource()))
                 .mapToDouble(MarginValue::getAmount)
                 .sum();
     }
