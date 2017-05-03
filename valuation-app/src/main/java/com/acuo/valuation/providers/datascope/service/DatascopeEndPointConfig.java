@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.datascope.service;
 
 import com.acuo.common.http.client.EndPointConfig;
 import lombok.Data;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,8 +48,8 @@ public class DatascopeEndPointConfig implements EndPointConfig {
                                    @Named(ACUO_DATASCOPE_REPORTPATH) String reportpath,
                                    @Named(ACUO_DATASCOPE_DOWNLOADPATH) String downloadpath,
                                    @Named(ACUO_DATASCOPE_LIST_ID_BOND) String listIdBond,
-                                   @Named(ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND) String reportTemplateIdBond
-                                   )
+                                   @Named(ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND) String reportTemplateIdBond,
+                                   PBEStringEncryptor encryptor)
     {
         this.scheme = scheme;
         this.host = host;
@@ -56,7 +57,7 @@ public class DatascopeEndPointConfig implements EndPointConfig {
         this.authpath = authpath;
         this.schedulepath = schedulepath;
         this.username = username;
-        this.password = password;
+        this.password = (encryptor == null) ? password : encryptor.decrypt(password);
         this.connectionTimeOut = connectionTimeOut;
         this.connectionTimeOutUnit = TimeUnit.MILLISECONDS;
         this.useProxy = Boolean.valueOf(useProxy);
