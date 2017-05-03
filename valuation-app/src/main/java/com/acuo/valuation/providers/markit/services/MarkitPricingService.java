@@ -71,9 +71,8 @@ public class MarkitPricingService implements PricingService {
 
     @Override
     public MarkitResults priceTradesOfType(String type) {
-        Iterable<Trade> trades = tradeService.findAllIRS();
+        Iterable<IRS> trades = tradeService.findAllIRS();
         List<SwapTrade> tradeIds = StreamSupport.stream(trades.spliterator(), false)
-                .map(trade -> (IRS) tradeService.find(trade.getTradeId()))
                 .map(irs -> SwapTradeBuilder.buildTrade(irs))
                 .collect(toList());
         return priceSwapTrades(tradeIds);

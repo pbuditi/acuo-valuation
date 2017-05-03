@@ -8,7 +8,6 @@ import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import com.acuo.valuation.providers.clarus.protocol.RequestBuilder;
-import com.acuo.valuation.providers.clarus.protocol.Response;
 import com.acuo.valuation.services.MarginCalcService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opengamma.strata.collect.result.Result;
@@ -78,13 +77,16 @@ public class ClarusMarginCalcService implements MarginCalcService {
                         map.getAccount(),
                         map.getChange(),
                         map.getMargin(),
-                        null))
-                .map(r -> Result.success(r))
+                        null,
+                        map.getPortfolioId()))
+                .map(Result::success)
                 .collect(Collectors.toList());
 
         MarginResults marginResults = new MarginResults();
         marginResults.setMarginType(callType.name());
         marginResults.setResults(results);
+        marginResults.setValuationDate(LocalDate.now());
+        marginResults.setCurrency("USD");
         return marginResults;
     }
 }

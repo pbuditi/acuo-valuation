@@ -1,13 +1,10 @@
 package com.acuo.valuation.providers.acuo.results;
 
-import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.entity.TradeValueRelation;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
-import com.acuo.persist.services.PortfolioService;
-import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
 import com.acuo.valuation.protocol.results.MarkitResults;
@@ -26,37 +23,27 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
-public class MarkitResultPersister implements ResultPersister<MarkitResults>, MarkitResultProcessor {
+public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults> implements ResultPersister<MarkitResults> {
 
-    private final TradeService<Trade> tradeService;
     private final ValuationService valuationService;
     private final ValueService valueService;
-    private MarkitResultProcessor nextProcessor;
-    private final PortfolioService portfolioService;
 
     @Inject
-    public MarkitResultPersister(TradeService<Trade> tradeService, ValuationService valuationService, ValueService valueService, PortfolioService portfolioService) {
-        this.tradeService = tradeService;
+    public MarkitResultPersister(ValuationService valuationService, ValueService valueService) {
         this.valuationService = valuationService;
         this.valueService = valueService;
-        this.portfolioService = portfolioService;
     }
 
     @Override
-    public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
+    public ProcessorItem process(ProcessorItem<MarkitResults> processorItem) {
         log.info("processing markit valuation items");
         MarkitResults results = processorItem.getResults();
         Set<PortfolioId> portfolioIds = persist(results);
         processorItem.setPortfolioIds(portfolioIds);
-        if (nextProcessor != null)
-            return nextProcessor.process(processorItem);
+        if (next != null)
+            return next.process(processorItem);
         else
             return processorItem;
-    }
-
-    @Override
-    public void setNext(MarkitResultProcessor nextProcessor) {
-        this.nextProcessor = nextProcessor;
     }
 
     public Set<PortfolioId> persist(MarkitResults markitResults) {
@@ -73,7 +60,7 @@ public class MarkitResultPersister implements ResultPersister<MarkitResults>, Ma
 
         List<Result<MarkitValuation>> results = markitResults.getResults();
         List<TradeValue> values = results.stream()
-                .flatMap(markitValuationResult -> markitValuationResult.stream())
+                .flatMap(Result::stream)
                 .map(value -> convert(date, currency, value))
                 .collect(toList());
         valueService.save(values);
@@ -86,6 +73,14 @@ public class MarkitResultPersister implements ResultPersister<MarkitResults>, Ma
     private TradeValue convert(LocalDate date, Currency currency, MarkitValuation value) {
         String tradeId = value.getTradeId();
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
+
+        /*Set<TradeValueRelation> values = valuation.getValues();
+        if(values != null) {
+            Set<TradeValueRelation> toRemove = values.stream()
+                    .filter(relation -> date.equals(relation.getDateTime()))
+                    .collect(toSet());
+            values.removeAll(toRemove);
+        }*/
 
         TradeValue newValue = createValue(currency, value.getPv(), "Markit");
         TradeValueRelation valueRelation = new TradeValueRelation();

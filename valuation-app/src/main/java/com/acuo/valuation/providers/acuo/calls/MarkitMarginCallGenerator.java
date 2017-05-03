@@ -14,8 +14,9 @@ import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.providers.acuo.results.MarkitResultProcessor;
-import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
+import com.acuo.valuation.protocol.results.MarkitResults;
+import com.acuo.valuation.providers.acuo.results.ResultProcessor;
+import com.acuo.valuation.providers.acuo.results.ProcessorItem;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,10 +34,9 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuation> implements MarkitResultProcessor {
+public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuation, MarkitResults> {
 
-    protected final MarginCallService marginCallService;
-    private MarkitResultProcessor nextProcessor;
+    final MarginCallService marginCallService;
 
     @Inject
     MarkitMarginCallGenerator(ValuationService valuationService,
@@ -52,22 +52,17 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
     }
 
     @Override
-    public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
+    public ProcessorItem process(ProcessorItem<MarkitResults> processorItem) {
         log.info("processing markit valuation items to generate expected calls");
         LocalDate valuationDate = processorItem.getResults().getDate();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
         List<VariationMargin> marginCalls = createCalls(portfolioIds, valuationDate, callDate);
         processorItem.setExpected(marginCalls);
-        if (nextProcessor!= null)
-            return nextProcessor.process(processorItem);
+        if (next != null)
+            return next.process(processorItem);
         else
             return processorItem;
-    }
-
-    @Override
-    public void setNext(MarkitResultProcessor nextProcessor) {
-        this.nextProcessor = nextProcessor;
     }
 
     protected Function<PortfolioId, TradeValuation> valuationsFunction() {
