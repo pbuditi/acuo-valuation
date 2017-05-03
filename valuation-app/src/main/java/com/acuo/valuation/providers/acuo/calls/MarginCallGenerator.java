@@ -13,6 +13,8 @@ import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.ValuationService;
+import com.acuo.valuation.protocol.results.MarkitResults;
+import com.acuo.valuation.providers.acuo.results.AbstractResultProcessor;
 import com.acuo.valuation.services.MarginCallGenService;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +30,11 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public abstract class MarginCallGenerator<V extends Valuation> implements MarginCallGenService {
+public abstract class MarginCallGenerator<V extends Valuation, R> extends AbstractResultProcessor<R> implements MarginCallGenService {
 
     final ValuationService valuationService;
-    protected final MarginStatementService marginStatementService;
-    protected final MarginCallService marginCallService;
+    private final MarginStatementService marginStatementService;
+    private final MarginCallService marginCallService;
     private final AgreementService agreementService;
 
     private final CurrencyService currencyService;

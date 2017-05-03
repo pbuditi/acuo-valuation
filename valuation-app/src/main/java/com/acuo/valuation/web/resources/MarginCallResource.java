@@ -1,12 +1,17 @@
 package com.acuo.valuation.web.resources;
 
+import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.VariationMargin;
+import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
+import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeCacheService;
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -19,11 +24,13 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.Response.Status.OK;
 
 @Slf4j
@@ -32,17 +39,17 @@ public class MarginCallResource {
 
     private final static Map<String, AsyncResponse> waiters = new ConcurrentHashMap<>();
 
-    private final PricingService pricingService;
-    private final MarkitValuationProcessor resultProcessor;
     private final TradeCacheService cacheService;
+    private final TradePricingProcessor tradePricingProcessor;
+    private final TradeService<Trade> tradeService;
 
     @Inject
-    public MarginCallResource(PricingService pricingService,
-                              MarkitValuationProcessor resultProcessor,
-                              TradeCacheService cacheService) {
-        this.pricingService = pricingService;
-        this.resultProcessor = resultProcessor;
+    public MarginCallResource(TradeCacheService cacheService,
+                              TradePricingProcessor tradePricingProcessor,
+                              TradeService<Trade> tradeService) {
         this.cacheService = cacheService;
+        this.tradePricingProcessor = tradePricingProcessor;
+        this.tradeService = tradeService;
     }
 
     @GET
@@ -52,8 +59,10 @@ public class MarginCallResource {
     public Response generate(@PathParam("tnxId") String tnxId) {
         log.info("Generating margin calls for transaction {}", tnxId);
         List<String> trades = cacheService.remove(tnxId);
-        MarkitResults results = pricingService.priceTradeIds(trades);
-        List<VariationMargin> marginCalls = resultProcessor.process(results);
+        List<Trade> swaps = trades.stream()
+                .map(tradeId -> (IRS) tradeService.find(tradeId))
+                .collect(toList());
+        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(swaps);
         return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
     }
 
@@ -67,8 +76,10 @@ public class MarginCallResource {
             waiters.put(tnxId, asyncResp);
             CompletableFuture.supplyAsync(() -> {
                 List<String> trades = cacheService.remove(tnxId);
-                MarkitResults results = pricingService.priceTradeIds(trades);
-                return resultProcessor.process(results);
+                List<Trade> swaps = trades.stream()
+                        .map(tradeId -> (IRS) tradeService.find(tradeId))
+                        .collect(toList());
+                return tradePricingProcessor.process(swaps);
             })
                     .thenApply((result) -> {
                         final AsyncResponse asyncResponse = waiters.get(tnxId);
