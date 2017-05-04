@@ -3,6 +3,7 @@ package com.acuo.valuation.web.resources;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.VariationMargin;
+import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
@@ -56,7 +57,7 @@ public class MarginCallResource {
         log.info("Generating margin calls for transaction {}", tnxId);
         List<String> trades = cacheService.remove(tnxId);
         List<Trade> swaps = trades.stream()
-                .map(tradeId -> (IRS) tradeService.find(tradeId))
+                .map(tradeId -> (IRS) tradeService.find(TradeId.fromString(tradeId)))
                 .collect(toList());
         Collection<VariationMargin> marginCalls = tradePricingProcessor.process(swaps);
         return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
@@ -73,7 +74,7 @@ public class MarginCallResource {
             CompletableFuture.supplyAsync(() -> {
                 List<String> trades = cacheService.remove(tnxId);
                 List<Trade> swaps = trades.stream()
-                        .map(tradeId -> tradeService.find(tradeId))
+                        .map(tradeId -> tradeService.find(TradeId.fromString(tradeId)))
                         .filter(trade -> trade instanceof IRS)
                         .collect(toList());
                 return tradePricingProcessor.process(swaps);

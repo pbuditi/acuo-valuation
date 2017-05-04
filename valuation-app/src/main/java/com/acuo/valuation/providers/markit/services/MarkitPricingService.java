@@ -5,6 +5,7 @@ import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
+import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.protocol.results.MarkitResults;
@@ -13,7 +14,8 @@ import com.acuo.valuation.utils.SwapTradeBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -37,11 +39,11 @@ public class MarkitPricingService implements PricingService {
     @Override
     public MarkitResults priceTradeIds(List<String> swapIds) {
         List<SwapTrade> swapTrades = swapIds.stream()
-                .map(id -> tradeService.find(id))
-                .filter(trade -> trade != null)
+                .map(id -> tradeService.find(TradeId.fromString(id)))
+                .filter(Objects::nonNull)
                 .filter(trade -> trade instanceof IRS)
                 .map(trade -> (IRS) trade)
-                .map(trade -> SwapTradeBuilder.buildTrade(trade))
+                .map(SwapTradeBuilder::buildTrade)
                 .collect(toList());
         return priceSwapTrades(swapTrades);
     }

@@ -9,6 +9,7 @@ import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.ClientId;
+import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.ImportServiceModule;
@@ -99,7 +100,7 @@ public class MarkitPricingServiceTest {
         final List<String> tradeIds = tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
 
         swaps = tradeIds.stream()
-                .map(id -> (IRS) tradeService.find(id))
+                .map(id -> (IRS) tradeService.find(TradeId.fromString(id)))
                 .map(irs -> SwapTradeBuilder.buildTrade(irs))
                 .collect(toList());
     }

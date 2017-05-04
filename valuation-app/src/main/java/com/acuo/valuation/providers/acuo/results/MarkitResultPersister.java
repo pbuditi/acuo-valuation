@@ -1,5 +1,7 @@
 package com.acuo.valuation.providers.acuo.results;
 
+import com.acuo.persist.entity.MarginValue;
+import com.acuo.persist.entity.MarginValueRelation;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.entity.TradeValueRelation;
@@ -15,12 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 @Slf4j
 public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults> implements ResultPersister<MarkitResults> {
@@ -64,7 +67,9 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
                 .map(value -> convert(date, currency, value))
                 .collect(toList());
         valueService.save(values);
-        Set<PortfolioId> portfolioIds = values.stream()
+        List<MarginValue> marginValues = generate(values);
+        valueService.save(marginValues);
+        Set<PortfolioId> portfolioIds = marginValues.stream()
                 .map(value -> value.getValuation().getValuation().getPortfolio().getPortfolioId())
                 .collect(toSet());
         return portfolioIds;
@@ -89,8 +94,33 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
         valueRelation.setValue(newValue);
         newValue.setValuation(valueRelation);
 
-
         return newValue;
+    }
+
+    private List<MarginValue> generate(List<TradeValue> values) {
+        Map<LocalDate, Map<PortfolioId, Map<Currency, List<Double>>>> map = values.stream()
+                .collect(
+                        groupingBy(this::valuationDate,
+                                groupingBy(this::portfolioId,
+                                        groupingBy(this::currency,
+                                                mapping(TradeValue::getPv, toList())
+                                        )
+                                )
+                        )
+                );
+        return convert(map);
+    }
+
+    private PortfolioId portfolioId(TradeValue value) {
+        return value.getValuation().getValuation().getTrade().getPortfolio().getPortfolioId();
+    }
+
+    private Currency currency(TradeValue value) {
+        return value.getCurrency();
+    }
+
+    private LocalDate valuationDate(TradeValue value) {
+        return value.getValuation().getDateTime();
     }
 
 
@@ -99,6 +129,44 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
         newValue.setSource(source);
         newValue.setCurrency(currency);
         newValue.setPv(pv);
+        return newValue;
+    }
+
+    private List<MarginValue> convert(Map<LocalDate, Map<PortfolioId, Map<Currency, List<Double>>>> dates) {
+        List<MarginValue> results = new ArrayList<>();
+        for (final LocalDate valuationDate : dates.keySet()) {
+            Map<PortfolioId, Map<Currency, List<Double>>> portfolios = dates.get(valuationDate);
+            for (final PortfolioId portfolioId : portfolios.keySet()) {
+                Map<Currency, List<Double>> currencies = portfolios.get(portfolioId);
+                for (final Currency currency : currencies.keySet()) {
+                    List<Double> values = currencies.get(currency);
+                    MarginValue marginValue = convert(valuationDate, portfolioId, currency, values.stream().mapToDouble(value -> value).sum());
+                    results.add(marginValue);
+                }
+            }
+        }
+        return results;
+    }
+
+    private MarginValue convert(LocalDate valuationDate, PortfolioId portfolioId, Currency currency, Double value) {
+
+        com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(portfolioId);
+
+        MarginValue newValue = createMarginValue(currency, value, "Markit");
+        MarginValueRelation valueRelation = new MarginValueRelation();
+        valueRelation.setValuation(valuation);
+        valueRelation.setDateTime(valuationDate);
+        valueRelation.setValue(newValue);
+        newValue.setValuation(valueRelation);
+
+        return newValue;
+    }
+
+    private MarginValue createMarginValue(Currency currency, Double amount, String source) {
+        MarginValue newValue = new MarginValue();
+        newValue.setAmount(amount);
+        newValue.setSource(source);
+        newValue.setCurrency(currency);
         return newValue;
     }
 }

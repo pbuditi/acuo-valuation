@@ -47,8 +47,8 @@ public class SwapTradeBuilder {
         swapTrade.setType(ProductType.SWAP);
 
         TradeInfo info = SwapTradeBuilder.buildTradeInfo(trade);
-        info.setTradeId(trade.getTradeId());
-        info.setClearedTradeId(trade.getTradeId());
+        info.setTradeId(trade.getTradeId().toString());
+        info.setClearedTradeId(trade.getTradeId().toString());
         info.setPortfolio(trade.getPortfolio().getPortfolioId().toString());
         swapTrade.setInfo(info);
 

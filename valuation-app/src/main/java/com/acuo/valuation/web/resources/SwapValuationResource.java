@@ -6,6 +6,7 @@ import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
+import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.protocol.results.MarkitResults;
@@ -80,7 +81,7 @@ public class SwapValuationResource {
     public MarginCallResponse priceBySwapId(@PathParam("id") String id) throws Exception {
         log.info("Pricing the trade {}", id);
         List<Trade> swaps = ImmutableList.of(id).stream()
-                .map(tradeId -> (IRS) tradeService.find(tradeId))
+                .map(tradeId -> (IRS) tradeService.find(TradeId.fromString(tradeId)))
                 .collect(toList());
         Collection<VariationMargin> marginCalls = tradePricingProcessor.process(swaps);
         return MarginCallResponse.of(marginCalls);

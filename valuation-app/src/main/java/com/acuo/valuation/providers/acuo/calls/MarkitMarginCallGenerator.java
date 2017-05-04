@@ -1,13 +1,7 @@
 package com.acuo.valuation.providers.acuo.calls;
 
 import com.acuo.common.util.LocalDateUtils;
-import com.acuo.persist.entity.Agreement;
-import com.acuo.persist.entity.TradeValuation;
-import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.TradeValueRelation;
 import com.acuo.persist.entity.VariationMargin;
-import com.acuo.persist.entity.enums.Side;
-import com.acuo.persist.entity.enums.StatementStatus;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
@@ -15,40 +9,28 @@ import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.protocol.results.MarkitResults;
-import com.acuo.valuation.providers.acuo.results.ResultProcessor;
 import com.acuo.valuation.providers.acuo.results.ProcessorItem;
-import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuation, MarkitResults> {
-
-    final MarginCallService marginCallService;
+public class MarkitMarginCallGenerator extends MarginCallGenerator<MarkitResults> {
 
     @Inject
     MarkitMarginCallGenerator(ValuationService valuationService,
                               MarginStatementService marginStatementService,
-                              AgreementService agreementService,
+                              MarginCallService marginCallService,
                               CurrencyService currencyService,
-                              MarginCallService marginCallService) {
+                              AgreementService agreementService) {
         super(valuationService,
-                marginStatementService,
-                marginCallService, agreementService,
-                currencyService);
-        this.marginCallService = marginCallService;
+              marginStatementService,
+              marginCallService,
+              currencyService,
+              agreementService);
     }
 
     @Override
@@ -63,43 +45,5 @@ public class MarkitMarginCallGenerator extends MarginCallGenerator<TradeValuatio
             return next.process(processorItem);
         else
             return processorItem;
-    }
-
-    protected Function<PortfolioId, TradeValuation> valuationsFunction() {
-        return valuationService::getTradeValuationFor;
-    }
-
-    protected Supplier<StatementStatus> statementStatusSupplier() {
-        return () -> StatementStatus.Expected;
-    }
-
-    protected Supplier<Side> sideSupplier() {return () -> Side.Client;}
-
-    protected Optional<VariationMargin> convert(Side side, TradeValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
-        Optional<List<TradeValueRelation>> current = tradeValueRelation(valuation, valuationDate);
-        Optional<Double> amount = current.map(this::sum);
-        return amount.map(aDouble -> process(side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates));
-    }
-
-    private Optional<List<TradeValueRelation>> tradeValueRelation(TradeValuation valuation, LocalDate valuationDate) {
-        Set<TradeValueRelation> values = valuation.getValues();
-        if (values != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            final List<TradeValueRelation> result = valuation.getValues()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .filter(valueRelation -> formatter.format(valueRelation.getDateTime()).equals(formatter.format(valuationDate)))
-                    .collect(toList());
-            return Optional.of(result);
-        }
-        return Optional.empty();
-    }
-
-    private Double sum(List<TradeValueRelation> relations) {
-        return relations.stream()
-                .map(TradeValueRelation::getValue)
-                .filter(value -> "Markit".equals(value.getSource()))
-                .mapToDouble(TradeValue::getPv)
-                .sum();
     }
 }

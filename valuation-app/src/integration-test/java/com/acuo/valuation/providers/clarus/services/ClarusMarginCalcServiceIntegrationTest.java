@@ -7,6 +7,7 @@ import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
+import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.ImportServiceModule;
@@ -74,7 +75,7 @@ public class ClarusMarginCalcServiceIntegrationTest {
     public void testWithMapper() throws IOException {
         String id = "455123";
         List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
-        Trade trade = irsService.find(id);
+        Trade trade = irsService.find(TradeId.fromString(id));
         if (trade != null) {
             SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
             swapTrades.add(swapTrade);
