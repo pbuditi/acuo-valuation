@@ -18,6 +18,8 @@ import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.date.*;
 import com.opengamma.strata.basics.index.FloatingRateName;
 import com.opengamma.strata.basics.schedule.Frequency;
+import com.opengamma.strata.basics.schedule.RollConvention;
+import com.opengamma.strata.product.common.PayReceive;
 import com.opengamma.strata.product.swap.FixingRelativeTo;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,23 +47,28 @@ public class SwapTradeBuilder {
         swapTrade.setType(ProductType.SWAP);
 
         TradeInfo info = SwapTradeBuilder.buildTradeInfo(trade);
-        info.setTradeId(trade.getTradeId().toString());
+        info.setTradeId(trade.getTradeId());
+        info.setClearedTradeId(trade.getTradeId());
         swapTrade.setInfo(info);
-
-        Set<Leg> payLegs = trade.getPayLegs();
-        if(payLegs != null)
-        for (Leg payLeg : payLegs) {
-            Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(1, payLeg);
-            leg.setNotional( -1 * leg.getNotional());
-            swap.addLeg(leg);
-        }
 
         Set<Leg> receiveLegs = trade.getReceiveLegs();
         if(receiveLegs != null)
         for (Leg receiveLeg : receiveLegs) {
-            Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(2,receiveLeg);
+            Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(1,receiveLeg);
+            leg.setPayReceive(PayReceive.RECEIVE);
+            leg.setRollConvention(RollConvention.ofDayOfMonth(10));
             swap.addLeg(leg);
         }
+
+        Set<Leg> payLegs = trade.getPayLegs();
+        if(payLegs != null)
+            for (Leg payLeg : payLegs) {
+                Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(2, payLeg);
+                leg.setPayReceive(PayReceive.PAY);
+                leg.setRollConvention(RollConvention.ofDayOfMonth(10));
+                leg.setNotional( -1 * leg.getNotional());
+                swap.addLeg(leg);
+            }
 
         return swapTrade;
     }
@@ -105,6 +112,7 @@ public class SwapTradeBuilder {
         adjustableSchedule.setFrequency(leg.getPaymentFrequency());
         adjustableSchedule.setAdjustment(adjustment);
         result.setPaymentSchedule(adjustableSchedule);
+        result.setCalculationSchedule(adjustableSchedule);
 
         if ("FLOAT".equals(leg.getType())) {
             Swap.SwapLegFixing swapLegFixing = new Swap.SwapLegFixing();
