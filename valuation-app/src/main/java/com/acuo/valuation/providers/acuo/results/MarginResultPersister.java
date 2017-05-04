@@ -3,7 +3,6 @@ package com.acuo.valuation.providers.acuo.results;
 import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.entity.MarginValueRelation;
 import com.acuo.persist.ids.PortfolioId;
-import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
 import com.acuo.valuation.protocol.results.MarginResults;
@@ -74,13 +73,13 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
         String portfolioId = marginValuation.getPortfolioId();
         com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(PortfolioId.fromString(portfolioId));
 
-        /*Set<MarginValueRelation> values = valuation.getValues();
+        Set<MarginValueRelation> values = valuation.getValues();
         if(values != null) {
             Set<MarginValueRelation> toRemove = values.stream()
                     .filter(relation -> valuationDate.equals(relation.getDateTime()))
                     .collect(toSet());
             values.removeAll(toRemove);
-        }*/
+        }
 
         MarginValue newValue = createValue(currency, marginValuation.getMargin(), "Clarus");
         MarginValueRelation valueRelation = new MarginValueRelation();

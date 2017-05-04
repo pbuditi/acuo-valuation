@@ -5,13 +5,9 @@ import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.jackson.MarginCallResponse;
-import com.acuo.valuation.protocol.results.MarkitResults;
-import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
-import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeCacheService;
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -77,7 +73,8 @@ public class MarginCallResource {
             CompletableFuture.supplyAsync(() -> {
                 List<String> trades = cacheService.remove(tnxId);
                 List<Trade> swaps = trades.stream()
-                        .map(tradeId -> (IRS) tradeService.find(tradeId))
+                        .map(tradeId -> tradeService.find(tradeId))
+                        .filter(trade -> trade instanceof IRS)
                         .collect(toList());
                 return tradePricingProcessor.process(swaps);
             })

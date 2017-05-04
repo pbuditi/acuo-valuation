@@ -4,6 +4,7 @@ import com.acuo.collateral.transform.Transformer;
 import com.acuo.collateral.transform.TransformerContext;
 import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
@@ -85,7 +86,7 @@ public class ClarusMarginCalcService implements MarginCalcService {
         MarginResults marginResults = new MarginResults();
         marginResults.setMarginType(callType.name());
         marginResults.setResults(results);
-        marginResults.setValuationDate(LocalDate.now());
+        marginResults.setValuationDate(LocalDateUtils.minus(LocalDate.now(), 1));
         marginResults.setCurrency("USD");
         return marginResults;
     }
