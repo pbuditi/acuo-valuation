@@ -50,8 +50,19 @@ public class SchedulerService extends AbstractService {
                     .withSchedule(cronSchedule("0 0/5 * * * ?"))
                     .build();
 
+            JobDetail fxjob = JobBuilder.newJob(FXValueJob.class)
+                    .withIdentity("FXValueJob", "datascoupegroup")
+                    .build();
+
+            Trigger fxTrigger = TriggerBuilder
+                    .newTrigger()
+                    .withIdentity("FXValueJob", "datascoupegroup")
+                    .withSchedule(cronSchedule("0 0 3 * * ?"))
+                    .build();
+
             scheduler.scheduleJob(jobDetail, trigger);
             scheduler.scheduleJob(assetjob, assetTrigger);
+            scheduler.scheduleJob(fxjob, fxTrigger);
 
             scheduler.start();
             notifyStarted();

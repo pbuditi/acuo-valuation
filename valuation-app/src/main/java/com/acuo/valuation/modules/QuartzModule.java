@@ -1,9 +1,6 @@
 package com.acuo.valuation.modules;
 
-import com.acuo.valuation.quartz.AcuoJobFactory;
-import com.acuo.valuation.quartz.AssetPriceJob;
-import com.acuo.valuation.quartz.TradePriceJob;
-import com.acuo.valuation.quartz.SchedulerService;
+import com.acuo.valuation.quartz.*;
 import com.google.common.util.concurrent.Service;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
@@ -16,6 +13,7 @@ public class QuartzModule extends AbstractModule {
         bind(JobFactory.class).to(AcuoJobFactory.class);
         bind(TradePriceJob.class);
         bind(AssetPriceJob.class);
+        bind(FXValueJob.class);
 
         Multibinder<Service> services = Multibinder.newSetBinder(binder(), Service.class);
         services.addBinding().to(SchedulerService.class);
