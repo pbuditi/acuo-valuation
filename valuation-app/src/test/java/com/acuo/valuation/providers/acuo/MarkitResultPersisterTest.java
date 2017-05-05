@@ -104,13 +104,12 @@ public class MarkitResultPersisterTest {
 
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
         assertThat(valuation).isNotNull();
-        Set<TradeValueRelation> values = valuation.getValues();
+        Set<TradeValue> values = valuation.getValues();
         assertThat(values).isNotNull().hasSize(1);
 
-        for (TradeValueRelation value : values) {
+        for (TradeValue value : values) {
             if(value.getDateTime().equals(localDate)){
-                TradeValue tradeValue = value.getValue();
-                assertThat(tradeValue.getPv().doubleValue()).isEqualTo(-30017690);
+                assertThat(value.getPv().doubleValue()).isEqualTo(-30017690);
             }
         }
     }
@@ -127,13 +126,12 @@ public class MarkitResultPersisterTest {
 
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
         assertThat(valuation).isNotNull();
-        Set<TradeValueRelation> values = valuation.getValues();
+        Set<TradeValue> values = valuation.getValues();
         assertThat(values).isNotNull().hasSize(1);
 
-        for (TradeValueRelation value : values) {
+        for (TradeValue value : values) {
             if(value.getDateTime().equals(localDate)){
-                TradeValue tradeValue = value.getValue();
-                assertThat(tradeValue.getPv().doubleValue()).isEqualTo(-30017690);
+                assertThat(value.getPv().doubleValue()).isEqualTo(-30017690);
             }
         }
     }
@@ -182,7 +180,7 @@ public class MarkitResultPersisterTest {
         persister.persist(markitResults);
 
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString("455820"));
-        Set<TradeValueRelation> values = valuation.getValues();
+        Set<TradeValue> values = valuation.getValues();
         assertThat(values).hasSize(1);
     }
 }

@@ -4,7 +4,6 @@ import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.MarginStatement;
 import com.acuo.persist.entity.MarginValuation;
 import com.acuo.persist.entity.MarginValue;
-import com.acuo.persist.entity.MarginValueRelation;
 import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.entity.enums.Side;
 import com.acuo.persist.entity.enums.StatementDirection;
@@ -27,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
@@ -76,30 +76,31 @@ public abstract class MarginCallGenerator<R> extends AbstractResultProcessor<R> 
 
     protected Supplier<Side> sideSupplier() {return () -> Side.Client;}
 
+    protected abstract Predicate<MarginValue> pricingSourcePredicate();
+
     private Optional<VariationMargin> convert(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
-        Optional<List<MarginValueRelation>> currents = marginValueRelation(valuation, valuationDate);
+        Optional<List<MarginValue>> currents = marginValueRelation(valuation, valuationDate);
         Optional<Double> amount = currents.map(this::sum);
         return amount.map(aDouble -> process(side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates));
     }
 
-    private Optional<List<MarginValueRelation>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {
-        Set<MarginValueRelation> values = valuation.getValues();
+    private Optional<List<MarginValue>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {
+        Set<MarginValue> values = valuation.getValues();
         if (values != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            List<MarginValueRelation> result = valuation.getValues()
+            List<MarginValue> result = valuation.getValues()
                     .stream()
                     .filter(Objects::nonNull)
-                    .filter(valueRelation -> formatter.format(valueRelation.getDateTime()).equals(formatter.format(valuationDate)))
+                    .filter(value -> formatter.format(value.getDateTime()).equals(formatter.format(valuationDate)))
                     .collect(toList());
             return Optional.of(result);
         }
         return Optional.empty();
     }
 
-    private Double sum(List<MarginValueRelation> relations) {
-        return relations.stream()
-                .map(MarginValueRelation::getValue)
-                .filter(value -> "Clarus".equals(value.getSource()))
+    private Double sum(List<MarginValue> values) {
+        return values.stream()
+                .filter(pricingSourcePredicate())
                 .mapToDouble(MarginValue::getAmount)
                 .sum();
     }

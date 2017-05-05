@@ -72,12 +72,11 @@ public class MarginResultPersisterTest {
         persister.persist(marginResults);
         com.acuo.persist.entity.MarginValuation valuation = valuationService.getMarginValuationFor(PortfolioId.fromString("p2"));
         assertThat(valuation).isNotNull();
-        Set<MarginValueRelation> values = valuation.getValues();
+        Set<MarginValue> values = valuation.getValues();
         assertThat(values).isNotNull().hasSize(1);
-        for (MarginValueRelation value : values) {
+        for (MarginValue value : values) {
             if(value.getDateTime().equals(localDate)){
-                MarginValue tradeValue = value.getValue();
-                assertThat(tradeValue.getAmount().doubleValue()).isEqualTo(1d);
+                assertThat(value.getAmount().doubleValue()).isEqualTo(1d);
             }
         }
     }
@@ -90,12 +89,11 @@ public class MarginResultPersisterTest {
         persister.persist(marginResults);
         com.acuo.persist.entity.MarginValuation valuation = valuationService.getMarginValuationFor(PortfolioId.fromString("p2"));
         assertThat(valuation).isNotNull();
-        Set<MarginValueRelation> values = valuation.getValues();
+        Set<MarginValue> values = valuation.getValues();
         assertThat(values).isNotNull().hasSize(1);
-        for (MarginValueRelation value : values) {
+        for (MarginValue value : values) {
             if(value.getDateTime().equals(localDate)){
-                MarginValue tradeValue = value.getValue();
-                assertThat(tradeValue.getAmount().doubleValue()).isEqualTo(1d);
+                assertThat(value.getAmount().doubleValue()).isEqualTo(1d);
             }
         }
     }

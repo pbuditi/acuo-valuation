@@ -1,7 +1,6 @@
 package com.acuo.valuation.providers.acuo.results;
 
 import com.acuo.persist.entity.MarginValue;
-import com.acuo.persist.entity.MarginValueRelation;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
@@ -62,41 +61,35 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
                 .map(marginValuation -> convert(valuationDate, currency, marginValuation))
                 .collect(toList());
         valueService.save(values);
-        Set<PortfolioId> portfolioIds = values.stream()
-                .map(value -> value.getValuation().getValuation().getPortfolio().getPortfolioId())
+        return values.stream()
+                .map(value -> value.getValuation().getPortfolio().getPortfolioId())
                 .collect(toSet());
-
-        return portfolioIds;
     }
 
     private MarginValue convert(LocalDate valuationDate, String currency, MarginValuation marginValuation) {
         String portfolioId = marginValuation.getPortfolioId();
         com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(PortfolioId.fromString(portfolioId));
 
-        Set<MarginValueRelation> values = valuation.getValues();
+        Set<MarginValue> values = valuation.getValues();
         if(values != null) {
-            Set<MarginValueRelation> toRemove = values.stream()
+            Set<MarginValue> toRemove = values.stream()
                     .filter(relation -> valuationDate.equals(relation.getDateTime()))
                     .collect(toSet());
             values.removeAll(toRemove);
         }
 
-        MarginValue newValue = createValue(currency, marginValuation.getMargin(), "Clarus");
-        MarginValueRelation valueRelation = new MarginValueRelation();
-        valueRelation.setValuation(valuation);
-        valueRelation.setDateTime(valuationDate);
-        valueRelation.setValue(newValue);
-        newValue.setValuation(valueRelation);
+        MarginValue newValue = createValue(valuationDate, currency, marginValuation.getMargin(), "Clarus");
+        newValue.setValuation(valuation);
 
         return newValue;
     }
 
-    private MarginValue createValue(String currency, Double amount, String source) {
+    private MarginValue createValue(LocalDate valuationDate, String currency, Double amount, String source) {
         MarginValue newValue = new MarginValue();
         newValue.setAmount(amount);
         newValue.setSource(source);
         newValue.setCurrency(Currency.of(currency));
-        //newValue.setDate(results.getValuationDate());
+        newValue.setDateTime(valuationDate);
         return newValue;
     }
 }

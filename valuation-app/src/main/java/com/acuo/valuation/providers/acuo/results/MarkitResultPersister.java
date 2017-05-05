@@ -1,10 +1,8 @@
 package com.acuo.valuation.providers.acuo.results;
 
 import com.acuo.persist.entity.MarginValue;
-import com.acuo.persist.entity.MarginValueRelation;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.TradeValueRelation;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.ValuationService;
@@ -66,11 +64,11 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
                 .flatMap(Result::stream)
                 .map(value -> convert(date, currency, value))
                 .collect(toList());
-        valueService.save(values);
+        valueService.save(values, 1);
         List<MarginValue> marginValues = generate(values);
-        valueService.save(marginValues);
+        Iterable<MarginValue> save = valueService.save(marginValues, 1);
         Set<PortfolioId> portfolioIds = marginValues.stream()
-                .map(value -> value.getValuation().getValuation().getPortfolio().getPortfolioId())
+                .map(value -> value.getValuation().getPortfolio().getPortfolioId())
                 .collect(toSet());
         return portfolioIds;
     }
@@ -79,20 +77,8 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
         String tradeId = value.getTradeId();
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
 
-        /*Set<TradeValueRelation> values = valuation.getValues();
-        if(values != null) {
-            Set<TradeValueRelation> toRemove = values.stream()
-                    .filter(relation -> date.equals(relation.getDateTime()))
-                    .collect(toSet());
-            values.removeAll(toRemove);
-        }*/
-
-        TradeValue newValue = createValue(currency, value.getPv(), "Markit");
-        TradeValueRelation valueRelation = new TradeValueRelation();
-        valueRelation.setValuation(valuation);
-        valueRelation.setDateTime(date);
-        valueRelation.setValue(newValue);
-        newValue.setValuation(valueRelation);
+        TradeValue newValue = createValue(date, currency, value.getPv(), "Markit");
+        newValue.setValuation(valuation);
 
         return newValue;
     }
@@ -112,7 +98,7 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
     }
 
     private PortfolioId portfolioId(TradeValue value) {
-        return value.getValuation().getValuation().getTrade().getPortfolio().getPortfolioId();
+        return value.getValuation().getTrade().getPortfolio().getPortfolioId();
     }
 
     private Currency currency(TradeValue value) {
@@ -120,15 +106,16 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
     }
 
     private LocalDate valuationDate(TradeValue value) {
-        return value.getValuation().getDateTime();
+        return value.getDateTime();
     }
 
 
-    private TradeValue createValue(Currency currency, Double pv, String source) {
+    private TradeValue createValue(LocalDate valuationDate, Currency currency, Double pv, String source) {
         TradeValue newValue = new TradeValue();
         newValue.setSource(source);
         newValue.setCurrency(currency);
         newValue.setPv(pv);
+        newValue.setDateTime(valuationDate);
         return newValue;
     }
 
@@ -152,21 +139,26 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
 
         com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(portfolioId);
 
-        MarginValue newValue = createMarginValue(currency, value, "Markit");
-        MarginValueRelation valueRelation = new MarginValueRelation();
-        valueRelation.setValuation(valuation);
-        valueRelation.setDateTime(valuationDate);
-        valueRelation.setValue(newValue);
-        newValue.setValuation(valueRelation);
+        Set<MarginValue> values = valuation.getValues();
+        if(values != null) {
+            Set<MarginValue> toRemove = values.stream()
+                    .filter(relation -> valuationDate.equals(relation.getDateTime()))
+                    .collect(toSet());
+            values.removeAll(toRemove);
+        }
+
+        MarginValue newValue = createMarginValue(valuationDate, currency, value, "Markit");
+        newValue.setValuation(valuation);
 
         return newValue;
     }
 
-    private MarginValue createMarginValue(Currency currency, Double amount, String source) {
+    private MarginValue createMarginValue(LocalDate valuationDate, Currency currency, Double amount, String source) {
         MarginValue newValue = new MarginValue();
         newValue.setAmount(amount);
         newValue.setSource(source);
         newValue.setCurrency(currency);
+        newValue.setDateTime(valuationDate);
         return newValue;
     }
 }

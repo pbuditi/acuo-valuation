@@ -1,6 +1,7 @@
 package com.acuo.valuation.providers.acuo.calls;
 
 import com.acuo.common.util.LocalDateUtils;
+import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 @Slf4j
 public class ClarusMarginCallGenService extends MarginCallGenerator<MarginResults> {
@@ -47,5 +49,7 @@ public class ClarusMarginCallGenService extends MarginCallGenerator<MarginResult
             return processorItem;
     }
 
-
+    protected Predicate<MarginValue> pricingSourcePredicate() {
+        return value -> "Clarus".equals(value.getSource());
+    }
 }
