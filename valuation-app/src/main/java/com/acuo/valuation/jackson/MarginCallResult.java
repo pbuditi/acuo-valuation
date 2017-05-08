@@ -13,8 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 
-import static com.acuo.common.model.margin.Types.CallType.Initial;
-import static com.acuo.common.model.margin.Types.CallType.Variation;
+import static com.acuo.common.model.margin.Types.MarginType.Initial;
+import static com.acuo.common.model.margin.Types.MarginType.Variation;
 
 @lombok.Data
 @Slf4j
