@@ -10,6 +10,7 @@
     "callType" : "Variation",
     "totalCallAmount" : "239000.00",
     "referenceIdentifier" : "b1bb2182",
+    "collateralValue" : "0.00",
     "pendingCollateral" : "0.00",
     "agreementDetails" : {
       "rounding" : "500.00",
