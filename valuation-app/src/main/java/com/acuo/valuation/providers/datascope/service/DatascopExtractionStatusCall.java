@@ -4,9 +4,7 @@ import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
 import okhttp3.HttpUrl;
-import okhttp3.MediaType;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 
 public class DatascopExtractionStatusCall extends CallBuilder<DatascopExtractionStatusCall> {
 
@@ -14,12 +12,9 @@ public class DatascopExtractionStatusCall extends CallBuilder<DatascopExtraction
     private Request.Builder builder;
     private HttpUrl statusUrl;
 
-    private DatascopExtractionStatusCall(ClientEndPoint<DatascopeEndPointConfig> client)
-    {
+    private DatascopExtractionStatusCall(ClientEndPoint<DatascopeEndPointConfig> client) {
         this.client = client;
         builder = new Request.Builder();
-
-
     }
 
     public static DatascopExtractionStatusCall of(ClientEndPoint<DatascopeEndPointConfig> client) {
@@ -27,13 +22,9 @@ public class DatascopExtractionStatusCall extends CallBuilder<DatascopExtraction
     }
 
     public DatascopExtractionStatusCall with(String key, String value) {
-        if(key.equalsIgnoreCase("token"))
-        {
+        if (key.equalsIgnoreCase("token")) {
             builder.header("Authorization", "Token " + value);
-        }
-        else
-        if(key.equalsIgnoreCase("id"))
-        {
+        } else if (key.equalsIgnoreCase("id")) {
             DatascopeEndPointConfig config = client.config();
             statusUrl = new HttpUrl.Builder()
                     .scheme(config.getScheme())

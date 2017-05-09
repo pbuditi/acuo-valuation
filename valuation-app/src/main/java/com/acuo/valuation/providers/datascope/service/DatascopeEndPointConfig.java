@@ -28,6 +28,7 @@ public class DatascopeEndPointConfig implements EndPointConfig {
     private final String statuspath;
     private final String reportpath;
     private final String downloadpath;
+    private final Long retryDelayInMilliseconds;
 
     private final String listIdBond;
     private final String reportTemplateIdBond;
@@ -49,6 +50,7 @@ public class DatascopeEndPointConfig implements EndPointConfig {
                                    @Named(ACUO_DATASCOPE_DOWNLOADPATH) String downloadpath,
                                    @Named(ACUO_DATASCOPE_LIST_ID_BOND) String listIdBond,
                                    @Named(ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND) String reportTemplateIdBond,
+                                   @Named(ACUO_DATASCOPE_RETRY_DELAY) String retryDelayInSeconds,
                                    PBEStringEncryptor encryptor)
     {
         this.scheme = scheme;
@@ -68,6 +70,7 @@ public class DatascopeEndPointConfig implements EndPointConfig {
         this.downloadpath = downloadpath;
         this.listIdBond = listIdBond;
         this.reportTemplateIdBond = reportTemplateIdBond;
+        this.retryDelayInMilliseconds = TimeUnit.SECONDS.toMillis(Long.parseLong(retryDelayInSeconds));
     }
 
     @Override

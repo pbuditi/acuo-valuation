@@ -60,22 +60,7 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_DATASCOPE_DOWNLOADPATH = "acuo.datascope.downloadpath";
     public static final String ACUO_DATASCOPE_LIST_ID_BOND = "acuo.datascope.list.id.bond";
     public static final String ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND = "acuo.datascope.report.template.id.bond";
-
-
-
-    public static final String ACUO_HOLIDAY_SCHEME = "acuo.holiday.scheme";
-    public static final String ACUO_HOLIDAY_HOST = "acuo.holiday.host";
-    public static final String ACUO_HOLIDAY_PORT = "acuo.holiday.port";
-    public static final String ACUO_HOLIDAY_PATH = "acuo.holiday.path";
-    public static final String ACUO_HOLIDAY_API_KEY = "acuo.holiday.api.key";
-    public static final String ACUO_HOLIDAY_CONNECTION_TIMEOUT = "acuo.holiday.connection.timeout";
-
-
-    public static final String NEO4J_OGM_URL = "neo4j.ogm.url";
-    public static final String NEO4J_OGM_USERNAME = "neo4j.ogm.username";
-    public static final String NEO4J_OGM_PASSWORD = "neo4j.ogm.password";
-    public static final String NEO4J_OGM_DRIVER = "neo4j.ogm.driver";
-    public static final String NEO4J_OGM_PACKAGES = "neo4j.ogm.packages";
+    public static final String ACUO_DATASCOPE_RETRY_DELAY = "acuo.datascope.retry.delay";
 
     private PropertiesHelper(Configuration configuration) {
         super(configuration);

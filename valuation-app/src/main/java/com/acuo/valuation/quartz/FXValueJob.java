@@ -27,11 +27,10 @@ public class FXValueJob implements Job {
 
     @Inject
     public FXValueJob(DatascopeAuthService datascopeAuthService,
-                             DatascopeScheduleService datascopeScheduleService,
-                             DatascopeExtractionService datascopeExtractionService,
-                             DatascopeDownloadService datascopeDownloadService,
-                             DatascopePersistService datascopePersistService)
-    {
+                      DatascopeScheduleService datascopeScheduleService,
+                      DatascopeExtractionService datascopeExtractionService,
+                      DatascopeDownloadService datascopeDownloadService,
+                      DatascopePersistService datascopePersistService) {
         this.datascopeAuthService = datascopeAuthService;
         this.datascopeScheduleService = datascopeScheduleService;
         this.datascopeDownloadService = datascopeDownloadService;
@@ -41,30 +40,25 @@ public class FXValueJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-
+        log.info("starting fx rate job");
         String token = datascopeAuthService.getToken();
         String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
         List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
         String csv = datascopeDownloadService.downloadFile(token, ids.get(1));
         BufferedReader br = new BufferedReader(new StringReader(csv));
         List<String> lines = new ArrayList<>();
-        try
-        {
-            //skipe the first two line
+        try {
+            //skip the first two line
             br.readLine();
             br.readLine();
             String line = null;
-            while ((line= br.readLine())!=null)
-            {
+            while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error("error in getFx :" + e);
         }
         datascopePersistService.persistFxRate(lines);
-
+        log.info("fx rates service job complete with {} rates", lines.size());
     }
 }

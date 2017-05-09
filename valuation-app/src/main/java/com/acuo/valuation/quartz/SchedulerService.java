@@ -1,11 +1,13 @@
 package com.acuo.valuation.quartz;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.AbstractService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
@@ -14,6 +16,7 @@ import org.quartz.spi.JobFactory;
 import javax.inject.Inject;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
 @Slf4j
 public class SchedulerService extends AbstractService {
@@ -57,12 +60,19 @@ public class SchedulerService extends AbstractService {
             Trigger fxTrigger = TriggerBuilder
                     .newTrigger()
                     .withIdentity("FXValueJob", "datascoupegroup")
-                    .withSchedule(cronSchedule("0 0 3 * * ?"))
+                    .withSchedule(cronSchedule("0 0 3 * * ?").withMisfireHandlingInstructionFireAndProceed())
+                    .build();
+
+            Trigger once = TriggerBuilder
+                    .newTrigger()
+                    .withIdentity("FXValueJobOnce", "datascoupegroup")
+                    .startNow()
+                    .withSchedule(simpleSchedule().withRepeatCount(0))
                     .build();
 
             scheduler.scheduleJob(jobDetail, trigger);
             scheduler.scheduleJob(assetjob, assetTrigger);
-            scheduler.scheduleJob(fxjob, fxTrigger);
+            scheduler.scheduleJob(fxjob, ImmutableSet.of(fxTrigger, once), false);
 
             scheduler.start();
             notifyStarted();
