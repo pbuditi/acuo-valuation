@@ -90,13 +90,14 @@ public class MarginCallResult {
         }
 
         marginCallResult.agreementdetails = new Agreementdetails();
+        marginCallResult.agreementdetails.setNetrequired(marginCall.getMarginAmount());
+        marginCallResult.agreementdetails.setThreshold(agreement.getThreshold());
         if (r != null) {
             marginCallResult.agreementdetails.setMintransfer(r.getMTA());
             marginCallResult.agreementdetails.setRounding(r.getRounding());
             marginCallResult.agreementdetails.setThreshold(r.getThreshold());
 
         }
-        marginCallResult.agreementdetails.setNetrequired(marginCall.getMarginAmount());
 
         return marginCallResult;
     }

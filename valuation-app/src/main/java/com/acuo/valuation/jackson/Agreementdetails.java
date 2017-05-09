@@ -1,12 +1,8 @@
-/**
-  * Copyright 2017 aTool.org 
-  */
 package com.acuo.valuation.jackson;
+
 import com.acuo.common.json.DoubleSerializer;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.EqualsAndHashCode;
 
 @lombok.Data
 public class Agreementdetails {
