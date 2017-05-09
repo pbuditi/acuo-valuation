@@ -20,10 +20,10 @@ public class MockServerTest {
     public ResourceFile request = new ResourceFile("/markit/requests/markit-sample.xml");
 
     @Rule
-    public ResourceFile report = new ResourceFile("/markit/reports/p45.xml");
+    public ResourceFile report = new ResourceFile("/markit/reports/large.xml");
 
     @Rule
-    public ResourceFile result = new ResourceFile("/markit/responses/p45.xml");
+    public ResourceFile result = new ResourceFile("/markit/responses/large.xml");
 
     private MockServer server;
 
