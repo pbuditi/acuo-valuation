@@ -19,37 +19,31 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
     private final AssetService assetService;
 
     @Inject
-    public DatascopePersistServiceImpl(CurrencyService currencyService, AssetService assetService)
-    {
+    public DatascopePersistServiceImpl(CurrencyService currencyService, AssetService assetService) {
         this.currencyService = currencyService;
         this.assetService = assetService;
     }
 
-
-    public void persistFxRate(List<String> csvLines)
-    {
-        for(String line : csvLines)
-        {
+    public void persistFxRate(List<String> csvLines) {
+        for (String line : csvLines) {
             String[] columns = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
-            String currencyName = columns[0].substring(0,3);
+            String currencyName = columns[0].substring(0, 3);
             String rate = columns[1];
             String lastUpdate = columns[2];
-            CurrencyEntity currencyEntity =  currencyService.find(currencyName);
+            CurrencyEntity currencyEntity = currencyService.find(currencyName);
 
-            if(currencyEntity == null)
-            {
+            if (currencyEntity == null) {
                 currencyEntity = new CurrencyEntity();
                 currencyEntity.setCurrencyId(currencyName);
             }
             FXRateRelation fxRateRelation = currencyEntity.getFxRateRelation();
-            if(fxRateRelation == null)
-            {
+            if (fxRateRelation == null) {
                 fxRateRelation = new FXRateRelation();
                 fxRateRelation.setFrom(currencyEntity);
                 fxRateRelation.setTo(currencyService.find("USD"));
                 currencyEntity.setFxRateRelation(fxRateRelation);
             }
-            if(rate!= null && rate.trim().length() > 0) {
+            if (rate != null && rate.trim().length() > 0) {
                 rate = rate.replaceAll("\"", "");
                 rate = rate.replaceAll(",", "");
                 fxRateRelation.setFxRate(Double.parseDouble(rate));
@@ -60,24 +54,18 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
         }
     }
 
-    public void persistBond(List<String> csvLine)
-    {
-       for(String line : csvLine)
-       {
-           String[] columns = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
-           String id = columns[3];
-           String parValue = columns[1];
-           Asset asset = assetService.find(id);
-           if(asset != null && parValue!= null && parValue.trim().length() > 0)
-           {
-               parValue = parValue.replaceAll("\"", "");
-               parValue = parValue.replaceAll(",", "");
-               asset.setParValue(Double.parseDouble(parValue));
-               assetService.createOrUpdate(asset);
-           }
-
-
-       }
-
+    public void persistBond(List<String> csvLine) {
+        for (String line : csvLine) {
+            String[] columns = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
+            String id = columns[3];
+            String parValue = columns[1];
+            Asset asset = assetService.find(id);
+            if (asset != null && parValue != null && parValue.trim().length() > 0) {
+                parValue = parValue.replaceAll("\"", "");
+                parValue = parValue.replaceAll(",", "");
+                asset.setParValue(Double.parseDouble(parValue));
+                assetService.createOrUpdate(asset);
+            }
+        }
     }
 }

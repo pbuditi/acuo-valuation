@@ -8,9 +8,14 @@ import org.quartz.JobExecutionException;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Slf4j
 public class FXValueJob implements Job {
@@ -44,20 +49,18 @@ public class FXValueJob implements Job {
         String token = datascopeAuthService.getToken();
         String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
         List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
-        String csv = datascopeDownloadService.downloadFile(token, ids.get(1));
-        BufferedReader br = new BufferedReader(new StringReader(csv));
-        List<String> lines = new ArrayList<>();
-        try {
-            //skip the first two line
-            br.readLine();
-            br.readLine();
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-        } catch (Exception e) {
-            log.error("error in getFx :" + e);
-        }
+        List<String> lines = ids.stream()
+                .limit(1)
+                .map(id -> datascopeDownloadService.downloadFile(token, id))
+                .flatMap(source -> {
+                    try (BufferedReader reader = new BufferedReader(new StringReader(source))) {
+                        return reader.lines().skip(2).collect(toList()).stream();
+                    } catch (IOException e) {
+                        log.error("error in getFx :" + e);
+                        throw new UncheckedIOException(e);
+                    }
+                })
+                .collect(toList());
         datascopePersistService.persistFxRate(lines);
         log.info("fx rates service job complete with {} rates", lines.size());
     }
