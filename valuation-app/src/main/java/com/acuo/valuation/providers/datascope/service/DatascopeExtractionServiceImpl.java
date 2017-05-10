@@ -6,6 +6,7 @@ import com.acuo.valuation.providers.datascope.protocol.report.Value;
 import com.acuo.valuation.providers.datascope.protocol.status.StatusResponseJson;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.parboiled.common.StringUtils;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -57,13 +58,9 @@ public class DatascopeExtractionServiceImpl implements DatascopeExtractionServic
     }
 
     private boolean isNotCompleted(String response) {
-        try {
-            StatusResponseJson responseJson = objectMapper.readValue(response, StatusResponseJson.class);
-            String status = responseJson.getStatus();
-            return !status.equalsIgnoreCase("Completed");
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            return false;
+        if (log.isDebugEnabled()) {
+            log.debug("is not complete predicate [{}]", response);
         }
+        return StringUtils.isEmpty(response) || !response.contains("Completed");
     }
 }
