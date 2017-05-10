@@ -30,7 +30,7 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
     {
         for(String line : csvLines)
         {
-            String[] columns = line.split(",");
+            String[] columns = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
             String currencyName = columns[0].substring(0,3);
             String rate = columns[1];
             String lastUpdate = columns[2];
@@ -49,8 +49,11 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
                 fxRateRelation.setTo(currencyService.find("USD"));
                 currencyEntity.setFxRateRelation(fxRateRelation);
             }
-            if(rate!= null && rate.trim().length() > 0)
+            if(rate!= null && rate.trim().length() > 0) {
+                rate = rate.replaceAll("\"", "");
+                rate = rate.replaceAll(",", "");
                 fxRateRelation.setFxRate(Double.parseDouble(rate));
+            }
             fxRateRelation.setLastUpdate(LocalDateTime.parse(lastUpdate, DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")));
             currencyService.createOrUpdate(currencyEntity);
 

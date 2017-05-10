@@ -28,6 +28,7 @@ public class DatascopeExtractionServiceImpl implements DatascopeExtractionServic
 
     public List<String> getExtractionFileId(String token, String scheduleId) {
         try {
+            log.info("scheduleId:" + scheduleId);
             String response = DatascopExtractionStatusCall.of(client)
                     .with("token", token)
                     .with("id", scheduleId)
@@ -58,10 +59,16 @@ public class DatascopeExtractionServiceImpl implements DatascopeExtractionServic
 
     private boolean isNotCompleted(String response) {
         try {
+            log.info("isNotCompleted response:" + response);
+            if(response == null || response.trim().length() == 0)
+            {
+                Thread.sleep(2000);
+                return true;
+            }
             StatusResponseJson responseJson = objectMapper.readValue(response, StatusResponseJson.class);
             String status = responseJson.getStatus();
             return !status.equalsIgnoreCase("Completed");
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             return false;
         }
