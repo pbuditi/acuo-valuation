@@ -5,6 +5,9 @@ import com.acuo.persist.entity.CurrencyEntity;
 import com.acuo.persist.entity.FXRateRelation;
 import com.acuo.persist.services.AssetService;
 import com.acuo.persist.services.CurrencyService;
+import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.basics.currency.FxRate;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -26,31 +29,34 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
 
     public void persistFxRate(List<String> csvLines) {
         for (String line : csvLines) {
-            String[] columns = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
-            String currencyName = columns[0].substring(0, 3);
-            String rate = columns[1];
-            String lastUpdate = columns[2];
-            CurrencyEntity currencyEntity = currencyService.find(currencyName);
+            final FxRateParser fxRateParser = new FxRateParser();
+            if (fxRateParser.parser(line)) {
+                FxRate fxRate = fxRateParser.getRate();
+                LocalDateTime lastUpdate = fxRateParser.getLastUpdate();
 
-            if (currencyEntity == null) {
-                currencyEntity = new CurrencyEntity();
-                currencyEntity.setCurrencyId(currencyName);
-            }
-            FXRateRelation fxRateRelation = currencyEntity.getFxRateRelation();
-            if (fxRateRelation == null) {
-                fxRateRelation = new FXRateRelation();
-                fxRateRelation.setFrom(currencyEntity);
-                fxRateRelation.setTo(currencyService.find("USD"));
-                currencyEntity.setFxRateRelation(fxRateRelation);
-            }
-            if (rate != null && rate.trim().length() > 0) {
-                rate = rate.replaceAll("\"", "");
-                rate = rate.replaceAll(",", "");
-                fxRateRelation.setFxRate(Double.parseDouble(rate));
-            }
-            fxRateRelation.setLastUpdate(LocalDateTime.parse(lastUpdate, DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")));
-            currencyService.createOrUpdate(currencyEntity);
+                final Currency base = fxRate.getPair().getBase();
+                CurrencyEntity baseEntity = currencyService.find(base.getCode());
+                if (baseEntity == null) {
+                    log.error("base {} currency not defined in the DB", base);
+                    continue;
+                }
 
+                final Currency counter = fxRate.getPair().getCounter();
+                CurrencyEntity counterEntity = currencyService.find(counter.getCode());
+                if (counterEntity == null) {
+                    log.error("base {} currency not defined in the DB", base);
+                    continue;
+                }
+
+                FXRateRelation fxRateRelation = new FXRateRelation();
+                fxRateRelation.setFrom(baseEntity);
+                fxRateRelation.setTo(counterEntity);
+                baseEntity.setFxRateRelation(fxRateRelation);
+                fxRateRelation.setFxRate(fxRate.fxRate(fxRate.getPair()));
+                fxRateRelation.setLastUpdate(lastUpdate);
+
+                currencyService.createOrUpdate(baseEntity);
+            }
         }
     }
 
@@ -65,6 +71,32 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
                 parValue = parValue.replaceAll(",", "");
                 asset.setParValue(Double.parseDouble(parValue));
                 assetService.createOrUpdate(asset);
+            }
+        }
+    }
+
+    @Data
+    static class FxRateParser {
+
+        private static final String PATTERN = ",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)";
+        private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+
+        private FxRate rate;
+        private LocalDateTime lastUpdate;
+
+        FxRateParser() {}
+
+        public boolean parser(String line) {
+            try {
+                String[] columns = line.split(PATTERN);
+                String ccy1 = columns[0].substring(0, 3);
+                String ccy2 = columns[0].substring(3, 6);
+                this.rate = FxRate.parse(ccy1 + "/" + ccy2 + " " + columns[1]);
+                this.lastUpdate = LocalDateTime.parse(columns[2], dateTimeFormatter);
+                return true;
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                return false;
             }
         }
     }

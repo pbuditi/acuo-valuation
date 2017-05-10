@@ -1,6 +1,10 @@
 package com.acuo.valuation.quartz;
 
-import com.acuo.valuation.providers.datascope.service.*;
+import com.acuo.valuation.providers.datascope.service.DatascopeAuthService;
+import com.acuo.valuation.providers.datascope.service.DatascopeDownloadService;
+import com.acuo.valuation.providers.datascope.service.DatascopeExtractionService;
+import com.acuo.valuation.providers.datascope.service.DatascopePersistService;
+import com.acuo.valuation.providers.datascope.service.DatascopeScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -11,11 +15,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class FXValueJob implements Job {
@@ -49,9 +51,17 @@ public class FXValueJob implements Job {
         String token = datascopeAuthService.getToken();
         String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
         List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
-        List<String> lines = ids.stream()
-                .limit(1)
+        final List<String> files = ids.stream()
                 .map(id -> datascopeDownloadService.downloadFile(token, id))
+                .peek(s -> {
+                    if (log.isDebugEnabled()) {
+                        log.debug("extracted file {}", s);
+                    }
+                })
+                .collect(toList());
+        List<String> lines = files.stream()
+                .skip(1)
+                .limit(1)
                 .flatMap(source -> {
                     try (BufferedReader reader = new BufferedReader(new StringReader(source))) {
                         return reader.lines().skip(2).collect(toList()).stream();
