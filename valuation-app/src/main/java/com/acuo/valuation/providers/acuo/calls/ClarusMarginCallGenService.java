@@ -8,6 +8,7 @@ import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
+import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.acuo.results.ProcessorItem;
@@ -27,12 +28,14 @@ public class ClarusMarginCallGenService extends MarginCallGenerator<MarginResult
                                MarginStatementService marginStatementService,
                                MarginCallService marginCallService,
                                CurrencyService currencyService,
-                               AgreementService agreementService) {
+                               AgreementService agreementService,
+                               PortfolioService portfolioService) {
         super(valuationService,
               marginStatementService,
               marginCallService,
               currencyService,
-              agreementService);
+              agreementService,
+              portfolioService);
     }
 
     @Override

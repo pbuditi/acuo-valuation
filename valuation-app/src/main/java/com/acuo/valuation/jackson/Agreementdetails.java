@@ -16,10 +16,12 @@ public class Agreementdetails {
     @JsonProperty("netRequired")
     @JsonSerialize(using = DoubleSerializer.class)
     private Double netrequired;
+    @JsonProperty("rate")
     @JsonSerialize(using = DoubleSerializer.class)
-    private Double rate;
-    @JsonProperty("tradeCount")
-    private String tradecount;
+    private Double fxRate;
+    private Long tradeCount;
+    private Long tradeValue;
+    private String pricingSource;
 
 
 }

@@ -56,6 +56,8 @@ public class MarginCallResult {
     private Agreementdetails agreementdetails;
 
 
+
+
     public static MarginCallResult of(VariationMargin marginCall) {
         MarginCallResult marginCallResult = new MarginCallResult();
         Agreement agreement = marginCall.getMarginStatement().getAgreement();
@@ -97,6 +99,17 @@ public class MarginCallResult {
             marginCallResult.agreementdetails.setRounding(r.getRounding());
             marginCallResult.agreementdetails.setThreshold(r.getThreshold());
 
+        }
+
+        marginCallResult.agreementdetails.setFxRate(marginCall.getFxRate());
+        marginCallResult.agreementdetails.setTradeCount(marginCall.getTradeCount());
+        marginCallResult.agreementdetails.setTradeValue(marginCall.getTradeCount());
+
+        String type = agreement.getType();
+        if ("bilateral".equals(type) || "legacy".equals(type)) {
+            marginCallResult.agreementdetails.setPricingSource("Markit");
+        } else {
+            marginCallResult.agreementdetails.setPricingSource("Clarus");
         }
 
         return marginCallResult;
