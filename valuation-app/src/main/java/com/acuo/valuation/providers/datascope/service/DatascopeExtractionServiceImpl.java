@@ -29,6 +29,9 @@ public class DatascopeExtractionServiceImpl implements DatascopeExtractionServic
 
     public List<String> getExtractionFileId(String token, String scheduleId) {
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("scheduleId {} ", scheduleId);
+            }
             String response = DatascopExtractionStatusCall.of(client)
                     .with("token", token)
                     .with("id", scheduleId)
