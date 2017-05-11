@@ -93,4 +93,15 @@ public class MarginCallResource {
             asyncResp.resume(new NotFoundException("transaction [" + tnxId + "] not found"));
         }
     }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Timed
+    @Path("/generate/swaps")
+    public Response generateFromSwaps() {
+        log.info("Generating margin calls from all swaps");
+        Iterable<IRS> trades = tradeService.findAllIRS();
+        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(trades);
+        return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
+    }
 }

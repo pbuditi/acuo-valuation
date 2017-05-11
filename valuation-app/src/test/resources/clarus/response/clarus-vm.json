@@ -1,0 +1,108 @@
+{
+  "results": {
+    "Acuo/p31": {
+      "Account": 10719686.998236934,
+      "Total": 10719686.998236934
+    },
+    "Acuo/p32": {
+      "Account": 10399822.653188094,
+      "Total": 10399822.653188094
+    },
+    "Acuo/p33": {
+      "Account": 12141134.73262754,
+      "Total": 12141134.73262754
+    },
+    "Acuo/p34": {
+      "Account": -22720529.404323228,
+      "Total": -22720529.404323228
+    },
+    "Acuo/p35": {
+      "Account": -155589.53489592724,
+      "Total": -155589.53489592724
+    },
+    "Acuo/p36": {
+      "Account": -206102.83555515806,
+      "Total": -206102.83555515806
+    },
+    "Acuo/p37": {
+      "Account": -29751884.7742756,
+      "Total": -29751884.7742756
+    },
+    "Acuo/p38": {
+      "Account": -19486128.933356848,
+      "Total": -19486128.933356848
+    },
+    "Acuo/p39": {
+      "Account": 622432.7980651218,
+      "Total": 622432.7980651218
+    },
+    "Acuo/p40": {
+      "Account": -205135.3771273839,
+      "Total": -205135.3771273839
+    },
+    "Acuo/p41": {
+      "Account": 622432.7980651218,
+      "Total": 622432.7980651218
+    },
+    "Acuo/p42": {
+      "Account": 466824.5985488413,
+      "Total": 466824.5985488413
+    },
+    "Acuo/p45": {
+      "Account": -26126250.877977353,
+      "Total": -26126250.877977353
+    },
+    "Total": {
+      "Account": -63679287.158779845,
+      "Total": -63679287.158779845
+    }
+  },
+  "stats": {
+    "AvgMaturity": "6.52",
+    "CalcTime": "375",
+    "CurveSize": "3500",
+    "GridTotal": "-6.3679287158779845E7",
+    "MTM/CPU/s": "1761",
+    "MTM/s": "7045",
+    "Memory%": "11",
+    "NumCPU": "4",
+    "NumMTM": "449",
+    "NumRequests": "13",
+    "NumTrades": "469",
+    "NumUsers": "1",
+    "NumWarnings": "20",
+    "ResponseTime": "1366",
+    "TaskTime": "1360"
+  },
+  "params": {
+    "LSOC": "false",
+    "marginType": "VM",
+    "model": "LCH",
+    "orgId": "Acuo",
+    "portfolios": "Value Date,Position Account ID,Cleared Trade ID,Platform ID,Client ID,CME Swap Indicator,Currency...",
+    "userName": "hicham@acuo.com",
+    "valueDate": "2017-05-09"
+  },
+  "messages": [
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455615\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455555\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455630\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455570\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455585\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455600\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455560\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455590\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455635\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455605\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455159\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455620\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455575\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455565\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455595\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455610\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455640\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455550\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455625\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08",
+    "Error calculating measures  for 2015-12-03~2020-12-03 JPY-TONA-OIS-COMPOUND-ON 0 1Y Roll 10 ACT/365F  v 0.001 1Y Roll 10 ACT/365F  : ClarusftException Pricing failed on trade 455580\n Fixing missing for 2016-12-26 JPY-TONAR-REUTERS:ON valuation date 2017-05-09 in fixing set CME.CLARUSFT.COM\nCurve not attempted, Quirks: LookbackResetOnValDate true firstAvailableFwdStart 2017-05-08"
+  ]
+}
