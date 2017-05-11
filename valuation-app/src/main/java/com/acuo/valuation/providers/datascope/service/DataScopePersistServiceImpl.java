@@ -1,10 +1,9 @@
 package com.acuo.valuation.providers.datascope.service;
 
 import com.acuo.persist.entity.Asset;
-import com.acuo.persist.entity.CurrencyEntity;
 import com.acuo.persist.entity.FXRateRelation;
 import com.acuo.persist.services.AssetService;
-import com.acuo.persist.services.CurrencyService;
+import com.acuo.persist.services.FXRateRelationService;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.FxRate;
 import lombok.Data;
@@ -16,14 +15,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
-public class DatascopePersistServiceImpl implements DatascopePersistService {
+public class DataScopePersistServiceImpl implements DataScopePersistService {
 
-    private final CurrencyService currencyService;
+    private final FXRateRelationService fxRateRelationService;
     private final AssetService assetService;
 
     @Inject
-    public DatascopePersistServiceImpl(CurrencyService currencyService, AssetService assetService) {
-        this.currencyService = currencyService;
+    public DataScopePersistServiceImpl(FXRateRelationService fxRateRelationService, AssetService assetService) {
+        this.fxRateRelationService = fxRateRelationService;
         this.assetService = assetService;
     }
 
@@ -35,34 +34,19 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
                 LocalDateTime lastUpdate = fxRateParser.getLastUpdate();
 
                 final Currency base = fxRate.getPair().getBase();
-                CurrencyEntity baseEntity = currencyService.find(base.getCode());
-                if (baseEntity == null) {
-                    log.error("base {} currency not defined in the DB", base);
-                    continue;
-                }
-
                 final Currency counter = fxRate.getPair().getCounter();
-                CurrencyEntity counterEntity = currencyService.find(counter.getCode());
-                if (counterEntity == null) {
-                    log.error("base {} currency not defined in the DB", base);
-                    continue;
-                }
-
-                FXRateRelation fxRateRelation = new FXRateRelation();
-                fxRateRelation.setFrom(baseEntity);
-                fxRateRelation.setTo(counterEntity);
-                baseEntity.setFxRateRelation(fxRateRelation);
+                FXRateRelation fxRateRelation = fxRateRelationService.getOrCreate(base, counter);
                 fxRateRelation.setFxRate(fxRate.fxRate(fxRate.getPair()));
                 fxRateRelation.setLastUpdate(lastUpdate);
 
-                currencyService.createOrUpdate(baseEntity);
+                fxRateRelationService.createOrUpdate(fxRateRelation);
             }
         }
     }
 
     public void persistBond(List<String> csvLine) {
         for (String line : csvLine) {
-            String[] columns = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
+            String[] columns = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
             String id = columns[3];
             String parValue = columns[1];
             Asset asset = assetService.find(id);
@@ -78,7 +62,7 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
     @Data
     static class FxRateParser {
 
-        private static final String PATTERN = ",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)";
+        private static final String PATTERN = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
         private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 
         private FxRate rate;
@@ -86,7 +70,7 @@ public class DatascopePersistServiceImpl implements DatascopePersistService {
 
         FxRateParser() {}
 
-        public boolean parser(String line) {
+        boolean parser(String line) {
             try {
                 String[] columns = line.split(PATTERN);
                 String ccy1 = columns[0].substring(0, 3);

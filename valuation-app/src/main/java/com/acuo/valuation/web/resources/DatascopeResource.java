@@ -26,20 +26,20 @@ public class DatascopeResource {
 
     private final DatascopeDownloadService datascopeDownloadService;
 
-    private final DatascopePersistService datascopePersistService;
+    private final DataScopePersistService dataScopePersistService;
 
     @Inject
     public DatascopeResource(DatascopeAuthService datascopeAuthService,
                              DatascopeScheduleService datascopeScheduleService,
                              DatascopeExtractionService datascopeExtractionService,
                              DatascopeDownloadService datascopeDownloadService,
-                             DatascopePersistService datascopePersistService)
+                             DataScopePersistService dataScopePersistService)
     {
         this.datascopeAuthService = datascopeAuthService;
         this.datascopeScheduleService = datascopeScheduleService;
         this.datascopeDownloadService = datascopeDownloadService;
         this.datascopeExtractionService = datascopeExtractionService;
-        this.datascopePersistService = datascopePersistService;
+        this.dataScopePersistService = dataScopePersistService;
     }
 
 
@@ -70,7 +70,7 @@ public class DatascopeResource {
         {
             log.error("error in getFx :" + e);
         }
-        datascopePersistService.persistFxRate(lines);
+        dataScopePersistService.persistFxRate(lines);
         return Response.ok().build();
     }
 
@@ -101,7 +101,7 @@ public class DatascopeResource {
         {
             log.error("error in getFx :" + e);
         }
-        datascopePersistService.persistBond(lines);
+        dataScopePersistService.persistBond(lines);
         return Response.ok().build();
     }
 }

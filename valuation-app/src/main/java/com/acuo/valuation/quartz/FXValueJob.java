@@ -3,7 +3,7 @@ package com.acuo.valuation.quartz;
 import com.acuo.valuation.providers.datascope.service.DatascopeAuthService;
 import com.acuo.valuation.providers.datascope.service.DatascopeDownloadService;
 import com.acuo.valuation.providers.datascope.service.DatascopeExtractionService;
-import com.acuo.valuation.providers.datascope.service.DatascopePersistService;
+import com.acuo.valuation.providers.datascope.service.DataScopePersistService;
 import com.acuo.valuation.providers.datascope.service.DatascopeScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
@@ -30,19 +30,19 @@ public class FXValueJob implements Job {
 
     private final DatascopeDownloadService datascopeDownloadService;
 
-    private final DatascopePersistService datascopePersistService;
+    private final DataScopePersistService dataScopePersistService;
 
     @Inject
     public FXValueJob(DatascopeAuthService datascopeAuthService,
                       DatascopeScheduleService datascopeScheduleService,
                       DatascopeExtractionService datascopeExtractionService,
                       DatascopeDownloadService datascopeDownloadService,
-                      DatascopePersistService datascopePersistService) {
+                      DataScopePersistService dataScopePersistService) {
         this.datascopeAuthService = datascopeAuthService;
         this.datascopeScheduleService = datascopeScheduleService;
         this.datascopeDownloadService = datascopeDownloadService;
         this.datascopeExtractionService = datascopeExtractionService;
-        this.datascopePersistService = datascopePersistService;
+        this.dataScopePersistService = dataScopePersistService;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class FXValueJob implements Job {
                     }
                 })
                 .collect(toList());
-        datascopePersistService.persistFxRate(lines);
+        dataScopePersistService.persistFxRate(lines);
         log.info("fx rates service job complete with {} rates", lines.size());
     }
 }

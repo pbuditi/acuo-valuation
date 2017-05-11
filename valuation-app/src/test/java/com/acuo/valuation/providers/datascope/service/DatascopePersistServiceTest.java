@@ -41,7 +41,7 @@ import java.util.List;
 public class DatascopePersistServiceTest {
 
     @Inject
-    DatascopePersistService datascopePersistService;
+    DataScopePersistService dataScopePersistService;
 
     @Inject
     ImportService importService;
@@ -63,7 +63,7 @@ public class DatascopePersistServiceTest {
         List<String> lines = new ArrayList<>();
         lines.add("BHDUSD=R,2.65252,04/17/2017 20:52:03");
         lines.add("BMDUSD=R,,04/17/2017 21:02:00");
-        datascopePersistService.persistFxRate(lines);
+        dataScopePersistService.persistFxRate(lines);
 
         CurrencyEntity currencyEntity = currencyService.find("BHD");
         log.info("fx:" + currencyEntity.getFxRateRelation().getFxRate());
@@ -76,7 +76,7 @@ public class DatascopePersistServiceTest {
         List<String> lines = new ArrayList<>();
         lines.add("DE114173=RRPS,.01,EUR,DE0001141737,\"GERMANY, FEDERAL REPUBLIC OF (GOVERNMENT)\"");
         lines.add("JP03560042=RRPS,\"50,000\",JPY,JP1023561F93,JAPAN (GOVERNMENT OF)");
-        datascopePersistService.persistBond(lines);
+        dataScopePersistService.persistBond(lines);
 
         Asset asset = assetService.find("JP1023561F93");
         Assert.assertEquals(asset.getParValue().doubleValue(), 50000, 0.1);
