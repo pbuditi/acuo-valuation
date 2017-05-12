@@ -39,7 +39,7 @@ public class DataScopePersistServiceImpl implements DataScopePersistService {
                 FXRateRelation fxRateRelation = fxRateRelationService.getOrCreate(base, counter);
                 // workaround reuters wrong rate for JPYUSD=R
                 if (CurrencyPair.of(Currency.JPY, Currency.USD).equals(fxRate.getPair()))
-                    fxRateRelation.setFxRate(fxRate.fxRate(fxRate.getPair()) / 100);
+                    fxRateRelation.setFxRate(100d / fxRate.fxRate(fxRate.getPair()));
                 else
                     fxRateRelation.setFxRate(fxRate.fxRate(fxRate.getPair()));
                 fxRateRelation.setLastUpdate(lastUpdate);
