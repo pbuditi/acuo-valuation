@@ -59,7 +59,7 @@ public class SchedulerService extends AbstractService {
             Trigger fxTrigger = TriggerBuilder
                     .newTrigger()
                     .withIdentity("FXValueJob", "datascoupegroup")
-                    .withSchedule(cronSchedule("0 * * * * ?").withMisfireHandlingInstructionFireAndProceed())
+                    .withSchedule(cronSchedule("0 0 * * * ?").withMisfireHandlingInstructionFireAndProceed())
                     .build();
 
             Trigger once = TriggerBuilder
