@@ -5,6 +5,7 @@ import com.acuo.persist.entity.FXRateRelation;
 import com.acuo.persist.services.AssetService;
 import com.acuo.persist.services.FXRateRelationService;
 import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.currency.FxRate;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,11 @@ public class DataScopePersistServiceImpl implements DataScopePersistService {
                 final Currency base = fxRate.getPair().getBase();
                 final Currency counter = fxRate.getPair().getCounter();
                 FXRateRelation fxRateRelation = fxRateRelationService.getOrCreate(base, counter);
-                fxRateRelation.setFxRate(fxRate.fxRate(fxRate.getPair()));
+                // workaround reuters wrong rate for JPYUSD=R
+                if (CurrencyPair.of(Currency.JPY, Currency.USD).equals(fxRate.getPair()))
+                    fxRateRelation.setFxRate(fxRate.fxRate(fxRate.getPair()) / 100);
+                else
+                    fxRateRelation.setFxRate(fxRate.fxRate(fxRate.getPair()));
                 fxRateRelation.setLastUpdate(lastUpdate);
 
                 fxRateRelationService.createOrUpdate(fxRateRelation);
