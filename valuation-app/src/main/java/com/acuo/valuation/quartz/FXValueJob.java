@@ -79,7 +79,7 @@ public class FXValueJob implements Job {
             dataScopePersistService.persistFxRate(lines);
             log.info("fx rates service job complete with {} rates", lines.size());
         } catch (Exception e) {
-
+            log.error(e.getMessage());
         }
     }
 }
