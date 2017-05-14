@@ -1,15 +1,12 @@
 package com.acuo.valuation.quartz;
 
-import com.acuo.persist.utils.GraphData;
+import com.acuo.valuation.providers.datascope.service.DataScopePersistService;
 import com.acuo.valuation.providers.datascope.service.DatascopeAuthService;
 import com.acuo.valuation.providers.datascope.service.DatascopeDownloadService;
 import com.acuo.valuation.providers.datascope.service.DatascopeExtractionService;
-import com.acuo.valuation.providers.datascope.service.DataScopePersistService;
 import com.acuo.valuation.providers.datascope.service.DatascopeScheduleService;
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.Resources;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -22,6 +19,7 @@ import java.io.StringReader;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -63,9 +61,8 @@ public class FXValueJob implements Job {
                 })
                 .collect(toList());*/
         try {
-            String path = readFile("/fx/rates.csv");
-            log.info(path);
-            List<String> files = ImmutableList.of("", path);
+            String file = readFile("/fx/rates.csv");
+            List<String> files = ImmutableList.of("", file);
             List<String> lines = files.stream()
                     .skip(1)
                     .limit(1)
@@ -85,16 +82,7 @@ public class FXValueJob implements Job {
         }
     }
 
-    private static String getDataLink(String dataImportLink) {
-        String file = FXValueJob.class.getResource(dataImportLink).getFile();
-        if (file.startsWith("file:/")) {
-            return file;
-        }
-        return "file://" + file;
-    }
-
     private static String readFile(String filePath) throws IOException, URISyntaxException {
-        String path = getDataLink(filePath);
-        return IOUtils.toString(new URI(path), com.google.common.base.Charsets.UTF_8);
+        return IOUtils.toString(FXValueJob.class.getResourceAsStream(filePath), StandardCharsets.UTF_8);
     }
 }
