@@ -65,7 +65,7 @@ public class FXValueJob implements Job {
         try {
             String path = readFile("/fx/rates.csv");
             log.info(path);
-            List<String> files = ImmutableList.of("", IOUtils.toString(new URI(path), Charsets.UTF_8));
+            List<String> files = ImmutableList.of("", path);
             List<String> lines = files.stream()
                     .skip(1)
                     .limit(1)
@@ -86,9 +86,11 @@ public class FXValueJob implements Job {
     }
 
     private static String getDataLink(String dataImportLink) {
-        if (dataImportLink.startsWith("file:/"))
-            return dataImportLink;
-        return "file://" + FXValueJob.class.getResource(dataImportLink).getFile();
+        String file = FXValueJob.class.getResource(dataImportLink).getFile();
+        if (file.startsWith("file:/")) {
+            return file;
+        }
+        return "file://" + file;
     }
 
     private static String readFile(String filePath) throws IOException, URISyntaxException {
