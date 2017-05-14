@@ -71,15 +71,15 @@ public class DatascopePersistServiceTest {
         dataScopePersistService.persistFxRate(lines);
 
         final Double bhd = currencyService.getFXValue(Currency.of("BHD"));
-        assertThat(bhd).isNotNull().isEqualTo(0.37699998, offset(0.00000001));
+        assertThat(bhd).isNotNull().isEqualTo(2.65252, offset(0.00000001));
 
         final Double jpy = currencyService.getFXValue(Currency.of("JPY"));
-        assertThat(jpy).isNotNull().isEqualTo(113.63636364, offset(0.00000001));
+        assertThat(jpy).isNotNull().isEqualTo(0.0088, offset(0.00000001));
 
         final Map<Currency, Double> allFX = currencyService.getAllFX();
         assertThat(allFX).isNotNull().isNotEmpty();
-        assertThat(allFX.keySet()).hasSize(2);
-        assertThat(allFX.entrySet()).hasSize(2);
+        assertThat(allFX.keySet()).hasSize(161);
+        assertThat(allFX.entrySet()).hasSize(161);
     }
 
     @Test
