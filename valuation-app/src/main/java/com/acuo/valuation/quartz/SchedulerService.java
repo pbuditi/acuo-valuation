@@ -7,7 +7,6 @@ import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
@@ -60,7 +59,7 @@ public class SchedulerService extends AbstractService {
             Trigger fxTrigger = TriggerBuilder
                     .newTrigger()
                     .withIdentity("FXValueJob", "datascoupegroup")
-                    .withSchedule(cronSchedule("0 0 3 * * ?").withMisfireHandlingInstructionFireAndProceed())
+                    .withSchedule(cronSchedule("0 0 * * * ?").withMisfireHandlingInstructionFireAndProceed())
                     .build();
 
             Trigger once = TriggerBuilder
