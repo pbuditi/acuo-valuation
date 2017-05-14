@@ -62,7 +62,8 @@ public class FXValueJob implements Job {
                 })
                 .collect(toList());*/
         try {
-            String path = "file://" + FXValueJob.class.getResource("/fx/rates.csv").getFile();
+            String path = "file://" + FXValueJob.class.getResource("/fx/rates.csv").getPath();
+            log.info(path);
             List<String> files = ImmutableList.of("", IOUtils.toString(new URI(path), Charsets.UTF_8));
             List<String> lines = files.stream()
                     .skip(1)
