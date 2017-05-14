@@ -3,14 +3,13 @@ package com.acuo.valuation.providers.clarus.services;
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okio.Buffer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -23,18 +22,18 @@ public class ClarusCall extends CallBuilder<ClarusCall> {
     private final ClarusEndPointConfig config;
     private final Request.Builder builder;
 
-    private ClarusCall(ClientEndPoint<ClarusEndPointConfig> client) {
+    private ClarusCall(ClientEndPoint<ClarusEndPointConfig> client, MarginCallType callType) {
         this.client = client;
         this.config = client.config();
         String credential = Credentials.basic(config.getKey(), config.getSecret());
         builder = new Request.Builder()
                 .header("Content-Type", "application/json")
                 .header("Authorization", credential)
-                .url(config.getHost() + "MarginCalc.json");
+                .url(config.getHost() + callType.name() + ".json");
     }
 
-    public static ClarusCall of(ClientEndPoint<ClarusEndPointConfig> client) {
-        return new ClarusCall(client);
+    public static ClarusCall of(ClientEndPoint<ClarusEndPointConfig> client, MarginCallType callType) {
+        return new ClarusCall(client, callType);
     }
 
     @Override
@@ -50,7 +49,7 @@ public class ClarusCall extends CallBuilder<ClarusCall> {
         return client.call(request, predicate);
     }
 
-    private static String bodyToString(final Request request){
+    private static String bodyToString(final Request request) {
         try {
             final Request copy = request.newBuilder().build();
             final Buffer buffer = new Buffer();

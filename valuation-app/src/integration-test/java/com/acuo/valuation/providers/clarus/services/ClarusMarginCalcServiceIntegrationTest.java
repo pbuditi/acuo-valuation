@@ -1,70 +1,86 @@
 package com.acuo.valuation.providers.clarus.services;
 
-import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.core.ImportService;
+import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Trade;
+import com.acuo.persist.ids.TradeId;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
-import com.acuo.valuation.modules.*;
+import com.acuo.persist.services.TradeService;
+import com.acuo.valuation.modules.ConfigurationIntegrationTestModule;
+import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.EndPointModule;
+import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import com.acuo.valuation.services.MarginCalcService;
-import org.junit.*;
+import com.acuo.valuation.services.TradeUploadService;
+import com.acuo.valuation.utils.SwapTradeBuilder;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataFormat;
-import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataType;
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
-import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
-import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
-import static org.junit.Assert.assertTrue;
+import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataModel;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
-                                MappingModule.class,
-                                EncryptionModule.class,
-                                Neo4jPersistModule.class,
-                                RepositoryModule.class,
-                                EndPointModule.class,
-                                ServicesModule.class})
+@GuiceJUnitRunner.GuiceModules({ConfigurationIntegrationTestModule.class,
+        MappingModule.class,
+        EncryptionModule.class,
+        Neo4jPersistModule.class,
+        DataLoaderModule.class,
+        DataImporterModule.class,
+        ImportServiceModule.class,
+        RepositoryModule.class,
+        EndPointModule.class,
+        ServicesModule.class})
 public class ClarusMarginCalcServiceIntegrationTest {
 
     @Rule
-    public ResourceFile cmeJsonResponse = new ResourceFile("/clarus/response/clarus-cme.json");
-
-    @Rule
-    public ResourceFile cmeCsv = new ResourceFile("/clarus/request/cme-1.csv");
+    public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Inject
     MarginCalcService service;
 
     @Inject
-    @Named("clarus")
-    Transformer<SwapTrade> transformer;
+    ImportService importService;
+
+    @Inject
+    TradeUploadService tradeUploadService;
+
+    @Inject
+    TradeService<Trade> irsService;
 
     @Before
     public void setup() {
+        importService.reload();
+        tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
     }
 
     @Test
-    @Ignore
-    public void testResourceFileExist() throws Exception {
-        assertTrue(cmeJsonResponse.getContent().length() > 0);
-        assertTrue(cmeJsonResponse.getFile().exists());
-    }
-
-    @Test
-    @Ignore
     public void testWithMapper() throws IOException {
-        List<SwapTrade> trades = transformer.deserialiseToList(cmeCsv.getContent());
-        MarginResults response = service.send(trades, DataFormat.CME, DataType.SwapRegister);
-        Assert.assertThat(response, isJson());
-        Assert.assertThat(response, jsonEquals(cmeJsonResponse.getContent()).when(IGNORING_EXTRA_FIELDS));
+        String id = "455123";
+        List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
+        Trade trade = irsService.find(TradeId.fromString(id));
+        if (trade != null) {
+            SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
+            swapTrades.add(swapTrade);
+        }
+        MarginResults response = service.send(swapTrades, DataModel.LCH, MarginCallType.VM);
+        assertThat(response).isNotNull();
     }
 }

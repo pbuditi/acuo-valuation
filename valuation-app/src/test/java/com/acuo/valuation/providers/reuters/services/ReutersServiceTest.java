@@ -73,7 +73,7 @@ public class ReutersServiceTest {
 
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
 
-        ReutersEndPointConfig config = new ReutersEndPointConfig("http", server.getHostName(), server.getPort(), "testUpload" ,"key", "secret", "10000", 10000,"false");
+        ReutersEndPointConfig config = new ReutersEndPointConfig("http", server.getHostName(), server.getPort(), "testUpload" ,"key", "secret", "10000", 10000,"false", null);
 
         ClientEndPoint<ReutersEndPointConfig> clientEndPoint = new OkHttpClient<>(httpClient, config);
 

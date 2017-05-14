@@ -10,9 +10,10 @@ import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
+import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.providers.acuo.results.MarkitResultProcessor;
-import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
+import com.acuo.valuation.protocol.results.MarkitResults;
+import com.acuo.valuation.providers.acuo.results.ProcessorItem;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,40 +25,38 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @Slf4j
-public class SimulationMarginCallBuilder extends MarkitMarginCallGenerator implements MarkitResultProcessor {
+public class MarkitMarginCallSimulator extends MarkitMarginCallGenerator {
 
-    private MarkitResultProcessor nextProcessor;
+    private final MarginCallService marginCallService;
 
     @Inject
-    public SimulationMarginCallBuilder(ValuationService valuationService,
-                                       MarginStatementService marginStatementService,
-                                       AgreementService agreementService,
-                                       CurrencyService currencyService,
-                                       MarginCallService marginCallService) {
+    public MarkitMarginCallSimulator(ValuationService valuationService,
+                                     MarginStatementService marginStatementService,
+                                     MarginCallService marginCallService,
+                                     CurrencyService currencyService,
+                                     AgreementService agreementService,
+                                     PortfolioService portfolioService) {
         super(valuationService,
                 marginStatementService,
-                agreementService,
+                marginCallService,
                 currencyService,
-                marginCallService);
+                agreementService,
+                portfolioService);
+        this.marginCallService = marginCallService;
     }
 
     @Override
-    public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
-        log.info("processing markit valuation items to generate simulated Unrecon calls");
+    public ProcessorItem process(ProcessorItem<MarkitResults> processorItem) {
+        log.info("processing markit valuation items to generate expected calls");
         LocalDate valuationDate = processorItem.getResults().getDate();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
         List<VariationMargin> marginCalls = createCalls(portfolioIds, valuationDate, callDate);
         processorItem.setSimulated(marginCalls);
-        if (nextProcessor!= null)
-            return nextProcessor.process(processorItem);
+        if (next != null)
+            return next.process(processorItem);
         else
             return processorItem;
-    }
-
-    @Override
-    public void setNext(MarkitResultProcessor nextProcessor) {
-        this.nextProcessor = nextProcessor;
     }
 
     protected Supplier<StatementStatus> statementStatusSupplier() {
@@ -66,12 +65,20 @@ public class SimulationMarginCallBuilder extends MarkitMarginCallGenerator imple
 
     protected Supplier<Side> sideSupplier() {return () -> Side.Cpty;}
 
-    protected VariationMargin process(Side side, Double value, Currency currency, StatementStatus statementStatus, Agreement agreement, LocalDate valuationDate, LocalDate callDate, Map<Currency, Double> rates) {
+    protected VariationMargin process(Side side,
+                                      Double value,
+                                      Currency currency,
+                                      StatementStatus statementStatus,
+                                      Agreement agreement,
+                                      LocalDate valuationDate,
+                                      LocalDate callDate,
+                                      Map<Currency, Double> rates,
+                                      Long tradeCount) {
         java.util.Random r = new java.util.Random();
         double noise = r.nextGaussian() * Math.sqrt(0.2);
         double a = (0.2*noise);
         double amount = value * (1 + a);
-        VariationMargin margin = super.process(side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates);
+        VariationMargin margin = super.process(side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
         marginCallService.matchToExpected(margin.getItemId());
         return margin;
     }

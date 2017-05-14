@@ -8,5 +8,6 @@ public class MarginValuation {
     Double change;
     Double margin;
     String marginType;
+    String portfolioId;
 
 }

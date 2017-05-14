@@ -74,7 +74,7 @@ public class MarginCallResourceTest implements WithResteasyFixtures {
             server = new MockWebServer();
             MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/"), "", "",
                     "username", "password", "0", "10000", "false");
-            ClarusEndPointConfig clarusEndPointConfig = new ClarusEndPointConfig("host", "key", "api", "10000", "false");
+            ClarusEndPointConfig clarusEndPointConfig = new ClarusEndPointConfig("host", "key", "api", "10000", "false", null);
             bind(MarkitEndPointConfig.class).toInstance(markitEndPointConfig);
             bind(ClarusEndPointConfig.class).toInstance(clarusEndPointConfig);
         }

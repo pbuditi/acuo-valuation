@@ -1,13 +1,10 @@
 package com.acuo.valuation.providers.acuo.results;
 
-import com.acuo.persist.entity.Trade;
+import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.entity.TradeValueRelation;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
-import com.acuo.persist.services.PortfolioService;
-import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
 import com.acuo.valuation.protocol.results.MarkitResults;
@@ -18,45 +15,36 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 @Slf4j
-public class MarkitResultPersister implements ResultPersister<MarkitResults>, MarkitResultProcessor {
+public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults> implements ResultPersister<MarkitResults> {
 
-    private final TradeService<Trade> tradeService;
     private final ValuationService valuationService;
     private final ValueService valueService;
-    private MarkitResultProcessor nextProcessor;
-    private final PortfolioService portfolioService;
 
     @Inject
-    public MarkitResultPersister(TradeService<Trade> tradeService, ValuationService valuationService, ValueService valueService, PortfolioService portfolioService) {
-        this.tradeService = tradeService;
+    public MarkitResultPersister(ValuationService valuationService, ValueService valueService) {
         this.valuationService = valuationService;
         this.valueService = valueService;
-        this.portfolioService = portfolioService;
     }
 
     @Override
-    public MarkitValuationProcessor.ProcessorItem process(MarkitValuationProcessor.ProcessorItem processorItem) {
+    public ProcessorItem process(ProcessorItem<MarkitResults> processorItem) {
         log.info("processing markit valuation items");
         MarkitResults results = processorItem.getResults();
         Set<PortfolioId> portfolioIds = persist(results);
         processorItem.setPortfolioIds(portfolioIds);
-        if (nextProcessor != null)
-            return nextProcessor.process(processorItem);
+        if (next != null)
+            return next.process(processorItem);
         else
             return processorItem;
-    }
-
-    @Override
-    public void setNext(MarkitResultProcessor nextProcessor) {
-        this.nextProcessor = nextProcessor;
     }
 
     public Set<PortfolioId> persist(MarkitResults markitResults) {
@@ -73,12 +61,14 @@ public class MarkitResultPersister implements ResultPersister<MarkitResults>, Ma
 
         List<Result<MarkitValuation>> results = markitResults.getResults();
         List<TradeValue> values = results.stream()
-                .flatMap(markitValuationResult -> markitValuationResult.stream())
+                .flatMap(Result::stream)
                 .map(value -> convert(date, currency, value))
                 .collect(toList());
-        valueService.save(values);
-        Set<PortfolioId> portfolioIds = values.stream()
-                .map(value -> value.getValuation().getValuation().getPortfolio().getPortfolioId())
+        valueService.save(values, 1);
+        List<MarginValue> marginValues = generate(values);
+        Iterable<MarginValue> save = valueService.save(marginValues, 1);
+        Set<PortfolioId> portfolioIds = marginValues.stream()
+                .map(value -> value.getValuation().getPortfolio().getPortfolioId())
                 .collect(toSet());
         return portfolioIds;
     }
@@ -87,23 +77,88 @@ public class MarkitResultPersister implements ResultPersister<MarkitResults>, Ma
         String tradeId = value.getTradeId();
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
 
-        TradeValue newValue = createValue(currency, value.getPv(), "Markit");
-        TradeValueRelation valueRelation = new TradeValueRelation();
-        valueRelation.setValuation(valuation);
-        valueRelation.setDateTime(date);
-        valueRelation.setValue(newValue);
-        newValue.setValuation(valueRelation);
-
+        TradeValue newValue = createValue(date, currency, value.getPv(), "Markit");
+        newValue.setValuation(valuation);
 
         return newValue;
     }
 
+    private List<MarginValue> generate(List<TradeValue> values) {
+        Map<LocalDate, Map<PortfolioId, Map<Currency, List<Double>>>> map = values.stream()
+                .collect(
+                        groupingBy(this::valuationDate,
+                                groupingBy(this::portfolioId,
+                                        groupingBy(this::currency,
+                                                mapping(TradeValue::getPv, toList())
+                                        )
+                                )
+                        )
+                );
+        return convert(map);
+    }
 
-    private TradeValue createValue(Currency currency, Double pv, String source) {
+    private PortfolioId portfolioId(TradeValue value) {
+        return value.getValuation().getTrade().getPortfolio().getPortfolioId();
+    }
+
+    private Currency currency(TradeValue value) {
+        return value.getCurrency();
+    }
+
+    private LocalDate valuationDate(TradeValue value) {
+        return value.getDateTime();
+    }
+
+
+    private TradeValue createValue(LocalDate valuationDate, Currency currency, Double pv, String source) {
         TradeValue newValue = new TradeValue();
         newValue.setSource(source);
         newValue.setCurrency(currency);
         newValue.setPv(pv);
+        newValue.setDateTime(valuationDate);
+        return newValue;
+    }
+
+    private List<MarginValue> convert(Map<LocalDate, Map<PortfolioId, Map<Currency, List<Double>>>> dates) {
+        List<MarginValue> results = new ArrayList<>();
+        for (final LocalDate valuationDate : dates.keySet()) {
+            Map<PortfolioId, Map<Currency, List<Double>>> portfolios = dates.get(valuationDate);
+            for (final PortfolioId portfolioId : portfolios.keySet()) {
+                Map<Currency, List<Double>> currencies = portfolios.get(portfolioId);
+                for (final Currency currency : currencies.keySet()) {
+                    List<Double> values = currencies.get(currency);
+                    MarginValue marginValue = convert(valuationDate, portfolioId, currency, values.stream().mapToDouble(value -> value).sum());
+                    results.add(marginValue);
+                }
+            }
+        }
+        return results;
+    }
+
+    private MarginValue convert(LocalDate valuationDate, PortfolioId portfolioId, Currency currency, Double value) {
+
+        com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(portfolioId);
+
+        Set<MarginValue> values = valuation.getValues();
+        if(values != null) {
+            Set<MarginValue> toRemove = values.stream()
+                    .filter(relation -> valuationDate.equals(relation.getDateTime()))
+                    .collect(toSet());
+            values.removeAll(toRemove);
+        }
+
+        MarginValue newValue = createMarginValue(valuationDate, currency, value, "Markit");
+        newValue.setValuation(valuation);
+
+        return newValue;
+    }
+
+    private MarginValue createMarginValue(LocalDate valuationDate, Currency currency, Double amount, String source) {
+        MarginValue newValue = new MarginValue();
+        newValue.setAmount(amount);
+        newValue.setSource(source);
+        newValue.setCurrency(currency);
+        newValue.setDateTime(valuationDate);
         return newValue;
     }
 }

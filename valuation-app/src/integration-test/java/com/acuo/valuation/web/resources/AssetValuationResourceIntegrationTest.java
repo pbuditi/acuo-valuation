@@ -9,7 +9,7 @@ import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
-import com.acuo.valuation.modules.ConfigurationTestModule;
+import com.acuo.valuation.modules.ConfigurationIntegrationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ResourcesModule;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({
-        ConfigurationTestModule.class,
+        ConfigurationIntegrationTestModule.class,
         EncryptionModule.class,
         Neo4jPersistModule.class,
         DataImporterModule.class,
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
         RepositoryModule.class,
         ServicesModule.class,
         ResourcesModule.class})
-public class AssetValuationResourceTest implements WithResteasyFixtures {
+public class AssetValuationResourceIntegrationTest implements WithResteasyFixtures {
 
     private Dispatcher dispatcher;
     @Inject

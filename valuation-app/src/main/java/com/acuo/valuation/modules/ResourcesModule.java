@@ -19,7 +19,6 @@ public class ResourcesModule extends AbstractModule {
         bind(SwapValuationResource.class);
         bind(ModelMapper.class);
         bind(ImportResource.class);
-        bind(ClarusValuationResource.class);
         bind(MarginCallResource.class);
         bind(AssetValuationResource.class);
         bind(DatascopeResource.class);

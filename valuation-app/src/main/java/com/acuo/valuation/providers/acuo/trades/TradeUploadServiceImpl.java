@@ -1,6 +1,11 @@
 package com.acuo.valuation.providers.acuo.trades;
 
-import com.acuo.persist.entity.*;
+import com.acuo.common.type.TypedString;
+import com.acuo.persist.entity.FRA;
+import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.Trade;
+import com.acuo.persist.entity.TradingAccount;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
@@ -23,8 +28,8 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class TradeUploadServiceImpl implements TradeUploadService {
 
-    private static Object lock = new Object();
-    final SwapExcelParser parser = new SwapExcelParser();
+    private static final Object lock = new Object();
+    private final SwapExcelParser parser = new SwapExcelParser();
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
     private final TradeService<Trade> tradeService;
@@ -81,7 +86,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             tradeService.createOrUpdate(tradeIdList);
         }
 
-        return tradeIdList.stream().map(Trade::getTradeId).collect(toList());
+        return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
     }
 
     private void linkPortfolio(Trade trade, String portfolioId) {

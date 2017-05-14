@@ -90,44 +90,65 @@ public class MarkitResultPersisterTest {
         MockitoAnnotations.initMocks(this);
         importService.reload();
         tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
-        persister = new MarkitResultPersister(tradeService, valuationService, valueService, portfolioService);
+        persister = new MarkitResultPersister(valuationService, valueService);
     }
 
     @Test
     public void testPersistValidPricingResult() throws ParseException {
-        List<Result<MarkitValuation>> results = new ArrayList<Result<MarkitValuation>>();
-
+        LocalDate localDate = LocalDate.now();
         String tradeId = "455123";
 
-        MarkitValue markitValue = new MarkitValue();
+        MarkitResults markitResults = markitResults(localDate, tradeId);
 
-        markitValue.setTradeId(tradeId);
-        markitValue.setPv(new Double(-30017690));
-
-        MarkitValuation markitValuation = new MarkitValuation(markitValue);
-
-        Result<MarkitValuation> result = Result.success(markitValuation);
-
-        results.add(result);
-
-        MarkitResults markitResults = new MarkitResults();
-        markitResults.setResults(results);
-
-        LocalDate myDate1 = LocalDate.now();
-        markitResults.setDate(myDate1);
-        markitResults.setCurrency(Currency.USD);
         persister.persist(markitResults);
 
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
-        boolean foundValue = false;
+        assertThat(valuation).isNotNull();
+        Set<TradeValue> values = valuation.getValues();
+        assertThat(values).isNotNull().hasSize(1);
 
-        Set<TradeValueRelation> values = valuation.getValues();
-        for (TradeValueRelation value : values) {
-            TradeValue tradeValue = value.getValue();
-            if (value.getDateTime().equals(myDate1) && tradeValue.getCurrency().equals(Currency.USD) && tradeValue.getSource().equals("Markit") && tradeValue.getPv().equals(new Double(-30017690)))
-                foundValue = true;
+        for (TradeValue value : values) {
+            if(value.getDateTime().equals(localDate)){
+                assertThat(value.getPv().doubleValue()).isEqualTo(-30017690);
+            }
         }
-        Assert.assertTrue(foundValue);
+    }
+
+    @Test
+    public void testPersistValidPricingResultTwice() throws ParseException {
+        LocalDate localDate = LocalDate.now();
+        String tradeId = "455123";
+
+        MarkitResults markitResults = markitResults(localDate, tradeId);
+
+        persister.persist(markitResults);
+        persister.persist(markitResults);
+
+        TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
+        assertThat(valuation).isNotNull();
+        Set<TradeValue> values = valuation.getValues();
+        assertThat(values).isNotNull().hasSize(1);
+
+        for (TradeValue value : values) {
+            if(value.getDateTime().equals(localDate)){
+                assertThat(value.getPv().doubleValue()).isEqualTo(-30017690);
+            }
+        }
+    }
+
+    private MarkitResults markitResults(LocalDate myDate1, String tradeId) {
+        List<Result<MarkitValuation>> results = new ArrayList<Result<MarkitValuation>>();
+        MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId(tradeId);
+        markitValue.setPv(new Double(-30017690));
+        MarkitValuation markitValuation = new MarkitValuation(markitValue);
+        Result<MarkitValuation> result = Result.success(markitValuation);
+        results.add(result);
+        MarkitResults markitResults = new MarkitResults();
+        markitResults.setResults(results);
+        markitResults.setDate(myDate1);
+        markitResults.setCurrency(Currency.USD);
+        return markitResults;
     }
 
     @Test
@@ -159,7 +180,7 @@ public class MarkitResultPersisterTest {
         persister.persist(markitResults);
 
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString("455820"));
-        Set<TradeValueRelation> values = valuation.getValues();
+        Set<TradeValue> values = valuation.getValues();
         assertThat(values).hasSize(1);
     }
 }

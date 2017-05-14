@@ -13,8 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 
-import static com.acuo.common.model.margin.Types.CallType.Initial;
-import static com.acuo.common.model.margin.Types.CallType.Variation;
+import static com.acuo.common.model.margin.Types.MarginType.Initial;
+import static com.acuo.common.model.margin.Types.MarginType.Variation;
 
 @lombok.Data
 @Slf4j
@@ -56,6 +56,8 @@ public class MarginCallResult {
     private Agreementdetails agreementdetails;
 
 
+
+
     public static MarginCallResult of(VariationMargin marginCall) {
         MarginCallResult marginCallResult = new MarginCallResult();
         Agreement agreement = marginCall.getMarginStatement().getAgreement();
@@ -90,13 +92,25 @@ public class MarginCallResult {
         }
 
         marginCallResult.agreementdetails = new Agreementdetails();
+        marginCallResult.agreementdetails.setNetrequired(marginCall.getMarginAmount());
+        marginCallResult.agreementdetails.setThreshold(agreement.getThreshold());
         if (r != null) {
             marginCallResult.agreementdetails.setMintransfer(r.getMTA());
             marginCallResult.agreementdetails.setRounding(r.getRounding());
             marginCallResult.agreementdetails.setThreshold(r.getThreshold());
 
         }
-        marginCallResult.agreementdetails.setNetrequired(marginCall.getMarginAmount());
+
+        marginCallResult.agreementdetails.setFxRate(marginCall.getFxRate());
+        marginCallResult.agreementdetails.setTradeCount(marginCall.getTradeCount());
+        marginCallResult.agreementdetails.setTradeValue(marginCall.getTradeCount());
+
+        String type = agreement.getType();
+        if ("bilateral".equals(type) || "legacy".equals(type)) {
+            marginCallResult.agreementdetails.setPricingSource("Markit");
+        } else {
+            marginCallResult.agreementdetails.setPricingSource("Clarus");
+        }
 
         return marginCallResult;
     }

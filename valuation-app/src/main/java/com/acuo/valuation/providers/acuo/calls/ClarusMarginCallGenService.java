@@ -1,89 +1,58 @@
 package com.acuo.valuation.providers.acuo.calls;
 
-import com.acuo.persist.entity.Agreement;
-import com.acuo.persist.entity.MarginValuation;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.MarginValue;
-import com.acuo.persist.entity.MarginValueRelation;
 import com.acuo.persist.entity.VariationMargin;
-import com.acuo.persist.entity.enums.Side;
-import com.acuo.persist.entity.enums.StatementStatus;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
+import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
-import com.opengamma.strata.basics.currency.Currency;
+import com.acuo.valuation.protocol.results.MarginResults;
+import com.acuo.valuation.providers.acuo.results.ProcessorItem;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import static java.util.stream.Collectors.toList;
+import java.util.function.Predicate;
 
 @Slf4j
-public class ClarusMarginCallGenService extends MarginCallGenerator<MarginValuation> {
-
-    private final MarginCallService marginCallService;
+public class ClarusMarginCallGenService extends MarginCallGenerator<MarginResults> {
 
     @Inject
-    public ClarusMarginCallGenService(ValuationService valuationService,
-                                      MarginStatementService marginStatementService,
-                                      AgreementService agreementService,
-                                      CurrencyService currencyService,
-                                      MarginCallService marginCallService) {
+    ClarusMarginCallGenService(ValuationService valuationService,
+                               MarginStatementService marginStatementService,
+                               MarginCallService marginCallService,
+                               CurrencyService currencyService,
+                               AgreementService agreementService,
+                               PortfolioService portfolioService) {
         super(valuationService,
-                marginStatementService,
-                marginCallService, agreementService,
-                currencyService);
-        this.marginCallService = marginCallService;
+              marginStatementService,
+              marginCallService,
+              currencyService,
+              agreementService,
+              portfolioService);
     }
 
     @Override
-    protected Function<PortfolioId, MarginValuation> valuationsFunction() {
-        return valuationService::getMarginValuationFor;
+    public ProcessorItem process(ProcessorItem<MarginResults> processorItem) {
+        log.info("processing markit valuation items to generate expected calls");
+        LocalDate valuationDate = processorItem.getResults().getValuationDate();
+        LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
+        Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
+        List<VariationMargin> marginCalls = createCalls(portfolioIds, valuationDate, callDate);
+        processorItem.setExpected(marginCalls);
+        if (next != null)
+            return next.process(processorItem);
+        else
+            return processorItem;
     }
 
-    @Override
-    protected Supplier<StatementStatus> statementStatusSupplier() {
-        return () -> StatementStatus.Expected;
-    }
-
-    protected Supplier<Side> sideSupplier() {return () -> Side.Client;}
-
-    protected Optional<VariationMargin> convert(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
-        Optional<List<MarginValueRelation>> currents = marginValueRelation(valuation, valuationDate);
-        Optional<Double> amount = currents.map(this::sum);
-        return amount.map(aDouble -> process(side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates));
-    }
-
-    private Optional<List<MarginValueRelation>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {
-        Set<MarginValueRelation> values = valuation.getValues();
-        if (values != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            List<MarginValueRelation> result = valuation.getValues()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .filter(valueRelation -> formatter.format(valueRelation.getDateTime()).equals(formatter.format(valuationDate)))
-                    .collect(toList());
-            return Optional.of(result);
-        }
-        return Optional.empty();
-    }
-
-    private Double sum(List<MarginValueRelation> relations) {
-        return relations.stream()
-                .map(MarginValueRelation::getValue)
-                .filter(value -> "Markit".equals(value.getSource()))
-                .mapToDouble(MarginValue::getAmount)
-                .sum();
+    protected Predicate<MarginValue> pricingSourcePredicate() {
+        return value -> "Clarus".equals(value.getSource());
     }
 }

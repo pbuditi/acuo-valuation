@@ -1,19 +1,22 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
+import com.acuo.persist.ids.TradeId;
+import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.protocol.results.MarkitResults;
-import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
+import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
 import com.acuo.valuation.services.PricingService;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.modelmapper.ModelMapper;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -24,8 +27,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.StringWriter;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Path("/swaps")
@@ -34,20 +40,19 @@ import java.util.List;
 public class SwapValuationResource {
 
     private final PricingService pricingService;
-    private final MarkitValuationProcessor resultProcessor;
+    private final TradeService<Trade> tradeService;
+    private final TradePricingProcessor tradePricingProcessor;
     private final VelocityEngine velocityEngine;
-    private final ModelMapper mapper;
-
 
     @Inject
     public SwapValuationResource(PricingService pricingService,
-                                 MarkitValuationProcessor resultProcessor,
-                                 VelocityEngine velocityEngine,
-                                 ModelMapper mapper) {
+                                 TradeService<Trade> tradeService,
+                                 TradePricingProcessor tradePricingProcessor,
+                                 VelocityEngine velocityEngine) {
         this.pricingService = pricingService;
-        this.resultProcessor = resultProcessor;
+        this.tradeService = tradeService;
+        this.tradePricingProcessor = tradePricingProcessor;
         this.velocityEngine = velocityEngine;
-        this.mapper = mapper;
     }
 
     @GET
@@ -66,8 +71,7 @@ public class SwapValuationResource {
     @Timed
     public MarkitResults price(SwapTrade swapTrade) throws Exception {
         log.info("Pricing the trade {}", swapTrade);
-        MarkitResults result = pricingService.priceSwapTrades(Arrays.asList(swapTrade));
-        return result;
+        return pricingService.priceSwapTrades(singletonList(swapTrade));
     }
 
     @GET
@@ -76,10 +80,11 @@ public class SwapValuationResource {
     @Timed
     public MarginCallResponse priceBySwapId(@PathParam("id") String id) throws Exception {
         log.info("Pricing the trade {}", id);
-        MarkitResults results = pricingService.priceTradeIds(ImmutableList.of(id));
-        List<VariationMargin> marginCalls = resultProcessor.process(results);
-        MarginCallResponse result = MarginCallResponse.of(marginCalls);
-        return result;
+        List<Trade> swaps = ImmutableList.of(id).stream()
+                .map(tradeId -> (IRS) tradeService.find(TradeId.fromString(tradeId)))
+                .collect(toList());
+        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(swaps);
+        return MarginCallResponse.of(marginCalls);
     }
 
     @GET
@@ -88,10 +93,11 @@ public class SwapValuationResource {
     @Timed
     public MarginCallResponse priceByPortfolio(@PathParam("id") PortfolioId portfolioId) throws Exception {
         log.info("Pricing all trades under the portfolio {}", portfolioId);
-        MarkitResults results = pricingService.priceTradesUnder(portfolioId);
-        List<VariationMargin> marginCalls = resultProcessor.process(results);
-        MarginCallResponse result = MarginCallResponse.of(marginCalls);
-        return result;
+        List<Trade> swaps = ImmutableList.of(portfolioId).stream()
+                .map(tradeId -> (IRS) tradeService.findByPortfolioId(portfolioId))
+                .collect(toList());
+        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(swaps);
+        return MarginCallResponse.of(marginCalls);
     }
 
     @GET
@@ -100,8 +106,7 @@ public class SwapValuationResource {
     @Timed
     public MarkitResults getPv(@PathParam("id") ClientId clientId) throws Exception {
         log.info("Pricing all trades of client {}", clientId);
-        MarkitResults result = pricingService.priceTradesOf(clientId);
-        return result;
+        return pricingService.priceTradesOf(clientId);
     }
 
     @GET
@@ -110,9 +115,8 @@ public class SwapValuationResource {
     @Timed
     public MarginCallResponse priceallBilateralIRS() throws Exception {
         log.info("Pricing all bilateral trades");
-        MarkitResults results = pricingService.priceTradesOfType("Bilateral");
-        List<VariationMargin> marginCalls = resultProcessor.process(results);
-        MarginCallResponse result = MarginCallResponse.of(marginCalls);
-        return result;
+        Iterable<IRS> allIRS = tradeService.findAllIRS();
+        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(allIRS);
+        return MarginCallResponse.of(marginCalls);
     }
 }

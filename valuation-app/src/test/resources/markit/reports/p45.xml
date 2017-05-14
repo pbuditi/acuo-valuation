@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <header>
+        <name>Valuations Upload Report</name>
+        <version>2.2</version>
+        <date>2017-05-08</date>
+    </header>
+    <report>
+        <tradeid>500102</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500102 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500104</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500104 : Leg 2 has fixing 1M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500105</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500105 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500107</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500107 : Leg 2 has fixing 1M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500107</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500107 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500109</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500109 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500110</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500110 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500113</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500113 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500114</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500114 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500116</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500116 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500117</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500117 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500118</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500118 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500124</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500124 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500125</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500125 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500129</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500129 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500131</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500131 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500133</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500133 : Leg 2 has fixing 1M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500134</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500134 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500136</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500136 : Leg 2 has fixing 1M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500136</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500136 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500138</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500138 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500139</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500139 : Leg 1 has fixing 3M against 6M payments</report>
+    </report>
+    <report>
+        <tradeid>500142</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500142 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500143</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500143 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500145</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500145 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500146</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500146 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500147</tradeid>
+        <type>WARNING</type>
+        <report>Warning processing trade 500147 : Maturity date of the trade is not a business day</report>
+    </report>
+    <report>
+        <tradeid>500125</tradeid>
+        <type>AUDIT</type>
+        <report>Updated trade 500125</report>
+    </report>
+    <report>
+        <tradeid>500120</tradeid>
+        <type>AUDIT</type>
+        <report>Updated trade 500120</report>
+    </report>
+    <report>
+        <tradeid>500149</tradeid>
+        <type>AUDIT</type>
+        <report>Updated trade 500149</report>
+    </report>
+    <report>
+        <tradeid>500101</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500101</report>
+    </report>
+    <report>
+        <tradeid>500102</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500102</report>
+    </report>
+    <report>
+        <tradeid>500104</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500104</report>
+    </report>
+    <report>
+        <tradeid>500103</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500103</report>
+    </report>
+    <report>
+        <tradeid>500106</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500106</report>
+    </report>
+    <report>
+        <tradeid>500105</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500105</report>
+    </report>
+    <report>
+        <tradeid>500107</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500107</report>
+    </report>
+    <report>
+        <tradeid>500108</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500108</report>
+    </report>
+    <report>
+        <tradeid>500109</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500109</report>
+    </report>
+    <report>
+        <tradeid>500110</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500110</report>
+    </report>
+    <report>
+        <tradeid>500111</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500111</report>
+    </report>
+    <report>
+        <tradeid>500112</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500112</report>
+    </report>
+    <report>
+        <tradeid>500113</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500113</report>
+    </report>
+    <report>
+        <tradeid>500114</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500114</report>
+    </report>
+    <report>
+        <tradeid>500115</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500115</report>
+    </report>
+    <report>
+        <tradeid>500116</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500116</report>
+    </report>
+    <report>
+        <tradeid>500117</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500117</report>
+    </report>
+    <report>
+        <tradeid>500118</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500118</report>
+    </report>
+    <report>
+        <tradeid>500119</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500119</report>
+    </report>
+    <report>
+        <tradeid>500121</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500121</report>
+    </report>
+    <report>
+        <tradeid>500122</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500122</report>
+    </report>
+    <report>
+        <tradeid>500123</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500123</report>
+    </report>
+    <report>
+        <tradeid>500124</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500124</report>
+    </report>
+    <report>
+        <tradeid>500126</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500126</report>
+    </report>
+    <report>
+        <tradeid>500127</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500127</report>
+    </report>
+    <report>
+        <tradeid>500128</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500128</report>
+    </report>
+    <report>
+        <tradeid>500129</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500129</report>
+    </report>
+    <report>
+        <tradeid>500130</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500130</report>
+    </report>
+    <report>
+        <tradeid>500131</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500131</report>
+    </report>
+    <report>
+        <tradeid>500133</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500133</report>
+    </report>
+    <report>
+        <tradeid>500132</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500132</report>
+    </report>
+    <report>
+        <tradeid>500135</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500135</report>
+    </report>
+    <report>
+        <tradeid>500134</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500134</report>
+    </report>
+    <report>
+        <tradeid>500136</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500136</report>
+    </report>
+    <report>
+        <tradeid>500137</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500137</report>
+    </report>
+    <report>
+        <tradeid>500138</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500138</report>
+    </report>
+    <report>
+        <tradeid>500139</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500139</report>
+    </report>
+    <report>
+        <tradeid>500140</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500140</report>
+    </report>
+    <report>
+        <tradeid>500141</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500141</report>
+    </report>
+    <report>
+        <tradeid>500142</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500142</report>
+    </report>
+    <report>
+        <tradeid>500143</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500143</report>
+    </report>
+    <report>
+        <tradeid>500144</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500144</report>
+    </report>
+    <report>
+        <tradeid>500145</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500145</report>
+    </report>
+    <report>
+        <tradeid>500146</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500146</report>
+    </report>
+    <report>
+        <tradeid>500147</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500147</report>
+    </report>
+    <report>
+        <tradeid>500148</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500148</report>
+    </report>
+    <report>
+        <tradeid>500150</tradeid>
+        <type>AUDIT</type>
+        <report>Unchanged trade 500150</report>
+    </report>
+    <report>
+        <type>AUDIT</type>
+        <report>Processed 50/50 trades successfully</report>
+    </report>
+</data>

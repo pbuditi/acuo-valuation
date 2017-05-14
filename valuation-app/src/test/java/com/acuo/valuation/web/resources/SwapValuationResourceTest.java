@@ -1,25 +1,31 @@
 package com.acuo.valuation.web.resources;
 
+import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
-import com.acuo.common.util.GuiceJUnitRunner.GuiceModules;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.modules.*;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.valuation.modules.ConfigurationTestModule;
-import com.acuo.valuation.modules.*;
-import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
-import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.modules.EndPointModule;
+import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
-import com.google.inject.AbstractModule;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,18 +42,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({
+@GuiceJUnitRunner.GuiceModules({
         ConfigurationTestModule.class,
-        SwapValuationResourceTest.MockServiceModule.class,
-        Neo4jPersistModule.class,
-        DataImporterModule.class,
-        DataLoaderModule.class,
-        ImportServiceModule.class,
         MappingModule.class,
-        EndPointModule.class,
+        EncryptionModule.class,
+        Neo4jPersistModule.class,
+        DataLoaderModule.class,
+        DataImporterModule.class,
+        ImportServiceModule.class,
         RepositoryModule.class,
-        ServicesModule.class,
-        ResourcesModule.class})
+        EndPointModule.class,
+        ServicesModule.class})
 public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Rule
@@ -71,23 +76,13 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
     @Rule
     public ResourceFile largeResponse = new ResourceFile("/markit/responses/large.xml");
 
+    @Rule
+    public ResourceFile clarusResponse = new ResourceFile("/clarus/response/clarus-lch.json");
+
     @Inject
     TradeUploadService tradeUploadService;
 
-    private static MockWebServer server;
-
-    public static class MockServiceModule extends AbstractModule {
-        @Override
-        protected void configure() {
-            server = new MockWebServer();
-            MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/"), "", "",
-                    "username", "password", "0", "10000", "false");
-            ClarusEndPointConfig clarusEndPointConfig = new ClarusEndPointConfig("host", "key", "api", "10000", "false");
-            bind(MarkitEndPointConfig.class).toInstance(markitEndPointConfig);
-            bind(ClarusEndPointConfig.class).toInstance(clarusEndPointConfig);
-        }
-
-    }
+    private static MockWebServer server = new MockWebServer();
 
     private Dispatcher dispatcher;
 
@@ -96,6 +91,11 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Inject
     ImportService importService;
+
+    @BeforeClass
+    public static void startServer() throws IOException {
+        server.start(8282);
+    }
 
     @Before
     public void setup() throws IOException {
@@ -108,9 +108,11 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
         server.enqueue(new MockResponse().setBody("key"));
         server.enqueue(new MockResponse().setBody(largeReport.getContent()));
         server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
+        server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
     }
 
     @Test
+    @Ignore
     public void testWelcomPage() throws URISyntaxException {
         MockHttpRequest request = MockHttpRequest.get("/swaps");
         MockHttpResponse response = new MockHttpResponse();

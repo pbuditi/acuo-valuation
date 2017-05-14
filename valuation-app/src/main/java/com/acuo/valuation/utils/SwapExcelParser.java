@@ -3,6 +3,9 @@ package com.acuo.valuation.utils;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
+import com.acuo.persist.entity.PricingSource;
+import com.acuo.persist.entity.enums.PricingProvider;
+import com.acuo.persist.ids.TradeId;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.date.BusinessDayConvention;
 import com.opengamma.strata.basics.date.DayCount;
@@ -21,6 +24,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+
 @Slf4j
 public class SwapExcelParser {
 
@@ -35,8 +39,11 @@ public class SwapExcelParser {
             irs.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
-            irs.setTradeId(row.getCell(3).getStringCellValue());
+            irs.setTradeId(TradeId.fromString(row.getCell(3).getStringCellValue()));
             irs.setTradeType(TRADE_TYPE_CLEARD);
+            PricingSource pricingSource = new PricingSource();
+            pricingSource.setName(PricingProvider.Clarus);
+            irs.setPricingSource(pricingSource);
 
 
             log.debug("loading irs id {} ", irs.getTradeId());
@@ -117,12 +124,15 @@ public class SwapExcelParser {
 
         try {
 
-            fra.setTradeId(row.getCell(3).getStringCellValue());
+            fra.setTradeId(TradeId.fromString(row.getCell(3).getStringCellValue()));
             fra.setCurrency(Currency.parse(row.getCell(4).getStringCellValue()));
             fra.setTradeDate(dateToLocalDate(row.getCell(5).getDateCellValue()));
             fra.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             fra.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
             fra.setTradeType(TRADE_TYPE_CLEARD);
+            PricingSource pricingSource = new PricingSource();
+            pricingSource.setName(PricingProvider.Clarus);
+            fra.setPricingSource(pricingSource);
 
             Leg leg1 = buildFraLeg(row, 16);
 
@@ -177,8 +187,11 @@ public class SwapExcelParser {
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
 
-            irs.setTradeId(row.getCell(3).getStringCellValue());
+            irs.setTradeId(TradeId.fromString(row.getCell(3).getStringCellValue()));
             irs.setTradeType(TRADE_TYPE_CLEARD);
+            PricingSource pricingSource = new PricingSource();
+            pricingSource.setName(PricingProvider.Clarus);
+            irs.setPricingSource(pricingSource);
 
 
             log.debug("irs trade id {}",irs.getTradeId());
@@ -249,9 +262,11 @@ public class SwapExcelParser {
             irs.setMaturity(dateToLocalDate(row.getCell(6).getDateCellValue()));
             irs.setClearingDate(dateToLocalDate(row.getCell(7).getDateCellValue()));
 
-            irs.setTradeId(row.getCell(3).getStringCellValue());
+            irs.setTradeId(TradeId.fromString(row.getCell(3).getStringCellValue()));
             irs.setTradeType(TRADE_TYPE_BILATERAL);
-
+            PricingSource pricingSource = new PricingSource();
+            pricingSource.setName(PricingProvider.Markit);
+            irs.setPricingSource(pricingSource);
 
             log.debug("loading irs Bilateral id {} ", irs.getTradeId());
 

@@ -25,6 +25,9 @@ public class MockServer implements Runnable {
         public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
             try {
                 final String body = request.getBody().readUtf8();
+                if (request.getPath().contains("VM.json")) {
+                    return new MockResponse().setResponseCode(200).setBody(removeLineBreaks(file("/clarus/response/clarus-vm.json")));
+                }
                 if (body.contains("multipart/form-data")) {
                     return new MockResponse().setResponseCode(200).setBody("key");
                 }
@@ -78,6 +81,10 @@ public class MockServer implements Runnable {
         } catch (URISyntaxException | IOException e) {
             return "";
         }
+    }
+
+    private String removeLineBreaks(String file) {
+        return file.replace("\n", "").replace("\r", "");
     }
 
     public static void main(String[] args) {
