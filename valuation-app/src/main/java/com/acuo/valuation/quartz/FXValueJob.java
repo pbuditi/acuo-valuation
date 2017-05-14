@@ -86,7 +86,7 @@ public class FXValueJob implements Job {
     }
 
     private static String getDataLink(String dataImportLink) {
-        if (dataImportLink.startsWith("file://") || dataImportLink.startsWith("http://") || dataImportLink.startsWith("https://"))
+        if (dataImportLink.startsWith("file:/"))
             return dataImportLink;
         return "file://" + FXValueJob.class.getResource(dataImportLink).getFile();
     }
