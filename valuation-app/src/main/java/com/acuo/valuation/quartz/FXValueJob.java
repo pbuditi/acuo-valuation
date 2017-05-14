@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -62,7 +63,7 @@ public class FXValueJob implements Job {
                 })
                 .collect(toList());*/
         try {
-            String path = "file://" + FXValueJob.class.getResource("/fx/rates.csv").getPath();
+            String path = readFile("/fx/rates.csv");
             log.info(path);
             List<String> files = ImmutableList.of("", IOUtils.toString(new URI(path), Charsets.UTF_8));
             List<String> lines = files.stream()
@@ -82,5 +83,16 @@ public class FXValueJob implements Job {
         } catch (Exception e) {
             log.error(e.getMessage(),e);
         }
+    }
+
+    private static String getDataLink(String dataImportLink) {
+        if (dataImportLink.startsWith("file://") || dataImportLink.startsWith("http://") || dataImportLink.startsWith("https://"))
+            return dataImportLink;
+        return "file://" + FXValueJob.class.getResource(dataImportLink).getFile();
+    }
+
+    private static String readFile(String filePath) throws IOException, URISyntaxException {
+        String path = getDataLink(filePath);
+        return IOUtils.toString(new URI(path), com.google.common.base.Charsets.UTF_8);
     }
 }
