@@ -78,13 +78,13 @@ public class ClarusMarginCalcService implements MarginCalcService {
                         map.getAccount(),
                         map.getChange(),
                         map.getMargin(),
-                        null,
+                        callType.getCallType(),
                         map.getPortfolioId()))
                 .map(Result::success)
                 .collect(Collectors.toList());
 
         MarginResults marginResults = new MarginResults();
-        marginResults.setMarginType(callType.name());
+        marginResults.setMarginType(callType.getCallType());
         marginResults.setResults(results);
         marginResults.setValuationDate(LocalDateUtils.minus(LocalDate.now(), 1));
         marginResults.setCurrency("USD");

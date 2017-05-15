@@ -1,6 +1,9 @@
 package com.acuo.valuation.providers.acuo.calls;
 
+import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.Agreement;
+import com.acuo.persist.entity.InitialMargin;
+import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.MarginStatement;
 import com.acuo.persist.entity.MarginValuation;
 import com.acuo.persist.entity.MarginValue;
@@ -56,10 +59,10 @@ public abstract class MarginCallGenerator<R> extends AbstractResultProcessor<R> 
         this.portfolioService = portfolioService;
     }
 
-    public List<VariationMargin> createCalls(Set<PortfolioId> portfolioSet, LocalDate valuationDate, LocalDate callDate) {
+    public List<MarginCall> createCalls(Set<PortfolioId> portfolioSet, LocalDate valuationDate, LocalDate callDate, Types.CallType callType) {
         log.info("generating margin calls for {}", portfolioSet);
-        List<VariationMargin> marginCalls = portfolioSet.stream()
-                .map(valuationService::getMarginValuationFor)
+        List<MarginCall> marginCalls = portfolioSet.stream()
+                .map(id -> valuationService.getMarginValuationFor(id, callType))
                 .map(valuation -> createcalls(sideSupplier().get(), valuation, valuationDate, callDate, statementStatusSupplier().get()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -68,7 +71,7 @@ public abstract class MarginCallGenerator<R> extends AbstractResultProcessor<R> 
         return marginCalls;
     }
 
-    private Optional<VariationMargin> createcalls(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus) {
+    private Optional<MarginCall> createcalls(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus) {
         final Agreement agreement = agreementService.agreementFor(valuation.getPortfolio().getPortfolioId());
         final Map<Currency, Double> rates = currencyService.getAllFX();
         return convert(side, valuation, valuationDate, callDate, statementStatus, agreement, rates);
@@ -82,11 +85,12 @@ public abstract class MarginCallGenerator<R> extends AbstractResultProcessor<R> 
 
     protected abstract Predicate<MarginValue> pricingSourcePredicate();
 
-    private Optional<VariationMargin> convert(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
+    private Optional<MarginCall> convert(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
         Optional<List<MarginValue>> currents = marginValueRelation(valuation, valuationDate);
+        Types.CallType callType = valuation.getCallType();
         Optional<Double> amount = currents.map(this::sum);
         Long tradeCount = portfolioService.tradeCount(valuation.getPortfolio().getPortfolioId());
-        return amount.map(aDouble -> process(side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount));
+        return amount.map(aDouble -> process(callType, side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount));
     }
 
     private Optional<List<MarginValue>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {
@@ -110,7 +114,8 @@ public abstract class MarginCallGenerator<R> extends AbstractResultProcessor<R> 
                 .sum();
     }
 
-    protected VariationMargin process(Side side,
+    protected MarginCall process(Types.CallType callType,
+                                      Side side,
                                       Double amount,
                                       Currency currency,
                                       StatementStatus statementStatus,
@@ -119,12 +124,17 @@ public abstract class MarginCallGenerator<R> extends AbstractResultProcessor<R> 
                                       LocalDate callDate,
                                       Map<Currency, Double> rates,
                                       Long tradeCount) {
-        VariationMargin variationMargin = new VariationMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
-        StatementDirection direction = variationMargin.getDirection();
+        MarginCall margin = null;
+        if (callType.equals(Types.CallType.Variation)) {
+            margin = new VariationMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
+        } else {
+            margin = new InitialMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
+        }
+        StatementDirection direction = margin.getDirection();
         MarginStatement marginStatement = marginStatementService.getOrCreateMarginStatement(agreement, callDate, direction);
-        variationMargin.setMarginStatement(marginStatement);
-        variationMargin = marginCallService.save(variationMargin);
-        marginStatementService.setStatus(variationMargin.getItemId(), statementStatus);
-        return variationMargin;
+        margin.setMarginStatement(marginStatement);
+        margin = marginCallService.save(margin);
+        marginStatementService.setStatus(margin.getItemId(), statementStatus);
+        return margin;
     }
 }

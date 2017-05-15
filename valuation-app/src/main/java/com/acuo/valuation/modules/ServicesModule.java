@@ -7,21 +7,32 @@ import com.acuo.valuation.providers.acuo.assets.CashAssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.assets.ReutersAssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.calls.ClarusMarginCallGenService;
 import com.acuo.valuation.providers.acuo.calls.ClarusMarginCallSimulator;
-import com.acuo.valuation.providers.acuo.results.MarginResultPersister;
 import com.acuo.valuation.providers.acuo.calls.MarkitMarginCallGenerator;
 import com.acuo.valuation.providers.acuo.calls.MarkitMarginCallSimulator;
 import com.acuo.valuation.providers.acuo.results.ClarusValuationProcessor;
-import com.acuo.valuation.providers.acuo.results.ResultProcessor;
-import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
+import com.acuo.valuation.providers.acuo.results.MarginResultPersister;
 import com.acuo.valuation.providers.acuo.results.MarkitResultPersister;
+import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
+import com.acuo.valuation.providers.acuo.results.ResultProcessor;
+import com.acuo.valuation.providers.acuo.trades.ClarusIMProcessorImpl;
 import com.acuo.valuation.providers.acuo.trades.ClarusPricingProcessor;
+import com.acuo.valuation.providers.acuo.trades.ClarusVMProcessorImpl;
 import com.acuo.valuation.providers.acuo.trades.LocalTradeCacheService;
 import com.acuo.valuation.providers.acuo.trades.MarkitPricingProcessor;
 import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
-import com.acuo.valuation.providers.datascope.service.*;
+import com.acuo.valuation.providers.datascope.service.DataScopePersistService;
+import com.acuo.valuation.providers.datascope.service.DataScopePersistServiceImpl;
+import com.acuo.valuation.providers.datascope.service.DatascopeAuthService;
+import com.acuo.valuation.providers.datascope.service.DatascopeAuthServiceImpl;
+import com.acuo.valuation.providers.datascope.service.DatascopeDownloadService;
+import com.acuo.valuation.providers.datascope.service.DatascopeDownloadServiceImpl;
+import com.acuo.valuation.providers.datascope.service.DatascopeExtractionService;
+import com.acuo.valuation.providers.datascope.service.DatascopeExtractionServiceImpl;
+import com.acuo.valuation.providers.datascope.service.DatascopeScheduleService;
+import com.acuo.valuation.providers.datascope.service.DatascopeScheduleServiceImpl;
 import com.acuo.valuation.providers.markit.services.MarkitPricingService;
 import com.acuo.valuation.providers.markit.services.PortfolioValuationsRetriever;
 import com.acuo.valuation.providers.markit.services.PortfolioValuationsSender;
@@ -68,7 +79,8 @@ public class ServicesModule extends AbstractModule {
         bind(ClarusMarginCallGenService.class);
         bind(ClarusMarginCallSimulator.class);
         bind(ClarusValuationProcessor.class);
-        bind(ClarusPricingProcessor.class);
+        bind(ClarusVMProcessorImpl.class);
+        bind(ClarusIMProcessorImpl.class);
 
         // asset valuation
         bind(ReutersService.class).to(ReutersServiceImpl.class);
@@ -118,8 +130,10 @@ public class ServicesModule extends AbstractModule {
     @Singleton
     TradePricingProcessor tradePricingProcessor(Injector injector) {
         MarkitPricingProcessor markitPricingProcessor = injector.getInstance(MarkitPricingProcessor.class);
-        ClarusPricingProcessor clarusPricingProcessor = injector.getInstance(ClarusPricingProcessor.class);
-        markitPricingProcessor.setNext(clarusPricingProcessor);
+        ClarusPricingProcessor vmProcessor = injector.getInstance(ClarusVMProcessorImpl.class);
+        ClarusPricingProcessor imProcessor = injector.getInstance(ClarusIMProcessorImpl.class);
+        markitPricingProcessor.setNext(vmProcessor);
+        vmProcessor.setNext(imProcessor);
         return markitPricingProcessor;
     }
 }

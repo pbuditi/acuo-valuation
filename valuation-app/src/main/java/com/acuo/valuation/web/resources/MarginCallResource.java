@@ -1,8 +1,8 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.jackson.MarginCallResponse;
@@ -59,7 +59,7 @@ public class MarginCallResource {
         List<Trade> swaps = trades.stream()
                 .map(tradeId -> (IRS) tradeService.find(TradeId.fromString(tradeId)))
                 .collect(toList());
-        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(swaps);
+        Collection<MarginCall> marginCalls = tradePricingProcessor.process(swaps);
         return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
     }
 
@@ -101,7 +101,7 @@ public class MarginCallResource {
     public Response generateFromSwaps() {
         log.info("Generating margin calls from all swaps");
         Iterable<IRS> trades = tradeService.findAllIRS();
-        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(trades);
+        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
         return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
     }
 }

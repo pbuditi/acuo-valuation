@@ -5,8 +5,8 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
@@ -29,14 +29,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({ConfigurationTestModule.class,
@@ -91,7 +89,7 @@ public class MarkitPricingProcessorTest {
     public void process() throws Exception {
         setMockMarkitResponse();
 
-        Collection<VariationMargin> margins = pricingProcessor.process(swaps);
+        Collection<MarginCall> margins = pricingProcessor.process(swaps);
         assertThat(margins).isNotNull().hasSize(1);
     }
 

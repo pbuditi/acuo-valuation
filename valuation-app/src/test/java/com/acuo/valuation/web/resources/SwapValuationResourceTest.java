@@ -21,7 +21,6 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -108,6 +107,7 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
         server.enqueue(new MockResponse().setBody("key"));
         server.enqueue(new MockResponse().setBody(largeReport.getContent()));
         server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
+        server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
         server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
     }
 

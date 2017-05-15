@@ -1,8 +1,9 @@
 package com.acuo.valuation.providers.acuo.calls;
 
+import com.acuo.common.model.margin.Types;
 import com.acuo.common.util.LocalDateUtils;
+import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.MarginValue;
-import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
@@ -43,8 +44,9 @@ public class ClarusMarginCallGenService extends MarginCallGenerator<MarginResult
         log.info("processing markit valuation items to generate expected calls");
         LocalDate valuationDate = processorItem.getResults().getValuationDate();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
+        Types.CallType callType = processorItem.getResults().getMarginType();
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
-        List<VariationMargin> marginCalls = createCalls(portfolioIds, valuationDate, callDate);
+        List<MarginCall> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
         processorItem.setExpected(marginCalls);
         if (next != null)
             return next.process(processorItem);

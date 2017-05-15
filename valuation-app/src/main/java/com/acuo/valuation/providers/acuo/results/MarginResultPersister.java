@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.acuo.results;
 
+import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.ValuationService;
@@ -68,7 +69,8 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
 
     private MarginValue convert(LocalDate valuationDate, String currency, MarginValuation marginValuation) {
         String portfolioId = marginValuation.getPortfolioId();
-        com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(PortfolioId.fromString(portfolioId));
+        final Types.CallType callType = marginValuation.getMarginType();
+        com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(PortfolioId.fromString(portfolioId), callType);
 
         Set<MarginValue> values = valuation.getValues();
         if(values != null) {

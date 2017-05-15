@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.acuo.results;
 
+import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
@@ -137,7 +138,7 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
 
     private MarginValue convert(LocalDate valuationDate, PortfolioId portfolioId, Currency currency, Double value) {
 
-        com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(portfolioId);
+        com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(portfolioId, Types.CallType.Variation);
 
         Set<MarginValue> values = valuation.getValues();
         if(values != null) {
