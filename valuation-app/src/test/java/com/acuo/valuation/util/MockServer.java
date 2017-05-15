@@ -25,7 +25,7 @@ public class MockServer implements Runnable {
         public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
             try {
                 final String body = request.getBody().readUtf8();
-                if (request.getPath().contains("VM.json")) {
+                if (request.getPath().contains("VM.json") || request.getPath().contains("IM.json")) {
                     return new MockResponse().setResponseCode(200).setBody(removeLineBreaks(file("/clarus/response/clarus-vm.json")));
                 }
                 if (body.contains("multipart/form-data")) {
