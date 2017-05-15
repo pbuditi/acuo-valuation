@@ -59,8 +59,11 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
         List<MarginValue> values = results.getResults()
                 .stream()
                 .map(Result::getValue)
+                .filter(marginValuation -> marginValuation.getPortfolioId() != null)
                 .map(marginValuation -> convert(valuationDate, currency, marginValuation))
                 .collect(toList());
+        if(values.isEmpty())
+            return Collections.emptySet();
         valueService.save(values);
         return values.stream()
                 .map(value -> value.getValuation().getPortfolio().getPortfolioId())
@@ -80,7 +83,7 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
             values.removeAll(toRemove);
         }
 
-        MarginValue newValue = createValue(valuationDate, currency, marginValuation.getMargin(), "Clarus");
+        MarginValue newValue = createValue(valuationDate, currency, marginValuation.getAccount(), "Clarus");
         newValue.setValuation(valuation);
 
         return newValue;

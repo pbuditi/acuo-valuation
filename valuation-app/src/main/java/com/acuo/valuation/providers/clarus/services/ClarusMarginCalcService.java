@@ -74,6 +74,7 @@ public class ClarusMarginCalcService implements MarginCalcService {
         List<?> list = transformer.deserialiseToList(response);
         List<Result<MarginValuation>> results = list.stream()
                 .map(map -> (com.acuo.common.model.results.MarginValuation)map)
+                .filter(map -> map.getPortfolioId() != null)
                 .map(map -> new MarginValuation(map.getName(),
                         map.getAccount(),
                         map.getChange(),
