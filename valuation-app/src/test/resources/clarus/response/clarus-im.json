@@ -1,0 +1,39 @@
+{
+  "messages": [],
+  "params": {
+    "marginType": "IM",
+    "model": "LCH",
+    "orgId": "Acuo",
+    "portfolios": "Value Date,Position Account ID,Cleared Trade ID,Platform ID,Client ID,CME Swap Indicator,Currency...",
+    "userName": "hicham@acuo.com",
+    "valueDate": "2017-05-15"
+  },
+  "results": {
+    "Acuo/p45": {
+      "Account": 6710916.35973697,
+      "Change": 0.0,
+      "Margin": 6710916.35973697
+    },
+    "Margin": {
+      "Account": 6710916.35973697,
+      "Change": 0.0,
+      "Margin": 6710916.35973697
+    }
+  },
+  "stats": {
+    "AvgMaturity": "8.18",
+    "CalcTime": "387",
+    "CurveSize": "3500",
+    "GridTotal": "6710916.35973697",
+    "MTM/CPU/s": "1889",
+    "MTM/s": "7558",
+    "Memory%": "42",
+    "NumCPU": "4",
+    "NumMTM": "2926",
+    "NumRequests": "1",
+    "NumTrades": "50",
+    "NumWarnings": "0",
+    "ResponseTime": "980",
+    "TaskTime": "461"
+  }
+}
