@@ -25,19 +25,25 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class TradeUploadServiceImpl implements TradeUploadService {
 
-    private static final Object lock = new Object();
-    private static CacheManager cacheManager = CacheManager.getInstance();
+    private final ReentrantLock lock = new ReentrantLock();
+
+    private final CacheManager cacheManager;
 
     private final SwapExcelParser parser = new SwapExcelParser();
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
     private final TradeService<Trade> tradeService;
+
+    private final int expireTime = 1;
+    private final TimeUnit expireUnit = TimeUnit.MINUTES;
 
     @Inject
     public TradeUploadServiceImpl(TradingAccountService accountService,
@@ -46,6 +52,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         this.accountService = accountService;
         this.portfolioService = portfolioService;
         this.tradeService = tradeService;
+        this.cacheManager = new CacheManager();
     }
 
     public List<String> uploadTradesFromExcel(InputStream fis) {
@@ -87,8 +94,11 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             log.error(e.getMessage(), e);
         }
 
-        synchronized(lock){
+        lock.lock();
+        try {
             tradeService.createOrUpdate(tradeIdList);
+        } finally {
+            lock.unlock();
         }
 
         return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
@@ -113,12 +123,15 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     private Portfolio portfolio(PortfolioId portfolioId) {
         Cacheable value = cacheManager.getCache(portfolioId);
         if (value == null) {
+            lock.lock();
             try {
-            Portfolio portfolio = portfolioService.find(portfolioId);
-            value = new CachedObject(portfolio, portfolioId, 5);
+                Portfolio portfolio = portfolioService.find(portfolioId);
+                value = new CachedObject(portfolio, portfolioId, expireTime, expireUnit);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                value = new CachedObject(null, portfolioId, 5);
+                value = new CachedObject(null, portfolioId, expireTime, expireUnit);
+            } finally {
+                lock.unlock();
             }
             cacheManager.putCache(value);
         }
@@ -128,12 +141,15 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     private TradingAccount account(String accountId) {
         Cacheable value = cacheManager.getCache(accountId);
         if (value == null) {
+            lock.lock();
             try {
                 TradingAccount account = accountService.find(accountId);
-                value = new CachedObject(account, accountId, 5);
+                value = new CachedObject(account, accountId, expireTime, expireUnit);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                value = new CachedObject(null, accountId, 5);
+                value = new CachedObject(null, accountId, expireTime, expireUnit);
+            } finally {
+                lock.unlock();
             }
             cacheManager.putCache(value);
         }

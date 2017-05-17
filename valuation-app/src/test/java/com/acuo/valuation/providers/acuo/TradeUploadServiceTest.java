@@ -5,7 +5,11 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.modules.*;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
@@ -14,6 +18,7 @@ import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
+import com.googlecode.junittoolbox.MultithreadingTester;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Rule;
@@ -88,12 +93,12 @@ public class TradeUploadServiceTest {
         assertThat(irses).isNotEmpty().hasSize(2);
     }
 
-//    @Test
-//    public void testConcurrentUpload() {
-//        new MultithreadingTester().numThreads(10).numRoundsPerThread(1).add(() -> {
-//            service.uploadTradesFromExcel(oneIRS.createInputStream());
-//            Thread.sleep(1000);
-//            return null;
-//        }).run();
-//    }
+    @Test
+    public void testConcurrentUpload() {
+        new MultithreadingTester().numThreads(10).numRoundsPerThread(1).add(() -> {
+            service.uploadTradesFromExcel(oneIRS.createInputStream());
+            Thread.sleep(1000);
+            return null;
+        }).run();
+    }
 }

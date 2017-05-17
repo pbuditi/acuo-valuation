@@ -8,6 +8,8 @@
     </appender>
     
     <logger name="com.acuo" level="info" />
+    <logger name="com.acuo.persist.services" level="debug"/>
+
     <logger name="org.jboss" level="error" />
     <logger name="javax.ws" level="error" />
 

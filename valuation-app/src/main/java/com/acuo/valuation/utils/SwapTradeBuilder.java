@@ -32,7 +32,7 @@ import static java.time.DayOfWeek.SUNDAY;
 @Slf4j
 public class SwapTradeBuilder {
 
-    private static CacheManager cacheManager = CacheManager.getInstance();
+    private static CacheManager cacheManager = new CacheManager();
 
     public static SwapTrade buildTrade(IRS trade) {
         SwapTrade swapTrade = new SwapTrade();
