@@ -1,5 +1,8 @@
 package com.acuo.valuation.providers.acuo.trades;
 
+import com.acuo.common.cache.manager.CacheManager;
+import com.acuo.common.cache.manager.Cacheable;
+import com.acuo.common.cache.manager.CachedObject;
 import com.acuo.common.type.TypedString;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
@@ -29,6 +32,8 @@ import static java.util.stream.Collectors.toList;
 public class TradeUploadServiceImpl implements TradeUploadService {
 
     private static final Object lock = new Object();
+    private static CacheManager cacheManager = CacheManager.getInstance();
+
     private final SwapExcelParser parser = new SwapExcelParser();
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
@@ -93,7 +98,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         if(log.isDebugEnabled()) {
             log.debug("linking to portfolioId: {}", portfolioId);
         }
-        Portfolio portfolio = portfolioService.find(PortfolioId.fromString(portfolioId));
+        Portfolio portfolio = portfolio(PortfolioId.fromString(portfolioId));
         trade.setPortfolio(portfolio);
     }
 
@@ -101,8 +106,38 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         if(log.isDebugEnabled()) {
             log.debug("linking to accountId: {}", accountId);
         }
-        TradingAccount account = accountService.find(accountId);
+        TradingAccount account = account(accountId);
         trade.setAccount(account);
+    }
+
+    private Portfolio portfolio(PortfolioId portfolioId) {
+        Cacheable value = cacheManager.getCache(portfolioId);
+        if (value == null) {
+            try {
+            Portfolio portfolio = portfolioService.find(portfolioId);
+            value = new CachedObject(portfolio, portfolioId, 5);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                value = new CachedObject(null, portfolioId, 5);
+            }
+            cacheManager.putCache(value);
+        }
+        return (Portfolio) value.getObject();
+    }
+
+    private TradingAccount account(String accountId) {
+        Cacheable value = cacheManager.getCache(accountId);
+        if (value == null) {
+            try {
+                TradingAccount account = accountService.find(accountId);
+                value = new CachedObject(account, accountId, 5);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                value = new CachedObject(null, accountId, 5);
+            }
+            cacheManager.putCache(value);
+        }
+        return (TradingAccount) value.getObject();
     }
 
     private Trade handleIRSRow(Row row) {

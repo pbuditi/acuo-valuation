@@ -17,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -32,6 +31,8 @@ public class FXValueJob implements Job {
     private final DatascopeExtractionService datascopeExtractionService;
     private final DatascopeDownloadService datascopeDownloadService;
     private final DataScopePersistService dataScopePersistService;
+
+    private final static boolean staticFile = true;
 
     @Inject
     public FXValueJob(DatascopeAuthService datascopeAuthService,
@@ -49,20 +50,8 @@ public class FXValueJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         log.info("starting fx rate job");
-        /*String token = datascopeAuthService.getToken();
-        String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
-        List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
-        final List<String> files = ids.stream()
-                .map(id -> datascopeDownloadService.downloadFile(token, id))
-                .peek(s -> {
-                    if (log.isDebugEnabled()) {
-                        log.debug("extracted file {}", s);
-                    }
-                })
-                .collect(toList());*/
         try {
-            String file = readFile("/fx/rates.csv");
-            List<String> files = ImmutableList.of("", file);
+            List<String> files = (staticFile) ? staticFiles() : remoteFiles();
             List<String> lines = files.stream()
                     .skip(1)
                     .limit(1)
@@ -80,6 +69,26 @@ public class FXValueJob implements Job {
         } catch (Exception e) {
             log.error(e.getMessage(),e);
         }
+    }
+
+    private List<String> staticFiles() throws IOException, URISyntaxException {
+        String file = readFile("/fx/rates.csv");
+        return ImmutableList.of("", file);
+    }
+
+    private List<String> remoteFiles() {
+        String token = datascopeAuthService.getToken();
+        String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
+        List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
+        return ids.stream()
+                .map(id -> datascopeDownloadService.downloadFile(token, id))
+                .peek(s -> {
+                    if (log.isDebugEnabled()) {
+                        log.debug("extracted file {}", s);
+                    }
+                })
+                .collect(toList());
+
     }
 
     private static String readFile(String filePath) throws IOException, URISyntaxException {
