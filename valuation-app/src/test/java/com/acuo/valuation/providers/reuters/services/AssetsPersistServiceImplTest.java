@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -50,8 +51,8 @@ public class AssetsPersistServiceImplTest {
 
     private static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                { "IT0001444378", "ISIN", 2.6415304243758504d, 139_000_000.524d, 1_000_000.0d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d },
-                { "IT0001444378", "ISIN", 2.6415304243758504d, 139_000_000.524d, 1_000_000.0d, LocalDate.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d }
+                { "IT0001444378", "ISIN", 2.6415304243758504d, 139_000_000.524d, 1_000_000.0d, LocalDateTime.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d },
+                { "IT0001444378", "ISIN", 2.6415304243758504d, 139_000_000.524d, 1_000_000.0d, LocalDateTime.now(), "PercentCleanPrice", "Reuters",  Currency.EUR, Currency.EUR, 6d }
         });
     }
 
@@ -95,7 +96,7 @@ public class AssetsPersistServiceImplTest {
                     assetValuation.setYield((Double) objects[i++]);
                     assetValuation.setCleanMarketValue((Double) objects[i++]);
                     assetValuation.setNotional((Double) objects[i++]);
-                    assetValuation.setValuationDateTime((LocalDate) objects[i++]);
+                    assetValuation.setValuationDateTime((LocalDateTime) objects[i++]);
                     assetValuation.setPriceQuotationType((String) objects[i++]);
                     assetValuation.setSource((String) objects[i++]);
                     assetValuation.setNominalCurrency((Currency) objects[i++]);
