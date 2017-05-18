@@ -1,28 +1,29 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 
-public class DatascopeExtractionReportCall extends CallBuilder<DatascopeExtractionReportCall> {
+public class DataScopeExtractionReportCall extends CallBuilder<DataScopeExtractionReportCall> {
 
-    private final ClientEndPoint<DatascopeEndPointConfig> client;
+    private final ClientEndPoint<DataScopeEndPointConfig> client;
     private Request.Builder builder;
     private HttpUrl reportUrl;
 
-    private DatascopeExtractionReportCall(ClientEndPoint<DatascopeEndPointConfig> client)
+    private DataScopeExtractionReportCall(ClientEndPoint<DataScopeEndPointConfig> client)
     {
         this.client = client;
         builder = new Request.Builder();
     }
 
-    public static DatascopeExtractionReportCall of(ClientEndPoint<DatascopeEndPointConfig> client) {
-        return new DatascopeExtractionReportCall(client);
+    public static DataScopeExtractionReportCall of(ClientEndPoint<DataScopeEndPointConfig> client) {
+        return new DataScopeExtractionReportCall(client);
     }
 
-    public DatascopeExtractionReportCall with(String key, String value) {
+    public DataScopeExtractionReportCall with(String key, String value) {
         if(key.equalsIgnoreCase("token"))
         {
             builder.header("Authorization", "Token " + value);
@@ -30,7 +31,7 @@ public class DatascopeExtractionReportCall extends CallBuilder<DatascopeExtracti
         else
         if(key.equalsIgnoreCase("id"))
         {
-            DatascopeEndPointConfig config = client.config();
+            DataScopeEndPointConfig config = client.config();
             reportUrl = new HttpUrl.Builder()
                     .scheme(config.getScheme())
                     .host(config.getHost())

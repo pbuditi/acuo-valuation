@@ -1,32 +1,27 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.authentication;
 
 import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.valuation.providers.datascope.protocol.auth.AuthJson;
 import com.acuo.valuation.providers.datascope.protocol.auth.Credentials;
 import com.acuo.valuation.providers.datascope.protocol.auth.TokenJson;
-import com.acuo.valuation.providers.datascope.protocol.schedule.Recurrence;
-import com.acuo.valuation.providers.datascope.protocol.schedule.ScheduleRequestJson;
-import com.acuo.valuation.providers.datascope.protocol.schedule.ScheduleResponseJson;
-import com.acuo.valuation.providers.datascope.protocol.schedule.Trigger;
+import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
-public class DatascopeAuthServiceImpl implements DatascopeAuthService {
+public class DataScopeAuthServiceImpl implements DataScopeAuthService {
 
-    private final ClientEndPoint<DatascopeEndPointConfig> client;
+    private final ClientEndPoint<DataScopeEndPointConfig> client;
     private final ObjectMapper objectMapper;
 
     private String token;
 
     @Inject
-    public DatascopeAuthServiceImpl(ClientEndPoint<DatascopeEndPointConfig> client)
+    public DataScopeAuthServiceImpl(ClientEndPoint<DataScopeEndPointConfig> client)
     {
         this.client = client;
         objectMapper = new ObjectMapper();
@@ -34,7 +29,7 @@ public class DatascopeAuthServiceImpl implements DatascopeAuthService {
 
     public String getToken()
     {
-        String response = DatascopeAuthCall.of(client).with("josn", buildAuthJson()).create().send();
+        String response = DataScopeAuthCall.of(client).with("josn", buildAuthJson()).create().send();
         try
         {
             token = objectMapper.readValue(response, TokenJson.class).getValue();
@@ -51,7 +46,7 @@ public class DatascopeAuthServiceImpl implements DatascopeAuthService {
 
     private String buildAuthJson()
     {
-        DatascopeEndPointConfig config = client.config();
+        DataScopeEndPointConfig config = client.config();
         Credentials credentials = new Credentials();
         credentials.setUsername(config.getUsername());
         credentials.setPassword(config.getPassword());

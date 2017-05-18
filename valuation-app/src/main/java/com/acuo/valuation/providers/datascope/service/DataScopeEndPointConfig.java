@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import static com.acuo.valuation.utils.PropertiesHelper.*;
 
 @Data
-public class DatascopeEndPointConfig implements EndPointConfig {
+public class DataScopeEndPointConfig implements EndPointConfig {
 
     private final String scheme;
     private final String host;
@@ -34,7 +34,7 @@ public class DatascopeEndPointConfig implements EndPointConfig {
     private final String reportTemplateIdBond;
 
     @Inject
-    public DatascopeEndPointConfig(@Named(ACUO_DATASCOPE_SCHEME) String scheme,
+    public DataScopeEndPointConfig(@Named(ACUO_DATASCOPE_SCHEME) String scheme,
                                    @Named(ACUO_DATASCOPE_HOST) String host,
                                    @Named(ACUO_DATASCOPE_PORT) int port,
                                    @Named(ACUO_DATASCOPE_AUTHPATH) String authpath,

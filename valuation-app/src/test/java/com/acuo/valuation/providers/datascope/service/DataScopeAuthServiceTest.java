@@ -8,6 +8,7 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,15 +25,15 @@ import javax.inject.Inject;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class DatascopeAuthServiceTest {
+public class DataScopeAuthServiceTest {
 
     @Inject
-    private DatascopeAuthService datascopeAuthService;
+    private DataScopeAuthService dataScopeAuthService;
 
     @Test
     public void testGetToken()
     {
-        //String token = datascopeAuthService.getToken();
+        //String token = dataScopeAuthService.getToken();
     }
 
 }

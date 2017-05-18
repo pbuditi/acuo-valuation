@@ -8,12 +8,15 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeDownloadService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeExtractionService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import java.util.List;
 
 @Slf4j
 @RunWith(GuiceJUnitRunner.class)
@@ -25,26 +28,26 @@ import java.util.List;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class DatascopeDownloadServiceTest {
+public class DataScopeDownloadServiceTest {
 
     @Inject
-    private DatascopeAuthService datascopeAuthService;
+    private DataScopeAuthService dataScopeAuthService;
 
     @Inject
-    private DatascopeScheduleService datascopeScheduleService;
+    private DataScopeScheduleService dataScopeScheduleService;
 
     @Inject
-    private DatascopeExtractionService datascopeExtractionService;
+    private DataScopeExtractionService dataScopeExtractionService;
 
     @Inject
-    private DatascopeDownloadService datascopeDownloadService;
+    private DataScopeDownloadService dataScopeDownloadService;
 
     @Test
     public void testDownloadFile()
     {
-//        String token = datascopeAuthService.getToken();
-//        String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
-//        List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
-//        ids.stream().forEach(fileId -> datascopeDownloadService.downloadFile(token, fileId));
+//        String token = dataScopeAuthService.getToken();
+//        String scheduleId = dataScopeScheduleService.scheduleFXRateExtraction(token);
+//        List<String> ids = dataScopeExtractionService.getExtractionFileId(token, scheduleId);
+//        ids.stream().forEach(fileId -> dataScopeDownloadService.downloadFile(token, fileId));
     }
 }

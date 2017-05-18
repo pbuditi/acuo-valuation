@@ -1,9 +1,10 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.valuation.providers.datascope.protocol.report.ReportResponseJson;
 import com.acuo.valuation.providers.datascope.protocol.report.Value;
 import com.acuo.valuation.providers.datascope.protocol.status.StatusResponseJson;
+import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.parboiled.common.StringUtils;
@@ -16,13 +17,13 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class DatascopeExtractionServiceImpl implements DatascopeExtractionService {
+public class DataScopeExtractionServiceImpl implements DataScopeExtractionService {
 
-    private final ClientEndPoint<DatascopeEndPointConfig> client;
+    private final ClientEndPoint<DataScopeEndPointConfig> client;
     private final ObjectMapper objectMapper;
 
     @Inject
-    public DatascopeExtractionServiceImpl(ClientEndPoint<DatascopeEndPointConfig> client) {
+    public DataScopeExtractionServiceImpl(ClientEndPoint<DataScopeEndPointConfig> client) {
         this.client = client;
         objectMapper = new ObjectMapper();
     }
@@ -32,7 +33,7 @@ public class DatascopeExtractionServiceImpl implements DatascopeExtractionServic
             if (log.isDebugEnabled()) {
                 log.debug("scheduleId {} ", scheduleId);
             }
-            String response = DatascopExtractionStatusCall.of(client)
+            String response = DataScopeExtractionStatusCall.of(client)
                     .with("token", token)
                     .with("id", scheduleId)
                     .retryWhile(this::isNotCompleted)
@@ -42,7 +43,7 @@ public class DatascopeExtractionServiceImpl implements DatascopeExtractionServic
             StatusResponseJson responseJson = objectMapper.readValue(response, StatusResponseJson.class);
             String reportExtractionId = responseJson.getReportExtractionId();
 
-            response = DatascopeExtractionReportCall.of(client)
+            response = DataScopeExtractionReportCall.of(client)
                     .with("token", token)
                     .with("id", reportExtractionId)
                     .create().send();

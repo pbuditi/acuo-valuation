@@ -1,31 +1,32 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 
-public class DatascopExtractionStatusCall extends CallBuilder<DatascopExtractionStatusCall> {
+public class DataScopeExtractionStatusCall extends CallBuilder<DataScopeExtractionStatusCall> {
 
-    private final ClientEndPoint<DatascopeEndPointConfig> client;
+    private final ClientEndPoint<DataScopeEndPointConfig> client;
     private Request.Builder builder;
     private HttpUrl statusUrl;
 
-    private DatascopExtractionStatusCall(ClientEndPoint<DatascopeEndPointConfig> client) {
+    private DataScopeExtractionStatusCall(ClientEndPoint<DataScopeEndPointConfig> client) {
         this.client = client;
         builder = new Request.Builder();
     }
 
-    public static DatascopExtractionStatusCall of(ClientEndPoint<DatascopeEndPointConfig> client) {
-        return new DatascopExtractionStatusCall(client);
+    public static DataScopeExtractionStatusCall of(ClientEndPoint<DataScopeEndPointConfig> client) {
+        return new DataScopeExtractionStatusCall(client);
     }
 
-    public DatascopExtractionStatusCall with(String key, String value) {
+    public DataScopeExtractionStatusCall with(String key, String value) {
         if (key.equalsIgnoreCase("token")) {
             builder.header("Authorization", "Token " + value);
         } else if (key.equalsIgnoreCase("id")) {
-            DatascopeEndPointConfig config = client.config();
+            DataScopeEndPointConfig config = client.config();
             statusUrl = new HttpUrl.Builder()
                     .scheme(config.getScheme())
                     .host(config.getHost())

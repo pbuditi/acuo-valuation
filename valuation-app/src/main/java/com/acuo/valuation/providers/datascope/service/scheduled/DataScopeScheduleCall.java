@@ -1,24 +1,25 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class DatascopeScheduleCall extends CallBuilder<DatascopeScheduleCall> {
+public class DataScopeScheduleCall extends CallBuilder<DataScopeScheduleCall> {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private final ClientEndPoint<DatascopeEndPointConfig> client;
+    private final ClientEndPoint<DataScopeEndPointConfig> client;
     private final Request.Builder builder;
     private final HttpUrl scheduleUrl;
 
-    private DatascopeScheduleCall(ClientEndPoint<DatascopeEndPointConfig> client)
+    private DataScopeScheduleCall(ClientEndPoint<DataScopeEndPointConfig> client)
     {
         this.client = client;
-        DatascopeEndPointConfig config = client.config();
+        DataScopeEndPointConfig config = client.config();
         scheduleUrl = new HttpUrl.Builder()
                 .scheme(config.getScheme())
                 .host(config.getHost())
@@ -32,11 +33,11 @@ public class DatascopeScheduleCall extends CallBuilder<DatascopeScheduleCall> {
 
     }
 
-    public static DatascopeScheduleCall of(ClientEndPoint<DatascopeEndPointConfig> client) {
-        return new DatascopeScheduleCall(client);
+    public static DataScopeScheduleCall of(ClientEndPoint<DataScopeEndPointConfig> client) {
+        return new DataScopeScheduleCall(client);
     }
 
-    public DatascopeScheduleCall with(String key, String value) {
+    public DataScopeScheduleCall with(String key, String value) {
         if(key.equalsIgnoreCase("token"))
         {
             builder.header("Authorization", "Token " + value);

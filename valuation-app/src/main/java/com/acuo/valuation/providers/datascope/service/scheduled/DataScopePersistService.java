@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import java.util.List;
 

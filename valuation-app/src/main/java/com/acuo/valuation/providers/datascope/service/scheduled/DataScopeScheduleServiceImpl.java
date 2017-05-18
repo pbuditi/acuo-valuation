@@ -1,10 +1,11 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.valuation.providers.datascope.protocol.schedule.Recurrence;
 import com.acuo.valuation.providers.datascope.protocol.schedule.ScheduleRequestJson;
 import com.acuo.valuation.providers.datascope.protocol.schedule.ScheduleResponseJson;
 import com.acuo.valuation.providers.datascope.protocol.schedule.Trigger;
+import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -15,13 +16,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
-public class DatascopeScheduleServiceImpl implements DatascopeScheduleService {
+public class DataScopeScheduleServiceImpl implements DataScopeScheduleService {
 
-    private final ClientEndPoint<DatascopeEndPointConfig> client;
+    private final ClientEndPoint<DataScopeEndPointConfig> client;
     private final ObjectMapper objectMapper;
 
     @Inject
-    public DatascopeScheduleServiceImpl(ClientEndPoint<DatascopeEndPointConfig> client)
+    public DataScopeScheduleServiceImpl(ClientEndPoint<DataScopeEndPointConfig> client)
     {
         this.client = client;
         objectMapper = new ObjectMapper();
@@ -30,20 +31,20 @@ public class DatascopeScheduleServiceImpl implements DatascopeScheduleService {
 
     public String scheduleFXRateExtraction(String token)
     {
-        DatascopeEndPointConfig config = client.config();
+        DataScopeEndPointConfig config = client.config();
         return schedule(token, buildScheduleRequestJson(config.getListIdFX(), config.getReportTemplateIdFX()));
     }
 
     public String scheduleBondExtraction(String token)
     {
-        DatascopeEndPointConfig config = client.config();
+        DataScopeEndPointConfig config = client.config();
         return schedule(token, buildScheduleRequestJson(config.getListIdBond(), config.getReportTemplateIdBond()));
     }
 
     private String schedule(String token, String json)
     {
         String scheduleId = null;
-        String response = DatascopeScheduleCall.of(client).with("token",token).with("body", json).create().send();
+        String response = DataScopeScheduleCall.of(client).with("token",token).with("body", json).create().send();
         log.info(response);
 
         try

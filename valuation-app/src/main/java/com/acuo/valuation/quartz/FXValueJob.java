@@ -1,10 +1,10 @@
 package com.acuo.valuation.quartz;
 
-import com.acuo.valuation.providers.datascope.service.DataScopePersistService;
-import com.acuo.valuation.providers.datascope.service.DatascopeAuthService;
-import com.acuo.valuation.providers.datascope.service.DatascopeDownloadService;
-import com.acuo.valuation.providers.datascope.service.DatascopeExtractionService;
-import com.acuo.valuation.providers.datascope.service.DatascopeScheduleService;
+import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeDownloadService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeExtractionService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopePersistService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeScheduleService;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -26,24 +26,24 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class FXValueJob implements Job {
 
-    private final DatascopeAuthService datascopeAuthService;
-    private final DatascopeScheduleService datascopeScheduleService;
-    private final DatascopeExtractionService datascopeExtractionService;
-    private final DatascopeDownloadService datascopeDownloadService;
+    private final DataScopeAuthService dataScopeAuthService;
+    private final DataScopeScheduleService dataScopeScheduleService;
+    private final DataScopeExtractionService dataScopeExtractionService;
+    private final DataScopeDownloadService dataScopeDownloadService;
     private final DataScopePersistService dataScopePersistService;
 
     private final static boolean staticFile = true;
 
     @Inject
-    public FXValueJob(DatascopeAuthService datascopeAuthService,
-                      DatascopeScheduleService datascopeScheduleService,
-                      DatascopeExtractionService datascopeExtractionService,
-                      DatascopeDownloadService datascopeDownloadService,
+    public FXValueJob(DataScopeAuthService dataScopeAuthService,
+                      DataScopeScheduleService dataScopeScheduleService,
+                      DataScopeExtractionService dataScopeExtractionService,
+                      DataScopeDownloadService dataScopeDownloadService,
                       DataScopePersistService dataScopePersistService) {
-        this.datascopeAuthService = datascopeAuthService;
-        this.datascopeScheduleService = datascopeScheduleService;
-        this.datascopeDownloadService = datascopeDownloadService;
-        this.datascopeExtractionService = datascopeExtractionService;
+        this.dataScopeAuthService = dataScopeAuthService;
+        this.dataScopeScheduleService = dataScopeScheduleService;
+        this.dataScopeDownloadService = dataScopeDownloadService;
+        this.dataScopeExtractionService = dataScopeExtractionService;
         this.dataScopePersistService = dataScopePersistService;
     }
 
@@ -77,11 +77,11 @@ public class FXValueJob implements Job {
     }
 
     private List<String> remoteFiles() {
-        String token = datascopeAuthService.getToken();
-        String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
-        List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
+        String token = dataScopeAuthService.getToken();
+        String scheduleId = dataScopeScheduleService.scheduleFXRateExtraction(token);
+        List<String> ids = dataScopeExtractionService.getExtractionFileId(token, scheduleId);
         return ids.stream()
-                .map(id -> datascopeDownloadService.downloadFile(token, id))
+                .map(id -> dataScopeDownloadService.downloadFile(token, id))
                 .peek(s -> {
                     if (log.isDebugEnabled()) {
                         log.debug("extracted file {}", s);

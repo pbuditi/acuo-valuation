@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.FXRate;

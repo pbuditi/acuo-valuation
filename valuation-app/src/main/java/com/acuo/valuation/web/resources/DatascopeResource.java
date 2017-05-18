@@ -1,6 +1,10 @@
 package com.acuo.valuation.web.resources;
 
-import com.acuo.valuation.providers.datascope.service.*;
+import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeDownloadService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopePersistService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeExtractionService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeScheduleService;
 import com.codahale.metrics.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,27 +22,27 @@ import java.util.List;
 public class DatascopeResource {
 
 
-    private final DatascopeAuthService datascopeAuthService;
+    private final DataScopeAuthService dataScopeAuthService;
 
-    private final DatascopeScheduleService datascopeScheduleService;
+    private final DataScopeScheduleService dataScopeScheduleService;
 
-    private final DatascopeExtractionService datascopeExtractionService;
+    private final DataScopeExtractionService dataScopeExtractionService;
 
-    private final DatascopeDownloadService datascopeDownloadService;
+    private final DataScopeDownloadService dataScopeDownloadService;
 
     private final DataScopePersistService dataScopePersistService;
 
     @Inject
-    public DatascopeResource(DatascopeAuthService datascopeAuthService,
-                             DatascopeScheduleService datascopeScheduleService,
-                             DatascopeExtractionService datascopeExtractionService,
-                             DatascopeDownloadService datascopeDownloadService,
+    public DatascopeResource(DataScopeAuthService dataScopeAuthService,
+                             DataScopeScheduleService dataScopeScheduleService,
+                             DataScopeExtractionService dataScopeExtractionService,
+                             DataScopeDownloadService dataScopeDownloadService,
                              DataScopePersistService dataScopePersistService)
     {
-        this.datascopeAuthService = datascopeAuthService;
-        this.datascopeScheduleService = datascopeScheduleService;
-        this.datascopeDownloadService = datascopeDownloadService;
-        this.datascopeExtractionService = datascopeExtractionService;
+        this.dataScopeAuthService = dataScopeAuthService;
+        this.dataScopeScheduleService = dataScopeScheduleService;
+        this.dataScopeDownloadService = dataScopeDownloadService;
+        this.dataScopeExtractionService = dataScopeExtractionService;
         this.dataScopePersistService = dataScopePersistService;
     }
 
@@ -48,10 +52,10 @@ public class DatascopeResource {
     @Timed
     public Response getFx()
     {
-        String token = datascopeAuthService.getToken();
-        String scheduleId = datascopeScheduleService.scheduleFXRateExtraction(token);
-        List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
-        String csv = datascopeDownloadService.downloadFile(token, ids.get(1));
+        String token = dataScopeAuthService.getToken();
+        String scheduleId = dataScopeScheduleService.scheduleFXRateExtraction(token);
+        List<String> ids = dataScopeExtractionService.getExtractionFileId(token, scheduleId);
+        String csv = dataScopeDownloadService.downloadFile(token, ids.get(1));
         BufferedReader br = new BufferedReader(new StringReader(csv));
         List<String> lines = new ArrayList<>();
         try
@@ -79,10 +83,10 @@ public class DatascopeResource {
     @Timed
     public Response getBond()
     {
-        String token = datascopeAuthService.getToken();
-        String scheduleId = datascopeScheduleService.scheduleBondExtraction(token);
-        List<String> ids = datascopeExtractionService.getExtractionFileId(token, scheduleId);
-        String csv = datascopeDownloadService.downloadFile(token, ids.get(1));
+        String token = dataScopeAuthService.getToken();
+        String scheduleId = dataScopeScheduleService.scheduleBondExtraction(token);
+        List<String> ids = dataScopeExtractionService.getExtractionFileId(token, scheduleId);
+        String csv = dataScopeDownloadService.downloadFile(token, ids.get(1));
         BufferedReader br = new BufferedReader(new StringReader(csv));
         List<String> lines = new ArrayList<>();
         try

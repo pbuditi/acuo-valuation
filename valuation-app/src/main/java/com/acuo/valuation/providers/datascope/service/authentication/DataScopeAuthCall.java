@@ -1,23 +1,24 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.authentication;
 
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class DatascopeAuthCall extends CallBuilder<DatascopeAuthCall> {
+public class DataScopeAuthCall extends CallBuilder<DataScopeAuthCall> {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private final ClientEndPoint<DatascopeEndPointConfig> client;
+    private final ClientEndPoint<DataScopeEndPointConfig> client;
     private final Request.Builder builder;
     private final HttpUrl authUrl;
 
-    private DatascopeAuthCall(ClientEndPoint<DatascopeEndPointConfig> client) {
+    private DataScopeAuthCall(ClientEndPoint<DataScopeEndPointConfig> client) {
         this.client = client;
-        DatascopeEndPointConfig config = client.config();
+        DataScopeEndPointConfig config = client.config();
         authUrl = new HttpUrl.Builder()
                 .scheme(config.getScheme())
                 .host(config.getHost())
@@ -29,11 +30,11 @@ public class DatascopeAuthCall extends CallBuilder<DatascopeAuthCall> {
                 .url(authUrl);
     }
 
-    public static DatascopeAuthCall of(ClientEndPoint<DatascopeEndPointConfig> client) {
-        return new DatascopeAuthCall(client);
+    public static DataScopeAuthCall of(ClientEndPoint<DataScopeEndPointConfig> client) {
+        return new DataScopeAuthCall(client);
     }
 
-    public DatascopeAuthCall with(String key, String value) {
+    public DataScopeAuthCall with(String key, String value) {
         RequestBody body = RequestBody.create(JSON, value);
         builder.post(body);
         return this;

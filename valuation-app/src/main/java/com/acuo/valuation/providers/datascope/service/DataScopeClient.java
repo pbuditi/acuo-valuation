@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 
 @Slf4j
-public class DatascopeClient extends OkHttpClient<DatascopeEndPointConfig> {
+public class DataScopeClient extends OkHttpClient<DataScopeEndPointConfig> {
 
     @Inject
-    public DatascopeClient(okhttp3.OkHttpClient httpClient, DatascopeEndPointConfig config) {
+    public DataScopeClient(okhttp3.OkHttpClient httpClient, DataScopeEndPointConfig config) {
         super(httpClient, config);
     }
 

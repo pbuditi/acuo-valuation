@@ -14,6 +14,7 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopePersistService;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;

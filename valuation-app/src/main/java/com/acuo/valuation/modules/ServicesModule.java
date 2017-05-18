@@ -23,16 +23,16 @@ import com.acuo.valuation.providers.acuo.trades.MarkitPricingProcessor;
 import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
-import com.acuo.valuation.providers.datascope.service.DataScopePersistService;
-import com.acuo.valuation.providers.datascope.service.DataScopePersistServiceImpl;
-import com.acuo.valuation.providers.datascope.service.DatascopeAuthService;
-import com.acuo.valuation.providers.datascope.service.DatascopeAuthServiceImpl;
-import com.acuo.valuation.providers.datascope.service.DatascopeDownloadService;
-import com.acuo.valuation.providers.datascope.service.DatascopeDownloadServiceImpl;
-import com.acuo.valuation.providers.datascope.service.DatascopeExtractionService;
-import com.acuo.valuation.providers.datascope.service.DatascopeExtractionServiceImpl;
-import com.acuo.valuation.providers.datascope.service.DatascopeScheduleService;
-import com.acuo.valuation.providers.datascope.service.DatascopeScheduleServiceImpl;
+import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthServiceImpl;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeExtractionService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeExtractionServiceImpl;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopePersistService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopePersistServiceImpl;
+import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeDownloadService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeDownloadServiceImpl;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeScheduleService;
+import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeScheduleServiceImpl;
 import com.acuo.valuation.providers.markit.services.MarkitPricingService;
 import com.acuo.valuation.providers.markit.services.PortfolioValuationsRetriever;
 import com.acuo.valuation.providers.markit.services.PortfolioValuationsSender;
@@ -88,10 +88,10 @@ public class ServicesModule extends AbstractModule {
         bind(CashAssetPricingProcessor.class);
 
         // datascope
-        bind(DatascopeAuthService.class).to(DatascopeAuthServiceImpl.class);
-        bind(DatascopeScheduleService.class).to(DatascopeScheduleServiceImpl.class);
-        bind(DatascopeExtractionService.class).to(DatascopeExtractionServiceImpl.class);
-        bind(DatascopeDownloadService.class).to(DatascopeDownloadServiceImpl.class);
+        bind(DataScopeAuthService.class).to(DataScopeAuthServiceImpl.class);
+        bind(DataScopeScheduleService.class).to(DataScopeScheduleServiceImpl.class);
+        bind(DataScopeExtractionService.class).to(DataScopeExtractionServiceImpl.class);
+        bind(DataScopeDownloadService.class).to(DataScopeDownloadServiceImpl.class);
         bind(DataScopePersistService.class).to(DataScopePersistServiceImpl.class);
     }
 

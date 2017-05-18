@@ -1,28 +1,29 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
 import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 
-public class DatascopeDownloadCall extends CallBuilder<DatascopeDownloadCall> {
+public class DataScopeDownloadCall extends CallBuilder<DataScopeDownloadCall> {
 
-    private final ClientEndPoint<DatascopeEndPointConfig> client;
+    private final ClientEndPoint<DataScopeEndPointConfig> client;
     private Request.Builder builder;
     private HttpUrl downloadUrl;
 
-    private DatascopeDownloadCall(ClientEndPoint<DatascopeEndPointConfig> client)
+    private DataScopeDownloadCall(ClientEndPoint<DataScopeEndPointConfig> client)
     {
         this.client = client;
         builder = new Request.Builder();
     }
 
-    public static DatascopeDownloadCall of(ClientEndPoint<DatascopeEndPointConfig> client) {
-        return new DatascopeDownloadCall(client);
+    public static DataScopeDownloadCall of(ClientEndPoint<DataScopeEndPointConfig> client) {
+        return new DataScopeDownloadCall(client);
     }
 
-    public DatascopeDownloadCall with(String key, String value) {
+    public DataScopeDownloadCall with(String key, String value) {
         if(key.equalsIgnoreCase("token"))
         {
             builder.header("Authorization", "Token " + value);
@@ -30,7 +31,7 @@ public class DatascopeDownloadCall extends CallBuilder<DatascopeDownloadCall> {
         else
         if(key.equalsIgnoreCase("id"))
         {
-            DatascopeEndPointConfig config = client.config();
+            DataScopeEndPointConfig config = client.config();
             downloadUrl = new HttpUrl.Builder()
                     .scheme(config.getScheme())
                     .host(config.getHost())
