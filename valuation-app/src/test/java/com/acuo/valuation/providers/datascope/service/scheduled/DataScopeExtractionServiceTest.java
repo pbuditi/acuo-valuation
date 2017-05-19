@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
@@ -9,7 +9,6 @@ import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
-import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeDownloadService;
 import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeExtractionService;
 import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeScheduleService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,7 @@ import javax.inject.Inject;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class DataScopeDownloadServiceTest {
+public class DataScopeExtractionServiceTest {
 
     @Inject
     private DataScopeAuthService dataScopeAuthService;
@@ -39,15 +38,11 @@ public class DataScopeDownloadServiceTest {
     @Inject
     private DataScopeExtractionService dataScopeExtractionService;
 
-    @Inject
-    private DataScopeDownloadService dataScopeDownloadService;
-
     @Test
-    public void testDownloadFile()
+    public void testGetExtractionFieldId()
     {
 //        String token = dataScopeAuthService.getToken();
 //        String scheduleId = dataScopeScheduleService.scheduleFXRateExtraction(token);
-//        List<String> ids = dataScopeExtractionService.getExtractionFileId(token, scheduleId);
-//        ids.stream().forEach(fileId -> dataScopeDownloadService.downloadFile(token, fileId));
+//        dataScopeExtractionService.getExtractionFileId(token, scheduleId);
     }
 }

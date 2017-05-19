@@ -1,0 +1,16 @@
+{
+  "Contents": [
+    {
+      "Last Update Time": "05/19/2017 21:02:26",
+      "Identifier": "USDEUR=R",
+      "Mid Price": 0.89425,
+      "IdentifierType": "Ric",
+      "RIC": "USDEUR=R"
+    }
+  ],
+  "@odata.context": "http://hosted.datascopeapi.reuters.com/RestApi/v1/$metadata#ThomsonReuters.Dss.Api.Extractions.ExtractionRequests.ExtractionResult",
+  "Notes": [
+    "Extraction Services Version 11.0.36705 (cbb5015f7377), Built May  3 2017 16:13:03\r\nProcessing started at 05/19/2017 21:02:27.\r\nUser ID: 9011594\r\nExtraction ID: 259387700\r\nSchedule: _OnD_0x05b94e02f3cb3026 (ID = 0x05b94e0369cb3026)\r\nInput List (1 items): _OnD_0x05b94e02f3cb3026 (ID = 05b94e032f4b3026) Created: 05/19/2017 21:02:25 Last Modified: 05/19/2017 21:02:25\r\nSchedule Time: 05/19/2017 21:02:26\r\nReport Template (9 fields): _OnD_0x05b94e02f3cb3026 (ID = 0x05b94e03074b3026) Created: 05/19/2017 21:02:25 Last Modified: 05/19/2017 21:02:25\r\nNo prices needed currency scaling.\r\nReal-time data was snapped at 05/19/2017 21:02:27, it was scheduled to snap at 05/19/2017 21:02:26.\r\nNo embargo required for this report.\r\nProcessing completed successfully at 05/19/2017 21:02:27, taking 0.860 Secs.\r\nExtraction finished at 05/19/2017 13:02:27 UTC, with servers: x09I09, DSHA02 (0.0 secs), QSHA02 (0.0 secs), QSHC08 (0.0 secs)\r\nUsage Summary for User 9011594, Client 105775, Template Type Intraday Pricing\r\nBase Usage\r\n        Instrument                          Instrument                   Terms          Price\r\n  Count Type                                Subtype                      Source         Source\r\n------- ----------------------------------- ---------------------------- -------------- ----------------------------------------\r\n      1 Money Market                                                     N/A            N/A\r\n-------\r\n      1 Total instrument charged.\r\n      0 Instruments with no reported data.\r\n=======\r\n      1 Instrument in the input list.\r\nNo TRPS complex usage to report -- 1 Instrument in the input list had no reported data.\r\nWriting RIC maintenance report.\r\n",
+    "Identifier,IdentType,Source,RIC,RecordDate,MaintType,OldValue,NewValue,Factor,FactorType\r\n"
+  ]
+}

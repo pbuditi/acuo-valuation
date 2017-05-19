@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.datascope.service.scheduled;
+package com.acuo.valuation.providers.datascope.service.intraday;
 
 import com.acuo.common.http.client.Call;
 import com.acuo.common.http.client.CallBuilder;
@@ -9,14 +9,13 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class DataScopeScheduleCall extends CallBuilder<DataScopeScheduleCall> {
+public class IntradayCall extends CallBuilder<IntradayCall> {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private final ClientEndPoint<DataScopeEndPointConfig> client;
     private final Request.Builder builder;
 
-    private DataScopeScheduleCall(ClientEndPoint<DataScopeEndPointConfig> client)
-    {
+    private IntradayCall(ClientEndPoint<DataScopeEndPointConfig> client) {
         this.client = client;
         DataScopeEndPointConfig config = client.config();
         HttpUrl scheduleUrl = new HttpUrl.Builder()
@@ -25,18 +24,18 @@ public class DataScopeScheduleCall extends CallBuilder<DataScopeScheduleCall> {
                 .port(config.getPort())
                 .addPathSegments(config.getSchedulepath())
                 .build();
-        builder = new Request.Builder()
+        this.builder = new Request.Builder()
                 .header("Prefer", "respond-async")
                 .header("Content-Type", "application/json")
                 .url(scheduleUrl);
-
     }
 
-    public static DataScopeScheduleCall of(ClientEndPoint<DataScopeEndPointConfig> client) {
-        return new DataScopeScheduleCall(client);
+    public static IntradayCall of(ClientEndPoint<DataScopeEndPointConfig> client) {
+        return new IntradayCall(client);
     }
 
-    public DataScopeScheduleCall with(String key, String value) {
+    @Override
+    public IntradayCall with(String key, String value) {
         if(key.equalsIgnoreCase("token"))
         {
             builder.header("Authorization", "Token " + value);
@@ -50,6 +49,7 @@ public class DataScopeScheduleCall extends CallBuilder<DataScopeScheduleCall> {
         return this;
     }
 
+    @Override
     public Call create() {
         Request request = builder.build();
         return client.call(request, predicate);

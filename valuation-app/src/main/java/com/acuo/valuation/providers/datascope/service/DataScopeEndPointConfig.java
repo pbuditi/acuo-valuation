@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.datascope.service;
 
 import com.acuo.common.http.client.EndPointConfig;
 import lombok.Data;
+import okhttp3.HttpUrl;
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
 import javax.inject.Inject;
@@ -33,6 +34,43 @@ public class DataScopeEndPointConfig implements EndPointConfig {
     private final String listIdBond;
     private final String reportTemplateIdBond;
 
+    public DataScopeEndPointConfig(HttpUrl httpUrl,
+                                   String authpath,
+                                   String schedulepath,
+                                   String username,
+                                   String password,
+                                   int connectionTimeOut,
+                                   String useProxy,
+                                   String listIdFX,
+                                   String reportTemplateIdFX,
+                                   String statuspath,
+                                   String reportpath,
+                                   String downloadpath,
+                                   String listIdBond,
+                                   String reportTemplateIdBond,
+                                   String retryDelayInSeconds,
+                                   PBEStringEncryptor encryptor) {
+        this(
+                httpUrl.scheme(),
+                httpUrl.host(),
+                httpUrl.port(),
+                authpath,
+                schedulepath,
+                username,
+                password,
+                connectionTimeOut,
+                useProxy,
+                listIdFX,
+                reportTemplateIdFX,
+                statuspath,
+                reportpath,
+                downloadpath,
+                listIdBond,
+                reportTemplateIdBond,
+                retryDelayInSeconds,
+                encryptor);
+    }
+
     @Inject
     public DataScopeEndPointConfig(@Named(ACUO_DATASCOPE_SCHEME) String scheme,
                                    @Named(ACUO_DATASCOPE_HOST) String host,
@@ -51,8 +89,7 @@ public class DataScopeEndPointConfig implements EndPointConfig {
                                    @Named(ACUO_DATASCOPE_LIST_ID_BOND) String listIdBond,
                                    @Named(ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND) String reportTemplateIdBond,
                                    @Named(ACUO_DATASCOPE_RETRY_DELAY) String retryDelayInSeconds,
-                                   PBEStringEncryptor encryptor)
-    {
+                                   PBEStringEncryptor encryptor) {
         this.scheme = scheme;
         this.host = host;
         this.port = port;

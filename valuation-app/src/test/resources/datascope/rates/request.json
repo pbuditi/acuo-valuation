@@ -1,0 +1,17 @@
+{
+  "ExtractionRequest" : {
+    "@odata.type" : "#ThomsonReuters.Dss.Api.Extractions.ExtractionRequests.IntradayPricingExtractionRequest",
+    "ContentFieldNames" : [ "RIC", "Mid Price", "Last Update Time" ],
+    "IdentifierList" : {
+      "@odata.type" : "#ThomsonReuters.Dss.Api.Extractions.ExtractionRequests.InstrumentIdentifierList",
+      "InstrumentIdentifiers" : {
+        "Identifier" : "USDEUR=R",
+        "IdentifierType" : "Ric"
+      },
+      "UseUserPreferencesForValidationOptions" : false
+    },
+    "Condition" : {
+      "ScalableCurrency" : true
+    }
+  }
+}

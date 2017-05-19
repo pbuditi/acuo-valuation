@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Java6Assertions.offset;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class DatascopePersistServiceTest {
+public class DataScopePersistServiceTest {
 
     @Inject
     DataScopePersistService dataScopePersistService;

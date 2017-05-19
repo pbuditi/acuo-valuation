@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.datascope.service;
+package com.acuo.valuation.providers.datascope.service.scheduled;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
@@ -9,7 +9,6 @@ import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
-import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeExtractionService;
 import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -27,7 +26,7 @@ import javax.inject.Inject;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class DataScopeExtractionServiceTest {
+public class DataScopeScheduleServiceTest {
 
     @Inject
     private DataScopeAuthService dataScopeAuthService;
@@ -35,14 +34,13 @@ public class DataScopeExtractionServiceTest {
     @Inject
     private DataScopeScheduleService dataScopeScheduleService;
 
-    @Inject
-    private DataScopeExtractionService dataScopeExtractionService;
-
     @Test
-    public void testGetExtractionFieldId()
+    public void testSheduleExtraction()
     {
 //        String token = dataScopeAuthService.getToken();
-//        String scheduleId = dataScopeScheduleService.scheduleFXRateExtraction(token);
-//        dataScopeExtractionService.getExtractionFileId(token, scheduleId);
+//        dataScopeScheduleService.setToken(token);
+//        String scheduleId = dataScopeScheduleService.scheduleFXRateExtraction();
+//        Assert.assertNotNull(scheduleId);
     }
+
 }
