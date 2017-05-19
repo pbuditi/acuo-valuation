@@ -11,6 +11,7 @@ import com.acuo.valuation.utils.SwapTradeBuilder;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,7 @@ public abstract class ClarusPricingProcessor extends AbstractTradePricingProcess
 
     private <T extends Trade> Collection<MarginCall> internal(Iterable<T> trades) {
         if (Iterables.isEmpty(trades))
-            return Collections.emptyList();
+            return new ArrayList();
         final List<SwapTrade> swapTrades = StreamSupport.stream(trades.spliterator(), false)
                 .filter(predicate)
                 .filter(trade -> trade instanceof IRS)
@@ -57,7 +58,7 @@ public abstract class ClarusPricingProcessor extends AbstractTradePricingProcess
                 .map(SwapTradeBuilder::buildTrade)
                 .collect(toList());
         if (Iterables.isEmpty(swapTrades))
-            return Collections.emptyList();
+            return new ArrayList();
         MarginResults results = send(swapTrades);
         return resultProcessor.process(results);
     }
