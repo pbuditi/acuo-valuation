@@ -29,6 +29,7 @@ public class DataScopeEndPointConfig implements EndPointConfig {
     private final String statuspath;
     private final String reportpath;
     private final String downloadpath;
+    private final String intradaypath;
     private final Long retryDelayInMilliseconds;
 
     private final String listIdBond;
@@ -46,6 +47,7 @@ public class DataScopeEndPointConfig implements EndPointConfig {
                                    String statuspath,
                                    String reportpath,
                                    String downloadpath,
+                                   String intradaypath,
                                    String listIdBond,
                                    String reportTemplateIdBond,
                                    String retryDelayInSeconds,
@@ -65,6 +67,7 @@ public class DataScopeEndPointConfig implements EndPointConfig {
                 statuspath,
                 reportpath,
                 downloadpath,
+                intradaypath,
                 listIdBond,
                 reportTemplateIdBond,
                 retryDelayInSeconds,
@@ -86,6 +89,7 @@ public class DataScopeEndPointConfig implements EndPointConfig {
                                    @Named(ACUO_DATASCOPE_STATUSPATH) String statuspath,
                                    @Named(ACUO_DATASCOPE_REPORTPATH) String reportpath,
                                    @Named(ACUO_DATASCOPE_DOWNLOADPATH) String downloadpath,
+                                   @Named(ACUO_DATASCOPE_INTRADAYPATH) String intradaypath,
                                    @Named(ACUO_DATASCOPE_LIST_ID_BOND) String listIdBond,
                                    @Named(ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND) String reportTemplateIdBond,
                                    @Named(ACUO_DATASCOPE_RETRY_DELAY) String retryDelayInSeconds,
@@ -105,6 +109,7 @@ public class DataScopeEndPointConfig implements EndPointConfig {
         this.statuspath = statuspath;
         this.reportpath = reportpath;
         this.downloadpath = downloadpath;
+        this.intradaypath = intradaypath;
         this.listIdBond = listIdBond;
         this.reportTemplateIdBond = reportTemplateIdBond;
         this.retryDelayInMilliseconds = TimeUnit.SECONDS.toMillis(Long.parseLong(retryDelayInSeconds));

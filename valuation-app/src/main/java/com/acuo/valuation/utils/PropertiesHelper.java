@@ -58,6 +58,7 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_DATASCOPE_STATUSPATH = "acuo.datascope.statuspath";
     public static final String ACUO_DATASCOPE_REPORTPATH = "acuo.datascope.reportpath";
     public static final String ACUO_DATASCOPE_DOWNLOADPATH = "acuo.datascope.downloadpath";
+    public static final String ACUO_DATASCOPE_INTRADAYPATH = "acuo.datascope.intradaypath";
     public static final String ACUO_DATASCOPE_LIST_ID_BOND = "acuo.datascope.list.id.bond";
     public static final String ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND = "acuo.datascope.report.template.id.bond";
     public static final String ACUO_DATASCOPE_RETRY_DELAY = "acuo.datascope.retry.delay";

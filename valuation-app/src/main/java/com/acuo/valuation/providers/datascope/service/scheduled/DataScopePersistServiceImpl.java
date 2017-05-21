@@ -34,19 +34,30 @@ public class DataScopePersistServiceImpl implements DataScopePersistService {
                 FxRate fxRate = fxRateParser.getRate();
                 LocalDateTime lastUpdate = fxRateParser.getLastUpdate();
 
-                final Currency base = fxRate.getPair().getBase();
-                final Currency counter = fxRate.getPair().getCounter();
-                FXRate fxRateRelation = fxRateService.getOrCreate(base, counter);
-                // workaround reuters wrong rate for JPYUSD=R
-                if (CurrencyPair.of(Currency.USD, Currency.JPY).equals(fxRate.getPair()))
-                    fxRateRelation.setValue(fxRate.fxRate(fxRate.getPair()) / 100);
-                else
-                    fxRateRelation.setValue(fxRate.fxRate(fxRate.getPair()));
-                fxRateRelation.setLastUpdate(lastUpdate);
-
-                fxRateService.createOrUpdate(fxRateRelation);
+                saveFxRate(fxRate, lastUpdate);
             }
         }
+    }
+
+    private void saveFxRate(FxRate fxRate, LocalDateTime lastUpdate) {
+        final Currency base = fxRate.getPair().getBase();
+        final Currency counter = fxRate.getPair().getCounter();
+        FXRate fxRateRelation = fxRateService.getOrCreate(base, counter);
+        // workaround reuters wrong rate for JPYUSD=R
+        if (CurrencyPair.of(Currency.USD, Currency.JPY).equals(fxRate.getPair()))
+            fxRateRelation.setValue(fxRate.fxRate(fxRate.getPair()) / 100);
+        else
+            fxRateRelation.setValue(fxRate.fxRate(fxRate.getPair()));
+        fxRateRelation.setLastUpdate(lastUpdate);
+
+        fxRateService.createOrUpdate(fxRateRelation);
+    }
+
+    public void persist(List<FxRate> fxRates) {
+        fxRates.stream()
+                .forEach(fxRate -> {
+                    saveFxRate(fxRate, null);
+                });
     }
 
     public void persistBond(List<String> csvLine) {

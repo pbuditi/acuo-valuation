@@ -6,11 +6,13 @@ import com.acuo.common.http.client.OkHttpClient;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
+import com.acuo.persist.entity.FXRate;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
+import com.acuo.persist.services.FXRateService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -18,6 +20,7 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.FxRate;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -33,6 +36,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(GuiceJUnitRunner.class)
@@ -56,6 +60,9 @@ public class DataScopeIntradayServiceImplTest {
 
     @Mock
     DataScopeAuthService dataScopeAuthService;
+
+    @Mock
+    FXRateService fxRateService;
 
     @Inject
     ObjectMapper objectMapper;
@@ -84,12 +91,13 @@ public class DataScopeIntradayServiceImplTest {
                 "",
                 "",
                 "",
+                "",
                 "10",
                 null);
 
         ClientEndPoint<DataScopeEndPointConfig> clientEndPoint = new OkHttpClient<>(httpClient, config);
 
-        intradayService = new DataScopeIntradayServiceImpl(dataScopeAuthService, clientEndPoint, objectMapper);
+        intradayService = new DataScopeIntradayServiceImpl(fxRateService, dataScopeAuthService, clientEndPoint, objectMapper);
     }
 
     @Test
@@ -97,9 +105,9 @@ public class DataScopeIntradayServiceImplTest {
         server.enqueue(new MockResponse().setBody(response.getContent()));
 
         when(dataScopeAuthService.getToken()).thenReturn("token");
+        when(fxRateService.getOrCreate(any(Currency.class),any(Currency.class))).thenReturn(new FXRate());
 
-        List<FxRate> rates = intradayService.rates();
-        assertThat(rates).isNotEmpty();
+        intradayService.rates();
 
         RecordedRequest r = server.takeRequest();
         String body = r.getBody().readUtf8();

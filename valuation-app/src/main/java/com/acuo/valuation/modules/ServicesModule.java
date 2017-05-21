@@ -24,6 +24,8 @@ import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginCalcService;
 import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthServiceImpl;
+import com.acuo.valuation.providers.datascope.service.intraday.DataScopeIntradayService;
+import com.acuo.valuation.providers.datascope.service.intraday.DataScopeIntradayServiceImpl;
 import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeExtractionService;
 import com.acuo.valuation.providers.datascope.service.scheduled.DataScopeExtractionServiceImpl;
 import com.acuo.valuation.providers.datascope.service.scheduled.DataScopePersistService;
@@ -93,6 +95,7 @@ public class ServicesModule extends AbstractModule {
         bind(DataScopeExtractionService.class).to(DataScopeExtractionServiceImpl.class);
         bind(DataScopeDownloadService.class).to(DataScopeDownloadServiceImpl.class);
         bind(DataScopePersistService.class).to(DataScopePersistServiceImpl.class);
+        bind(DataScopeIntradayService.class).to(DataScopeIntradayServiceImpl.class);
     }
 
     @Provides

@@ -1,42 +1,45 @@
 package com.acuo.valuation.providers.datascope.service.intraday;
 
 import com.acuo.common.http.client.ClientEndPoint;
+import com.acuo.persist.entity.FXRate;
+import com.acuo.persist.services.FXRateService;
 import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.currency.FxRate;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
 
+    private final FXRateService fxRateService;
     private final DataScopeAuthService dataScopeAuthService;
     private final ClientEndPoint<DataScopeEndPointConfig> clientEndPoint;
     private final ObjectMapper objectMapper;
 
     @Inject
-    public DataScopeIntradayServiceImpl(DataScopeAuthService dataScopeAuthService,
+    public DataScopeIntradayServiceImpl(FXRateService fxRateService,
+                                        DataScopeAuthService dataScopeAuthService,
                                         ClientEndPoint<DataScopeEndPointConfig> clientEndPoint,
                                         ObjectMapper objectMapper) {
+        this.fxRateService = fxRateService;
         this.dataScopeAuthService = dataScopeAuthService;
         this.clientEndPoint = clientEndPoint;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public List<FxRate> rates() {
+    public void rates() {
         String token = dataScopeAuthService.getToken();
 
         String response = IntradayCall.of(clientEndPoint)
@@ -45,11 +48,14 @@ public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
                 .create()
                 .send();
         ExtractionResponse extraction = response(response);
-        return extraction.getContents().stream()
-                .map(content -> new FxRateParser().parser(content))
-                .map(fxRateParser -> fxRateParser.getRate())
-                .filter(Objects::nonNull)
-                .collect(toList());
+        List<ExtractionResponse.Content> contents = extraction.getContents();
+        if (contents != null) {
+            log.info("saving {} rates", contents.size());
+            contents.stream()
+                    .map(content -> new FxRateParser().parser(content))
+                    .filter(Objects::nonNull)
+                    .forEach(parser -> saveFxRate(parser.getRate(), parser.getLastUpdate()));
+        }
     }
 
     private String request() {
@@ -69,6 +75,20 @@ public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
             log.error(e.getMessage(), e);
             return null;
         }
+    }
+
+    private void saveFxRate(FxRate fxRate, LocalDateTime lastUpdate) {
+        final Currency base = fxRate.getPair().getBase();
+        final Currency counter = fxRate.getPair().getCounter();
+        FXRate fxRateRelation = fxRateService.getOrCreate(base, counter);
+        // workaround reuters wrong rate for JPYUSD=R
+        if (CurrencyPair.of(Currency.USD, Currency.JPY).equals(fxRate.getPair()))
+            fxRateRelation.setValue(fxRate.fxRate(fxRate.getPair()) / 100);
+        else
+            fxRateRelation.setValue(fxRate.fxRate(fxRate.getPair()));
+        fxRateRelation.setLastUpdate(lastUpdate);
+
+        fxRateService.createOrUpdate(fxRateRelation);
     }
 
     @Data
@@ -91,7 +111,7 @@ public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
                 return this;
             } catch (Exception e) {
                 log.error(e.getMessage());
-                return this;
+                return null;
             }
         }
     }

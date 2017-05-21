@@ -24,7 +24,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class FXValueJob implements Job {
+public class FXScheduledValueJob implements Job {
 
     private final DataScopeAuthService dataScopeAuthService;
     private final DataScopeScheduleService dataScopeScheduleService;
@@ -35,11 +35,11 @@ public class FXValueJob implements Job {
     private final static boolean staticFile = true;
 
     @Inject
-    public FXValueJob(DataScopeAuthService dataScopeAuthService,
-                      DataScopeScheduleService dataScopeScheduleService,
-                      DataScopeExtractionService dataScopeExtractionService,
-                      DataScopeDownloadService dataScopeDownloadService,
-                      DataScopePersistService dataScopePersistService) {
+    public FXScheduledValueJob(DataScopeAuthService dataScopeAuthService,
+                               DataScopeScheduleService dataScopeScheduleService,
+                               DataScopeExtractionService dataScopeExtractionService,
+                               DataScopeDownloadService dataScopeDownloadService,
+                               DataScopePersistService dataScopePersistService) {
         this.dataScopeAuthService = dataScopeAuthService;
         this.dataScopeScheduleService = dataScopeScheduleService;
         this.dataScopeDownloadService = dataScopeDownloadService;
@@ -49,7 +49,7 @@ public class FXValueJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        log.info("starting fx rate job");
+        log.info("starting fx rate scheduled job");
         try {
             List<String> files = (staticFile) ? staticFiles() : remoteFiles();
             List<String> lines = files.stream()
@@ -92,6 +92,6 @@ public class FXValueJob implements Job {
     }
 
     private static String readFile(String filePath) throws IOException, URISyntaxException {
-        return IOUtils.toString(FXValueJob.class.getResourceAsStream(filePath), StandardCharsets.UTF_8);
+        return IOUtils.toString(FXScheduledValueJob.class.getResourceAsStream(filePath), StandardCharsets.UTF_8);
     }
 }
