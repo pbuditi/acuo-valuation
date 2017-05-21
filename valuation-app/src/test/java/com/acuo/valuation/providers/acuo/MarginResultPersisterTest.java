@@ -1,12 +1,16 @@
 package com.acuo.valuation.providers.acuo;
 
+import com.acuo.common.model.margin.Types;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.*;
+import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.ids.PortfolioId;
-import com.acuo.persist.modules.*;
-import com.acuo.persist.services.PortfolioService;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
@@ -17,7 +21,6 @@ import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.providers.acuo.results.MarginResultPersister;
 import com.opengamma.strata.collect.result.Result;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,9 +54,6 @@ public class MarginResultPersisterTest {
     ValuationService valuationService;
 
     @Inject
-    PortfolioService portfolioService;
-
-    @Inject
     ValueService valueService;
 
     MarginResultPersister persister;
@@ -70,7 +70,9 @@ public class MarginResultPersisterTest {
         LocalDate localDate = LocalDate.now();
         MarginResults marginResults = marginResults(localDate);
         persister.persist(marginResults);
-        com.acuo.persist.entity.MarginValuation valuation = valuationService.getMarginValuationFor(PortfolioId.fromString("p2"));
+        com.acuo.persist.entity.MarginValuation valuation = valuationService.getMarginValuationFor(
+                PortfolioId.fromString("p2"),
+                marginResults.getMarginType());
         assertThat(valuation).isNotNull();
         Set<MarginValue> values = valuation.getValues();
         assertThat(values).isNotNull().hasSize(1);
@@ -87,7 +89,9 @@ public class MarginResultPersisterTest {
         MarginResults marginResults = marginResults(localDate);
         persister.persist(marginResults);
         persister.persist(marginResults);
-        com.acuo.persist.entity.MarginValuation valuation = valuationService.getMarginValuationFor(PortfolioId.fromString("p2"));
+        com.acuo.persist.entity.MarginValuation valuation = valuationService.getMarginValuationFor(
+                PortfolioId.fromString("p2"),
+                marginResults.getMarginType());
         assertThat(valuation).isNotNull();
         Set<MarginValue> values = valuation.getValues();
         assertThat(values).isNotNull().hasSize(1);
@@ -99,12 +103,13 @@ public class MarginResultPersisterTest {
     }
 
     private MarginResults marginResults(LocalDate localDate) {
-        MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d, null, "p2");
+        MarginValuation marginValuation = new MarginValuation("USD", 1d, 1d, 1d, Types.CallType.Variation, "p2");
         Result<MarginValuation> result = Result.success(marginValuation);
         MarginResults marginResults = new MarginResults();
         marginResults.setResults(Collections.singletonList(result));
         marginResults.setValuationDate(localDate);
         marginResults.setCurrency("USD");
+        marginResults.setMarginType(Types.CallType.Variation);
         return marginResults;
     }
 }

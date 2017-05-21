@@ -1,5 +1,8 @@
 package com.acuo.valuation.providers.acuo.trades;
 
+import com.acuo.common.cache.manager.CacheManager;
+import com.acuo.common.cache.manager.Cacheable;
+import com.acuo.common.cache.manager.CachedObject;
 import com.acuo.common.type.TypedString;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
@@ -22,17 +25,25 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class TradeUploadServiceImpl implements TradeUploadService {
 
-    private static final Object lock = new Object();
+    private final ReentrantLock lock = new ReentrantLock();
+
+    private final CacheManager cacheManager;
+
     private final SwapExcelParser parser = new SwapExcelParser();
     private final TradingAccountService accountService;
     private final PortfolioService portfolioService;
     private final TradeService<Trade> tradeService;
+
+    private final int expireTime = 1;
+    private final TimeUnit expireUnit = TimeUnit.MINUTES;
 
     @Inject
     public TradeUploadServiceImpl(TradingAccountService accountService,
@@ -41,6 +52,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         this.accountService = accountService;
         this.portfolioService = portfolioService;
         this.tradeService = tradeService;
+        this.cacheManager = new CacheManager();
     }
 
     public List<String> uploadTradesFromExcel(InputStream fis) {
@@ -82,8 +94,11 @@ public class TradeUploadServiceImpl implements TradeUploadService {
             log.error(e.getMessage(), e);
         }
 
-        synchronized(lock){
+        lock.lock();
+        try {
             tradeService.createOrUpdate(tradeIdList);
+        } finally {
+            lock.unlock();
         }
 
         return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
@@ -93,7 +108,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         if(log.isDebugEnabled()) {
             log.debug("linking to portfolioId: {}", portfolioId);
         }
-        Portfolio portfolio = portfolioService.find(PortfolioId.fromString(portfolioId));
+        Portfolio portfolio = portfolio(PortfolioId.fromString(portfolioId));
         trade.setPortfolio(portfolio);
     }
 
@@ -101,8 +116,44 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         if(log.isDebugEnabled()) {
             log.debug("linking to accountId: {}", accountId);
         }
-        TradingAccount account = accountService.find(accountId);
+        TradingAccount account = account(accountId);
         trade.setAccount(account);
+    }
+
+    private Portfolio portfolio(PortfolioId portfolioId) {
+        Cacheable value = cacheManager.getCache(portfolioId);
+        if (value == null) {
+            lock.lock();
+            try {
+                Portfolio portfolio = portfolioService.find(portfolioId);
+                value = new CachedObject(portfolio, portfolioId, expireTime, expireUnit);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                value = new CachedObject(null, portfolioId, expireTime, expireUnit);
+            } finally {
+                lock.unlock();
+            }
+            cacheManager.putCache(value);
+        }
+        return (Portfolio) value.getObject();
+    }
+
+    private TradingAccount account(String accountId) {
+        Cacheable value = cacheManager.getCache(accountId);
+        if (value == null) {
+            lock.lock();
+            try {
+                TradingAccount account = accountService.find(accountId);
+                value = new CachedObject(account, accountId, expireTime, expireUnit);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                value = new CachedObject(null, accountId, expireTime, expireUnit);
+            } finally {
+                lock.unlock();
+            }
+            cacheManager.putCache(value);
+        }
+        return (TradingAccount) value.getObject();
     }
 
     private Trade handleIRSRow(Row row) {

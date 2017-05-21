@@ -4,7 +4,6 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.Asset;
-import com.acuo.persist.entity.CurrencyEntity;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
@@ -15,6 +14,7 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,6 +25,10 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.offset;
 
 @Slf4j
 @RunWith(GuiceJUnitRunner.class)
@@ -62,12 +66,20 @@ public class DatascopePersistServiceTest {
     {
         List<String> lines = new ArrayList<>();
         lines.add("BHDUSD=R,2.65252,04/17/2017 20:52:03");
+        lines.add("JPYUSD=R,0.88,04/17/2017 20:52:03");
         lines.add("BMDUSD=R,,04/17/2017 21:02:00");
         dataScopePersistService.persistFxRate(lines);
 
-        CurrencyEntity currencyEntity = currencyService.find("BHD");
-        log.info("fx:" + currencyEntity.getFxRateRelation().getFxRate());
+        final Double bhd = currencyService.getFXValue(Currency.of("BHD"));
+        assertThat(bhd).isNotNull().isEqualTo(2.65252, offset(0.00000001));
 
+        final Double jpy = currencyService.getFXValue(Currency.of("JPY"));
+        assertThat(jpy).isNotNull().isEqualTo(0.0088, offset(0.00000001));
+
+        final Map<Currency, Double> allFX = currencyService.getAllFX();
+        assertThat(allFX).isNotNull().isNotEmpty();
+        assertThat(allFX.keySet()).hasSize(161);
+        assertThat(allFX.entrySet()).hasSize(161);
     }
 
     @Test

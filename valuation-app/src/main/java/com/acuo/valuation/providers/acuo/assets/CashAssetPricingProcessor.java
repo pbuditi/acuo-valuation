@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
@@ -70,7 +71,7 @@ public class CashAssetPricingProcessor extends AbstractAssetPricingProcessor {
         assetValue.setUnitValue(division);
         assetValue.setPriceQuotationType("FX");
         assetValue.setReportCurrency(Currency.USD);
-        assetValue.setValuationDateTime(LocalDate.now());
+        assetValue.setValuationDateTime(LocalDateTime.now());
         assetValue.setYield(0.0d);
         return assetValue;
     }

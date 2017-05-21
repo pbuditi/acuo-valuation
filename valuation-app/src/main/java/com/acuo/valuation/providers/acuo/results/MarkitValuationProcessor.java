@@ -1,6 +1,6 @@
 package com.acuo.valuation.providers.acuo.results;
 
-import com.acuo.persist.entity.VariationMargin;
+import com.acuo.persist.entity.MarginCall;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +19,7 @@ public class MarkitValuationProcessor {
         this.firstProcessor = firstProcessor;
     }
 
-    public List<VariationMargin> process(MarkitResults results) {
+    public List<MarginCall> process(MarkitResults results) {
         log.info("starting pricing result processing");
         ProcessorItem<MarkitResults> processorItem = firstProcessor.process(new ProcessorItem(results));
         log.info("pricing result processing ended");

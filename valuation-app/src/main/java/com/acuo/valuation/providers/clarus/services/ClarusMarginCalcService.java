@@ -74,17 +74,18 @@ public class ClarusMarginCalcService implements MarginCalcService {
         List<?> list = transformer.deserialiseToList(response);
         List<Result<MarginValuation>> results = list.stream()
                 .map(map -> (com.acuo.common.model.results.MarginValuation)map)
+                .filter(map -> map.getPortfolioId() != null)
                 .map(map -> new MarginValuation(map.getName(),
                         map.getAccount(),
                         map.getChange(),
                         map.getMargin(),
-                        null,
+                        callType.getCallType(),
                         map.getPortfolioId()))
                 .map(Result::success)
                 .collect(Collectors.toList());
 
         MarginResults marginResults = new MarginResults();
-        marginResults.setMarginType(callType.name());
+        marginResults.setMarginType(callType.getCallType());
         marginResults.setResults(results);
         marginResults.setValuationDate(LocalDateUtils.minus(LocalDate.now(), 1));
         marginResults.setCurrency("USD");

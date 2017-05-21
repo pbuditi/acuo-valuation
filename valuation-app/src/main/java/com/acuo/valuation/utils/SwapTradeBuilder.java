@@ -15,21 +15,15 @@ import com.acuo.persist.entity.Leg;
 import com.acuo.persist.entity.Trade;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.opengamma.strata.basics.date.*;
-import com.opengamma.strata.basics.index.FloatingRateName;
-import com.opengamma.strata.basics.schedule.Frequency;
+import com.opengamma.strata.basics.date.HolidayCalendarId;
+import com.opengamma.strata.basics.date.HolidayCalendars;
+import com.opengamma.strata.basics.date.ImmutableHolidayCalendar;
+import com.opengamma.strata.basics.date.Tenor;
 import com.opengamma.strata.basics.schedule.RollConvention;
 import com.opengamma.strata.product.common.PayReceive;
 import com.opengamma.strata.product.swap.FixingRelativeTo;
 import lombok.extern.slf4j.Slf4j;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 
 import static java.time.DayOfWeek.SATURDAY;
@@ -38,7 +32,7 @@ import static java.time.DayOfWeek.SUNDAY;
 @Slf4j
 public class SwapTradeBuilder {
 
-    static CacheManager cacheManager = CacheManager.getInstance();
+    private static CacheManager cacheManager = new CacheManager();
 
     public static SwapTrade buildTrade(IRS trade) {
         SwapTrade swapTrade = new SwapTrade();
@@ -74,7 +68,7 @@ public class SwapTradeBuilder {
         return swapTrade;
     }
 
-    public static TradeInfo buildTradeInfo(Trade trade) {
+    private static TradeInfo buildTradeInfo(Trade trade) {
         TradeInfo tradeInfo = new TradeInfo();
         tradeInfo.setTradeId(trade.getTradeId().toString());
         tradeInfo.setClearedTradeDate(trade.getClearingDate());
@@ -83,7 +77,7 @@ public class SwapTradeBuilder {
         return tradeInfo;
     }
 
-    public static Swap.SwapLeg buildLeg(int id, Leg leg) {
+    private static Swap.SwapLeg buildLeg(int id, Leg leg) {
         Swap.SwapLeg result = new Swap.SwapLeg();
 
         result.setId(id);
@@ -134,7 +128,7 @@ public class SwapTradeBuilder {
         String refCalendar = leg.getRefCalendar();
         Cacheable value = cacheManager.getCache(refCalendar);
         if (value == null) {
-            HolidayCalendarId holidays = HolidayCalendars.NO_HOLIDAYS.getId();
+            HolidayCalendarId holidays;
             try {
                 holidays = HolidayCalendars.of(refCalendar).getId();
             } catch (Exception e) {
@@ -145,99 +139,5 @@ public class SwapTradeBuilder {
             cacheManager.putCache(value);
         }
         return (HolidayCalendarId)value.getObject();
-    }
-
-    public static Swap.SwapLeg buildLeg(Map<String, Object> entry) {
-        Swap.SwapLeg leg = new Swap.SwapLeg();
-
-        if (entry.get("notional") != null)
-            leg.setNotional((Double) entry.get("notional"));
-
-        if (entry.get("fixedRate") != null)
-            leg.setRate((Double) entry.get("fixedRate"));
-
-        if (entry.get("type") != null)
-            leg.setType((String) entry.get("type"));
-
-
-        if (entry.get("payStart") != null) {
-            AdjustableDate adjustableDate = new AdjustableDate();
-            adjustableDate.setDate(StringToLocalDate((String) entry.get("payStart")));
-            leg.setStartDate(adjustableDate);
-        }
-
-        if (entry.get("payEnd") != null) {
-            AdjustableDate adjustableDate = new AdjustableDate();
-            adjustableDate.setDate(StringToLocalDate((String) entry.get("payEnd")));
-            leg.setMaturityDate(adjustableDate);
-        }
-
-        try {
-            if (entry.get("paymentFrequency") != null) {
-                AdjustableSchedule adjustableSchedule = new AdjustableSchedule();
-                adjustableSchedule.setFrequency(parseFrequency((String) entry.get("paymentFrequency")));
-                leg.setPaymentSchedule(adjustableSchedule);
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
-        Swap.SwapLegFixing swapLegFixing = new Swap.SwapLegFixing();
-        leg.setFixing(swapLegFixing);
-
-        if (entry.get("indexTenor") != null)
-            swapLegFixing.setTenor(Tenor.parse((String) entry.get("indexTenor")));
-
-        if (entry.get("index") != null)
-            swapLegFixing.setFloatingRateName(FloatingRateName.of((String) entry.get("index")));
-
-        return leg;
-    }
-
-    public static LocalDate StringToLocalDate(String s) {
-        Cacheable value = cacheManager.getCache(s);
-        if (value != null) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yy");
-                Date date = sdf.parse(s);
-                Instant instant = date.toInstant();
-                ZoneId zone = ZoneId.systemDefault();
-                LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
-                value = new CachedObject(localDateTime.toLocalDate(), s, 0);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                value = new CachedObject(null, s, 0);
-            }
-        }
-        return (LocalDate)value.getObject();
-    }
-
-    public static Frequency parseFrequency(String s) {
-
-        if (s == null)
-            return null;
-
-        Cacheable value = cacheManager.getCache(s);
-        if (value != null) {
-            Frequency frequency = null;
-            if (s.contains("M")) {
-                frequency = Frequency.ofMonths(Integer.parseInt(s.substring(0, s.length() - 1)));
-            }
-
-            if (s.contains("T")) {
-                frequency = Frequency.ofYears(Integer.parseInt(s.substring(0, s.length() - 1)));
-            }
-
-            if (s.contains("W")) {
-                frequency = Frequency.ofWeeks(Integer.parseInt(s.substring(0, s.length() - 1)));
-            }
-
-            if (s.contains("D")) {
-                frequency = Frequency.ofDays(Integer.parseInt(s.substring(0, s.length() - 1)));
-            }
-
-            value = new CachedObject(frequency, s, 0);
-        }
-        return (Frequency)value.getObject();
     }
 }

@@ -22,7 +22,8 @@
 	</appender>
 	
 	<logger name="com.acuo" level="info"/>
-	<logger name="com.acuo.valuation.providers.clarus.services" level="debug"/>
+	<logger name="com.acuo.valuation.providers.clarus.services" level="error"/>
+	<logger name="com.acuo.persist.services.TradeServiceImpl" level="debug"/>
 
 	<logger name="org.neo4j.ogm.drivers.bolt.request" level="error"/>
 	<logger name="org.neo4j.ogm.drivers.bolt.response" level="error"/>

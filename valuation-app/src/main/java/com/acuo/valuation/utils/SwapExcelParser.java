@@ -28,9 +28,8 @@ import java.util.Set;
 @Slf4j
 public class SwapExcelParser {
 
-    public static String TRADE_TYPE_CLEARD = "Cleared";
-
-    public static String TRADE_TYPE_BILATERAL = "Bilateral";
+    private static String TRADE_TYPE_CLEARD = "Cleared";
+    private static String TRADE_TYPE_BILATERAL = "Bilateral";
 
     public IRS buildIRS(Row row) {
         try {
@@ -52,10 +51,12 @@ public class SwapExcelParser {
             String leg2Relationship = row.getCell(42).getStringCellValue();
 
             Leg leg1 = buildLeg(row, 15);
+            leg1.setLegId(irs.getTradeId() + "-1");
             Leg leg2 = buildLeg(row, 28);
+            leg2.setLegId(irs.getTradeId() + "-2");
 
-            Set<Leg> payLegs = new HashSet<Leg>();
-            Set<Leg> receiveLegs = new HashSet<Leg>();
+            Set<Leg> payLegs = new HashSet<>();
+            Set<Leg> receiveLegs = new HashSet<>();
 
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
@@ -80,7 +81,7 @@ public class SwapExcelParser {
 
     private Leg buildLeg(Row row, int startIndex) {
         Leg leg = new Leg();
-        leg.setLegId(row.getCell(3).getStringCellValue() + "-" + startIndex);
+
         leg.setType(getStringValue(row.getCell(startIndex)));
         leg.setCurrency(Currency.parse(getStringValue(row.getCell(startIndex + 1))));
         leg.setPaymentFrequency(Frequency.parse(getStringValue(row.getCell(startIndex + 2))));
@@ -135,11 +136,12 @@ public class SwapExcelParser {
             fra.setPricingSource(pricingSource);
 
             Leg leg1 = buildFraLeg(row, 16);
+            leg1.setLegId(fra.getTradeId()+"-1");
 
             String leg1Relationship = row.getCell(9).getStringCellValue();
 
-            Set<Leg> payLegs = new HashSet<Leg>();
-            Set<Leg> receiveLegs = new HashSet<Leg>();
+            Set<Leg> payLegs = new HashSet<>();
+            Set<Leg> receiveLegs = new HashSet<>();
 
             fra.setPayLegs(payLegs);
             fra.setReceiveLegs(receiveLegs);
@@ -197,14 +199,16 @@ public class SwapExcelParser {
             log.debug("irs trade id {}",irs.getTradeId());
 
             Leg leg1 = buildOISLeg(row, 15);
+            leg1.setLegId(irs.getTradeId()+"-1");
             Leg leg2 = buildOISLeg(row, 28);
+            leg2.setLegId(irs.getTradeId()+"-2");
 
             String leg1Relationship = row.getCell(41).getStringCellValue();
             String leg2Relationship = row.getCell(42).getStringCellValue();
 
 
-            Set<Leg> payLegs = new HashSet<Leg>();
-            Set<Leg> receiveLegs = new HashSet<Leg>();
+            Set<Leg> payLegs = new HashSet<>();
+            Set<Leg> receiveLegs = new HashSet<>();
 
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
@@ -271,14 +275,16 @@ public class SwapExcelParser {
             log.debug("loading irs Bilateral id {} ", irs.getTradeId());
 
             Leg leg1 = buildLeg(row, 11);
+            leg1.setLegId(irs.getTradeId() + "-1");
             Leg leg2 = buildLeg(row, 24);
+            leg2.setLegId(irs.getTradeId() + "-2");
 
             String leg1Relationship = row.getCell(37).getStringCellValue();
             String leg2Relationship = row.getCell(38).getStringCellValue();
 
 
-            Set<Leg> payLegs = new HashSet<Leg>();
-            Set<Leg> receiveLegs = new HashSet<Leg>();
+            Set<Leg> payLegs = new HashSet<>();
+            Set<Leg> receiveLegs = new HashSet<>();
 
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
@@ -303,9 +309,5 @@ public class SwapExcelParser {
 
     private static LocalDate dateToLocalDate(Date date) {
         return date != null ? date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
-    }
-
-    private static int sign(String direction) {
-        return "R".equals(direction) ? 1 : -1;
     }
 }

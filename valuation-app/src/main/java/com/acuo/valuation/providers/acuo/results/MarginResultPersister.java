@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.acuo.results;
 
+import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.ValuationService;
@@ -58,8 +59,11 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
         List<MarginValue> values = results.getResults()
                 .stream()
                 .map(Result::getValue)
+                .filter(marginValuation -> marginValuation.getPortfolioId() != null)
                 .map(marginValuation -> convert(valuationDate, currency, marginValuation))
                 .collect(toList());
+        if(values.isEmpty())
+            return Collections.emptySet();
         valueService.save(values);
         return values.stream()
                 .map(value -> value.getValuation().getPortfolio().getPortfolioId())
@@ -68,7 +72,8 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
 
     private MarginValue convert(LocalDate valuationDate, String currency, MarginValuation marginValuation) {
         String portfolioId = marginValuation.getPortfolioId();
-        com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(PortfolioId.fromString(portfolioId));
+        final Types.CallType callType = marginValuation.getMarginType();
+        com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(PortfolioId.fromString(portfolioId), callType);
 
         Set<MarginValue> values = valuation.getValues();
         if(values != null) {
@@ -78,7 +83,7 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
             values.removeAll(toRemove);
         }
 
-        MarginValue newValue = createValue(valuationDate, currency, marginValuation.getMargin(), "Clarus");
+        MarginValue newValue = createValue(valuationDate, currency, marginValuation.getAccount(), "Clarus");
         newValue.setValuation(valuation);
 
         return newValue;

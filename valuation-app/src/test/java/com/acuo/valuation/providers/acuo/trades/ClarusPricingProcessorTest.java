@@ -5,8 +5,8 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
@@ -57,7 +57,10 @@ public class ClarusPricingProcessorTest {
     TradeUploadService tradeUploadService;
 
     @Inject
-    ClarusPricingProcessor pricingProcessor;
+    ClarusVMProcessorImpl vmProcessor;
+
+    @Inject
+    ClarusIMProcessorImpl imProcessor;
 
     @Inject
     TradeService<Trade> tradeService;
@@ -86,8 +89,12 @@ public class ClarusPricingProcessorTest {
     @Test
     public void testProcessor() throws IOException {
         server.enqueue(new MockResponse().setBody(response.getContent()));
+        server.enqueue(new MockResponse().setBody(response.getContent()));
 
-        Collection<VariationMargin> margins = pricingProcessor.process(swaps);
+        Collection<MarginCall> margins = vmProcessor.process(swaps);
+        assertThat(margins).isNotNull().hasSize(1);
+
+        margins = imProcessor.process(swaps);
         assertThat(margins).isNotNull().hasSize(1);
     }
 

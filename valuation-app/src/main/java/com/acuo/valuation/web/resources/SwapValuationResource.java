@@ -2,8 +2,8 @@ package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
@@ -83,7 +83,7 @@ public class SwapValuationResource {
         List<Trade> swaps = ImmutableList.of(id).stream()
                 .map(tradeId -> (IRS) tradeService.find(TradeId.fromString(tradeId)))
                 .collect(toList());
-        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(swaps);
+        Collection<MarginCall> marginCalls = tradePricingProcessor.process(swaps);
         return MarginCallResponse.of(marginCalls);
     }
 
@@ -96,7 +96,7 @@ public class SwapValuationResource {
         List<Trade> swaps = ImmutableList.of(portfolioId).stream()
                 .map(tradeId -> (IRS) tradeService.findByPortfolioId(portfolioId))
                 .collect(toList());
-        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(swaps);
+        Collection<MarginCall> marginCalls = tradePricingProcessor.process(swaps);
         return MarginCallResponse.of(marginCalls);
     }
 
@@ -116,7 +116,7 @@ public class SwapValuationResource {
     public MarginCallResponse priceallBilateralIRS() throws Exception {
         log.info("Pricing all bilateral trades");
         Iterable<IRS> allIRS = tradeService.findAllIRS();
-        Collection<VariationMargin> marginCalls = tradePricingProcessor.process(allIRS);
+        Collection<MarginCall> marginCalls = tradePricingProcessor.process(allIRS);
         return MarginCallResponse.of(marginCalls);
     }
 }

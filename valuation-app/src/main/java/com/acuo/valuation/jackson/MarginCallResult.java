@@ -5,7 +5,7 @@ import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.ClientSignsRelation;
 import com.acuo.persist.entity.CounterpartSignsRelation;
 import com.acuo.persist.entity.LegalEntity;
-import com.acuo.persist.entity.VariationMargin;
+import com.acuo.persist.entity.MarginCall;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -58,7 +58,7 @@ public class MarginCallResult {
 
 
 
-    public static MarginCallResult of(VariationMargin marginCall) {
+    public static MarginCallResult of(MarginCall marginCall) {
         MarginCallResult marginCallResult = new MarginCallResult();
         Agreement agreement = marginCall.getMarginStatement().getAgreement();
         marginCallResult.marginagreement = agreement.getAgreementId();

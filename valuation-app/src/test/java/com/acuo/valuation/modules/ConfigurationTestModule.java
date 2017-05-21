@@ -22,7 +22,7 @@ public class ConfigurationTestModule extends AbstractModule {
 		Injector injector = Guice.createInjector(new AbstractModule() {
 			@Override
 			protected void configure() {
-				bind(Configuration.class).toInstance(Configuration.builder(AppId.of("valuation-app")).with(Environment.TEST).build());
+				bind(Configuration.class).toInstance(configuration);
 			}
 		});
 		install(injector.getInstance(ConfigurationModule.PropertiesModule.class));

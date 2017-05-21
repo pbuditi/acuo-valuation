@@ -28,6 +28,9 @@ public class MockServer implements Runnable {
                 if (request.getPath().contains("VM.json")) {
                     return new MockResponse().setResponseCode(200).setBody(removeLineBreaks(file("/clarus/response/clarus-vm.json")));
                 }
+                if (request.getPath().contains("IM.json")) {
+                    return new MockResponse().setResponseCode(200).setBody(removeLineBreaks(file("/clarus/response/clarus-im.json")));
+                }
                 if (body.contains("multipart/form-data")) {
                     return new MockResponse().setResponseCode(200).setBody("key");
                 }
