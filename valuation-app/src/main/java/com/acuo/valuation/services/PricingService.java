@@ -19,4 +19,6 @@ public interface PricingService {
 
     MarkitResults priceTradesOfType(String type);
 
+    MarkitResults priceSwapTradesByBulk(List<SwapTrade> swaps);
+
 }

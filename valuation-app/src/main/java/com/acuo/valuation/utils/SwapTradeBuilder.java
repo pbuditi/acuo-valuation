@@ -10,6 +10,7 @@ import com.acuo.common.model.product.Swap;
 import com.acuo.common.model.trade.ProductType;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.model.trade.TradeInfo;
+import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
 import com.acuo.persist.entity.Trade;
@@ -33,6 +34,54 @@ import static java.time.DayOfWeek.SUNDAY;
 public class SwapTradeBuilder {
 
     private static CacheManager cacheManager = new CacheManager();
+
+    public static SwapTrade buildTrade(Trade trade) {
+
+        if (trade instanceof FRA) {
+            return buildTrade((FRA)trade);
+        }
+
+        if (trade instanceof IRS) {
+            return buildTrade((IRS) trade);
+        }
+
+        throw new UnsupportedOperationException("trade " + trade + " not supported");
+    }
+
+    public static SwapTrade buildTrade(FRA trade) {
+        SwapTrade swapTrade = new SwapTrade();
+        Swap swap = new Swap();
+        swapTrade.setProduct(swap);
+        swapTrade.setType(ProductType.FRA);
+
+        TradeInfo info = SwapTradeBuilder.buildTradeInfo(trade);
+        info.setTradeId(trade.getTradeId().toString());
+        info.setClearedTradeId(trade.getTradeId().toString());
+        info.setPortfolio(trade.getPortfolio().getPortfolioId().toString());
+        swapTrade.setInfo(info);
+
+        Set<Leg> receiveLegs = trade.getReceiveLegs();
+        if(receiveLegs != null)
+            for (Leg receiveLeg : receiveLegs) {
+                Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(1,receiveLeg);
+                leg.setPayReceive(PayReceive.RECEIVE);
+                leg.setRollConvention(RollConvention.ofDayOfMonth(10));
+                swap.addLeg(leg);
+            }
+
+        Set<Leg> payLegs = trade.getPayLegs();
+        if(payLegs != null)
+            for (Leg payLeg : payLegs) {
+                Swap.SwapLeg leg = SwapTradeBuilder.buildLeg(2, payLeg);
+                leg.setPayReceive(PayReceive.PAY);
+                leg.setRollConvention(RollConvention.ofDayOfMonth(10));
+                leg.setNotional( -1 * leg.getNotional());
+                swap.addLeg(leg);
+            }
+
+        return swapTrade;
+
+    }
 
     public static SwapTrade buildTrade(IRS trade) {
         SwapTrade swapTrade = new SwapTrade();

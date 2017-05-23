@@ -63,7 +63,7 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
                 .collect(toList());
         if (Iterables.isEmpty(swapTrades))
             return new ArrayList();
-        MarkitResults results = pricingService.priceSwapTrades(swapTrades);
+        MarkitResults results = pricingService.priceSwapTradesByBulk(swapTrades);
         return resultProcessor.process(results);
     }
 }

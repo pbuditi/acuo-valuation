@@ -1,6 +1,7 @@
 package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.ClientId;
@@ -14,12 +15,16 @@ import com.acuo.valuation.utils.SwapTradeBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
@@ -66,7 +71,7 @@ public class MarkitPricingService implements PricingService {
                 .filter(trade -> trade instanceof IRS)
                 .map(trade -> (IRS) trade)
                 .filter(irs -> "Bilateral".equalsIgnoreCase(irs.getTradeType()))
-                .map(irs -> SwapTradeBuilder.buildTrade(irs))
+                .map(SwapTradeBuilder::buildTrade)
                 .collect(toList());
         return priceSwapTrades(filtered);
     }
@@ -75,7 +80,7 @@ public class MarkitPricingService implements PricingService {
     public MarkitResults priceTradesOfType(String type) {
         Iterable<IRS> trades = tradeService.findAllIRS();
         List<SwapTrade> tradeIds = StreamSupport.stream(trades.spliterator(), false)
-                .map(irs -> SwapTradeBuilder.buildTrade(irs))
+                .map(SwapTradeBuilder::buildTrade)
                 .collect(toList());
         return priceSwapTrades(tradeIds);
     }
@@ -83,15 +88,10 @@ public class MarkitPricingService implements PricingService {
     @Override
     public MarkitResults priceSwapTrades(List<SwapTrade> swaps) {
 
-        Report report = sender.send(swaps);
-        Predicate<? super String> errorReport = (Predicate<String>) tradeId -> {
-            List<Report.Item> items = report.itemsPerTradeId().get(tradeId);
-            if (items == null || items.stream().anyMatch(item -> "ERROR".equals(item.getType()))) {
-                return false;
-            }
-            return true;
-        };
+        LocalDate valuationDate = LocalDateUtils.minus(LocalDate.now(), 1);
 
+        Report report = sender.send(swaps, valuationDate);
+        Predicate<? super String> errorReport = getPredicate(report);
 
         List<String> tradeIds = swaps
                 .stream()
@@ -99,6 +99,40 @@ public class MarkitPricingService implements PricingService {
                 .filter(errorReport)
                 .collect(Collectors.toList());
 
-        return retriever.retrieve(report.valuationDate(), tradeIds);
+        return retriever.retrieve(valuationDate, tradeIds);
+    }
+
+    @Override
+    public MarkitResults priceSwapTradesByBulk(List<SwapTrade> swaps) {
+
+        LocalDate valuationDate = LocalDateUtils.minus(LocalDate.now(), 1);
+
+        Map<String, List<SwapTrade>> bulks = swaps.stream()
+                .collect(groupingBy(trade -> trade.getInfo().getPortfolio(), toList()));
+
+        List<String> tradeIds = new ArrayList<>();
+
+        for (String key : bulks.keySet()) {
+            List<SwapTrade> swapTrades = bulks.get(key);
+            Report report = sender.send(swapTrades, valuationDate);
+            Predicate<? super String> errorReport = getPredicate(report);
+
+            List<String> ids = swapTrades
+                    .stream()
+                    .map(swap -> swap.getInfo().getTradeId())
+                    .filter(errorReport)
+                    .collect(Collectors.toList());
+
+            tradeIds.addAll(ids);
+        }
+
+        return retriever.retrieve(valuationDate, tradeIds);
+    }
+
+    private Predicate<? super String> getPredicate(Report report) {
+        return (Predicate<String>) tradeId -> {
+            List<Report.Item> items = report.itemsPerTradeId().get(tradeId);
+            return !(items == null || items.stream().anyMatch(item -> "ERROR".equals(item.getType())));
+        };
     }
 }

@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -118,7 +119,7 @@ public class PortfolioValuationsSenderTest {
         server.enqueue(new MockResponse().setBody(STILL_PROCESSING_KEY));
         server.enqueue(new MockResponse().setBody(report.getContent()));
 
-        Report r = sender.send(swaps);
+        Report r = sender.send(swaps, LocalDate.now());
 
         RecordedRequest request = server.takeRequest();
         String body = request.getBody().readUtf8();
