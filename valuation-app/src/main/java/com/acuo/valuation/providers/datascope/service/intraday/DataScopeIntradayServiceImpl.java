@@ -80,15 +80,14 @@ public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
     private void saveFxRate(FxRate fxRate, LocalDateTime lastUpdate) {
         final Currency base = fxRate.getPair().getBase();
         final Currency counter = fxRate.getPair().getCounter();
-        FXRate fxRateRelation = fxRateService.getOrCreate(base, counter);
+        FXRate fx = fxRateService.getOrCreate(base, counter);
         // workaround reuters wrong rate for JPYUSD=R
+        double value = 0.0d;
         if (CurrencyPair.of(Currency.USD, Currency.JPY).equals(fxRate.getPair()))
-            fxRateRelation.setValue(fxRate.fxRate(fxRate.getPair()) / 100);
+            value = fxRate.fxRate(fxRate.getPair()) / 100;
         else
-            fxRateRelation.setValue(fxRate.fxRate(fxRate.getPair()));
-        fxRateRelation.setLastUpdate(lastUpdate);
-
-        fxRateService.createOrUpdate(fxRateRelation);
+            value = fxRate.fxRate(fxRate.getPair());
+        fxRateService.addValue(fx, value, lastUpdate);
     }
 
     @Data

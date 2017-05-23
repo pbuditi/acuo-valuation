@@ -1,6 +1,5 @@
 package com.acuo.valuation.quartz;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.AbstractService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobBuilder;
@@ -66,7 +65,7 @@ public class SchedulerService extends AbstractService {
                 Trigger fxTrigger = TriggerBuilder
                         .newTrigger()
                         .withIdentity("FXScheduledValueJob", "datascoupegroup")
-                        .withSchedule(cronSchedule("0 0 * * * ?").withMisfireHandlingInstructionFireAndProceed())
+                        .withSchedule(cronSchedule("0 0/5 * * * ?").withMisfireHandlingInstructionFireAndProceed())
                         .build();
 
                 Trigger once = TriggerBuilder
