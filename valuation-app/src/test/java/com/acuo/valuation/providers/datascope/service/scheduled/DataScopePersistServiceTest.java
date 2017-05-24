@@ -78,8 +78,8 @@ public class DataScopePersistServiceTest {
 
         final Map<Currency, Double> allFX = currencyService.getAllFX();
         assertThat(allFX).isNotNull().isNotEmpty();
-        assertThat(allFX.keySet()).hasSize(3);
-        assertThat(allFX.entrySet()).hasSize(3);
+        assertThat(allFX.keySet()).hasSize(161);
+        assertThat(allFX.entrySet()).hasSize(161);
     }
 
     @Test
