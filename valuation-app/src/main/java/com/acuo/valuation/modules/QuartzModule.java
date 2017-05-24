@@ -11,7 +11,7 @@ public class QuartzModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(JobFactory.class).to(AcuoJobFactory.class);
-        bind(TradePriceJob.class);
+        bind(GenerateCallJob.class);
         bind(AssetPriceJob.class);
         bind(FXScheduledValueJob.class);
         bind(FXRatesIntradayJob.class);
