@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-public interface MarginCallGenService {
+public interface CallService {
 
     List<MarginCall> createCalls(Set<PortfolioId> portfolioSet, LocalDate valuationDate, LocalDate callDate, Types.CallType callType);
 

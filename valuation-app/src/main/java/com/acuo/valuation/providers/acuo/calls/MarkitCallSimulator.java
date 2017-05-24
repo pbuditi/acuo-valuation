@@ -26,17 +26,17 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @Slf4j
-public class MarkitMarginCallSimulator extends MarkitMarginCallGenerator {
+public class MarkitCallSimulator extends MarkitCallGenerator {
 
     private final MarginCallService marginCallService;
 
     @Inject
-    public MarkitMarginCallSimulator(ValuationService valuationService,
-                                     MarginStatementService marginStatementService,
-                                     MarginCallService marginCallService,
-                                     CurrencyService currencyService,
-                                     AgreementService agreementService,
-                                     PortfolioService portfolioService) {
+    public MarkitCallSimulator(ValuationService valuationService,
+                               MarginStatementService marginStatementService,
+                               MarginCallService marginCallService,
+                               CurrencyService currencyService,
+                               AgreementService agreementService,
+                               PortfolioService portfolioService) {
         super(valuationService,
                 marginStatementService,
                 marginCallService,

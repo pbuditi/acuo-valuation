@@ -63,7 +63,7 @@ public class MarkitServiceIntegrationTest {
     public void setUp(){
         dataLoader.purgeDatabase();
         dataImporter.importFiles("clients", "legalentities", "accounts");
-        tradeUploadService.uploadTradesFromExcel(oneIRS.getInputStream());
+        tradeUploadService.fromExcel(oneIRS.getInputStream());
     }
 
     /*@Test

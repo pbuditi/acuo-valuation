@@ -100,7 +100,7 @@ public class MarginCallResource {
     @Path("/generate/swaps")
     public Response generateFromSwaps() {
         log.info("Generating margin calls from all swaps");
-        Iterable<IRS> trades = tradeService.findAllIRS();
+        Iterable<Trade> trades = tradeService.findAll(2);
         Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
         return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
     }

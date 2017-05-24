@@ -15,13 +15,11 @@ import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.modules.ConfigurationIntegrationTestModule;
-import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
-import com.acuo.valuation.services.MarginCalcService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapTradeBuilder;
 import org.junit.Before;
@@ -48,13 +46,13 @@ import static org.assertj.core.api.Assertions.assertThat;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class ClarusMarginCalcServiceIntegrationTest {
+public class ClarusMarginServiceImplIntegrationTest {
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Inject
-    MarginCalcService service;
+    ClarusMarginService service;
 
     @Inject
     ImportService importService;
@@ -68,7 +66,7 @@ public class ClarusMarginCalcServiceIntegrationTest {
     @Before
     public void setup() {
         importService.reload();
-        tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
+        tradeUploadService.fromExcel(oneIRS.createInputStream());
     }
 
     @Test

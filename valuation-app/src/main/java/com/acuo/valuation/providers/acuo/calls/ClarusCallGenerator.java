@@ -22,15 +22,15 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 @Slf4j
-public class ClarusMarginCallGenService extends MarginCallGenerator<MarginResults> {
+public class ClarusCallGenerator extends CallGenerator<MarginResults> {
 
     @Inject
-    ClarusMarginCallGenService(ValuationService valuationService,
-                               MarginStatementService marginStatementService,
-                               MarginCallService marginCallService,
-                               CurrencyService currencyService,
-                               AgreementService agreementService,
-                               PortfolioService portfolioService) {
+    ClarusCallGenerator(ValuationService valuationService,
+                        MarginStatementService marginStatementService,
+                        MarginCallService marginCallService,
+                        CurrencyService currencyService,
+                        AgreementService agreementService,
+                        PortfolioService portfolioService) {
         super(valuationService,
               marginStatementService,
               marginCallService,

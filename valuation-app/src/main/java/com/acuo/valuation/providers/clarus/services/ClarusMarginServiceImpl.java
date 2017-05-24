@@ -9,7 +9,6 @@ import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarginValuation;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import com.acuo.valuation.providers.clarus.protocol.RequestBuilder;
-import com.acuo.valuation.services.MarginCalcService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +23,16 @@ import java.util.stream.Collectors;
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataModel;
 
 @Slf4j
-public class ClarusMarginCalcService implements MarginCalcService {
+public class ClarusMarginServiceImpl implements ClarusMarginService {
 
-    private final ClientEndPoint clientEndPoint;
+    private final ClientEndPoint<ClarusEndPointConfig> clientEndPoint;
     private final ObjectMapper objectMapper;
     private final Transformer<SwapTrade> transformer;
 
     @Inject
-    public ClarusMarginCalcService(ClientEndPoint<ClarusEndPointConfig> clientEndPoint, ObjectMapper objectMapper, @Named("clarus") Transformer<SwapTrade> dataMapper) {
+    ClarusMarginServiceImpl(ClientEndPoint<ClarusEndPointConfig> clientEndPoint,
+                            ObjectMapper objectMapper,
+                            @Named("clarus") Transformer<SwapTrade> dataMapper) {
         this.clientEndPoint = clientEndPoint;
         this.objectMapper = objectMapper;
         this.transformer = dataMapper;

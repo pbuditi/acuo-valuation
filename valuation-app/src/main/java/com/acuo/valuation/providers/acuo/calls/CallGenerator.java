@@ -19,7 +19,7 @@ import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.providers.acuo.results.AbstractResultProcessor;
-import com.acuo.valuation.services.MarginCallGenService;
+import com.acuo.valuation.services.CallService;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public abstract class MarginCallGenerator<R> extends AbstractResultProcessor<R> implements MarginCallGenService {
+public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implements CallService {
 
     private final ValuationService valuationService;
     private final MarginStatementService marginStatementService;
@@ -45,12 +45,12 @@ public abstract class MarginCallGenerator<R> extends AbstractResultProcessor<R> 
     private final CurrencyService currencyService;
     private final PortfolioService portfolioService;
 
-    MarginCallGenerator(ValuationService valuationService,
-                        MarginStatementService marginStatementService,
-                        MarginCallService marginCallService,
-                        CurrencyService currencyService,
-                        AgreementService agreementService,
-                        PortfolioService portfolioService) {
+    CallGenerator(ValuationService valuationService,
+                  MarginStatementService marginStatementService,
+                  MarginCallService marginCallService,
+                  CurrencyService currencyService,
+                  AgreementService agreementService,
+                  PortfolioService portfolioService) {
         this.valuationService = valuationService;
         this.marginStatementService = marginStatementService;
         this.marginCallService = marginCallService;
@@ -124,7 +124,7 @@ public abstract class MarginCallGenerator<R> extends AbstractResultProcessor<R> 
                                       LocalDate callDate,
                                       Map<Currency, Double> rates,
                                       Long tradeCount) {
-        MarginCall margin = null;
+        MarginCall margin;
         if (callType.equals(Types.CallType.Variation)) {
             margin = new VariationMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
         } else {

@@ -79,7 +79,7 @@ public class MarkitPricingProcessorTest {
         server.start(8282);
 
         importService.reload();
-        List<String> tradeIds = tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
+        List<String> tradeIds = tradeUploadService.fromExcel(oneIRS.createInputStream());
         swaps = tradeIds.stream()
                 .map(id -> (IRS) tradeService.find(TradeId.fromString(id)))
                 .collect(toList());

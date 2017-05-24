@@ -98,7 +98,7 @@ public class MarginCallResourceTest implements WithResteasyFixtures {
         dispatcher.getRegistry().addSingletonResource(resource);
         setMockMarkitResponse();
         importService.reload();
-        tradeUploadService.uploadTradesFromExcel(one.createInputStream());
+        tradeUploadService.fromExcel(one.createInputStream());
     }
 
     private void setMockMarkitResponse() throws IOException {

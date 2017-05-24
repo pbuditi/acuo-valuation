@@ -34,12 +34,12 @@ public class SchedulerService extends AbstractService {
         if (!disabled) {
             try {
                 JobDetail jobDetail = JobBuilder
-                        .newJob(TradePriceJob.class)
-                        .withIdentity("TradePriceJob", "markitgroup")
+                        .newJob(GenerateCallJob.class)
+                        .withIdentity("GenerateCallJob", "markitgroup")
                         .build();
                 Trigger trigger = TriggerBuilder
                         .newTrigger()
-                        .withIdentity("TradePriceJob", "markitgroup")
+                        .withIdentity("GenerateCallJob", "markitgroup")
                         .withSchedule(cronSchedule("0 0 1 * * ?"))
                         .build();
 

@@ -24,7 +24,6 @@ import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.acuo.valuation.services.TradeUploadService;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -89,7 +88,7 @@ public class MarkitResultPersisterTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         importService.reload();
-        tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
+        tradeUploadService.fromExcel(oneIRS.createInputStream());
         persister = new MarkitResultPersister(valuationService, valueService);
     }
 

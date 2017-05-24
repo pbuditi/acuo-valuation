@@ -26,17 +26,17 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @Slf4j
-public class ClarusMarginCallSimulator extends ClarusMarginCallGenService {
+public class ClarusCallSimulator extends ClarusCallGenerator {
 
     private final MarginCallService marginCallService;
 
     @Inject
-    public ClarusMarginCallSimulator(ValuationService valuationService,
-                                     MarginStatementService marginStatementService,
-                                     AgreementService agreementService,
-                                     CurrencyService currencyService,
-                                     MarginCallService marginCallService,
-                                     PortfolioService portfolioService) {
+    public ClarusCallSimulator(ValuationService valuationService,
+                               MarginStatementService marginStatementService,
+                               AgreementService agreementService,
+                               CurrencyService currencyService,
+                               MarginCallService marginCallService,
+                               PortfolioService portfolioService) {
         super(valuationService,
                 marginStatementService,
                 marginCallService,

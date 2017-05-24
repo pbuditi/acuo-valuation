@@ -9,9 +9,6 @@ import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okio.Buffer;
-
-import java.io.IOException;
 
 @Slf4j
 public class ClarusCall extends CallBuilder<ClarusCall> {
@@ -47,16 +44,5 @@ public class ClarusCall extends CallBuilder<ClarusCall> {
     public Call create() {
         Request request = builder.build();
         return client.call(request, predicate);
-    }
-
-    private static String bodyToString(final Request request) {
-        try {
-            final Request copy = request.newBuilder().build();
-            final Buffer buffer = new Buffer();
-            copy.body().writeTo(buffer);
-            return buffer.readUtf8();
-        } catch (final IOException e) {
-            return "did not work";
-        }
     }
 }

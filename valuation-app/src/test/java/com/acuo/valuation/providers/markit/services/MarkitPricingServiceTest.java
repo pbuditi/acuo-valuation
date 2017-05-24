@@ -189,7 +189,7 @@ public class MarkitPricingServiceTest {
     }
 
     private List<SwapTrade> loadTrades(ResourceFile file) {
-        final List<String> tradeIds = tradeUploadService.uploadTradesFromExcel(file.createInputStream());
+        final List<String> tradeIds = tradeUploadService.fromExcel(file.createInputStream());
 
         return tradeIds.stream()
                 .map(id -> tradeService.find(TradeId.fromString(id)))

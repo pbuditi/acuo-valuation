@@ -22,15 +22,15 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 @Slf4j
-public class MarkitMarginCallGenerator extends MarginCallGenerator<MarkitResults> {
+public class MarkitCallGenerator extends CallGenerator<MarkitResults> {
 
     @Inject
-    MarkitMarginCallGenerator(ValuationService valuationService,
-                              MarginStatementService marginStatementService,
-                              MarginCallService marginCallService,
-                              CurrencyService currencyService,
-                              AgreementService agreementService,
-                              PortfolioService portfolioService) {
+    MarkitCallGenerator(ValuationService valuationService,
+                        MarginStatementService marginStatementService,
+                        MarginCallService marginCallService,
+                        CurrencyService currencyService,
+                        AgreementService agreementService,
+                        PortfolioService portfolioService) {
         super(valuationService,
               marginStatementService,
               marginCallService,

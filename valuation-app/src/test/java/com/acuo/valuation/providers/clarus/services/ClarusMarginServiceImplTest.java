@@ -56,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class ClarusMarginCalcServiceTest {
+public class ClarusMarginServiceImplTest {
 
     @Rule
     public ResourceFile response = new ResourceFile("/clarus/response/clarus-lch.json");
@@ -82,7 +82,7 @@ public class ClarusMarginCalcServiceTest {
 
     MockWebServer server = new MockWebServer();
 
-    ClarusMarginCalcService service;
+    ClarusMarginServiceImpl service;
 
     @Before
     public void setup() throws IOException {
@@ -91,18 +91,18 @@ public class ClarusMarginCalcServiceTest {
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
         ClarusEndPointConfig config = new ClarusEndPointConfig(server.url("/").toString(), "key", "secret", "10000", "false", null);
 
-        ClientEndPoint<ClarusEndPointConfig> clientEndPoint = new OkHttpClient(httpClient, config);
+        ClientEndPoint<ClarusEndPointConfig> clientEndPoint = new OkHttpClient<>(httpClient, config);
 
-        service = new ClarusMarginCalcService(clientEndPoint, objectMapper, transformer);
+        service = new ClarusMarginServiceImpl(clientEndPoint, objectMapper, transformer);
 
         importService.reload();
-        tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
+        tradeUploadService.fromExcel(oneIRS.createInputStream());
     }
 
     @Test
     public void testMakeRequest() throws IOException {
         String id = "455123";
-        List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
+        List<SwapTrade> swapTrades = new ArrayList<>();
         Trade trade = irsService.find(TradeId.fromString(id));
         if (trade != null) {
             SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
@@ -119,7 +119,7 @@ public class ClarusMarginCalcServiceTest {
     public void testMarginCalcOnCmePortfolioFromListOfSwaps() throws IOException, InterruptedException {
         server.enqueue(new MockResponse().setBody(response.getContent()));
         String id = "455123";
-        List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
+        List<SwapTrade> swapTrades = new ArrayList<>();
         Trade trade = irsService.find(TradeId.fromString(id));
         if (trade != null) {
             SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
