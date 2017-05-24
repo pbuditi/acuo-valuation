@@ -16,10 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -35,7 +37,7 @@ public class MarkitPricingService implements PricingService {
     private final TradeService<Trade> tradeService;
 
     @Inject
-    public MarkitPricingService(Sender sender, Retriever retriever, TradeService<Trade> tradeService) {
+    MarkitPricingService(Sender sender, Retriever retriever, TradeService<Trade> tradeService) {
         this.sender = sender;
         this.retriever = retriever;
         this.tradeService = tradeService;
@@ -110,21 +112,15 @@ public class MarkitPricingService implements PricingService {
         Map<String, List<SwapTrade>> bulks = swaps.stream()
                 .collect(groupingBy(trade -> trade.getInfo().getPortfolio(), toList()));
 
-        List<String> tradeIds = new ArrayList<>();
+        final List<CompletableFuture<List<String>>> futures = bulks.keySet().stream()
+                .map(bulks::get)
+                .map(swapTrades -> calculateAsyncWithCancellation(swapTrades, valuationDate))
+                .collect(toList());
 
-        for (String key : bulks.keySet()) {
-            List<SwapTrade> swapTrades = bulks.get(key);
-            Report report = sender.send(swapTrades, valuationDate);
-            Predicate<? super String> errorReport = getPredicate(report);
-
-            List<String> ids = swapTrades
-                    .stream()
-                    .map(swap -> swap.getInfo().getTradeId())
-                    .filter(errorReport)
-                    .collect(Collectors.toList());
-
-            tradeIds.addAll(ids);
-        }
+        List<String> tradeIds = futures.stream()
+                .map(CompletableFuture::join)
+                .flatMap(Collection::stream)
+                .collect(toList());
 
         return retriever.retrieve(valuationDate, tradeIds);
     }
@@ -134,5 +130,18 @@ public class MarkitPricingService implements PricingService {
             List<Report.Item> items = report.itemsPerTradeId().get(tradeId);
             return !(items == null || items.stream().anyMatch(item -> "ERROR".equals(item.getType())));
         };
+    }
+
+    private CompletableFuture<List<String>> calculateAsyncWithCancellation(List<SwapTrade> swaps, LocalDate valuationDate) {
+        return CompletableFuture.supplyAsync(() -> {
+            Report report = sender.send(swaps, valuationDate);
+            Predicate<? super String> errorReport = getPredicate(report);
+
+            return swaps
+                    .stream()
+                    .map(swap -> swap.getInfo().getTradeId())
+                    .filter(errorReport)
+                    .collect(Collectors.toList());
+        }, Executors.newFixedThreadPool(30));
     }
 }
