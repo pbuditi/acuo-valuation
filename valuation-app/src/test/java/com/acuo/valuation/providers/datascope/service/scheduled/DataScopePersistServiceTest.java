@@ -14,7 +14,6 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
-import com.acuo.valuation.providers.datascope.service.scheduled.DataScopePersistService;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -59,7 +58,7 @@ public class DataScopePersistServiceTest {
 
     @Before
     public void setup() throws IOException {
-        importService.reload();
+        //importService.reload();
     }
 
     @Test
@@ -72,10 +71,10 @@ public class DataScopePersistServiceTest {
         dataScopePersistService.persistFxRate(lines);
 
         final Double bhd = currencyService.getFXValue(Currency.of("BHD"));
-        assertThat(bhd).isNotNull().isEqualTo(2.65252, offset(0.00000001));
+        assertThat(bhd).isNotNull().isEqualTo(0.3769999849200006, offset(0.00000001));
 
         final Double jpy = currencyService.getFXValue(Currency.of("JPY"));
-        assertThat(jpy).isNotNull().isEqualTo(0.0088, offset(0.00000001));
+        assertThat(jpy).isNotNull().isEqualTo(113.63636363636363, offset(0.00000001));
 
         final Map<Currency, Double> allFX = currencyService.getAllFX();
         assertThat(allFX).isNotNull().isNotEmpty();
