@@ -64,7 +64,7 @@ public class PortfolioValuationsRetrieverTest {
         assertThat(markitResults).isNotNull();
         assertThat(body).contains("username=username");
         assertThat(body).contains("password=password");
-        assertThat(body).contains("asof=2016-06-09");
+        assertThat(body).contains("asof=2016-06-10");
         assertThat(body).contains("format=xml");
     }
 
