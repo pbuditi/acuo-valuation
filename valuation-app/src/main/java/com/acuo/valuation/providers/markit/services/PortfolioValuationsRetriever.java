@@ -1,7 +1,6 @@
 package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.common.http.client.ClientEndPoint;
-import com.acuo.common.util.LocalDateUtils;
 import com.acuo.valuation.protocol.responses.Response;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.MarkitValuation;
@@ -34,10 +33,9 @@ public class PortfolioValuationsRetriever implements Retriever {
     }
 
     @Override
-    public MarkitResults retrieve(LocalDate reportDate, List<String> tradeIds) {
-        LocalDate valuationDate = LocalDateUtils.minus(reportDate, 1);
+    public MarkitResults retrieve(LocalDate valuationDate, List<String> tradeIds) {
         log.info("retrieving pricing results of {} trades", tradeIds.size());
-        log.info("with report date {} and valuation date set to {}", reportDate, valuationDate);
+        log.info("with valuation date set to {}", valuationDate);
         final Response response = upload(valuationDate, tradeIds);
 
         printFailedTrades(tradeIds, response);

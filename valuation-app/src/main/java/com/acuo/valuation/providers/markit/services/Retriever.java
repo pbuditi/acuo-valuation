@@ -6,5 +6,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface Retriever {
-    MarkitResults retrieve(LocalDate localDate, List<String> tradeIds);
+    MarkitResults retrieve(LocalDate valuationDate, List<String> tradeIds);
 }
