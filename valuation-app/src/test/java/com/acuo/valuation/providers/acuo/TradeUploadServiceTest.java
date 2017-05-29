@@ -6,6 +6,7 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
+import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.TradeId;
@@ -124,7 +125,7 @@ public class TradeUploadServiceTest {
             Trade versionOld = olds.next();
             Trade versionNew = irsService.find(versionOld.getTradeId(), 2);
 
-            if(!versionOld.equals(versionNew))
+            if(!(versionNew instanceof FRA) && !versionOld.equals(versionNew))
             {
                 log.info("old:" + versionOld.toString());
                 log.info("new:" + versionNew.toString());

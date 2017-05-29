@@ -146,7 +146,7 @@ public class SwapExcelParser {
             fra.setPayLegs(payLegs);
             fra.setReceiveLegs(receiveLegs);
 
-            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("Receive"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
