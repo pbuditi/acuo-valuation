@@ -3,6 +3,7 @@ package com.acuo.valuation.modules;
 import com.acuo.collateral.transform.Transformer;
 import com.acuo.collateral.transform.services.ClarusTransformer;
 import com.acuo.collateral.transform.services.MarkitTransformer;
+import com.acuo.collateral.transform.services.PortfolioImportTransformer;
 import com.acuo.collateral.transform.services.ReutersTransformer;
 import com.acuo.collateral.transform.trace.transformer_valuations.Mapper;
 import com.acuo.common.marshal.Marshaller;
@@ -44,11 +45,13 @@ public class MappingModule extends AbstractModule {
         MarkitTransformer<SwapTrade> markitTransformer = new MarkitTransformer<>(new Mapper());
         ReutersTransformer<Assets> assetsAssetsTransformer = new ReutersTransformer<>();
         ReutersTransformer<AssetValuation> assetValuationReutersTransformer = new ReutersTransformer<>();
+        PortfolioImportTransformer<SwapTrade> portfolioImportTransformer = new PortfolioImportTransformer<>(new Mapper());
 
         bind(new TypeLiteral<Transformer<SwapTrade>>() {}).annotatedWith(Names.named("clarus")).toInstance(clarusTransformer);
         bind(new TypeLiteral<Transformer<SwapTrade>>() {}).annotatedWith(Names.named("markit")).toInstance(markitTransformer);
         bind(new TypeLiteral<Transformer<Assets>>() {}).annotatedWith(Names.named("assets")).toInstance(assetsAssetsTransformer);
         bind(new TypeLiteral<Transformer<AssetValuation>>() {}).annotatedWith(Names.named("assetValuation")).toInstance(assetValuationReutersTransformer);
+        bind(new TypeLiteral<Transformer<SwapTrade>>() {}).annotatedWith(Names.named("portfolio")).toInstance(portfolioImportTransformer);
     }
 
     @Provides

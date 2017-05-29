@@ -1,8 +1,10 @@
 package com.acuo.valuation.providers.acuo.trades;
 
+import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.cache.manager.CacheManager;
 import com.acuo.common.cache.manager.Cacheable;
 import com.acuo.common.cache.manager.CachedObject;
+import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.type.TypedString;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
@@ -15,6 +17,7 @@ import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
+import com.acuo.valuation.utils.TradeBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -22,11 +25,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -44,15 +51,18 @@ public class TradeUploadServiceImpl implements TradeUploadService {
 
     private final int expireTime = 1;
     private final TimeUnit expireUnit = TimeUnit.MINUTES;
+    private final Transformer<SwapTrade> transformer;
 
     @Inject
     public TradeUploadServiceImpl(TradingAccountService accountService,
                                   PortfolioService portfolioService,
-                                  TradeService<Trade> tradeService) {
+                                  TradeService<Trade> tradeService,
+                                  @Named("portfolio") Transformer<SwapTrade> transformer) {
         this.accountService = accountService;
         this.portfolioService = portfolioService;
         this.tradeService = tradeService;
         this.cacheManager = new CacheManager();
+        this.transformer = transformer;
     }
 
     public List<String> fromExcel(InputStream fis) {
@@ -102,6 +112,34 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         }
 
         return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
+    }
+
+    public List<String> fromExcelNew(InputStream fis)
+    {
+        List<Trade> tradeIdList = new ArrayList<>();
+        TradeBuilder tradeBuilder = new TradeBuilder();
+        try
+        {
+            List<SwapTrade> swapTrades = transformer.deserialise(toByteArray(fis));
+            tradeIdList = swapTrades.stream().map(swapTrade -> tradeBuilder.build(swapTrade)).collect(Collectors.toList());
+            log.info(tradeIdList.toString());
+            tradeService.createOrUpdate(tradeIdList);
+        }
+        catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
+    }
+
+    public static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[4096];
+        int n = 0;
+        while (-1 != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
+        }
+        return output.toByteArray();
+
     }
 
     private void linkPortfolio(Trade trade, String portfolioId) {

@@ -61,12 +61,12 @@ public class SwapExcelParser {
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
 
-            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("Receive"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
-            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
+            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("Receive"))
                 receiveLegs.add(leg2);
             else
                 payLegs.add(leg2);
@@ -213,12 +213,12 @@ public class SwapExcelParser {
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
 
-            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("Receive"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
-            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
+            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("Receive"))
                 receiveLegs.add(leg2);
             else
                 payLegs.add(leg2);
@@ -289,12 +289,12 @@ public class SwapExcelParser {
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
 
-            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("Receive"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
-            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
+            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("Receive"))
                 receiveLegs.add(leg2);
             else
                 payLegs.add(leg2);

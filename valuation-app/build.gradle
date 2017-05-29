@@ -5,8 +5,8 @@ apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/ja
 
 ext.versions += [
         persist         : '0.9.0-SNAPSHOT',
-        common          : '0.7.1',
-        mapping         : '0.7.2'
+        common          : '0.8.0-SNAPSHOT',
+        mapping         : '0.7.0-SNAPSHOT'
 ]
 
 configurations {
