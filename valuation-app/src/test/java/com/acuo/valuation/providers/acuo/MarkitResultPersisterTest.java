@@ -107,7 +107,7 @@ public class MarkitResultPersisterTest {
         assertThat(values).isNotNull().hasSize(1);
 
         for (TradeValue value : values) {
-            if(value.getDateTime().equals(localDate)){
+            if(value.getValuationDate().equals(localDate)){
                 assertThat(value.getPv().doubleValue()).isEqualTo(-30017690);
             }
         }
@@ -129,7 +129,7 @@ public class MarkitResultPersisterTest {
         assertThat(values).isNotNull().hasSize(1);
 
         for (TradeValue value : values) {
-            if(value.getDateTime().equals(localDate)){
+            if(value.getValuationDate().equals(localDate)){
                 assertThat(value.getPv().doubleValue()).isEqualTo(-30017690);
             }
         }
@@ -145,7 +145,7 @@ public class MarkitResultPersisterTest {
         results.add(result);
         MarkitResults markitResults = new MarkitResults();
         markitResults.setResults(results);
-        markitResults.setDate(myDate1);
+        markitResults.setValuationDate(myDate1);
         markitResults.setCurrency(Currency.USD);
         return markitResults;
     }
@@ -173,7 +173,7 @@ public class MarkitResultPersisterTest {
 
         MarkitResults markitResults = new MarkitResults();
         markitResults.setResults(results);
-        markitResults.setDate(response.header().getDate());
+        markitResults.setValuationDate(response.header().getDate());
         markitResults.setCurrency(Currency.parse(response.header().getValuationCurrency()));
 
         persister.persist(markitResults);

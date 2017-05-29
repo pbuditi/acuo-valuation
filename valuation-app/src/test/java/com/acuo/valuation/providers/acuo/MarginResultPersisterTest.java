@@ -77,7 +77,7 @@ public class MarginResultPersisterTest {
         Set<MarginValue> values = valuation.getValues();
         assertThat(values).isNotNull().hasSize(1);
         for (MarginValue value : values) {
-            if(value.getDateTime().equals(localDate)){
+            if(value.getValuationDate().equals(localDate)){
                 assertThat(value.getAmount().doubleValue()).isEqualTo(1d);
             }
         }
@@ -96,7 +96,7 @@ public class MarginResultPersisterTest {
         Set<MarginValue> values = valuation.getValues();
         assertThat(values).isNotNull().hasSize(1);
         for (MarginValue value : values) {
-            if(value.getDateTime().equals(localDate)){
+            if(value.getValuationDate().equals(localDate)){
                 assertThat(value.getAmount().doubleValue()).isEqualTo(1d);
             }
         }

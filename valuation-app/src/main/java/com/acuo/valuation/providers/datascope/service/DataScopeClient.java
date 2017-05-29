@@ -5,8 +5,10 @@ import com.acuo.common.http.client.OkHttpClient;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Slf4j
+@Singleton
 public class DataScopeClient extends OkHttpClient<DataScopeEndPointConfig> {
 
     @Inject

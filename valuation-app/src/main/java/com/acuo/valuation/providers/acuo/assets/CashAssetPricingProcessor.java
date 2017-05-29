@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
@@ -71,7 +70,7 @@ public class CashAssetPricingProcessor extends AbstractAssetPricingProcessor {
         assetValue.setUnitValue(division);
         assetValue.setPriceQuotationType("FX");
         assetValue.setReportCurrency(Currency.USD);
-        assetValue.setValuationDateTime(LocalDateTime.now());
+        assetValue.setTimestamp(Instant.now());
         assetValue.setYield(0.0d);
         return assetValue;
     }

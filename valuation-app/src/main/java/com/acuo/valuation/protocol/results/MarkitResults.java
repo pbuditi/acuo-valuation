@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class MarkitResults {
 
-    private LocalDate date;
+    private LocalDate valuationDate;
     private Currency currency;
     private List<Result<MarkitValuation>> results;
 

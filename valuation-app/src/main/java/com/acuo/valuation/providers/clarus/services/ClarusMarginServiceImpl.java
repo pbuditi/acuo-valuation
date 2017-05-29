@@ -18,9 +18,11 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import static com.acuo.valuation.providers.clarus.protocol.Clarus.DataModel;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Slf4j
 public class ClarusMarginServiceImpl implements ClarusMarginService {
@@ -43,7 +45,10 @@ public class ClarusMarginServiceImpl implements ClarusMarginService {
         try {
             String request = makeRequest(swaps, model);
             String response = sendRequest(request, callType);
-            return makeResult(response, callType);
+            final Set<String> portfolioIds = swaps.stream()
+                    .map(swapTrade -> swapTrade.getInfo().getPortfolio())
+                    .collect(toSet());
+            return makeResult(response, portfolioIds, callType);
         } catch (IOException e) {
             //TODO return an ErrorResult here instead of throwing an exception
             throw new RuntimeException("an error occurred while calculating margin: " + e.getMessage(), e);
@@ -71,11 +76,11 @@ public class ClarusMarginServiceImpl implements ClarusMarginService {
         return response;
     }
 
-    private MarginResults makeResult(String response, MarginCallType callType) throws IOException {
+    private MarginResults makeResult(String response, Set<String> portfolioIds, MarginCallType callType) throws IOException {
         List<?> list = transformer.deserialiseToList(response);
         List<Result<MarginValuation>> results = list.stream()
                 .map(map -> (com.acuo.common.model.results.MarginValuation)map)
-                .filter(map -> map.getPortfolioId() != null)
+                .filter(map -> map.getPortfolioId() != null && portfolioIds.contains(map.getPortfolioId()))
                 .map(map -> new MarginValuation(map.getName(),
                         map.getAccount(),
                         map.getChange(),
@@ -83,7 +88,7 @@ public class ClarusMarginServiceImpl implements ClarusMarginService {
                         callType.getCallType(),
                         map.getPortfolioId()))
                 .map(Result::success)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         MarginResults marginResults = new MarginResults();
         marginResults.setMarginType(callType.getCallType());

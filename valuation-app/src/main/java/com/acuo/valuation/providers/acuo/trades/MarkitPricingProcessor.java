@@ -14,8 +14,8 @@ import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
@@ -54,7 +54,7 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
 
     private <T extends Trade> Collection<MarginCall> internal(Iterable<T> trades) {
         if (Iterables.isEmpty(trades))
-            return Collections.emptyList();
+            return new ArrayList<>();
         final List<SwapTrade> swapTrades = StreamSupport.stream(trades.spliterator(), false)
                 .filter(predicate)
                 .filter(trade -> trade instanceof IRS)
@@ -62,7 +62,7 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
                 .map(SwapTradeBuilder::buildTrade)
                 .collect(toList());
         if (Iterables.isEmpty(swapTrades))
-            return Collections.emptyList();
+            return new ArrayList<>();
         MarkitResults results = (useBulkPricing) ?
                 pricingService.priceSwapTradesByBulk(swapTrades) :
                 pricingService.priceSwapTrades(swapTrades);

@@ -24,7 +24,6 @@ import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -96,11 +95,10 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
     private Optional<List<MarginValue>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {
         Set<MarginValue> values = valuation.getValues();
         if (values != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
             List<MarginValue> result = valuation.getValues()
                     .stream()
                     .filter(Objects::nonNull)
-                    .filter(value -> formatter.format(value.getDateTime()).equals(formatter.format(valuationDate)))
+                    .filter(value -> value.getValuationDate().equals(valuationDate))
                     .collect(toList());
             return Optional.of(result);
         }
