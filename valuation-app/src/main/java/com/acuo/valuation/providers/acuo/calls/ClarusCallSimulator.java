@@ -80,10 +80,13 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
                                  LocalDate callDate,
                                  Map<Currency, Double> rates,
                                  Long tradeCount) {
-        double amount = simulationHelper.getRandomAmount(value);
-        MarginCall margin = super.process(callType, side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
-        if (simulationHelper.getRandomBoolean())
+        if (simulationHelper.getRandomBoolean()) {
+            double amount = simulationHelper.getRandomAmount(value);
+            MarginCall margin = super.process(callType, side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
             marginCallService.matchToExpected(margin.getItemId());
-        return margin;
+            return margin;
+        } else {
+            return null;
+        }
     }
 }

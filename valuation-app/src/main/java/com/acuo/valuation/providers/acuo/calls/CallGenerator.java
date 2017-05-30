@@ -91,7 +91,8 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
         Types.CallType callType = valuation.getCallType();
         Optional<Double> amount = currents.map(this::sum);
         Long tradeCount = portfolioService.tradeCount(valuation.getPortfolio().getPortfolioId());
-        return amount.map(aDouble -> process(callType, side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount));
+        return amount.map(aDouble -> process(callType, side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount))
+                .filter(Objects::nonNull);
     }
 
     private Optional<List<MarginValue>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {
