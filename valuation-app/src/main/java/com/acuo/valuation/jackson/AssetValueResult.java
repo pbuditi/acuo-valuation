@@ -5,8 +5,8 @@ import com.opengamma.strata.basics.currency.Currency;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Data
 @Slf4j
@@ -29,7 +29,7 @@ public class AssetValueResult {
     public AssetValueResult(AssetValue value) {
         this.yield = value.getYield();
         this.unitValue = value.getUnitValue();
-        this.valuationDateTime = value.getValuationDateTime();
+        this.valuationDateTime = LocalDateTime.ofInstant(value.getTimestamp(), ZoneOffset.UTC);
         this.priceQuotationType = value.getPriceQuotationType();
         this.nominalCurrency = value.getNominalCurrency();
         this.reportCurrency = value.getReportCurrency();

@@ -1,5 +1,5 @@
 {
-  "date" : "${json-unit.ignore}",
+  "valuationDate" : "${json-unit.ignore}",
   "currency" : "USD",
   "results" : [ {
     "pv" : -20277.510590907827,

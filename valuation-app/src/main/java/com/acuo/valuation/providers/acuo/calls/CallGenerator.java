@@ -24,7 +24,6 @@ import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -81,7 +80,9 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
         return () -> StatementStatus.Expected;
     }
 
-    protected Supplier<Side> sideSupplier() {return () -> Side.Client;}
+    protected Supplier<Side> sideSupplier() {
+        return () -> Side.Client;
+    }
 
     protected abstract Predicate<MarginValue> pricingSourcePredicate();
 
@@ -90,17 +91,17 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
         Types.CallType callType = valuation.getCallType();
         Optional<Double> amount = currents.map(this::sum);
         Long tradeCount = portfolioService.tradeCount(valuation.getPortfolio().getPortfolioId());
-        return amount.map(aDouble -> process(callType, side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount));
+        return amount.map(aDouble -> process(callType, side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount))
+                .filter(Objects::nonNull);
     }
 
     private Optional<List<MarginValue>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {
         Set<MarginValue> values = valuation.getValues();
         if (values != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
             List<MarginValue> result = valuation.getValues()
                     .stream()
                     .filter(Objects::nonNull)
-                    .filter(value -> formatter.format(value.getDateTime()).equals(formatter.format(valuationDate)))
+                    .filter(value -> value.getValuationDate().equals(valuationDate))
                     .collect(toList());
             return Optional.of(result);
         }
@@ -115,26 +116,33 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
     }
 
     protected MarginCall process(Types.CallType callType,
-                                      Side side,
-                                      Double amount,
-                                      Currency currency,
-                                      StatementStatus statementStatus,
-                                      Agreement agreement,
-                                      LocalDate valuationDate,
-                                      LocalDate callDate,
-                                      Map<Currency, Double> rates,
-                                      Long tradeCount) {
+                                 Side side,
+                                 Double amount,
+                                 Currency currency,
+                                 StatementStatus statementStatus,
+                                 Agreement agreement,
+                                 LocalDate valuationDate,
+                                 LocalDate callDate,
+                                 Map<Currency, Double> rates,
+                                 Long tradeCount) {
         MarginCall margin;
         if (callType.equals(Types.CallType.Variation)) {
             margin = new VariationMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
         } else {
             margin = new InitialMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
         }
+
+        final MarginCall toDelete = marginCallService.find(margin.getItemId());
+        if (toDelete != null) {
+            marginCallService.delete(marginCallService.find(margin.getItemId()));
+        }
+
         StatementDirection direction = margin.getDirection();
         MarginStatement marginStatement = marginStatementService.getOrCreateMarginStatement(agreement, callDate, direction);
         margin.setMarginStatement(marginStatement);
         margin = marginCallService.save(margin);
         marginStatementService.setStatus(margin.getItemId(), statementStatus);
         return margin;
+
     }
 }

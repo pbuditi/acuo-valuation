@@ -42,7 +42,7 @@ public class MarkitCallGenerator extends CallGenerator<MarkitResults> {
     @Override
     public ProcessorItem process(ProcessorItem<MarkitResults> processorItem) {
         log.info("processing markit valuation items to generate expected calls");
-        LocalDate valuationDate = processorItem.getResults().getDate();
+        LocalDate valuationDate = processorItem.getResults().getValuationDate();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
         List<MarginCall> marginCalls = createCalls(portfolioIds, valuationDate, callDate, Types.CallType.Variation);

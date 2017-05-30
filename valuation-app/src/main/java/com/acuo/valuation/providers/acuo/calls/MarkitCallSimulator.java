@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 public class MarkitCallSimulator extends MarkitCallGenerator {
 
     private final MarginCallService marginCallService;
+    private final SimulationHelper simulationHelper = new SimulationHelper();
 
     @Inject
     public MarkitCallSimulator(ValuationService valuationService,
@@ -49,7 +50,7 @@ public class MarkitCallSimulator extends MarkitCallGenerator {
     @Override
     public ProcessorItem process(ProcessorItem<MarkitResults> processorItem) {
         log.info("processing markit valuation items to generate expected calls");
-        LocalDate valuationDate = processorItem.getResults().getDate();
+        LocalDate valuationDate = processorItem.getResults().getValuationDate();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
         List<MarginCall> marginCalls = createCalls(portfolioIds, valuationDate, callDate, Types.CallType.Variation);
@@ -76,12 +77,13 @@ public class MarkitCallSimulator extends MarkitCallGenerator {
                                       LocalDate callDate,
                                       Map<Currency, Double> rates,
                                       Long tradeCount) {
-        java.util.Random r = new java.util.Random();
-        double noise = r.nextGaussian() * Math.sqrt(0.2);
-        double a = (0.2*noise);
-        double amount = value * (1 + a);
-        MarginCall margin = super.process(callType, side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
-        marginCallService.matchToExpected(margin.getItemId());
-        return margin;
+        if (simulationHelper.getRandomBoolean()) {
+            double amount = simulationHelper.getRandomAmount(value);
+            MarginCall margin = super.process(callType, side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
+            marginCallService.matchToExpected(margin.getItemId());
+            return margin;
+        } else {
+            return null;
+        }
     }
 }

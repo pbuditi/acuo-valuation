@@ -7,11 +7,13 @@ import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.concurrent.TimeUnit;
 
 import static com.acuo.valuation.utils.PropertiesHelper.*;
 
 @Data
+@Singleton
 public class DataScopeEndPointConfig implements EndPointConfig {
 
     private final String scheme;

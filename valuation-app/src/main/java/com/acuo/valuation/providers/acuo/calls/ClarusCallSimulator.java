@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 public class ClarusCallSimulator extends ClarusCallGenerator {
 
     private final MarginCallService marginCallService;
+    private final SimulationHelper simulationHelper = new SimulationHelper();
 
     @Inject
     public ClarusCallSimulator(ValuationService valuationService,
@@ -79,12 +80,13 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
                                  LocalDate callDate,
                                  Map<Currency, Double> rates,
                                  Long tradeCount) {
-        java.util.Random r = new java.util.Random();
-        double noise = r.nextGaussian() * Math.sqrt(0.2);
-        double a = (0.2 * noise);
-        double amount = value * (1 + a);
-        MarginCall margin = super.process(callType, side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
-        marginCallService.matchToExpected(margin.getItemId());
-        return margin;
+        if (simulationHelper.getRandomBoolean()) {
+            double amount = simulationHelper.getRandomAmount(value);
+            MarginCall margin = super.process(callType, side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
+            marginCallService.matchToExpected(margin.getItemId());
+            return margin;
+        } else {
+            return null;
+        }
     }
 }
