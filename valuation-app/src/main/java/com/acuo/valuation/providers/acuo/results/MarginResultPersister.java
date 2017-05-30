@@ -84,7 +84,10 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
             values.removeAll(toRemove);
         }
 
-        MarginValue newValue = createValue(valuationDate, currency, marginValuation.getAccount(), "Clarus");
+        // reverse the margin for IM
+        final Double value = (callType.equals(Types.CallType.Initial)) ? -1*marginValuation.getAccount() : marginValuation.getAccount();
+
+        MarginValue newValue = createValue(valuationDate, currency, value, "Clarus");
         newValue.setValuation(valuation);
 
         return newValue;
