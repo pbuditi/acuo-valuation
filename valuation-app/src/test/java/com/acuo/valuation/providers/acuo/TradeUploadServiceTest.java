@@ -137,7 +137,12 @@ public class TradeUploadServiceTest {
             }
         }
 
-
-
     }
+
+    @Test
+    public void testUploadAllNew() throws IOException {
+        List<String> tradeIds = service.fromExcelNew(excel.createInputStream());
+        assertThat(tradeIds).isNotEmpty().doesNotContainNull();
+    }
+
 }

@@ -117,18 +117,27 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     public List<String> fromExcelNew(InputStream fis)
     {
         List<Trade> tradeIdList = new ArrayList<>();
-        TradeBuilder tradeBuilder = new TradeBuilder();
+
         try
         {
             List<SwapTrade> swapTrades = transformer.deserialise(toByteArray(fis));
-            tradeIdList = swapTrades.stream().map(swapTrade -> tradeBuilder.build(swapTrade)).collect(Collectors.toList());
-            log.info(tradeIdList.toString());
+            tradeIdList = swapTrades.stream().map(swapTrade -> buildTradeNew(swapTrade)).collect(Collectors.toList());
+            //log.info(tradeIdList.toString());
             tradeService.createOrUpdate(tradeIdList);
         }
         catch (Exception e) {
             log.error(e.getMessage(), e);
         }
         return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
+    }
+
+    private Trade buildTradeNew(SwapTrade swapTrade)
+    {
+        TradeBuilder tradeBuilder = new TradeBuilder();
+        Trade trade = tradeBuilder.build(swapTrade);
+        linkPortfolio(trade, swapTrade.getInfo().getPortfolio());
+        linkAccount(trade, swapTrade.getInfo().getTradingAccountId());
+        return trade;
     }
 
     public static byte[] toByteArray(InputStream input) throws IOException {
