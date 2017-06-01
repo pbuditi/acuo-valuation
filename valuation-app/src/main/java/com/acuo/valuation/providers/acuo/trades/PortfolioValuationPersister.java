@@ -36,7 +36,7 @@ public class PortfolioValuationPersister implements ResultPersister<PortfolioRes
 
     public Set<PortfolioId> persist(PortfolioResults results)
     {
-        if (results == null) {
+        if (results == null || results.getResults().size() == 0) {
             log.warn("PortfolioResults is null");
             return Collections.emptySet();
         }
@@ -46,10 +46,13 @@ public class PortfolioValuationPersister implements ResultPersister<PortfolioRes
         LocalDate date = results.getValuationDate();
         Currency currency = results.getCurrency();
 
+        LocalDate dayRange = LocalDate.now().minusDays(2);
+
         List<Result<TradeValuation>> result = results.getResults();
         List<TradeValue> values = result.stream()
                 .flatMap(Result::stream)
-                .map(value -> convert(date, currency, value))
+                .filter(tradeValuation -> tradeValuation.getValuationDate().isAfter(dayRange))
+                .map(value -> convert(currency, value))
                 .collect(toList());
         valueService.save(values, 1);
         List<MarginValue> marginValues = generate(values);
@@ -60,11 +63,11 @@ public class PortfolioValuationPersister implements ResultPersister<PortfolioRes
         return portfolioIds;
     }
 
-    private TradeValue convert(LocalDate date, Currency currency, TradeValuation value) {
+    private TradeValue convert(Currency currency, TradeValuation value) {
         String tradeId = value.getTradeId();
         com.acuo.persist.entity.TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
 
-        TradeValue newValue = createValue(date, currency, value.getMarketValue(), "Portfolio");
+        TradeValue newValue = createValue(value.getValuationDate(), currency, value.getMarketValue(), "Portfolio");
         newValue.setValuation(valuation);
 
         return newValue;
