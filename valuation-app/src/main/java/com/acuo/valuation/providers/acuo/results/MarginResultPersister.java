@@ -12,6 +12,7 @@ import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -78,12 +79,15 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
         Set<MarginValue> values = valuation.getValues();
         if(values != null) {
             Set<MarginValue> toRemove = values.stream()
-                    .filter(relation -> valuationDate.equals(relation.getDateTime()))
+                    .filter(relation -> valuationDate.equals(relation.getValuationDate()))
                     .collect(toSet());
             values.removeAll(toRemove);
         }
 
-        MarginValue newValue = createValue(valuationDate, currency, marginValuation.getAccount(), "Clarus");
+        // reverse the margin for IM
+        final Double value = (callType.equals(Types.CallType.Initial)) ? -1*marginValuation.getAccount() : marginValuation.getAccount();
+
+        MarginValue newValue = createValue(valuationDate, currency, value, "Clarus");
         newValue.setValuation(valuation);
 
         return newValue;
@@ -94,7 +98,8 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
         newValue.setAmount(amount);
         newValue.setSource(source);
         newValue.setCurrency(Currency.of(currency));
-        newValue.setDateTime(valuationDate);
+        newValue.setValuationDate(valuationDate);
+        newValue.setTimestamp(Instant.now());
         return newValue;
     }
 }

@@ -15,6 +15,7 @@ import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,9 +56,9 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
             return Collections.emptySet();
         }
 
-        log.info("persisting {} markit result of {}", markitResults.getResults().size(), markitResults.getDate());
+        log.info("persisting {} markit result of {}", markitResults.getResults().size(), markitResults.getValuationDate());
 
-        LocalDate date = markitResults.getDate();
+        LocalDate date = markitResults.getValuationDate();
         Currency currency = markitResults.getCurrency();
 
         List<Result<MarkitValuation>> results = markitResults.getResults();
@@ -67,7 +68,7 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
                 .collect(toList());
         valueService.save(values, 1);
         List<MarginValue> marginValues = generate(values);
-        Iterable<MarginValue> save = valueService.save(marginValues, 1);
+        valueService.save(marginValues, 1);
         Set<PortfolioId> portfolioIds = marginValues.stream()
                 .map(value -> value.getValuation().getPortfolio().getPortfolioId())
                 .collect(toSet());
@@ -107,7 +108,7 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
     }
 
     private LocalDate valuationDate(TradeValue value) {
-        return value.getDateTime();
+        return value.getValuationDate();
     }
 
 
@@ -116,7 +117,8 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
         newValue.setSource(source);
         newValue.setCurrency(currency);
         newValue.setPv(pv);
-        newValue.setDateTime(valuationDate);
+        newValue.setValuationDate(valuationDate);
+        newValue.setTimestamp(Instant.now());
         return newValue;
     }
 
@@ -143,7 +145,7 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
         Set<MarginValue> values = valuation.getValues();
         if(values != null) {
             Set<MarginValue> toRemove = values.stream()
-                    .filter(relation -> valuationDate.equals(relation.getDateTime()))
+                    .filter(relation -> valuationDate.equals(relation.getValuationDate()))
                     .collect(toSet());
             values.removeAll(toRemove);
         }
@@ -159,7 +161,8 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
         newValue.setAmount(amount);
         newValue.setSource(source);
         newValue.setCurrency(currency);
-        newValue.setDateTime(valuationDate);
+        newValue.setValuationDate(valuationDate);
+        newValue.setTimestamp(Instant.now());
         return newValue;
     }
 }

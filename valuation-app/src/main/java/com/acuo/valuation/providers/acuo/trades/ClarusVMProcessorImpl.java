@@ -3,7 +3,7 @@ package com.acuo.valuation.providers.acuo.trades;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.acuo.results.ClarusValuationProcessor;
-import com.acuo.valuation.services.MarginCalcService;
+import com.acuo.valuation.providers.clarus.services.ClarusMarginService;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -13,17 +13,17 @@ import static com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType
 
 public class ClarusVMProcessorImpl extends ClarusPricingProcessor {
 
-    private final MarginCalcService marginCalcService;
+    private final ClarusMarginService clarusMarginService;
 
     @Inject
     public ClarusVMProcessorImpl(ClarusValuationProcessor resultProcessor,
-                                 MarginCalcService marginCalcService) {
+                                 ClarusMarginService clarusMarginService) {
         super(resultProcessor);
-        this.marginCalcService = marginCalcService;
+        this.clarusMarginService = clarusMarginService;
     }
 
     @Override
     protected MarginResults send(List<SwapTrade> swapTrades) {
-        return marginCalcService.send(swapTrades, LCH, VM);
+        return clarusMarginService.send(swapTrades, LCH, VM);
     }
 }

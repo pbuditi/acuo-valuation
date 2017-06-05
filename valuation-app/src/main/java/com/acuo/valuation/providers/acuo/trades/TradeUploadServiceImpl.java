@@ -55,7 +55,7 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         this.cacheManager = new CacheManager();
     }
 
-    public List<String> uploadTradesFromExcel(InputStream fis) {
+    public List<String> fromExcel(InputStream fis) {
         List<Trade> tradeIdList = new ArrayList<>();
         try {
             Workbook workbook = new XSSFWorkbook(fis);

@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface TradeUploadService {
 
-    List<String> uploadTradesFromExcel(InputStream fis);
+    List<String> fromExcel(InputStream fis);
 }

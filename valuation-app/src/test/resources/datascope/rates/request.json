@@ -1,0 +1,485 @@
+{
+  "ExtractionRequest" : {
+    "@odata.type" : "#ThomsonReuters.Dss.Api.Extractions.ExtractionRequests.IntradayPricingExtractionRequest",
+    "ContentFieldNames" : [ "RIC", "Mid Price", "Last Update Time" ],
+    "IdentifierList" : {
+      "@odata.type" : "#ThomsonReuters.Dss.Api.Extractions.ExtractionRequests.InstrumentIdentifierList",
+      "InstrumentIdentifiers" : [ {
+        "Identifier" : "AEDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "AFNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ALLUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "AMDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ANGUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "AOAUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ARSUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "AWGUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "AZNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BAMUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BBDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BDTUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BGNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BHDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BIFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BMDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BNDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BOBUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BRLUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BSDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BTNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BYNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "BZDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CADUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CDFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CHFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CLFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CLPUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CNHUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CNYUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "COPUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CRCUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CUPUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CVEUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "CZKUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "DJFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "DKKUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "DOPUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "DZDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ECSUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "EGPUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ERNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ETBUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "GELUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "GHSUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "GMDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "GNFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "GTQUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "GYDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "HKDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "HNLUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "HRKUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "HTGUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "HUFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "IDRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ILSUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "INRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "IQDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "IRRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ISKUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "JMDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "JODUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "JPYUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "KESUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "KGSUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "KHRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "KMFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "KPWUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "KRWUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "KWDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "KYDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "KZTUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "LAKUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "LBPUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "LKRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "LRDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "LSLUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "LYDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MADUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MDLUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MGAUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MKDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MMKUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MNTUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MOPUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MROUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MURUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MVRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MWKUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MXNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MYRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "MZNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "NADUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "NGNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "NIOUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "NOKUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "NPRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "OMRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "PABUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "PENUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "PHPUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "PKRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "PLNUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "PYGUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "QARUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "RONUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "RSDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "RUBUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "RWFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SARUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SCRUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SDGUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SEKUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SGDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SLLUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SOSUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SRDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "STDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SVCUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SYPUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "SZLUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "THBUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "TJSUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "TMTUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "TNDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "TRYUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "TTDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "TWDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "TZSUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "UAHUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "UGXUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDAUD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDBWP=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDEUR=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDFJD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDFKP=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDGBP=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDGIP=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDNZD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDPGK=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDRON=REU",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDSBD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDSHP=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDTOP=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "USDWST=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "UYUUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "UZSUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "VEFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "VNDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "VUVUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "XAFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "XCDUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "XOFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "XPFUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "YERUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ZARUSD=R",
+        "IdentifierType" : "Ric"
+      }, {
+        "Identifier" : "ZMWUSD=R",
+        "IdentifierType" : "Ric"
+      } ],
+      "UseUserPreferencesForValidationOptions" : false
+    },
+    "Condition" : {
+      "ScalableCurrency" : true
+    }
+  }
+}

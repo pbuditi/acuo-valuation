@@ -30,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -98,7 +99,7 @@ public class MarginCallResourceTest implements WithResteasyFixtures {
         dispatcher.getRegistry().addSingletonResource(resource);
         setMockMarkitResponse();
         importService.reload();
-        tradeUploadService.uploadTradesFromExcel(one.createInputStream());
+        tradeUploadService.fromExcel(one.createInputStream());
     }
 
     private void setMockMarkitResponse() throws IOException {
@@ -120,7 +121,7 @@ public class MarginCallResourceTest implements WithResteasyFixtures {
         assertThat(response.getContentAsString()).isNotNull();
         String json = response.getContentAsString();
         Assert.assertThat(json, isJson());
-        assertEquals(generateResponse.getContent(), json);
+        assertThatJson(json).isEqualTo(generateResponse.getContent());
     }
 
     @AfterClass

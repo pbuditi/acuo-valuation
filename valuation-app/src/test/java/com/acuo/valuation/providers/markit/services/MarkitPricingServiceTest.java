@@ -6,7 +6,6 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.TradeId;
@@ -65,7 +64,13 @@ public class MarkitPricingServiceTest {
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
+    public ResourceFile all = new ResourceFile("/excel/TradePortfolio.xlsx");
+
+    @Rule
     public ResourceFile test02 = new ResourceFile("/markit/reports/markit-test-02.xml");
+
+    @Rule
+    public ResourceFile largeReport = new ResourceFile("/markit/reports/large.xml");
 
     @Inject
     ReportParser reportParser;
@@ -97,17 +102,12 @@ public class MarkitPricingServiceTest {
 
         importService.reload();
 
-        final List<String> tradeIds = tradeUploadService.uploadTradesFromExcel(oneIRS.createInputStream());
-
-        swaps = tradeIds.stream()
-                .map(id -> (IRS) tradeService.find(TradeId.fromString(id)))
-                .map(irs -> SwapTradeBuilder.buildTrade(irs))
-                .collect(toList());
+        swaps = loadTrades(oneIRS);
     }
 
     @Test
     public void testPriceSwapWithErrorReport() {
-        when(sender.send(any(List.class))).thenReturn(ReportHelper.reportError());
+        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(ReportHelper.reportError());
 
         MarkitResults markitResults = new MarkitResults();
         markitResults.setResults(Collections.EMPTY_LIST);
@@ -120,13 +120,8 @@ public class MarkitPricingServiceTest {
 
     @Test
     public void testPriceSwapWithNoErrorReport() {
-        when(sender.send(any(List.class))).thenReturn(ReportHelper.report());
-        MarkitValue markitValue = new MarkitValue();
-        markitValue.setTradeId("id1");
-        markitValue.setPv(1.0d);
-        MarkitResults expectedResults = new MarkitResults();
-        expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
+        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(ReportHelper.report());
+        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
 
         MarkitResults results = service.priceSwapTrades(swaps);
 
@@ -140,13 +135,8 @@ public class MarkitPricingServiceTest {
 
     @Test
     public void testPriceSwapWithReportFromFile() throws Exception {
-        when(sender.send(any(List.class))).thenReturn(reportParser.parse(test02.getContent()));
-        MarkitValue markitValue = new MarkitValue();
-        markitValue.setTradeId("id1");
-        markitValue.setPv(1.0d);
-        MarkitResults expectedResults = new MarkitResults();
-        expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
+        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(reportParser.parse(test02.getContent()));
+        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
 
         MarkitResults results = service.priceSwapTrades(asList(SwapHelper.createTrade()));
 
@@ -161,15 +151,8 @@ public class MarkitPricingServiceTest {
     @Test
     public void testPriceSwapFromClientId() throws Exception {
 
-        when(sender.send(any(List.class))).thenReturn(reportParser.parse(test02.getContent()));
-
-        MarkitValue markitValue = new MarkitValue();
-        markitValue.setTradeId("id1");
-        markitValue.setPv(1.0d);
-
-        MarkitResults expectedResults = new MarkitResults();
-        expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults);
+        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(reportParser.parse(test02.getContent()));
+        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
 
         MarkitResults results = service.priceTradesOf(ClientId.fromString("c1"));
 
@@ -179,5 +162,38 @@ public class MarkitPricingServiceTest {
         Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
+    }
+
+    private MarkitResults expectedResults() {
+        MarkitValue markitValue = new MarkitValue();
+        markitValue.setTradeId("id1");
+        markitValue.setPv(1.0d);
+
+        MarkitResults expectedResults = new MarkitResults();
+        expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
+        return expectedResults;
+    }
+
+    @Test
+    public void testPriceTradesByBulk() throws Exception {
+
+        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(reportParser.parse(largeReport.getContent()));
+        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
+
+        List<SwapTrade> all = loadTrades(this.all);
+
+        MarkitResults results = service.priceSwapTradesByBulk(all);
+
+        assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
+
+    }
+
+    private List<SwapTrade> loadTrades(ResourceFile file) {
+        final List<String> tradeIds = tradeUploadService.fromExcel(file.createInputStream());
+
+        return tradeIds.stream()
+                .map(id -> tradeService.find(TradeId.fromString(id)))
+                .map(irs -> SwapTradeBuilder.buildTrade(irs))
+                .collect(toList());
     }
 }

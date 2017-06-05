@@ -75,20 +75,20 @@ public class TradeUploadServiceTest {
 
     @Test
     public void testUploadOneIRS() {
-        List<String> tradeIds = service.uploadTradesFromExcel(oneIRS.createInputStream());
+        List<String> tradeIds = service.fromExcel(oneIRS.createInputStream());
         assertThat(tradeIds).isNotEmpty();
     }
 
     @Test
     public void testUploadAll() throws IOException {
-        List<String> tradeIds = service.uploadTradesFromExcel(excel.createInputStream());
+        List<String> tradeIds = service.fromExcel(excel.createInputStream());
         assertThat(tradeIds).isNotEmpty().doesNotContainNull();
     }
 
     @Test
     public void testHandleIRSOneRowUpdate() throws IOException {
-        service.uploadTradesFromExcel(oneIRS.createInputStream());
-        service.uploadTradesFromExcel(oneIRS.createInputStream());
+        service.fromExcel(oneIRS.createInputStream());
+        service.fromExcel(oneIRS.createInputStream());
         Iterable<Trade> irses = irsService.findAll();
         assertThat(irses).isNotEmpty().hasSize(2);
     }
@@ -96,7 +96,7 @@ public class TradeUploadServiceTest {
     @Test
     public void testConcurrentUpload() {
         new MultithreadingTester().numThreads(10).numRoundsPerThread(1).add(() -> {
-            service.uploadTradesFromExcel(oneIRS.createInputStream());
+            service.fromExcel(oneIRS.createInputStream());
             Thread.sleep(1000);
             return null;
         }).run();

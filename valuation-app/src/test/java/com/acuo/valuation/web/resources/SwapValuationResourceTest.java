@@ -145,7 +145,7 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Test
     public void testValuationAll() throws URISyntaxException, IOException {
-        tradeUploadService.uploadTradesFromExcel(one.createInputStream());
+        tradeUploadService.fromExcel(one.createInputStream());
 
         setMockMarkitResponse();
 

@@ -42,7 +42,7 @@ public class UploadResource {
     public Response upload(@MultipartForm UploadForm entity) throws IOException {
         ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
         log.info("start uploading trade file ");
-        List<String> trades = irsService.uploadTradesFromExcel(fis);
+        List<String> trades = irsService.fromExcel(fis);
         final UploadResponse response = new UploadResponse();
         final UploadResponse.Status success = new UploadResponse.Status(UploadResponse.StatusType.success, trades.size() +" trades have been uploaded");
         final UploadResponse.Status failure = new UploadResponse.Status(UploadResponse.StatusType.failure, "no trade have failed to upload");

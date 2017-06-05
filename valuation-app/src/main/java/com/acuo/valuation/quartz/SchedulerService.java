@@ -1,6 +1,5 @@
 package com.acuo.valuation.quartz;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.AbstractService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobBuilder;
@@ -35,12 +34,12 @@ public class SchedulerService extends AbstractService {
         if (!disabled) {
             try {
                 JobDetail jobDetail = JobBuilder
-                        .newJob(TradePriceJob.class)
-                        .withIdentity("TradePriceJob", "markitgroup")
+                        .newJob(GenerateCallJob.class)
+                        .withIdentity("GenerateCallJob", "markitgroup")
                         .build();
                 Trigger trigger = TriggerBuilder
                         .newTrigger()
-                        .withIdentity("TradePriceJob", "markitgroup")
+                        .withIdentity("GenerateCallJob", "markitgroup")
                         .withSchedule(cronSchedule("0 0 1 * * ?"))
                         .build();
 
@@ -55,13 +54,17 @@ public class SchedulerService extends AbstractService {
                         .withSchedule(cronSchedule("0 0/5 * * * ?"))
                         .build();
 
-                JobDetail fxjob = JobBuilder.newJob(FXValueJob.class)
-                        .withIdentity("FXValueJob", "datascoupegroup")
+                JobDetail fxScheduledJob = JobBuilder.newJob(FXScheduledValueJob.class)
+                        .withIdentity("FXScheduledValueJob", "datascoupegroup")
+                        .build();
+
+                JobDetail fxIntradayJob = JobBuilder.newJob(FXRatesIntradayJob.class)
+                        .withIdentity("FXRatesIntradayJob", "datascoupegroup")
                         .build();
 
                 Trigger fxTrigger = TriggerBuilder
                         .newTrigger()
-                        .withIdentity("FXValueJob", "datascoupegroup")
+                        .withIdentity("FXScheduledValueJob", "datascoupegroup")
                         .withSchedule(cronSchedule("0 0 * * * ?").withMisfireHandlingInstructionFireAndProceed())
                         .build();
 
@@ -74,7 +77,8 @@ public class SchedulerService extends AbstractService {
 
                 scheduler.scheduleJob(jobDetail, trigger);
                 scheduler.scheduleJob(assetjob, assetTrigger);
-                scheduler.scheduleJob(fxjob, ImmutableSet.of(fxTrigger, once), false);
+                scheduler.scheduleJob(fxIntradayJob, fxTrigger);
+                scheduler.scheduleJob(fxScheduledJob, once);
 
                 scheduler.start();
                 notifyStarted();
