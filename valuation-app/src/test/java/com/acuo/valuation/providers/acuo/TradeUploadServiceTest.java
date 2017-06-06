@@ -75,7 +75,7 @@ public class TradeUploadServiceTest {
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio24-05-17.xlsx");
+    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio18-05-17v2-NPV.xlsx");
 
     @Before
     public void setup() throws IOException {
@@ -86,20 +86,20 @@ public class TradeUploadServiceTest {
 
     @Test
     public void testUploadOneIRS() {
-        List<String> tradeIds = service.fromExcel(oneIRS.createInputStream());
+        List<String> tradeIds = service.fromExcelNew(oneIRS.createInputStream());
         assertThat(tradeIds).isNotEmpty();
     }
 
     @Test
     public void testUploadAll() throws IOException {
-        List<String> tradeIds = service.fromExcel(excel.createInputStream());
+        List<String> tradeIds = service.fromExcelNew(excel.createInputStream());
         assertThat(tradeIds).isNotEmpty().doesNotContainNull();
     }
 
     @Test
     public void testHandleIRSOneRowUpdate() throws IOException {
-        service.fromExcel(oneIRS.createInputStream());
-        service.fromExcel(oneIRS.createInputStream());
+        service.fromExcelNew(oneIRS.createInputStream());
+        service.fromExcelNew(oneIRS.createInputStream());
         Iterable<Trade> irses = irsService.findAll();
         assertThat(irses).isNotEmpty().hasSize(2);
     }
@@ -107,7 +107,7 @@ public class TradeUploadServiceTest {
     @Test
     public void testConcurrentUpload() {
         new MultithreadingTester().numThreads(10).numRoundsPerThread(1).add(() -> {
-            service.fromExcel(oneIRS.createInputStream());
+            service.fromExcelNew(oneIRS.createInputStream());
             Thread.sleep(1000);
             return null;
         }).run();
@@ -116,7 +116,7 @@ public class TradeUploadServiceTest {
     @Test
     public void testCompareVersion()
     {
-        List<String> tradeIds = service.fromExcel(excel.createInputStream());
+        List<String> tradeIds = service.fromExcelNew(excel.createInputStream());
         Iterator<Trade> olds = irsService.findAll(2).iterator();
         importService.reload();
         service.fromExcelNew(excel.createInputStream());

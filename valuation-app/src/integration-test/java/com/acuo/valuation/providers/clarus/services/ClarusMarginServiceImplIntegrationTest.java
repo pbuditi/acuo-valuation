@@ -66,7 +66,7 @@ public class ClarusMarginServiceImplIntegrationTest {
     @Before
     public void setup() {
         importService.reload();
-        tradeUploadService.fromExcel(oneIRS.createInputStream());
+        tradeUploadService.fromExcelNew(oneIRS.createInputStream());
     }
 
     @Test

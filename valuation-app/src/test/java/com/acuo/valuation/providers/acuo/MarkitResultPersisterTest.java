@@ -88,7 +88,7 @@ public class MarkitResultPersisterTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         importService.reload();
-        tradeUploadService.fromExcel(oneIRS.createInputStream());
+        tradeUploadService.fromExcelNew(oneIRS.createInputStream());
         persister = new MarkitResultPersister(valuationService, valueService);
     }
 

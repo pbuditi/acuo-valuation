@@ -80,7 +80,7 @@ public class ClarusPricingProcessorTest {
         server.start(8282);
 
         importService.reload();
-        List<String> tradeIds = tradeUploadService.fromExcel(oneIRS.createInputStream());
+        List<String> tradeIds = tradeUploadService.fromExcelNew(oneIRS.createInputStream());
         swaps = tradeIds.stream()
                 .map(id -> (IRS) tradeService.find(TradeId.fromString(id)))
                 .collect(toList());

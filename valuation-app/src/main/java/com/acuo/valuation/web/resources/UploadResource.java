@@ -4,6 +4,7 @@ import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.model.results.TradeValuation;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.PortfolioId;
+import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
@@ -33,7 +34,10 @@ import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.CREATED;
@@ -69,7 +73,13 @@ public class UploadResource {
     public Response upload(@MultipartForm UploadForm entity) throws IOException {
         ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
         log.info("start uploading trade file ");
-        List<String> portfolios = irsService.fromExcelNew(fis);
+        List<String> tradeIds = irsService.fromExcelNew(fis);
+        Iterator<Trade> trades = tradeService.findAllTradeByIds(tradeIds.stream().map(s -> TradeId.fromString(s)).collect(Collectors.toList())).iterator();
+        Set<PortfolioId> portfolios = new HashSet<>();
+        while(trades.hasNext())
+        {
+            portfolios.add(trades.next().getPortfolio().getPortfolioId());
+        }
         List<TradeValuation> tradeValuations = transformer.deserialise(TradeUploadServiceImpl.toByteArray(fis));
         PortfolioResults results = new PortfolioResults();
         results.setResults(tradeValuations.stream().map(tradeValuation -> Result.success(tradeValuation)).collect(Collectors.toList()));
@@ -83,7 +93,7 @@ public class UploadResource {
 //        String tnxId = cacheService.put(trades);
 //        response.setTxnID(tnxId);
 //        log.info("uploading trade file complete, txnId [{}]", tnxId);
-        final MarginCallResponse  response = MarginCallResponse.ofPortfolio(portfolios.stream().map(id -> portfolioService.find(PortfolioId.fromString(id), 2)).collect(Collectors.toList()), tradeService, valuationService);
+        final MarginCallResponse  response = MarginCallResponse.ofPortfolio(portfolios.stream().map(id -> portfolioService.find(id, 2)).collect(Collectors.toList()), tradeService, valuationService);
         return Response.status(CREATED).entity(response).build();
     }
 }

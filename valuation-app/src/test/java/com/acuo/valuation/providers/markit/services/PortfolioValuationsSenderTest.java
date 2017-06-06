@@ -103,7 +103,7 @@ public class PortfolioValuationsSenderTest {
 
         importService.reload();
 
-        final List<String> tradeIds = tradeUploadService.fromExcel(oneIRS.createInputStream());
+        final List<String> tradeIds = tradeUploadService.fromExcelNew(oneIRS.createInputStream());
 
         swaps = tradeIds.stream()
                 .map(id -> (IRS) tradeService.find(TradeId.fromString(id)))

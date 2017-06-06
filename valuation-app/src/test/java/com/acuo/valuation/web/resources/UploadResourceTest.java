@@ -55,13 +55,11 @@ public class UploadResourceTest implements WithResteasyFixtures {
     Dispatcher dispatcher;
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio.xlsx");
+    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio18-05-17v2-NPV.xlsx");
 
     @Rule
     public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");
 
-    @Rule
-    public ResourceFile newFile = new ResourceFile("/excel/TradePortfolio18-05-17v2-NPV.xlsx");
 
     @Rule
     public ResourceFile generatedllMC = new ResourceFile("/acuo/margincalls/upload-all-mc.json");
@@ -88,10 +86,6 @@ public class UploadResourceTest implements WithResteasyFixtures {
         testFileUpload(excel);
     }
 
-    @Test
-    public void testUploadnewFile() throws URISyntaxException, IOException {
-        testFileUpload(newFile);
-    }
 
     @Test
     public void testUploadSmallFileMultipleTimes() throws URISyntaxException, IOException {

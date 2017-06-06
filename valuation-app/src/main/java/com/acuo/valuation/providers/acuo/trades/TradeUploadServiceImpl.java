@@ -129,8 +129,8 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        //return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
-        return swapTrades.stream().map(swapTrade -> swapTrade.getInfo().getPortfolio()).distinct().collect(Collectors.toList());
+        return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
+        //return swapTrades.stream().map(swapTrade -> swapTrade.getInfo().getPortfolio()).distinct().collect(Collectors.toList());
     }
 
     private Trade buildTradeNew(SwapTrade swapTrade)

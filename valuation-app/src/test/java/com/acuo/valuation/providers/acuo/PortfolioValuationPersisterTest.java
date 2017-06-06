@@ -75,7 +75,7 @@ public class PortfolioValuationPersisterTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         importService.reload();
-        tradeUploadService.fromExcel(oneIRS.createInputStream());
+        tradeUploadService.fromExcelNew(oneIRS.createInputStream());
         persister = new PortfolioValuationPersister(valuationService, valueService);
     }
 
@@ -105,6 +105,7 @@ public class PortfolioValuationPersisterTest {
         com.acuo.common.model.results.TradeValuation markitValue = new com.acuo.common.model.results.TradeValuation();
         markitValue.setTradeId(tradeId);
         markitValue.setMarketValue(new Double(-30017690));
+        markitValue.setValuationDate(LocalDate.now());
         Result<TradeValuation> result = Result.success(markitValue);
         results.add(result);
         PortfolioResults markitResults = new PortfolioResults();
