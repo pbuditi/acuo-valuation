@@ -2,6 +2,7 @@ package com.acuo.valuation.modules;
 
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarkitResults;
+import com.acuo.valuation.protocol.results.PortfolioResults;
 import com.acuo.valuation.providers.acuo.assets.AssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.assets.CashAssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.assets.ReutersAssetPricingProcessor;
@@ -15,13 +16,7 @@ import com.acuo.valuation.providers.acuo.results.MarkitResultPersister;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.providers.acuo.results.ResultProcessor;
-import com.acuo.valuation.providers.acuo.trades.ClarusIMProcessorImpl;
-import com.acuo.valuation.providers.acuo.trades.ClarusPricingProcessor;
-import com.acuo.valuation.providers.acuo.trades.ClarusVMProcessorImpl;
-import com.acuo.valuation.providers.acuo.trades.LocalTradeCacheService;
-import com.acuo.valuation.providers.acuo.trades.MarkitPricingProcessor;
-import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
-import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
+import com.acuo.valuation.providers.acuo.trades.*;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginServiceImpl;
 import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthServiceImpl;
 import com.acuo.valuation.providers.datascope.service.intraday.DataScopeIntradayService;
@@ -73,6 +68,7 @@ public class ServicesModule extends AbstractModule {
         bind(MarkitValuationProcessor.class);
         bind(MarkitResultPersister.class);
         bind(MarkitPricingProcessor.class);
+        bind(new TypeLiteral<ResultPersister<PortfolioResults>>(){}).to(PortfolioValuationPersister.class);
 
         // clarus portfolio valuation and margin call generation
         bind(ClarusMarginService.class).to(ClarusMarginServiceImpl.class);
@@ -96,6 +92,7 @@ public class ServicesModule extends AbstractModule {
         bind(DataScopeDownloadService.class).to(DataScopeDownloadServiceImpl.class);
         bind(DataScopePersistService.class).to(DataScopePersistServiceImpl.class);
         bind(DataScopeIntradayService.class).to(DataScopeIntradayServiceImpl.class);
+
     }
 
     @Provides

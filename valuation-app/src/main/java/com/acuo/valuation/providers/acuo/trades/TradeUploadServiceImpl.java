@@ -117,10 +117,11 @@ public class TradeUploadServiceImpl implements TradeUploadService {
     public List<String> fromExcelNew(InputStream fis)
     {
         List<Trade> tradeIdList = new ArrayList<>();
+        List<SwapTrade> swapTrades = null;
 
         try
         {
-            List<SwapTrade> swapTrades = transformer.deserialise(toByteArray(fis));
+           swapTrades = transformer.deserialise(toByteArray(fis));
             tradeIdList = swapTrades.stream().map(swapTrade -> buildTradeNew(swapTrade)).collect(Collectors.toList());
             //log.info(tradeIdList.toString());
             tradeService.createOrUpdate(tradeIdList);
@@ -128,7 +129,8 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
+        //return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
+        return swapTrades.stream().map(swapTrade -> swapTrade.getInfo().getPortfolio()).distinct().collect(Collectors.toList());
     }
 
     private Trade buildTradeNew(SwapTrade swapTrade)
