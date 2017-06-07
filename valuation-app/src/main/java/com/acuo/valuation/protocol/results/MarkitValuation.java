@@ -1,5 +1,8 @@
 package com.acuo.valuation.protocol.results;
 
+import com.opengamma.strata.collect.result.FailureItem;
+import com.opengamma.strata.collect.result.FailureReason;
+import com.opengamma.strata.collect.result.ValueWithFailures;
 import lombok.Data;
 import org.neo4j.helpers.collection.Iterators;
 
@@ -7,27 +10,38 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Data
 public class MarkitValuation {
 
-    private final Double pv;
+    private final ValueWithFailures<Double> value;
     private final String tradeId;
 
     public MarkitValuation(List<Value> values) {
-        this.pv = computePv(values);
         this.tradeId = checkUniqueTradeId(values);
-    }
-
-    private Double computePv(List<Value> values) {
-        return values.stream().map(Value::getPv).reduce(0.0d, (a, b) -> a + b);
+        Double pv = computePv(values);
+        List<FailureItem> failures = failures(values);
+        this.value = ValueWithFailures.of(pv, failures);
     }
 
     public MarkitValuation(Value... values) {
-        List<Value> v = Arrays.asList(values);
-        this.pv = computePv(v);
-        this.tradeId = checkUniqueTradeId(v);
+        this(Arrays.asList(values));
+    }
+
+    private Double computePv(List<Value> values) {
+        return values.stream()
+                .filter(value -> !"Failed".equalsIgnoreCase(value.getStatus()))
+                .map(Value::getPv)
+                .reduce(0.0d, (a, b) -> a + b);
+    }
+
+    private List<FailureItem> failures(List<Value> values) {
+        return values.stream()
+                .filter(value -> "Failed".equalsIgnoreCase(value.getStatus()))
+                .map(value -> FailureItem.of(FailureReason.ERROR, "{}", value.getErrorMessage()))
+                .collect(toList());
     }
 
     private String checkUniqueTradeId(List<Value> values) {

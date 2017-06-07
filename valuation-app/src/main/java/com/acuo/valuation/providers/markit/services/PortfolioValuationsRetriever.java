@@ -4,7 +4,6 @@ import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.valuation.protocol.responses.Response;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.MarkitValuation;
-import com.acuo.valuation.protocol.results.Value;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseParser;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
@@ -38,18 +37,8 @@ public class PortfolioValuationsRetriever implements Retriever {
         log.info("with valuation date set to {}", valuationDate);
         final Response response = upload(valuationDate, tradeIds);
 
-        printFailedTrades(tradeIds, response);
 
-        List<Result<MarkitValuation>> results = tradeIds.stream()
-                .map(tradeId -> response.values()
-                        .stream()
-                        .filter(value -> tradeId.equals(value.getTradeId()))
-                        .filter(value -> !"Failed".equalsIgnoreCase(value.getStatus()))
-                        .collect(toList()))
-                .filter(values -> !values.isEmpty())
-                .map(MarkitValuation::new)
-                .map(Result::success)
-                .collect(toList());
+        List<Result<MarkitValuation>> results = results(tradeIds, response);
 
         MarkitResults markitResults = new MarkitResults();
         markitResults.setResults(results);
@@ -59,14 +48,16 @@ public class PortfolioValuationsRetriever implements Retriever {
         return markitResults;
     }
 
-    private void printFailedTrades(List<String> tradeIds, Response response) {
-        List<String> values = response.values()
-                .stream()
-                .filter(value -> tradeIds.contains(value.getTradeId()))
-                .filter(value -> "Failed".equalsIgnoreCase(value.getStatus()))
-                .map(Value::getTradeId)
-                .collect(toList());
-        log.warn("valuation for the following trades has failed: {}",values);
+    private List<Result<MarkitValuation>> results(List<String> tradeIds, Response response) {
+        return tradeIds.stream()
+                    .map(tradeId -> response.values()
+                            .stream()
+                            .filter(value -> tradeId.equals(value.getTradeId()))
+                            .collect(toList()))
+                    .filter(values -> !values.isEmpty())
+                    .map(MarkitValuation::new)
+                    .map(Result::success)
+                    .collect(toList());
     }
 
     private Response upload(LocalDate valuationDate, List<String> tradeIds) {

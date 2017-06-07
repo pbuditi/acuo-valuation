@@ -1,9 +1,11 @@
 package com.acuo.valuation.providers.acuo.results;
 
 import com.acuo.common.model.margin.Types;
+import com.acuo.persist.entity.ErrorValue;
 import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
+import com.acuo.persist.entity.Value;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.ValuationService;
@@ -12,12 +14,14 @@ import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
+import com.opengamma.strata.collect.result.ValueWithFailures;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -62,9 +66,10 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
         Currency currency = markitResults.getCurrency();
 
         List<Result<MarkitValuation>> results = markitResults.getResults();
-        List<TradeValue> values = results.stream()
+        List<Value> values = results.stream()
                 .flatMap(Result::stream)
                 .map(value -> convert(date, currency, value))
+                .flatMap(Collection::stream)
                 .collect(toList());
         valueService.save(values, 1);
         List<MarginValue> marginValues = generate(values);
@@ -75,18 +80,36 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
         return portfolioIds;
     }
 
-    private TradeValue convert(LocalDate date, Currency currency, MarkitValuation value) {
+    private List<Value> convert(LocalDate date, Currency currency, MarkitValuation value) {
+        List<Value> values = new ArrayList<>();
         String tradeId = value.getTradeId();
         TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
 
-        TradeValue newValue = createValue(date, currency, value.getPv(), "Markit");
+        ValueWithFailures<Double> result = value.getValue();
+        TradeValue newValue = createValue(date, currency, result.getValue(), "Markit");
         newValue.setValuation(valuation);
 
-        return newValue;
+        values.add(newValue);
+
+        List<ErrorValue> errorValues = result.getFailures().stream()
+                .map(failureItem -> {
+                    ErrorValue error = new ErrorValue();
+                    error.setReason(failureItem.getReason().name());
+                    error.setMessage(failureItem.getMessage());
+                    error.setValuation(valuation);
+                    return error;
+                })
+                .collect(toList());
+
+        values.addAll(errorValues);
+
+        return values;
     }
 
-    private List<MarginValue> generate(List<TradeValue> values) {
+    private List<MarginValue> generate(List<Value> values) {
         Map<LocalDate, Map<PortfolioId, Map<Currency, List<Double>>>> map = values.stream()
+                .filter(value -> value instanceof TradeValue)
+                .map(value -> (TradeValue)value)
                 .collect(
                         groupingBy(this::valuationDate,
                                 groupingBy(this::portfolioId,

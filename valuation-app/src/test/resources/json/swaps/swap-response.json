@@ -2,7 +2,7 @@
   "valuationDate" : "${json-unit.ignore}",
   "currency" : "USD",
   "results" : [ {
-    "pv" : -20277.510590907827,
+    "value" : {"value":-20277.510590907827,"failures":[]},
     "tradeId" : "IRS_VANILLA"
   } ]
 }

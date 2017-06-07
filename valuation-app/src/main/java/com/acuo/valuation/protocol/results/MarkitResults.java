@@ -13,5 +13,6 @@ public class MarkitResults {
     private LocalDate valuationDate;
     private Currency currency;
     private List<Result<MarkitValuation>> results;
+    private List<Result<MarkitError>> errors;
 
 }
