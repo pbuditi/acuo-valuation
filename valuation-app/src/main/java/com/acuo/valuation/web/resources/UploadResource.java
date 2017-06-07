@@ -69,8 +69,9 @@ public class UploadResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_JSON})
+    @Path("/v1")
     @Timed
-    public Response upload(@MultipartForm UploadForm entity) throws IOException {
+    public Response uploadV1(@MultipartForm UploadForm entity) throws IOException {
         ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
         log.info("start uploading trade file ");
         List<String> tradeIds = irsService.fromExcelNew(fis);
@@ -86,14 +87,25 @@ public class UploadResource {
         results.setCurrency(Currency.USD);
         results.setValuationDate(LocalDate.now());
         persister.persist(results);
-//        final UploadResponse response = new UploadResponse();
-//        final UploadResponse.Status success = new UploadResponse.Status(UploadResponse.StatusType.success, trades.size() +" trades have been uploaded");
-//        final UploadResponse.Status failure = new UploadResponse.Status(UploadResponse.StatusType.failure, "no trade have failed to upload");
-//        response.setStatuses(ImmutableList.of(success, failure));
-//        String tnxId = cacheService.put(trades);
-//        response.setTxnID(tnxId);
-//        log.info("uploading trade file complete, txnId [{}]", tnxId);
         final MarginCallResponse  response = MarginCallResponse.ofPortfolio(portfolios.stream().map(id -> portfolioService.find(id, 2)).collect(Collectors.toList()), tradeService, valuationService);
+        return Response.status(CREATED).entity(response).build();
+    }
+
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces({MediaType.APPLICATION_JSON})
+    @Timed
+    public Response upload(@MultipartForm UploadForm entity) throws IOException {
+        ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
+        log.info("start uploading trade file ");
+        List<String> trades = irsService.fromExcel(fis);
+        final UploadResponse response = new UploadResponse();
+        final UploadResponse.Status success = new UploadResponse.Status(UploadResponse.StatusType.success, trades.size() +" trades have been uploaded");
+        final UploadResponse.Status failure = new UploadResponse.Status(UploadResponse.StatusType.failure, "no trade have failed to upload");
+        response.setStatuses(ImmutableList.of(success, failure));
+        String tnxId = cacheService.put(trades);
+        response.setTxnID(tnxId);
+        log.info("uploading trade file complete, txnId [{}]", tnxId);
         return Response.status(CREATED).entity(response).build();
     }
 }
