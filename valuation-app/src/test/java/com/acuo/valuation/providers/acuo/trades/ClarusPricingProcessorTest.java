@@ -51,19 +51,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ClarusPricingProcessorTest {
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private TradeUploadService tradeUploadService = null;
 
     @Inject
-    ClarusVMProcessorImpl vmProcessor;
+    private ClarusVMProcessorImpl vmProcessor = null;
 
     @Inject
-    ClarusIMProcessorImpl imProcessor;
+    private ClarusIMProcessorImpl imProcessor = null;
 
     @Inject
-    TradeService<Trade> tradeService;
+    private TradeService<Trade> tradeService = null;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -71,9 +71,9 @@ public class ClarusPricingProcessorTest {
     @Rule
     public ResourceFile response = new ResourceFile("/clarus/response/clarus-lch.json");
 
-    MockWebServer server = new MockWebServer();
+    private MockWebServer server = new MockWebServer();
 
-    List<Trade> swaps;
+    private List<Trade> swaps;
 
     @Before
     public void setup() throws IOException {

@@ -11,7 +11,6 @@ import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.protocol.results.PortfolioResults;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
-import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
 import com.acuo.valuation.services.TradeCacheService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.web.entities.UploadForm;
@@ -55,8 +54,13 @@ public class UploadResource {
     private final ValuationService valuationService;
 
     @Inject
-    public UploadResource(TradeUploadService irsService, TradeCacheService cacheService, @Named("tradeValuation") Transformer<TradeValuation> transformer,
-                          ResultPersister<PortfolioResults> persister, PortfolioService portfolioService, TradeService<Trade> tradeService, ValuationService valuationService) {
+    public UploadResource(TradeUploadService irsService,
+                          TradeCacheService cacheService,
+                          @Named("tradeValuation") Transformer<TradeValuation> transformer,
+                          ResultPersister<PortfolioResults> persister,
+                          PortfolioService portfolioService,
+                          TradeService<Trade> tradeService,
+                          ValuationService valuationService) {
         this.irsService = irsService;
         this.cacheService = cacheService;
         this.transformer = transformer;
@@ -75,15 +79,15 @@ public class UploadResource {
         ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
         log.info("start uploading trade file ");
         List<String> tradeIds = irsService.fromExcelNew(fis);
-        Iterator<Trade> trades = tradeService.findAllTradeByIds(tradeIds.stream().map(s -> TradeId.fromString(s)).collect(Collectors.toList())).iterator();
+        Iterator<Trade> trades = tradeService.findAllTradeByIds(tradeIds.stream().map(TradeId::fromString).collect(Collectors.toList())).iterator();
         Set<PortfolioId> portfolios = new HashSet<>();
         while(trades.hasNext())
         {
             portfolios.add(trades.next().getPortfolio().getPortfolioId());
         }
-        List<TradeValuation> tradeValuations = transformer.deserialise(TradeUploadServiceImpl.toByteArray(fis));
+        List<TradeValuation> tradeValuations = null;//transformer.deserialise(TradeUploadServiceImpl.toByteArray(fis));
         PortfolioResults results = new PortfolioResults();
-        results.setResults(tradeValuations.stream().map(tradeValuation -> Result.success(tradeValuation)).collect(Collectors.toList()));
+        results.setResults(tradeValuations.stream().map(Result::success).collect(Collectors.toList()));
         results.setCurrency(Currency.USD);
         results.setValuationDate(LocalDate.now());
         persister.persist(results);

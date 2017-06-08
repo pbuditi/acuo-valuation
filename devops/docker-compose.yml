@@ -1,8 +1,29 @@
-version: '2'
+version: '3.1'
 
 services:
+
+ traefik:
+  image: traefik:v1.3.0
+  container_name: traefik
+  ports:
+   - "80:80"
+   - "8080:8080"
+  volumes:
+   - "./traefik.toml:/traefik.toml"
+   - "/var/run/docker.sock:/var/run/docker.sock"
+
+ valuation:
+  build: ./build
+  image: valuation-app
+  ports:
+   - "9090:9090"
+  depends_on:
+   - neo4j
+  labels:
+   - "traefik.frontend.rule=Host:dev.acuo.com,internal;PathPrefixStrip:/valuation"
+
  neo4j:
-  image: neo4j:3.1.1-enterprise
+  image: neo4j:3.1.5-enterprise
   ports:
    - "7474:7474"
    - "7687:7687"
@@ -11,11 +32,5 @@ services:
    - "7474"
   environment:
    - NEO4J_AUTH=none
-
- valuation:
-  build: ./build
-  image: valuation-app
-  ports:
-   - "9090:9090"
-  links:
-    - neo4j
+  labels:
+   - traefik.enable=false

@@ -4,11 +4,14 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.*;
+import com.acuo.persist.entity.TradeValuation;
+import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.ids.TradeId;
-import com.acuo.persist.modules.*;
-import com.acuo.persist.services.PortfolioService;
-import com.acuo.persist.services.TradeService;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
@@ -56,25 +59,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MarkitResultPersisterTest {
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private TradeUploadService tradeUploadService = null;
 
     @Inject
-    TradeService<Trade> tradeService;
+    private ValuationService valuationService = null;
 
     @Inject
-    ValuationService valuationService;
+    private ValueService valueService = null;
 
     @Inject
-    PortfolioService portfolioService;
-
-    @Inject
-    ValueService valueService;
-
-    @Inject
-    ResponseParser parser;
+    private ResponseParser parser = null;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -82,7 +79,7 @@ public class MarkitResultPersisterTest {
     @Rule
     public ResourceFile large = new ResourceFile("/markit/responses/large.xml");
 
-    MarkitResultPersister persister;
+    private MarkitResultPersister persister;
 
     @Before
     public void setup() throws IOException {
@@ -136,10 +133,10 @@ public class MarkitResultPersisterTest {
     }
 
     private MarkitResults markitResults(LocalDate myDate1, String tradeId) {
-        List<Result<MarkitValuation>> results = new ArrayList<Result<MarkitValuation>>();
+        List<Result<MarkitValuation>> results = new ArrayList<>();
         MarkitValue markitValue = new MarkitValue();
         markitValue.setTradeId(tradeId);
-        markitValue.setPv(new Double(-30017690));
+        markitValue.setPv((double) -30017690);
         MarkitValuation markitValuation = new MarkitValuation(markitValue);
         Result<MarkitValuation> result = Result.success(markitValuation);
         results.add(result);

@@ -48,15 +48,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MarginResultPersisterTest {
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    ValuationService valuationService;
+    private ValuationService valuationService = null;
 
     @Inject
-    ValueService valueService;
+    private ValueService valueService = null;
 
-    MarginResultPersister persister;
+    private MarginResultPersister persister = null;
 
     @Before
     public void setup() throws IOException {

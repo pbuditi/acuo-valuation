@@ -5,11 +5,13 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.ids.TradeId;
-import com.acuo.persist.modules.*;
-import com.acuo.persist.services.TradeService;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
@@ -51,22 +53,18 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class PortfolioValuationPersisterTest {
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private TradeUploadService tradeUploadService = null;
 
     @Inject
-    TradeService<Trade> tradeService;
+    private ValuationService valuationService = null;
 
     @Inject
-    ValuationService valuationService;
+    private ValueService valueService = null;
 
-
-    @Inject
-    ValueService valueService;
-
-    PortfolioValuationPersister persister;
+    private PortfolioValuationPersister persister = null;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -101,10 +99,10 @@ public class PortfolioValuationPersisterTest {
     }
 
     private PortfolioResults portfolioResults(LocalDate myDate1, String tradeId) {
-        List<Result<com.acuo.common.model.results.TradeValuation>> results = new ArrayList<Result<com.acuo.common.model.results.TradeValuation>>();
+        List<Result<com.acuo.common.model.results.TradeValuation>> results = new ArrayList<>();
         com.acuo.common.model.results.TradeValuation markitValue = new com.acuo.common.model.results.TradeValuation();
         markitValue.setTradeId(tradeId);
-        markitValue.setMarketValue(new Double(-30017690));
+        markitValue.setMarketValue(-30017690.0d);
         markitValue.setValuationDate(LocalDate.now());
         Result<TradeValuation> result = Result.success(markitValue);
         results.add(result);

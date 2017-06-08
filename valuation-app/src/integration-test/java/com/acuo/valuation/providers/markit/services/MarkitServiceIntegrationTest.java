@@ -45,16 +45,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MarkitServiceIntegrationTest {
 
     @Inject
-    PricingService pricingService;
+    private PricingService pricingService = null;
 
     @Inject
-    DataImporter dataImporter;
+    private DataImporter dataImporter = null;
 
     @Inject
-    DataLoader dataLoader;
+    private DataLoader dataLoader = null;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private TradeUploadService tradeUploadService = null;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");

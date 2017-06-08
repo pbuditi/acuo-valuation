@@ -33,10 +33,10 @@ import java.io.IOException;
         DataImporterModule.class})
 public class SwapResourceIntegrationTest implements WithResteasyFixtures {
 
-    Dispatcher dispatcher;
+    private Dispatcher dispatcher = null;
 
     @Inject
-    SwapValuationResource resource;
+    private SwapValuationResource resource = null;
 
     @Before
     public void setup() throws IOException {

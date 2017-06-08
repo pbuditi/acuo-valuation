@@ -7,9 +7,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.FRA;
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.ImportServiceModule;
@@ -53,23 +51,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class TradeUploadServiceTest {
 
-    TradeUploadServiceImpl service;
+    private TradeUploadServiceImpl service;
 
     @Inject
-    TradingAccountService accountService;
+    private TradingAccountService accountService = null;
 
     @Inject
-    PortfolioService portfolioService;
+    private PortfolioService portfolioService = null;
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    TradeService<Trade> irsService;
+    private TradeService<Trade> irsService = null;
 
     @Inject
     @Named("portfolio")
-    Transformer<SwapTrade> transformer;
+    private Transformer<SwapTrade> transformer = null;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -114,25 +112,20 @@ public class TradeUploadServiceTest {
     }
 
     @Test
-    public void testCompareVersion()
-    {
-        List<String> tradeIds = service.fromExcelNew(excel.createInputStream());
+    public void testCompareVersion() {
+        service.fromExcelNew(excel.createInputStream());
         Iterator<Trade> olds = irsService.findAll(2).iterator();
         importService.reload();
         service.fromExcelNew(excel.createInputStream());
-        while(olds.hasNext())
-        {
+        while (olds.hasNext()) {
             Trade versionOld = olds.next();
             Trade versionNew = irsService.find(versionOld.getTradeId(), 2);
 
-            if(!(versionNew instanceof FRA) && !versionOld.equals(versionNew))
-            {
+            if (!(versionNew instanceof FRA) && !versionOld.equals(versionNew)) {
                 log.info("old:" + versionOld.toString());
                 log.info("new:" + versionNew.toString());
                 break;
-            }
-            else
-            {
+            } else {
                 log.info("trade match:" + versionOld.getTradeId());
             }
         }
@@ -144,5 +137,4 @@ public class TradeUploadServiceTest {
         List<String> tradeIds = service.fromExcelNew(excel.createInputStream());
         assertThat(tradeIds).isNotEmpty().doesNotContainNull();
     }
-
 }

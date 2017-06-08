@@ -49,17 +49,18 @@ import static org.assertj.core.api.Assertions.assertThat;
         ServicesModule.class})
 @Slf4j
 public class MarkitPricingProcessorTest {
-    @Inject
-    ImportService importService;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private ImportService importService = null;
 
     @Inject
-    MarkitPricingProcessor pricingProcessor;
+    private TradeUploadService tradeUploadService = null;
 
     @Inject
-    TradeService<Trade> tradeService;
+    private MarkitPricingProcessor pricingProcessor = null;
+
+    @Inject
+    private TradeService<Trade> tradeService = null;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
@@ -70,9 +71,9 @@ public class MarkitPricingProcessorTest {
     @Rule
     public ResourceFile largeResponse = new ResourceFile("/markit/responses/large.xml");
 
-    MockWebServer server = new MockWebServer();
+    private MockWebServer server = new MockWebServer();
 
-    List<Trade> swaps;
+    private List<Trade> swaps;
 
     @Before
     public void setUp() throws Exception {

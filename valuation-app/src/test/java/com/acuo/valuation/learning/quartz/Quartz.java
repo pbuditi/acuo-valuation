@@ -16,7 +16,7 @@ public class Quartz {
         scheduler.start();
     }
 
-    public final Scheduler getScheduler() {
+    final Scheduler getScheduler() {
         return scheduler;
     }
 
