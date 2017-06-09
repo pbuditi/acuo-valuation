@@ -61,12 +61,12 @@ public class SwapExcelParser {
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
 
-            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("Receive"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
-            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("Receive"))
+            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg2);
             else
                 payLegs.add(leg2);
@@ -146,7 +146,7 @@ public class SwapExcelParser {
             fra.setPayLegs(payLegs);
             fra.setReceiveLegs(receiveLegs);
 
-            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("Receive"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
@@ -213,12 +213,12 @@ public class SwapExcelParser {
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
 
-            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("Receive"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
-            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("Receive"))
+            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg2);
             else
                 payLegs.add(leg2);
@@ -289,12 +289,12 @@ public class SwapExcelParser {
             irs.setPayLegs(payLegs);
             irs.setReceiveLegs(receiveLegs);
 
-            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("Receive"))
+            if (leg1Relationship != null && leg1Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg1);
             else
                 payLegs.add(leg1);
 
-            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("Receive"))
+            if (leg2Relationship != null && leg2Relationship.equalsIgnoreCase("R"))
                 receiveLegs.add(leg2);
             else
                 payLegs.add(leg2);

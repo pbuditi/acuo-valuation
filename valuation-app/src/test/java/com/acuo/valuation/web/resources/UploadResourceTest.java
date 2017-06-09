@@ -51,7 +51,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
     Dispatcher dispatcher;
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio18.xlsx");
+    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio.xlsx");
 
     @Rule
     public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");

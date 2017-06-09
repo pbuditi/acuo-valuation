@@ -13,7 +13,7 @@ import java.util.zip.ZipInputStream;
 public class ZipInputStreamTest {
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio18.xlsx");
+    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio.xlsx");
 
     @Test
     public void testCreateZipStreamFromString() throws IOException {

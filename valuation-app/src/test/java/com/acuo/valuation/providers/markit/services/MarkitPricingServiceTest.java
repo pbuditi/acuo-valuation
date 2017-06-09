@@ -64,7 +64,7 @@ public class MarkitPricingServiceTest {
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
-    public ResourceFile all = new ResourceFile("/excel/TradePortfolio18.xlsx");
+    public ResourceFile all = new ResourceFile("/excel/TradePortfolio.xlsx");
 
     @Rule
     public ResourceFile test02 = new ResourceFile("/markit/reports/markit-test-02.xml");

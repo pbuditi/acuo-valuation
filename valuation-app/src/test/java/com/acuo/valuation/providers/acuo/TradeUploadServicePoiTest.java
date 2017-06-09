@@ -65,7 +65,7 @@ public class TradeUploadServicePoiTest {
     public ResourceFile oneIRS = new ResourceFile("/excel/legacy/OneIRS.xlsx");
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/legacy/TradePortfolio.xlsx");
+    public ResourceFile all = new ResourceFile("/excel/legacy/TradePortfolio.xlsx");
 
     @Before
     public void setup() throws IOException {
@@ -82,7 +82,7 @@ public class TradeUploadServicePoiTest {
 
     @Test
     public void testUploadAll() throws IOException {
-        List<String> tradeIds = service.fromExcel(excel.createInputStream());
+        List<String> tradeIds = service.fromExcel(all.createInputStream());
         assertThat(tradeIds).isNotEmpty().doesNotContainNull().hasSize(799);
     }
 
@@ -101,11 +101,5 @@ public class TradeUploadServicePoiTest {
             Thread.sleep(1000);
             return null;
         }).run();
-    }
-
-    @Test
-    public void testUploadAllNew() throws IOException {
-        List<String> tradeIds = service.fromExcel(excel.createInputStream());
-        assertThat(tradeIds).isNotEmpty().doesNotContainNull();
     }
 }

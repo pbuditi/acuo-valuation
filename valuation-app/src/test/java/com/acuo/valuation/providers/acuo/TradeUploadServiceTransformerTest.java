@@ -75,10 +75,10 @@ public class TradeUploadServiceTransformerTest {
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio18.xlsx");
+    public ResourceFile all = new ResourceFile("/excel/TradePortfolio.xlsx");
 
     @Rule
-    public ResourceFile qa = new ResourceFile("/excel/TradePortfolioQA.xlsx");
+    public ResourceFile legacy = new ResourceFile("/excel/legacy/TradePortfolio.xlsx");
 
     @Before
     public void setup() throws IOException {
@@ -95,7 +95,7 @@ public class TradeUploadServiceTransformerTest {
 
     @Test
     public void testUploadAll() throws IOException {
-        List<String> tradeIds = service.fromExcel(excel.createInputStream());
+        List<String> tradeIds = service.fromExcel(all.createInputStream());
         assertThat(tradeIds).isNotEmpty().doesNotContainNull().hasSize(799);
     }
 
@@ -103,8 +103,8 @@ public class TradeUploadServiceTransformerTest {
     public void testHandleIRSOneRowUpdate() throws IOException {
         service.fromExcel(oneIRS.createInputStream());
         service.fromExcel(oneIRS.createInputStream());
-        Iterable<Trade> irses = tradeService.findAll();
-        assertThat(irses).isNotEmpty().hasSize(2);
+        Iterable<Trade> trades = tradeService.findAll();
+        assertThat(trades).isNotEmpty().hasSize(2);
     }
 
     @Test
@@ -119,10 +119,10 @@ public class TradeUploadServiceTransformerTest {
     @Test
     public void testCompareVersion() {
         final TradeUploadServicePoi oldService = new TradeUploadServicePoi(accountService, portfolioService, tradeService);
-        oldService.fromExcel(qa.createInputStream());
+        oldService.fromExcel(legacy.createInputStream());
         Iterator<Trade> olds = tradeService.findAll(2).iterator();
         importService.reload();
-        service.fromExcel(excel.createInputStream());
+        service.fromExcel(all.createInputStream());
         while (olds.hasNext()) {
             Trade versionOld = olds.next();
             Trade versionNew = tradeService.find(versionOld.getTradeId(), 2);
@@ -136,11 +136,5 @@ public class TradeUploadServiceTransformerTest {
             }
         }
 
-    }
-
-    @Test
-    public void testUploadAllNew() throws IOException {
-        List<String> tradeIds = service.fromExcel(excel.createInputStream());
-        assertThat(tradeIds).isNotEmpty().doesNotContainNull();
     }
 }
