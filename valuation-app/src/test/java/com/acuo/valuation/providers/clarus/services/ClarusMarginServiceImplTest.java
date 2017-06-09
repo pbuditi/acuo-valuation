@@ -96,7 +96,7 @@ public class ClarusMarginServiceImplTest {
         service = new ClarusMarginServiceImpl(clientEndPoint, objectMapper, transformer);
 
         importService.reload();
-        tradeUploadService.fromExcelNew(oneIRS.createInputStream());
+        tradeUploadService.fromExcel(oneIRS.createInputStream());
     }
 
     @Test

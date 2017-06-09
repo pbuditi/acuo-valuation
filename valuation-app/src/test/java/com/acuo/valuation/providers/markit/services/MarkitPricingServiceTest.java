@@ -64,7 +64,7 @@ public class MarkitPricingServiceTest {
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
-    public ResourceFile all = new ResourceFile("/excel/TradePortfolio18-05-17v2-NPV.xlsx");
+    public ResourceFile all = new ResourceFile("/excel/TradePortfolio18.xlsx");
 
     @Rule
     public ResourceFile test02 = new ResourceFile("/markit/reports/markit-test-02.xml");
@@ -189,7 +189,7 @@ public class MarkitPricingServiceTest {
     }
 
     private List<SwapTrade> loadTrades(ResourceFile file) {
-        final List<String> tradeIds = tradeUploadService.fromExcelNew(file.createInputStream());
+        final List<String> tradeIds = tradeUploadService.fromExcel(file.createInputStream());
 
         return tradeIds.stream()
                 .map(id -> tradeService.find(TradeId.fromString(id)))

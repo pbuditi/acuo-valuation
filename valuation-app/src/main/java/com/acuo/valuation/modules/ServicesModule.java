@@ -54,7 +54,7 @@ public class ServicesModule extends AbstractModule {
     protected void configure() {
 
         // common
-        bind(TradeUploadService.class).to(TradeUploadServiceImpl.class);
+        bind(TradeUploadService.class).to(TradeUploadServiceTransformer.class);
         bind(TradeCacheService.class).to(LocalTradeCacheService.class);
 
         // markit trade valuation and margin call generation

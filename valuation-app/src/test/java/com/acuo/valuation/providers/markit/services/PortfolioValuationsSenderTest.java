@@ -65,26 +65,26 @@ public class PortfolioValuationsSenderTest {
     public ResourceFile report = new ResourceFile("/markit/reports/markit-test-01.xml");
 
     @Inject
-    ReportParser reportParser;
+    private ReportParser reportParser = null;
 
     @Inject
     @Named("markit")
-    Transformer<SwapTrade> markitTransformer;
+    private Transformer<SwapTrade> markitTransformer = null;
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private TradeUploadService tradeUploadService = null;
 
     @Inject
-    TradeService<Trade> tradeService;
+    private TradeService<Trade> tradeService = null;
 
-    MockWebServer server = new MockWebServer();
+    private MockWebServer server = new MockWebServer();
 
-    PortfolioValuationsSender sender;
+    private PortfolioValuationsSender sender;
 
-    List<SwapTrade> swaps;
+    private List<SwapTrade> swaps;
 
     @Before
     public void setUp() throws Exception {
@@ -97,13 +97,13 @@ public class PortfolioValuationsSenderTest {
         MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/"), "", "",
                 "username", "password", "0", "10000", "false");
 
-        OkHttpClient client = new MarkitClient(httpClient, markitEndPointConfig);
+        OkHttpClient<MarkitEndPointConfig> client = new MarkitClient(httpClient, markitEndPointConfig);
 
         sender = new PortfolioValuationsSender(client, reportParser, markitTransformer);
 
         importService.reload();
 
-        final List<String> tradeIds = tradeUploadService.fromExcelNew(oneIRS.createInputStream());
+        final List<String> tradeIds = tradeUploadService.fromExcel(oneIRS.createInputStream());
 
         swaps = tradeIds.stream()
                 .map(id -> (IRS) tradeService.find(TradeId.fromString(id)))
@@ -137,6 +137,7 @@ public class PortfolioValuationsSenderTest {
                         .contains("key=key")
                         .contains("version=2");
             } catch (InterruptedException e) {
+                // do nothing
             }
         });
         assertThat(r).isNotNull();

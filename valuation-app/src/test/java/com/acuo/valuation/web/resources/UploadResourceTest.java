@@ -8,12 +8,8 @@ import com.acuo.persist.core.ImportService;
 import com.acuo.persist.modules.*;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.*;
-import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
-import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
-import com.google.inject.AbstractModule;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
@@ -55,7 +51,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
     Dispatcher dispatcher;
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio18-05-17v2-NPV.xlsx");
+    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio18.xlsx");
 
     @Rule
     public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");

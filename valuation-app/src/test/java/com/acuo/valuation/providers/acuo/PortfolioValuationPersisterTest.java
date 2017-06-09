@@ -73,7 +73,7 @@ public class PortfolioValuationPersisterTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         importService.reload();
-        tradeUploadService.fromExcelNew(oneIRS.createInputStream());
+        tradeUploadService.fromExcel(oneIRS.createInputStream());
         persister = new PortfolioValuationPersister(valuationService, valueService);
     }
 

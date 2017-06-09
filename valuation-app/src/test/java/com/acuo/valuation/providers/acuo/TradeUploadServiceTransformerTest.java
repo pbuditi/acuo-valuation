@@ -20,7 +20,9 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
-import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
+import com.acuo.valuation.providers.acuo.trades.TradeUploadServicePoi;
+import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceTransformer;
+import com.acuo.valuation.services.TradeUploadService;
 import com.googlecode.junittoolbox.MultithreadingTester;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -49,9 +51,9 @@ import static org.assertj.core.api.Assertions.assertThat;
         EndPointModule.class,
         ServicesModule.class})
 @Slf4j
-public class TradeUploadServiceTest {
+public class TradeUploadServiceTransformerTest {
 
-    private TradeUploadServiceImpl service;
+    private TradeUploadService service;
 
     @Inject
     private TradingAccountService accountService = null;
@@ -63,7 +65,7 @@ public class TradeUploadServiceTest {
     private ImportService importService = null;
 
     @Inject
-    private TradeService<Trade> irsService = null;
+    private TradeService<Trade> tradeService = null;
 
     @Inject
     @Named("portfolio")
@@ -73,39 +75,42 @@ public class TradeUploadServiceTest {
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio18-05-17v2-NPV.xlsx");
+    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio18.xlsx");
+
+    @Rule
+    public ResourceFile qa = new ResourceFile("/excel/TradePortfolioQA.xlsx");
 
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        service = new TradeUploadServiceImpl(accountService, portfolioService, irsService, transformer);
+        service = new TradeUploadServiceTransformer(accountService, portfolioService, tradeService, transformer);
         importService.reload();
     }
 
     @Test
     public void testUploadOneIRS() {
-        List<String> tradeIds = service.fromExcelNew(oneIRS.createInputStream());
-        assertThat(tradeIds).isNotEmpty();
+        List<String> tradeIds = service.fromExcel(oneIRS.createInputStream());
+        assertThat(tradeIds).isNotEmpty().doesNotContainNull().hasSize(2);
     }
 
     @Test
     public void testUploadAll() throws IOException {
-        List<String> tradeIds = service.fromExcelNew(excel.createInputStream());
-        assertThat(tradeIds).isNotEmpty().doesNotContainNull();
+        List<String> tradeIds = service.fromExcel(excel.createInputStream());
+        assertThat(tradeIds).isNotEmpty().doesNotContainNull().hasSize(799);
     }
 
     @Test
     public void testHandleIRSOneRowUpdate() throws IOException {
-        service.fromExcelNew(oneIRS.createInputStream());
-        service.fromExcelNew(oneIRS.createInputStream());
-        Iterable<Trade> irses = irsService.findAll();
+        service.fromExcel(oneIRS.createInputStream());
+        service.fromExcel(oneIRS.createInputStream());
+        Iterable<Trade> irses = tradeService.findAll();
         assertThat(irses).isNotEmpty().hasSize(2);
     }
 
     @Test
     public void testConcurrentUpload() {
         new MultithreadingTester().numThreads(10).numRoundsPerThread(1).add(() -> {
-            service.fromExcelNew(oneIRS.createInputStream());
+            service.fromExcel(oneIRS.createInputStream());
             Thread.sleep(1000);
             return null;
         }).run();
@@ -113,13 +118,14 @@ public class TradeUploadServiceTest {
 
     @Test
     public void testCompareVersion() {
-        service.fromExcelNew(excel.createInputStream());
-        Iterator<Trade> olds = irsService.findAll(2).iterator();
+        final TradeUploadServicePoi oldService = new TradeUploadServicePoi(accountService, portfolioService, tradeService);
+        oldService.fromExcel(qa.createInputStream());
+        Iterator<Trade> olds = tradeService.findAll(2).iterator();
         importService.reload();
-        service.fromExcelNew(excel.createInputStream());
+        service.fromExcel(excel.createInputStream());
         while (olds.hasNext()) {
             Trade versionOld = olds.next();
-            Trade versionNew = irsService.find(versionOld.getTradeId(), 2);
+            Trade versionNew = tradeService.find(versionOld.getTradeId(), 2);
 
             if (!(versionNew instanceof FRA) && !versionOld.equals(versionNew)) {
                 log.info("old:" + versionOld.toString());
@@ -134,7 +140,7 @@ public class TradeUploadServiceTest {
 
     @Test
     public void testUploadAllNew() throws IOException {
-        List<String> tradeIds = service.fromExcelNew(excel.createInputStream());
+        List<String> tradeIds = service.fromExcel(excel.createInputStream());
         assertThat(tradeIds).isNotEmpty().doesNotContainNull();
     }
 }

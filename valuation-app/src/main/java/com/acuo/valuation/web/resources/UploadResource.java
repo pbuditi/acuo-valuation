@@ -19,6 +19,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.parboiled.common.ImmutableList;
 
@@ -45,7 +46,7 @@ import static javax.ws.rs.core.Response.Status.CREATED;
 @Path("/upload")
 public class UploadResource {
 
-    private final TradeUploadService irsService;
+    private final TradeUploadService tradeUploadService;
     private final TradeCacheService cacheService;
     private final Transformer<TradeValuation> transformer;
     private final ResultPersister<PortfolioResults> persister;
@@ -54,14 +55,14 @@ public class UploadResource {
     private final ValuationService valuationService;
 
     @Inject
-    public UploadResource(TradeUploadService irsService,
+    public UploadResource(TradeUploadService tradeUploadService,
                           TradeCacheService cacheService,
                           @Named("tradeValuation") Transformer<TradeValuation> transformer,
                           ResultPersister<PortfolioResults> persister,
                           PortfolioService portfolioService,
                           TradeService<Trade> tradeService,
                           ValuationService valuationService) {
-        this.irsService = irsService;
+        this.tradeUploadService = tradeUploadService;
         this.cacheService = cacheService;
         this.transformer = transformer;
         this.persister = persister;
@@ -78,14 +79,14 @@ public class UploadResource {
     public Response uploadV1(@MultipartForm UploadForm entity) throws IOException {
         ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
         log.info("start uploading trade file ");
-        List<String> tradeIds = irsService.fromExcelNew(fis);
+        List<String> tradeIds = tradeUploadService.fromExcel(fis);
         Iterator<Trade> trades = tradeService.findAllTradeByIds(tradeIds.stream().map(TradeId::fromString).collect(Collectors.toList())).iterator();
         Set<PortfolioId> portfolios = new HashSet<>();
         while(trades.hasNext())
         {
             portfolios.add(trades.next().getPortfolio().getPortfolioId());
         }
-        List<TradeValuation> tradeValuations = null;//transformer.deserialise(TradeUploadServiceImpl.toByteArray(fis));
+        List<TradeValuation> tradeValuations = transformer.deserialise(IOUtils.toByteArray(fis));
         PortfolioResults results = new PortfolioResults();
         results.setResults(tradeValuations.stream().map(Result::success).collect(Collectors.toList()));
         results.setCurrency(Currency.USD);
@@ -102,7 +103,7 @@ public class UploadResource {
     public Response upload(@MultipartForm UploadForm entity) throws IOException {
         ByteArrayInputStream fis = new ByteArrayInputStream(entity.getFile());
         log.info("start uploading trade file ");
-        List<String> trades = irsService.fromExcel(fis);
+        List<String> trades = tradeUploadService.fromExcel(fis);
         final UploadResponse response = new UploadResponse();
         final UploadResponse.Status success = new UploadResponse.Status(UploadResponse.StatusType.success, trades.size() +" trades have been uploaded");
         final UploadResponse.Status failure = new UploadResponse.Status(UploadResponse.StatusType.failure, "no trade have failed to upload");
