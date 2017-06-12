@@ -65,24 +65,24 @@ public class ClarusMarginServiceImplTest {
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Inject
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = null;
 
     @Inject
     @Named("clarus")
-    Transformer<SwapTrade> transformer;
+    private Transformer<SwapTrade> transformer = null;
 
     @Inject
-    TradeService<Trade> irsService;
+    private TradeService<Trade> irsService = null;
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private TradeUploadService tradeUploadService = null;
 
-    MockWebServer server = new MockWebServer();
+    private MockWebServer server = new MockWebServer();
 
-    ClarusMarginServiceImpl service;
+    private ClarusMarginServiceImpl service = null;
 
     @Before
     public void setup() throws IOException {

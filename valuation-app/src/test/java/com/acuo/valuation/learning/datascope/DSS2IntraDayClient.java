@@ -9,7 +9,6 @@ package com.acuo.valuation.learning.datascope;/*
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -26,8 +25,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.util.Scanner;
 
 public class DSS2IntraDayClient {
@@ -56,10 +53,10 @@ public class DSS2IntraDayClient {
     /**
      * Request DSS2 for a Session Token (24 hour life)
      * 
-     * @param username
-     * @param password
+     * @param username user name
+     * @param password password
      */
-    public void getSessionToken(String username, String password) {
+    private void getSessionToken(String username, String password) {
 
         try {
             HttpPost httppost = new HttpPost(urlHost + "/Authentication/RequestToken");
@@ -83,15 +80,7 @@ public class DSS2IntraDayClient {
             sessionToken = jsonResponse.get("value").toString();
             System.out.println("Session Token (expires in 24 hours):\n" + sessionToken);
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -104,7 +93,7 @@ public class DSS2IntraDayClient {
      * https://hosted.datascopeapi.reuters.com/RestApi.Help/Home/KeyMechanisms#sectionAsync
      * 
      */
-    public void intraDayExtractRequest() {
+    private void intraDayExtractRequest() {
 
         try {
             HttpPost httppost = new HttpPost(urlHost + "/Extractions/ExtractWithNotes");
@@ -141,7 +130,7 @@ public class DSS2IntraDayClient {
             // NOTE: If the extraction request takes more than 30 seconds the async mechanism will be used. 
             HttpResponse response = httpclient.execute(httppost);
 
-            StringBuffer result = new StringBuffer();
+            StringBuffer result;
 
             // Get the response status code
             int respStatusCode = response.getStatusLine().getStatusCode();
@@ -160,10 +149,9 @@ public class DSS2IntraDayClient {
 
                 Header[] headers = response.getAllHeaders();
                 String pollURL = "";
-                for (int i= 0; i< headers.length; i++)
-                {
-                    if (headers[i].getName().equalsIgnoreCase("Location")) {
-                        pollURL = headers[i].getValue();
+                for (Header header : headers) {
+                    if (header.getName().equalsIgnoreCase("Location")) {
+                        pollURL = header.getValue();
                         System.out.println("The location URL: " + pollURL);
                     }
                 }
@@ -207,21 +195,13 @@ public class DSS2IntraDayClient {
                 break;
         }
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    public StringBuffer getResult(HttpResponse response) {
+    private StringBuffer getResult(HttpResponse response) {
 
     	StringBuffer result = new StringBuffer();
 
@@ -229,27 +209,19 @@ public class DSS2IntraDayClient {
             BufferedReader rd = new BufferedReader(
                 new InputStreamReader(response.getEntity().getContent()));
 
-            String line = "";
+            String line;
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
         return result;
     }
 
 
-    public void treatResult(StringBuffer result) {
+    private void treatResult(StringBuffer result) {
 
         System.out.println("Result received:\n"+result);
 
@@ -279,7 +251,7 @@ public class DSS2IntraDayClient {
     }
 
 
-    public static void wait(int seconds) {
+    private static void wait(int seconds) {
         try {
             System.out.println("Waiting " + seconds + " seconds ..");
             Thread.sleep(seconds * 1000);
@@ -289,7 +261,7 @@ public class DSS2IntraDayClient {
     }
 
 
-    public static void promptEnterKey() {
+    private static void promptEnterKey() {
         System.out.println("Press \"ENTER\" to continue...");
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();

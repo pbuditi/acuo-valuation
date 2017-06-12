@@ -21,7 +21,6 @@ import com.acuo.valuation.providers.datascope.service.DataScopeEndPointConfig;
 import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opengamma.strata.basics.currency.Currency;
-import com.opengamma.strata.basics.currency.FxRate;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -33,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.inject.Inject;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -59,13 +57,13 @@ public class DataScopeIntradayServiceImplTest {
     public ResourceFile response = new ResourceFile("/datascope/rates/response.json");
 
     @Mock
-    DataScopeAuthService dataScopeAuthService;
+    private DataScopeAuthService dataScopeAuthService = null;
 
     @Mock
-    FXRateService fxRateService;
+    private FXRateService fxRateService = null;
 
     @Inject
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = null;
 
     private MockWebServer server = new MockWebServer();
 

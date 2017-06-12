@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import java.io.FileInputStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @Slf4j
 public class SwapExcelParserTest {
 
@@ -20,50 +22,40 @@ public class SwapExcelParserTest {
     private SwapExcelParser parser = new SwapExcelParser();
 
     @Before
-    public void setUp() throws Exception
-    {
-        FileInputStream fis = new FileInputStream("src/test/resources/excel/TradePortfolio.xlsx");
+    public void setUp() throws Exception {
+        FileInputStream fis = new FileInputStream("src/test/resources/excel/legacy/TradePortfolio.xlsx");
         workbook = new XSSFWorkbook(fis);
-
     }
 
     @Test
-    public void tesParserIRSCleared()
-    {
+    public void tesParserIRSCleared() {
         Sheet sheet = workbook.getSheetAt(0);
         Row row = sheet.getRow(1);
-
-       //IRS irs  = parser.buildIRS(row);
-        //log.debug(irs.toString());
+        IRS trade  = parser.buildIRS(row);
+        assertThat(trade).isNotNull();
     }
 
     @Test
-    public void tesParserFRACleared()
-    {
+    public void tesParserFRACleared() {
         Sheet sheet = workbook.getSheetAt(1);
         Row row = sheet.getRow(1);
-
-        FRA fra = parser.buildFRA(row);
-        log.debug(fra.toString());
+        FRA trade = parser.buildFRA(row);
+        assertThat(trade).isNotNull();
     }
 
     @Test
-    public void testParserOISCleared()
-    {
+    public void testParserOISCleared() {
         Sheet sheet = workbook.getSheetAt(2);
         Row row = sheet.getRow(1);
-
-        //IRS irs = parser.buildOIS(row);
-        //log.debug(irs.toString());
+        IRS trade = parser.buildOIS(row);
+        assertThat(trade).isNotNull();
     }
 
     @Test
-    public void tesParserIRSBilateral()
-    {
+    public void tesParserIRSBilateral() {
         Sheet sheet = workbook.getSheetAt(3);
         Row row = sheet.getRow(1);
-
-        //IRS irs = parser.buildIRSBilateral(row);
-        //log.debug(irs.toString());
+        IRS trade = parser.buildIRSBilateral(row);
+        assertThat(trade).isNotNull();
     }
 }

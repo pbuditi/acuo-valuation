@@ -52,16 +52,16 @@ public class ClarusMarginServiceImplIntegrationTest {
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Inject
-    ClarusMarginService service;
+    private ClarusMarginService service = null;
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private TradeUploadService tradeUploadService = null;
 
     @Inject
-    TradeService<Trade> irsService;
+    private TradeService<Trade> irsService = null;
 
     @Before
     public void setup() {
@@ -72,7 +72,7 @@ public class ClarusMarginServiceImplIntegrationTest {
     @Test
     public void testWithMapper() throws IOException {
         String id = "455123";
-        List<SwapTrade> swapTrades = new ArrayList<SwapTrade>();
+        List<SwapTrade> swapTrades = new ArrayList<>();
         Trade trade = irsService.find(TradeId.fromString(id));
         if (trade != null) {
             SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);

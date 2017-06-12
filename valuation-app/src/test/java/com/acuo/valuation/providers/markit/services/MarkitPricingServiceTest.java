@@ -128,7 +128,7 @@ public class MarkitPricingServiceTest {
         assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
         Result<MarkitValuation> swapResult = results.getResults().get(0);
-        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
+        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getValue().getValue().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
     }
@@ -143,7 +143,7 @@ public class MarkitPricingServiceTest {
         assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
         Result<MarkitValuation> swapResult = results.getResults().get(0);
-        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
+        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getValue().getValue().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
     }
@@ -159,7 +159,7 @@ public class MarkitPricingServiceTest {
         assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
         Result<MarkitValuation> swapResult = results.getResults().get(0);
-        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getPv().equals(1.0d), "Swap PV not equal to 1.0d");
+        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getValue().getValue().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
     }

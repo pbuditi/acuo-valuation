@@ -63,7 +63,7 @@ public class ClarusMarginServiceImpl implements ClarusMarginService {
                 .create(objectMapper, portfolios)
                 .addDataModel(model)
                 .build();
-        log.debug(request);
+        log.info(request);
         return request;
     }
 
@@ -72,7 +72,7 @@ public class ClarusMarginServiceImpl implements ClarusMarginService {
                 .with("data", request)
                 .create()
                 .send();
-        log.debug(response);
+        log.info(response);
         return response;
     }
 

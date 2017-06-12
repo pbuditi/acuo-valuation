@@ -45,10 +45,10 @@ public class AssetValuationResourceIntegrationTest implements WithResteasyFixtur
 
     private Dispatcher dispatcher;
     @Inject
-    AssetValuationResource resource;
+    private AssetValuationResource resource = null;
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Before
     public void setUp() throws Exception {

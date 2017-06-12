@@ -48,17 +48,22 @@ public abstract class ClarusPricingProcessor extends AbstractTradePricingProcess
     protected abstract MarginResults send(List<SwapTrade> swapTrades);
 
     private <T extends Trade> Collection<MarginCall> internal(Iterable<T> trades) {
-        if (Iterables.isEmpty(trades))
+        try {
+            if (Iterables.isEmpty(trades))
+                return new ArrayList<>();
+            final List<SwapTrade> swapTrades = StreamSupport.stream(trades.spliterator(), false)
+                    .filter(predicate)
+                    .filter(trade -> trade instanceof IRS)
+                    .map(trade -> (IRS) trade)
+                    .map(SwapTradeBuilder::buildTrade)
+                    .collect(toList());
+            if (Iterables.isEmpty(swapTrades))
+                return new ArrayList<>();
+            MarginResults results = send(swapTrades);
+            return resultProcessor.process(results);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
             return new ArrayList<>();
-        final List<SwapTrade> swapTrades = StreamSupport.stream(trades.spliterator(), false)
-                .filter(predicate)
-                .filter(trade -> trade instanceof IRS)
-                .map(trade -> (IRS) trade)
-                .map(SwapTradeBuilder::buildTrade)
-                .collect(toList());
-        if (Iterables.isEmpty(swapTrades))
-            return new ArrayList<>();
-        MarginResults results = send(swapTrades);
-        return resultProcessor.process(results);
+        }
     }
 }

@@ -18,7 +18,7 @@ public class MarkitValuationTest {
         MarkitValuation markitValuation = new MarkitValuation(markitValue);
 
         assertThat(markitValuation.getTradeId()).isEqualTo("id1");
-        assertThat(markitValuation.getPv()).isEqualTo(1.0d);
+        assertThat(markitValuation.getValue().getValue()).isEqualTo(1.0d);
     }
 
     @Test
@@ -37,14 +37,14 @@ public class MarkitValuationTest {
         double[] pvs = {1.0d, 2.0d, 3.0d};
 
         List<MarkitValue> values = new ArrayList<>();
-        for (int i = 0; i < pvs.length; i++) {
+        for (double pv : pvs) {
             MarkitValue value = new MarkitValue();
             value.setTradeId("id");
-            value.setPv(pvs[i]);
+            value.setPv(pv);
             values.add(value);
         }
         MarkitValuation valuation = new MarkitValuation(values.toArray(new MarkitValue[values.size()]));
 
-        assertThat(valuation.getPv()).isEqualTo(6.0d);
+        assertThat(valuation.getValue().getValue()).isEqualTo(6.0d);
     }
 }

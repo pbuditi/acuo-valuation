@@ -19,7 +19,7 @@ public class JodaModuleTest {
         public Currency currency;
     }
 
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Before
     public void setUp() {

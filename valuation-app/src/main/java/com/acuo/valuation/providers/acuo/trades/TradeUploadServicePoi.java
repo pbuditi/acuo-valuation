@@ -1,19 +1,12 @@
 package com.acuo.valuation.providers.acuo.trades;
 
-import com.acuo.common.cache.manager.CacheManager;
-import com.acuo.common.cache.manager.Cacheable;
-import com.acuo.common.cache.manager.CachedObject;
 import com.acuo.common.type.TypedString;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
-import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.TradingAccount;
-import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
-import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.utils.SwapExcelParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,34 +18,22 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class TradeUploadServiceImpl implements TradeUploadService {
-
-    private final ReentrantLock lock = new ReentrantLock();
-
-    private final CacheManager cacheManager;
+public class TradeUploadServicePoi extends TradeUploadServiceAbstract {
 
     private final SwapExcelParser parser = new SwapExcelParser();
-    private final TradingAccountService accountService;
-    private final PortfolioService portfolioService;
+
     private final TradeService<Trade> tradeService;
 
-    private final int expireTime = 1;
-    private final TimeUnit expireUnit = TimeUnit.MINUTES;
-
     @Inject
-    public TradeUploadServiceImpl(TradingAccountService accountService,
-                                  PortfolioService portfolioService,
-                                  TradeService<Trade> tradeService) {
-        this.accountService = accountService;
-        this.portfolioService = portfolioService;
+    public TradeUploadServicePoi(TradingAccountService accountService,
+                                 PortfolioService portfolioService,
+                                 TradeService<Trade> tradeService) {
+        super(accountService, portfolioService);
         this.tradeService = tradeService;
-        this.cacheManager = new CacheManager();
     }
 
     public List<String> fromExcel(InputStream fis) {
@@ -102,58 +83,6 @@ public class TradeUploadServiceImpl implements TradeUploadService {
         }
 
         return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
-    }
-
-    private void linkPortfolio(Trade trade, String portfolioId) {
-        if(log.isDebugEnabled()) {
-            log.debug("linking to portfolioId: {}", portfolioId);
-        }
-        Portfolio portfolio = portfolio(PortfolioId.fromString(portfolioId));
-        trade.setPortfolio(portfolio);
-    }
-
-    private void linkAccount(Trade trade, String accountId) {
-        if(log.isDebugEnabled()) {
-            log.debug("linking to accountId: {}", accountId);
-        }
-        TradingAccount account = account(accountId);
-        trade.setAccount(account);
-    }
-
-    private Portfolio portfolio(PortfolioId portfolioId) {
-        Cacheable value = cacheManager.getCache(portfolioId);
-        if (value == null) {
-            lock.lock();
-            try {
-                Portfolio portfolio = portfolioService.find(portfolioId);
-                value = new CachedObject(portfolio, portfolioId, expireTime, expireUnit);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                value = new CachedObject(null, portfolioId, expireTime, expireUnit);
-            } finally {
-                lock.unlock();
-            }
-            cacheManager.putCache(value);
-        }
-        return (Portfolio) value.getObject();
-    }
-
-    private TradingAccount account(String accountId) {
-        Cacheable value = cacheManager.getCache(accountId);
-        if (value == null) {
-            lock.lock();
-            try {
-                TradingAccount account = accountService.find(accountId);
-                value = new CachedObject(account, accountId, expireTime, expireUnit);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                value = new CachedObject(null, accountId, expireTime, expireUnit);
-            } finally {
-                lock.unlock();
-            }
-            cacheManager.putCache(value);
-        }
-        return (TradingAccount) value.getObject();
     }
 
     private Trade handleIRSRow(Row row) {

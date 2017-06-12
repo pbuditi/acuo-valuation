@@ -1,9 +1,7 @@
 package com.acuo.valuation.modules;
 
 import com.acuo.collateral.transform.Transformer;
-import com.acuo.collateral.transform.services.ClarusTransformer;
-import com.acuo.collateral.transform.services.MarkitTransformer;
-import com.acuo.collateral.transform.services.ReutersTransformer;
+import com.acuo.collateral.transform.services.*;
 import com.acuo.collateral.transform.trace.transformer_valuations.Mapper;
 import com.acuo.common.marshal.Marshaller;
 import com.acuo.common.marshal.MarshallerExecutor;
@@ -14,6 +12,7 @@ import com.acuo.common.marshal.json.JsonContextFactory;
 import com.acuo.common.marshal.json.MoxyJsonContextFactory;
 import com.acuo.common.model.assets.Assets;
 import com.acuo.common.model.results.AssetValuation;
+import com.acuo.common.model.results.TradeValuation;
 import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportInput;
 import com.acuo.valuation.providers.markit.protocol.responses.ResponseInput;
@@ -44,11 +43,15 @@ public class MappingModule extends AbstractModule {
         MarkitTransformer<SwapTrade> markitTransformer = new MarkitTransformer<>(new Mapper());
         ReutersTransformer<Assets> assetsAssetsTransformer = new ReutersTransformer<>();
         ReutersTransformer<AssetValuation> assetValuationReutersTransformer = new ReutersTransformer<>();
+        PortfolioImportTransformer<SwapTrade> portfolioImportTransformer = new PortfolioImportTransformer<>(new Mapper());
+        TradeValuationTransformer<TradeValuation> tradeValuationTransformer = new TradeValuationTransformer<>(new Mapper());
 
         bind(new TypeLiteral<Transformer<SwapTrade>>() {}).annotatedWith(Names.named("clarus")).toInstance(clarusTransformer);
         bind(new TypeLiteral<Transformer<SwapTrade>>() {}).annotatedWith(Names.named("markit")).toInstance(markitTransformer);
         bind(new TypeLiteral<Transformer<Assets>>() {}).annotatedWith(Names.named("assets")).toInstance(assetsAssetsTransformer);
         bind(new TypeLiteral<Transformer<AssetValuation>>() {}).annotatedWith(Names.named("assetValuation")).toInstance(assetValuationReutersTransformer);
+        bind(new TypeLiteral<Transformer<SwapTrade>>() {}).annotatedWith(Names.named("portfolio")).toInstance(portfolioImportTransformer);
+        bind(new TypeLiteral<Transformer<TradeValuation>>() {}).annotatedWith(Names.named("tradeValuation")).toInstance(tradeValuationTransformer);
     }
 
     @Provides

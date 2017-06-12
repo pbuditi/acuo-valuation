@@ -26,10 +26,10 @@ import static org.junit.Assert.assertNotNull;
 public class PortfolioValuationsRetrieverIntegrationTest {
 
     @Inject
-    ClientEndPoint clientEndPoint;
+    private ClientEndPoint<MarkitEndPointConfig> clientEndPoint = null;
 
     @Inject
-    ResponseParser parser;
+    private ResponseParser parser = null;
 
     @Before
     public void setUp() {
@@ -39,8 +39,7 @@ public class PortfolioValuationsRetrieverIntegrationTest {
     @Test
     public void testRetrieve() throws Exception {
         PortfolioValuationsRetriever retriever = new PortfolioValuationsRetriever(clientEndPoint, parser);
-        MarkitResults results = retriever.retrieve(LocalDate.of(2016,6,10), new ArrayList<String>());
+        MarkitResults results = retriever.retrieve(LocalDate.of(2016,6,10), new ArrayList<>());
         assertNotNull(results);
     }
-
 }

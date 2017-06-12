@@ -8,12 +8,8 @@ import com.acuo.persist.core.ImportService;
 import com.acuo.persist.modules.*;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.*;
-import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
-import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
-import com.google.inject.AbstractModule;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
@@ -60,6 +56,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
     @Rule
     public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");
 
+
     @Rule
     public ResourceFile generatedllMC = new ResourceFile("/acuo/margincalls/upload-all-mc.json");
 
@@ -85,6 +82,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
         testFileUpload(excel);
     }
 
+
     @Test
     public void testUploadSmallFileMultipleTimes() throws URISyntaxException, IOException {
         testFileUpload(one);
@@ -105,6 +103,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         assertThat(response.getContentAsString())
                 .isNotNull();
+        log.info(response.getContentAsString());
     }
 
 

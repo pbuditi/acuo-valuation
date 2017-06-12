@@ -1,9 +1,12 @@
 package com.acuo.valuation.providers.acuo;
 
+import com.acuo.collateral.transform.Transformer;
+import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
+import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
@@ -17,7 +20,9 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
-import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceImpl;
+import com.acuo.valuation.providers.acuo.trades.TradeUploadServicePoi;
+import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceTransformer;
+import com.acuo.valuation.services.TradeUploadService;
 import com.googlecode.junittoolbox.MultithreadingTester;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -27,7 +32,9 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,53 +51,60 @@ import static org.assertj.core.api.Assertions.assertThat;
         EndPointModule.class,
         ServicesModule.class})
 @Slf4j
-public class TradeUploadServiceTest {
+public class TradeUploadServiceTransformerTest {
 
-    TradeUploadServiceImpl service;
-
-    @Inject
-    TradingAccountService accountService;
+    private TradeUploadService service;
 
     @Inject
-    PortfolioService portfolioService;
+    private TradingAccountService accountService = null;
 
     @Inject
-    ImportService importService;
+    private PortfolioService portfolioService = null;
 
     @Inject
-    TradeService<Trade> irsService;
+    private ImportService importService = null;
+
+    @Inject
+    private TradeService<Trade> tradeService = null;
+
+    @Inject
+    @Named("portfolio")
+    private Transformer<SwapTrade> transformer = null;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
-    public ResourceFile excel = new ResourceFile("/excel/TradePortfolio.xlsx");
+    public ResourceFile all = new ResourceFile("/excel/TradePortfolio.xlsx");
+
+    @Rule
+    public ResourceFile legacy = new ResourceFile("/excel/legacy/TradePortfolio.xlsx");
 
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        service = new TradeUploadServiceImpl(accountService, portfolioService, irsService);
+        service = new TradeUploadServiceTransformer(accountService, portfolioService, tradeService, transformer);
         importService.reload();
     }
 
     @Test
     public void testUploadOneIRS() {
         List<String> tradeIds = service.fromExcel(oneIRS.createInputStream());
-        assertThat(tradeIds).isNotEmpty();
+        assertThat(tradeIds).isNotEmpty().doesNotContainNull().hasSize(2);
     }
 
     @Test
     public void testUploadAll() throws IOException {
-        List<String> tradeIds = service.fromExcel(excel.createInputStream());
-        assertThat(tradeIds).isNotEmpty().doesNotContainNull();
+        List<String> tradeIds = service.fromExcel(all.createInputStream());
+        assertThat(tradeIds).isNotEmpty().doesNotContainNull().hasSize(799);
     }
 
     @Test
     public void testHandleIRSOneRowUpdate() throws IOException {
         service.fromExcel(oneIRS.createInputStream());
         service.fromExcel(oneIRS.createInputStream());
-        Iterable<Trade> irses = irsService.findAll();
-        assertThat(irses).isNotEmpty().hasSize(2);
+        Iterable<Trade> trades = tradeService.findAll();
+        assertThat(trades).isNotEmpty().hasSize(2);
     }
 
     @Test
@@ -100,5 +114,27 @@ public class TradeUploadServiceTest {
             Thread.sleep(1000);
             return null;
         }).run();
+    }
+
+    @Test
+    public void testCompareVersion() {
+        final TradeUploadServicePoi oldService = new TradeUploadServicePoi(accountService, portfolioService, tradeService);
+        oldService.fromExcel(legacy.createInputStream());
+        Iterator<Trade> olds = tradeService.findAll(2).iterator();
+        importService.reload();
+        service.fromExcel(all.createInputStream());
+        while (olds.hasNext()) {
+            Trade versionOld = olds.next();
+            Trade versionNew = tradeService.find(versionOld.getTradeId(), 2);
+
+            if (!(versionNew instanceof FRA) && !versionOld.equals(versionNew)) {
+                log.info("old:" + versionOld.toString());
+                log.info("new:" + versionNew.toString());
+                break;
+            } else {
+                log.info("trade match:" + versionOld.getTradeId());
+            }
+        }
+
     }
 }

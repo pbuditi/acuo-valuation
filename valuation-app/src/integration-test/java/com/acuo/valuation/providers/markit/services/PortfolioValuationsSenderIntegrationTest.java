@@ -30,14 +30,14 @@ public class PortfolioValuationsSenderIntegrationTest {
     public ResourceFile res = new ResourceFile("/markit/markit-sample.xml");
 
     @Inject
-    ClientEndPoint clientEndPoint;
+    private ClientEndPoint<MarkitEndPointConfig> clientEndPoint = null;
 
     @Inject
     @Named("markit")
-    Transformer<SwapTrade> transformer;
+    private Transformer<SwapTrade> transformer = null;
 
     @Inject
-    ReportParser parser;
+    private ReportParser parser = null;
 
     @Test
     public void testResourceFileExist() throws Exception {
@@ -48,9 +48,7 @@ public class PortfolioValuationsSenderIntegrationTest {
     @Test
     public void testUploadFile() throws Exception {
         PortfolioValuationsSender mps = new PortfolioValuationsSender(clientEndPoint, parser, transformer);
-
         Report report = mps.send(res.getContent());
-
         assertThat(report).isNotNull();
     }
 }

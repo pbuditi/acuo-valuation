@@ -6,11 +6,10 @@ import com.google.inject.Scopes;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
-public class QuartzModule extends AbstractModule
-{
+public class QuartzModule extends AbstractModule {
+
     @Override
-    protected void configure()
-    {
+    protected void configure() {
         install(new ServiceManagerModule());
 
         bind(SchedulerFactory.class).to(StdSchedulerFactory.class).in(Scopes.SINGLETON);

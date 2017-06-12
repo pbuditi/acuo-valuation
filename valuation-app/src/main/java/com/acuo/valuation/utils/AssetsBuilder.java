@@ -30,6 +30,7 @@ public class AssetsBuilder {
 
         assets.setParValue(asset.getParValue());
         assets.setType(asset.getType());
+        assets.setNotional(asset.getParValue());
         return assets;
     }
 }
