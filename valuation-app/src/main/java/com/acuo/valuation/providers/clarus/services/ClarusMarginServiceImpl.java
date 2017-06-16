@@ -84,7 +84,7 @@ public class ClarusMarginServiceImpl implements ClarusMarginService {
                 .map(map -> new MarginValuation(map.getName(),
                         map.getAccount(),
                         map.getChange(),
-                        map.getMargin(),
+                        map.getTotal(),
                         callType.getCallType(),
                         map.getPortfolioId()))
                 .map(Result::success)

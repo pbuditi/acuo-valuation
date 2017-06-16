@@ -17,6 +17,8 @@
     <logger name="org.neo4j.ogm.drivers.bolt.response" level="warn"/>
     <logger name="org.neo4j.ogm.context" level="warn"/>
 
+    <logger name="com.tracegroup.SYS_DIAG.transformer.PARSE.OK" level="trace"/>
+
     <root level="warn">
         <appender-ref ref="console" />
     </root>
