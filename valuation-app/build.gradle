@@ -4,9 +4,9 @@ apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/ja
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/sonarqube.gradle"
 
 ext.versions += [
-        persist         : '0.10.0-SNAPSHOT',
-        common          : '0.9.0-SNAPSHOT',
-        mapping         : '0.8.0-SNAPSHOT'
+        persist         : '0.10.4',
+        common          : '0.9.1',
+        mapping         : '0.9.0'
 ]
 
 configurations {
