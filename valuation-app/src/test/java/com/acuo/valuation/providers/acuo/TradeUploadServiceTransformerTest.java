@@ -1,7 +1,6 @@
 package com.acuo.valuation.providers.acuo;
 
 import com.acuo.collateral.transform.Transformer;
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
@@ -69,7 +68,7 @@ public class TradeUploadServiceTransformerTest {
 
     @Inject
     @Named("portfolio")
-    private Transformer<SwapTrade> transformer = null;
+    private Transformer<com.acuo.common.model.trade.Trade> transformer = null;
 
     @Rule
     public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");

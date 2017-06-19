@@ -1,7 +1,6 @@
 package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.collateral.transform.Transformer;
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.type.TypedString;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.services.PortfolioService;
@@ -24,13 +23,13 @@ import static java.util.stream.Collectors.toList;
 public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
 
     private final TradeService<Trade> tradeService;
-    private final Transformer<SwapTrade> transformer;
+    private final Transformer<com.acuo.common.model.trade.Trade> transformer;
 
     @Inject
     public TradeUploadServiceTransformer(TradingAccountService accountService,
                                          PortfolioService portfolioService,
                                          TradeService<Trade> tradeService,
-                                         @Named("portfolio") Transformer<SwapTrade> transformer) {
+                                         @Named("portfolio") Transformer<com.acuo.common.model.trade.Trade> transformer) {
         super(accountService, portfolioService);
         this.tradeService = tradeService;
         this.transformer = transformer;
@@ -38,7 +37,7 @@ public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
 
     public List<String> fromExcel(InputStream fis) {
         List<Trade> tradeIdList = new ArrayList<>();
-        List<SwapTrade> swapTrades;
+        List<com.acuo.common.model.trade.Trade> swapTrades;
 
         try {
             swapTrades = transformer.deserialise(IOUtils.toByteArray(fis));
@@ -50,11 +49,10 @@ public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
         return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
     }
 
-    private Trade buildTradeNew(SwapTrade swapTrade) {
-        TradeBuilder tradeBuilder = new TradeBuilder();
-        Trade trade = tradeBuilder.build(swapTrade);
-        linkPortfolio(trade, swapTrade.getInfo().getPortfolio());
-        linkAccount(trade, swapTrade.getInfo().getTradingAccountId());
+    private Trade buildTradeNew(com.acuo.common.model.trade.Trade t) {
+        Trade trade = TradeBuilder.build(t);
+        linkPortfolio(trade, t.getInfo().getPortfolio());
+        linkAccount(trade, t.getInfo().getTradingAccountId());
         return trade;
     }
 }
