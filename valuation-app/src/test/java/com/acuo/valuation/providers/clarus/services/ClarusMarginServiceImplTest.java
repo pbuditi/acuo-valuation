@@ -4,12 +4,10 @@ import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.http.client.ClientEndPoint;
 import com.acuo.common.http.client.LoggingInterceptor;
 import com.acuo.common.http.client.OkHttpClient;
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
@@ -25,7 +23,7 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import com.acuo.valuation.services.TradeUploadService;
-import com.acuo.valuation.utils.SwapTradeBuilder;
+import com.acuo.valuation.builders.TradeBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -69,7 +67,7 @@ public class ClarusMarginServiceImplTest {
 
     @Inject
     @Named("clarus")
-    private Transformer<SwapTrade> transformer = null;
+    private Transformer<com.acuo.common.model.trade.Trade> transformer = null;
 
     @Inject
     private TradeService<Trade> irsService = null;
@@ -102,14 +100,14 @@ public class ClarusMarginServiceImplTest {
     @Test
     public void testMakeRequest() throws IOException {
         String id = "455123";
-        List<SwapTrade> swapTrades = new ArrayList<>();
-        Trade trade = irsService.find(TradeId.fromString(id));
-        if (trade != null) {
-            SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
-            swapTrades.add(swapTrade);
+        List<com.acuo.common.model.trade.Trade> trades = new ArrayList<>();
+        Trade entity = irsService.find(TradeId.fromString(id));
+        if (entity != null) {
+            com.acuo.common.model.trade.Trade swapTrade = TradeBuilder.buildTrade(entity);
+            trades.add(swapTrade);
         }
 
-        String request = service.makeRequest(swapTrades, DataModel.LCH);
+        String request = service.makeRequest(trades, DataModel.LCH);
         assertThat(request).isNotNull();
         Assert.assertThat(request, isJson());
         //Assert.assertThat(request, jsonEquals(json.getContent()).when(IGNORING_EXTRA_FIELDS));
@@ -119,14 +117,14 @@ public class ClarusMarginServiceImplTest {
     public void testMarginCalcOnCmePortfolioFromListOfSwaps() throws IOException, InterruptedException {
         server.enqueue(new MockResponse().setBody(response.getContent()));
         String id = "455123";
-        List<SwapTrade> swapTrades = new ArrayList<>();
-        Trade trade = irsService.find(TradeId.fromString(id));
-        if (trade != null) {
-            SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
-            swapTrades.add(swapTrade);
+        List<com.acuo.common.model.trade.Trade> trades = new ArrayList<>();
+        Trade entity = irsService.find(TradeId.fromString(id));
+        if (entity != null) {
+            com.acuo.common.model.trade.Trade trade = TradeBuilder.buildTrade(entity);
+            trades.add(trade);
         }
 
-        MarginResults results = service.send(swapTrades, DataModel.LCH, MarginCallType.VM);
+        MarginResults results = service.send(trades, DataModel.LCH, MarginCallType.VM);
         assertThat(results).isNotNull();
         assertThat(results.getResults().size()).isEqualTo(1);
     }

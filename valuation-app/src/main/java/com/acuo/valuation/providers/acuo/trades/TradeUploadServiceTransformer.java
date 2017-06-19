@@ -6,7 +6,7 @@ import com.acuo.persist.entity.Trade;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
-import com.acuo.valuation.utils.TradeBuilder;
+import com.acuo.valuation.builders.TradeBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 

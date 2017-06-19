@@ -1,7 +1,6 @@
 package com.acuo.valuation.providers.acuo.trades;
 
 
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.PricingSource;
@@ -9,7 +8,7 @@ import com.acuo.persist.entity.Trade;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.services.PricingService;
-import com.acuo.valuation.utils.SwapTradeBuilder;
+import com.acuo.valuation.builders.TradeBuilder;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,20 +51,20 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
         return results;
     }
 
-    private <T extends Trade> Collection<MarginCall> internal(Iterable<T> trades) {
-        if (Iterables.isEmpty(trades))
+    private <T extends Trade> Collection<MarginCall> internal(Iterable<T> entities) {
+        if (Iterables.isEmpty(entities))
             return new ArrayList<>();
-        final List<SwapTrade> swapTrades = StreamSupport.stream(trades.spliterator(), false)
+        final List<com.acuo.common.model.trade.Trade> trades = StreamSupport.stream(entities.spliterator(), false)
                 .filter(predicate)
                 .filter(trade -> trade instanceof IRS)
                 .map(trade -> (IRS) trade)
-                .map(SwapTradeBuilder::buildTrade)
+                .map(TradeBuilder::buildTrade)
                 .collect(toList());
-        if (Iterables.isEmpty(swapTrades))
+        if (Iterables.isEmpty(trades))
             return new ArrayList<>();
         MarkitResults results = (useBulkPricing) ?
-                pricingService.priceSwapTradesByBulk(swapTrades) :
-                pricingService.priceSwapTrades(swapTrades);
+                pricingService.priceSwapTradesByBulk(trades) :
+                pricingService.priceSwapTrades(trades);
         return resultProcessor.process(results);
     }
 }

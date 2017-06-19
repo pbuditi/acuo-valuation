@@ -39,15 +39,15 @@ public class MappingModule extends AbstractModule {
 
         bind(ObjectMapper.class).toProvider(JacksonObjectMapperProvider.class);
 
-        ClarusTransformer<SwapTrade> clarusTransformer = new ClarusTransformer<>(new Mapper());
-        MarkitTransformer<SwapTrade> markitTransformer = new MarkitTransformer<>(new Mapper());
+        ClarusTransformer<com.acuo.common.model.trade.Trade> clarusTransformer = new ClarusTransformer<>(new Mapper());
+        MarkitTransformer<com.acuo.common.model.trade.Trade> markitTransformer = new MarkitTransformer<>(new Mapper());
         ReutersTransformer<Assets> assetsAssetsTransformer = new ReutersTransformer<>();
         ReutersTransformer<AssetValuation> assetValuationReutersTransformer = new ReutersTransformer<>();
         PortfolioImportTransformer<com.acuo.common.model.trade.Trade> portfolioImportTransformer = new PortfolioImportTransformer<>(new Mapper());
         TradeValuationTransformer<TradeValuation> tradeValuationTransformer = new TradeValuationTransformer<>(new Mapper());
 
-        bind(new TypeLiteral<Transformer<SwapTrade>>() {}).annotatedWith(Names.named("clarus")).toInstance(clarusTransformer);
-        bind(new TypeLiteral<Transformer<SwapTrade>>() {}).annotatedWith(Names.named("markit")).toInstance(markitTransformer);
+        bind(new TypeLiteral<Transformer<com.acuo.common.model.trade.Trade>>() {}).annotatedWith(Names.named("clarus")).toInstance(clarusTransformer);
+        bind(new TypeLiteral<Transformer<com.acuo.common.model.trade.Trade>>() {}).annotatedWith(Names.named("markit")).toInstance(markitTransformer);
         bind(new TypeLiteral<Transformer<Assets>>() {}).annotatedWith(Names.named("assets")).toInstance(assetsAssetsTransformer);
         bind(new TypeLiteral<Transformer<AssetValuation>>() {}).annotatedWith(Names.named("assetValuation")).toInstance(assetValuationReutersTransformer);
         bind(new TypeLiteral<Transformer<com.acuo.common.model.trade.Trade>>() {}).annotatedWith(Names.named("portfolio")).toInstance(portfolioImportTransformer);

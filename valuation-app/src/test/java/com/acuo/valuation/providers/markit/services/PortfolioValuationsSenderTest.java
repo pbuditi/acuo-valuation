@@ -3,7 +3,6 @@ package com.acuo.valuation.providers.markit.services;
 import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.http.client.LoggingInterceptor;
 import com.acuo.common.http.client.OkHttpClient;
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
@@ -24,7 +23,7 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.services.TradeUploadService;
-import com.acuo.valuation.utils.SwapTradeBuilder;
+import com.acuo.valuation.builders.TradeBuilder;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -69,7 +68,7 @@ public class PortfolioValuationsSenderTest {
 
     @Inject
     @Named("markit")
-    private Transformer<SwapTrade> markitTransformer = null;
+    private Transformer<com.acuo.common.model.trade.Trade> markitTransformer = null;
 
     @Inject
     private ImportService importService = null;
@@ -84,7 +83,7 @@ public class PortfolioValuationsSenderTest {
 
     private PortfolioValuationsSender sender;
 
-    private List<SwapTrade> swaps;
+    private List<com.acuo.common.model.trade.Trade> trades;
 
     @Before
     public void setUp() throws Exception {
@@ -105,9 +104,9 @@ public class PortfolioValuationsSenderTest {
 
         final List<String> tradeIds = tradeUploadService.fromExcel(oneIRS.createInputStream());
 
-        swaps = tradeIds.stream()
+        trades = tradeIds.stream()
                 .map(id -> (IRS) tradeService.find(TradeId.fromString(id)))
-                .map(SwapTradeBuilder::buildTrade)
+                .map(TradeBuilder::buildTrade)
                 .collect(toList());
     }
 
@@ -119,7 +118,7 @@ public class PortfolioValuationsSenderTest {
         server.enqueue(new MockResponse().setBody(STILL_PROCESSING_KEY));
         server.enqueue(new MockResponse().setBody(report.getContent()));
 
-        Report r = sender.send(swaps, LocalDate.now());
+        Report r = sender.send(trades, LocalDate.now());
 
         RecordedRequest request = server.takeRequest();
         String body = request.getBody().readUtf8();

@@ -1,11 +1,9 @@
 package com.acuo.valuation.providers.clarus.services;
 
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
@@ -21,7 +19,7 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import com.acuo.valuation.services.TradeUploadService;
-import com.acuo.valuation.utils.SwapTradeBuilder;
+import com.acuo.valuation.builders.TradeBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,13 +70,13 @@ public class ClarusMarginServiceImplIntegrationTest {
     @Test
     public void testWithMapper() throws IOException {
         String id = "455123";
-        List<SwapTrade> swapTrades = new ArrayList<>();
-        Trade trade = irsService.find(TradeId.fromString(id));
-        if (trade != null) {
-            SwapTrade swapTrade = SwapTradeBuilder.buildTrade((IRS) trade);
-            swapTrades.add(swapTrade);
+        List<com.acuo.common.model.trade.Trade> trades = new ArrayList<>();
+        Trade entity = irsService.find(TradeId.fromString(id));
+        if (entity != null) {
+            com.acuo.common.model.trade.Trade trade = TradeBuilder.buildTrade(entity);
+            trades.add(trade);
         }
-        MarginResults response = service.send(swapTrades, DataModel.LCH, MarginCallType.VM);
+        MarginResults response = service.send(trades, DataModel.LCH, MarginCallType.VM);
         assertThat(response).isNotNull();
     }
 }

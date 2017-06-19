@@ -17,6 +17,7 @@ import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -53,6 +54,7 @@ public class ReutersAssetPricingProcessorTest {
     }
 
     @Test
+    @Ignore
     public void process() throws Exception {
         Asset asset = assetService.find("FR0010482547", 1);
         final Collection<AssetValue> results = processor.process(ImmutableList.of(asset));
