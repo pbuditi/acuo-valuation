@@ -63,6 +63,8 @@ public class PropertiesHelper extends BasePropertiesHelper {
     public static final String ACUO_DATASCOPE_REPORT_TEMPLATE_ID_BOND = "acuo.datascope.report.template.id.bond";
     public static final String ACUO_DATASCOPE_RETRY_DELAY = "acuo.datascope.retry.delay";
 
+    public static final String ACUO_SIMULATION_ENABLED = "acuo.simulation.enabled";
+
     private PropertiesHelper(Configuration configuration) {
         super(configuration);
     }
