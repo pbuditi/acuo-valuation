@@ -29,7 +29,7 @@ public class ClarusValuationProcessor {
         ProcessorItem<MarginResults> processorItem = firstProcessor.process(new ProcessorItem(results));
         log.info("pricing result processing ended");
         final List<String> ids = processorItem.getExpected();
-        return ids.stream().map(id -> marginCallService.find(id, 2)).collect(toList());
+        return ids.stream().map(id -> marginCallService.find(id, 3)).collect(toList());
     }
 
 }

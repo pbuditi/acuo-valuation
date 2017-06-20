@@ -3,6 +3,7 @@
     "currency" : "KRW",
     "exposure" : "181646493.91",
     "legalEntity" : "ACUO US LLC",
+    "cptyOrg" : "Counterpart B",
     "cptyEntity" : "Counterpart B4",
     "marginAgreement" : "a29",
     "valuationDate" : "${json-unit.ignore}",
