@@ -64,7 +64,7 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
     }
 
     protected Supplier<StatementStatus> statementStatusSupplier() {
-        return () -> StatementStatus.Unrecon;
+        return () -> StatementStatus.Received;
     }
 
     protected Supplier<Side> sideSupplier() {

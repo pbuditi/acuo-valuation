@@ -63,7 +63,7 @@ public class MarkitCallSimulator extends MarkitCallGenerator {
     }
 
     protected Supplier<StatementStatus> statementStatusSupplier() {
-        return () -> StatementStatus.Unrecon;
+        return () -> StatementStatus.Received;
     }
 
     protected Supplier<Side> sideSupplier() {return () -> Side.Cpty;}
