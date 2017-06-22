@@ -21,4 +21,6 @@ public interface PricingService {
 
     MarkitResults priceSwapTradesByBulk(List<Trade> trades);
 
+    MarkitResults pricePortfolios(List<PortfolioId> portfolioIds);
+
 }

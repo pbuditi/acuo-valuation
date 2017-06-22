@@ -3,10 +3,13 @@ package com.acuo.valuation.providers.markit.services;
 import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
+import com.acuo.persist.entity.TradeValuation;
+import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.TradeService;
+import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.services.PricingService;
@@ -34,12 +37,14 @@ public class MarkitPricingService implements PricingService {
     private final Sender sender;
     private final Retriever retriever;
     private final TradeService<Trade> tradeService;
+    private final ValuationService valuationService;
 
     @Inject
-    MarkitPricingService(Sender sender, Retriever retriever, TradeService<Trade> tradeService) {
+    MarkitPricingService(Sender sender, Retriever retriever, TradeService<Trade> tradeService,ValuationService valuationService) {
         this.sender = sender;
         this.retriever = retriever;
         this.tradeService = tradeService;
+        this.valuationService = valuationService;
     }
 
     @Override
@@ -75,6 +80,37 @@ public class MarkitPricingService implements PricingService {
                 .map(TradeBuilder::buildTrade)
                 .collect(toList());
         return priceSwapTrades(filtered);
+    }
+
+    @Override
+    public MarkitResults pricePortfolios(List<PortfolioId> portfolioIds)
+    {
+        List<Trade> tradeList = portfolioIds.stream().map(portfolioId -> tradeService.findByPortfolioId(portfolioId)).flatMap(trades -> StreamSupport.stream(trades.spliterator(), false)).collect(Collectors.toList());
+        List<com.acuo.common.model.trade.Trade> filtered = tradeList.stream()
+                .map(trade -> tradeService.find(trade.getTradeId(), 2))
+                .filter(trade -> trade instanceof IRS)
+                .map(trade -> (IRS) trade)
+                .filter(irs -> "Bilateral".equalsIgnoreCase(irs.getTradeType()))
+                .filter(irs -> !isTradeValuated(irs))
+                .map(TradeBuilder::buildTrade)
+                .collect(toList());
+        return priceSwapTrades(filtered);
+    }
+
+    boolean isTradeValuated(IRS irs)
+    {
+        TradeValuation tradeValuation = valuationService.getTradeValuationFor(irs.getTradeId());
+        if(tradeValuation != null && tradeValuation.getValues() != null)
+        {
+            for(TradeValue tradeValue : tradeValuation.getValues())
+            {
+                if(tradeValue.getValuationDate().equals(LocalDate.now()))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
