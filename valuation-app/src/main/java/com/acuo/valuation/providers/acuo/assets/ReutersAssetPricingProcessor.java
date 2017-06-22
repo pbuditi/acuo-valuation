@@ -52,6 +52,7 @@ public class ReutersAssetPricingProcessor extends AbstractAssetPricingProcessor 
     private Collection<AssetValue> internal(Iterable<Asset> assets) {
         final List<Assets> list = StreamSupport.stream(assets.spliterator(), false)
                 .filter(reutersPredicate)
+                .filter(asset -> !"FR0010482547".equals(asset.getAssetId()))
                 .map(AssetsBuilder::buildAssets)
                 .collect(toList());
         List<AssetValuation> results = reutersService.send(list);

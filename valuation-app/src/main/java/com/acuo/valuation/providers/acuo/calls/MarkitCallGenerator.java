@@ -45,7 +45,7 @@ public class MarkitCallGenerator extends CallGenerator<MarkitResults> {
         LocalDate valuationDate = processorItem.getResults().getValuationDate();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
-        List<MarginCall> marginCalls = createCalls(portfolioIds, valuationDate, callDate, Types.CallType.Variation);
+        List<String> marginCalls = createCalls(portfolioIds, valuationDate, callDate, Types.CallType.Variation);
         processorItem.setExpected(marginCalls);
         if (next != null)
             return next.process(processorItem);

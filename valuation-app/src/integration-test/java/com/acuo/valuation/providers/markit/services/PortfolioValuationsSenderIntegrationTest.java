@@ -2,14 +2,14 @@ package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.http.client.ClientEndPoint;
-import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.model.trade.Trade;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
-import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.reports.Report;
+import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class PortfolioValuationsSenderIntegrationTest {
 
     @Inject
     @Named("markit")
-    private Transformer<SwapTrade> transformer = null;
+    private Transformer<Trade> transformer = null;
 
     @Inject
     private ReportParser parser = null;

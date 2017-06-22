@@ -1,6 +1,6 @@
 package com.acuo.valuation.providers.acuo.trades;
 
-import com.acuo.common.model.trade.SwapTrade;
+import com.acuo.common.model.trade.Trade;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.acuo.results.ClarusValuationProcessor;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginService;
@@ -23,7 +23,7 @@ public class ClarusIMProcessorImpl extends ClarusPricingProcessor {
     }
 
     @Override
-    protected MarginResults send(List<SwapTrade> swapTrades) {
-        return clarusMarginService.send(swapTrades, LCH, IM);
+    protected MarginResults send(List<Trade> trades) {
+        return clarusMarginService.send(trades, LCH, IM);
     }
 }

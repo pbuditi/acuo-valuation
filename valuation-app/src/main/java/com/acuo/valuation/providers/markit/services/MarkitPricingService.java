@@ -1,6 +1,5 @@
 package com.acuo.valuation.providers.markit.services;
 
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
@@ -11,7 +10,7 @@ import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.services.PricingService;
-import com.acuo.valuation.utils.SwapTradeBuilder;
+import com.acuo.valuation.builders.TradeBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -45,22 +44,22 @@ public class MarkitPricingService implements PricingService {
 
     @Override
     public MarkitResults priceTradeIds(List<String> swapIds) {
-        List<SwapTrade> swapTrades = swapIds.stream()
+        List<com.acuo.common.model.trade.Trade> trades = swapIds.stream()
                 .map(id -> tradeService.find(TradeId.fromString(id)))
                 .filter(Objects::nonNull)
                 .filter(trade -> trade instanceof IRS)
                 .map(trade -> (IRS) trade)
-                .map(SwapTradeBuilder::buildTrade)
+                .map(TradeBuilder::buildTrade)
                 .collect(toList());
-        return priceSwapTrades(swapTrades);
+        return priceSwapTrades(trades);
     }
 
     @Override
     public MarkitResults priceTradesOf(ClientId clientId) {
         Iterable<Trade> trades = tradeService.findBilateralTradesByClientId(clientId);
-        List<SwapTrade> swapTrades = StreamSupport.stream(trades.spliterator(), false)
+        List<com.acuo.common.model.trade.Trade> swapTrades = StreamSupport.stream(trades.spliterator(), false)
                 .filter(trade -> trade instanceof IRS)
-                .map(trade -> SwapTradeBuilder.buildTrade((IRS) trade))
+                .map(trade -> TradeBuilder.buildTrade(trade))
                 .collect(toList());
         return priceSwapTrades(swapTrades);
     }
@@ -68,12 +67,12 @@ public class MarkitPricingService implements PricingService {
     @Override
     public MarkitResults priceTradesUnder(PortfolioId portfolioId) {
         Iterable<Trade> all = tradeService.findByPortfolioId(portfolioId);
-        List<SwapTrade> filtered = StreamSupport.stream(all.spliterator(), false)
+        List<com.acuo.common.model.trade.Trade> filtered = StreamSupport.stream(all.spliterator(), false)
                 .map(trade -> tradeService.find(trade.getTradeId(), 2))
                 .filter(trade -> trade instanceof IRS)
                 .map(trade -> (IRS) trade)
                 .filter(irs -> "Bilateral".equalsIgnoreCase(irs.getTradeType()))
-                .map(SwapTradeBuilder::buildTrade)
+                .map(TradeBuilder::buildTrade)
                 .collect(toList());
         return priceSwapTrades(filtered);
     }
@@ -81,21 +80,21 @@ public class MarkitPricingService implements PricingService {
     @Override
     public MarkitResults priceTradesOfType(String type) {
         Iterable<IRS> trades = tradeService.findAllIRS();
-        List<SwapTrade> tradeIds = StreamSupport.stream(trades.spliterator(), false)
-                .map(SwapTradeBuilder::buildTrade)
+        List<com.acuo.common.model.trade.Trade> tradeIds = StreamSupport.stream(trades.spliterator(), false)
+                .map(TradeBuilder::buildTrade)
                 .collect(toList());
         return priceSwapTrades(tradeIds);
     }
 
     @Override
-    public MarkitResults priceSwapTrades(List<SwapTrade> swaps) {
+    public MarkitResults priceSwapTrades(List<com.acuo.common.model.trade.Trade> trades) {
 
         LocalDate valuationDate = LocalDateUtils.minus(LocalDate.now(), 1);
 
-        Report report = sender.send(swaps, valuationDate);
+        Report report = sender.send(trades, valuationDate);
         Predicate<? super String> errorReport = getPredicate(report);
 
-        List<String> tradeIds = swaps
+        List<String> tradeIds = trades
                 .stream()
                 .map(swap -> swap.getInfo().getTradeId())
                 .filter(errorReport)
@@ -105,11 +104,11 @@ public class MarkitPricingService implements PricingService {
     }
 
     @Override
-    public MarkitResults priceSwapTradesByBulk(List<SwapTrade> swaps) {
+    public MarkitResults priceSwapTradesByBulk(List<com.acuo.common.model.trade.Trade> trades) {
 
         LocalDate valuationDate = LocalDateUtils.minus(LocalDate.now(), 1);
 
-        Map<String, List<SwapTrade>> bulks = swaps.stream()
+        Map<String, List<com.acuo.common.model.trade.Trade>> bulks = trades.stream()
                 .collect(groupingBy(trade -> trade.getInfo().getPortfolio(), toList()));
 
         final List<CompletableFuture<List<String>>> futures = bulks.keySet().stream()
@@ -132,12 +131,12 @@ public class MarkitPricingService implements PricingService {
         };
     }
 
-    private CompletableFuture<List<String>> calculateAsyncWithCancellation(List<SwapTrade> swaps, LocalDate valuationDate) {
+    private CompletableFuture<List<String>> calculateAsyncWithCancellation(List<com.acuo.common.model.trade.Trade> trades, LocalDate valuationDate) {
         return CompletableFuture.supplyAsync(() -> {
-            Report report = sender.send(swaps, valuationDate);
+            Report report = sender.send(trades, valuationDate);
             Predicate<? super String> errorReport = getPredicate(report);
 
-            return swaps
+            return trades
                     .stream()
                     .map(swap -> swap.getInfo().getTradeId())
                     .filter(errorReport)

@@ -3,7 +3,6 @@ package com.acuo.valuation.providers.clarus.services;
 import com.acuo.collateral.transform.Transformer;
 import com.acuo.collateral.transform.TransformerContext;
 import com.acuo.common.http.client.ClientEndPoint;
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.util.LocalDateUtils;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarginValuation;
@@ -29,23 +28,23 @@ public class ClarusMarginServiceImpl implements ClarusMarginService {
 
     private final ClientEndPoint<ClarusEndPointConfig> clientEndPoint;
     private final ObjectMapper objectMapper;
-    private final Transformer<SwapTrade> transformer;
+    private final Transformer<com.acuo.common.model.trade.Trade> transformer;
 
     @Inject
     ClarusMarginServiceImpl(ClientEndPoint<ClarusEndPointConfig> clientEndPoint,
                             ObjectMapper objectMapper,
-                            @Named("clarus") Transformer<SwapTrade> dataMapper) {
+                            @Named("clarus") Transformer<com.acuo.common.model.trade.Trade> dataMapper) {
         this.clientEndPoint = clientEndPoint;
         this.objectMapper = objectMapper;
         this.transformer = dataMapper;
     }
 
     @Override
-    public MarginResults send(List<SwapTrade> swaps, DataModel model, MarginCallType callType) {
+    public MarginResults send(List<com.acuo.common.model.trade.Trade> trades, DataModel model, MarginCallType callType) {
         try {
-            String request = makeRequest(swaps, model);
+            String request = makeRequest(trades, model);
             String response = sendRequest(request, callType);
-            final Set<String> portfolioIds = swaps.stream()
+            final Set<String> portfolioIds = trades.stream()
                     .map(swapTrade -> swapTrade.getInfo().getPortfolio())
                     .collect(toSet());
             return makeResult(response, portfolioIds, callType);
@@ -55,10 +54,10 @@ public class ClarusMarginServiceImpl implements ClarusMarginService {
         }
     }
 
-    String makeRequest(List<SwapTrade> swaps, DataModel model) {
+    String makeRequest(List<com.acuo.common.model.trade.Trade> trades, DataModel model) {
         TransformerContext context = new TransformerContext();
         context.setValueDate(LocalDate.now());
-        String portfolios = transformer.serialise(swaps, context);
+        String portfolios = transformer.serialise(trades, context);
         String request = RequestBuilder
                 .create(objectMapper, portfolios)
                 .addDataModel(model)
