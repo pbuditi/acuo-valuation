@@ -39,7 +39,7 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
 
     private final ValuationService valuationService;
     private final MarginStatementService marginStatementService;
-    private final MarginCallService marginCallService;
+    protected final MarginCallService marginCallService;
     private final AgreementService agreementService;
     private final CurrencyService currencyService;
     private final PortfolioService portfolioService;
