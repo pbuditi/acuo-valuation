@@ -14,8 +14,10 @@ import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
+import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceTransformer;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
@@ -52,13 +54,20 @@ import static org.junit.Assert.assertEquals;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
+@Slf4j
 public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Rule
     public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
+    public ResourceFile all = new ResourceFile("/excel/TradePortfolio.xlsx");
+
+    @Rule
     public ResourceFile jsonRequest = new ResourceFile("/json/swaps/swap-request.json");
+
+    @Rule
+    public ResourceFile jsonPortfolioRequest = new ResourceFile("/json/swaps/swap-portfolio-request.json");
 
     @Rule
     public ResourceFile jsonResponse = new ResourceFile("/json/swaps/swap-response.json");
@@ -80,6 +89,9 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
 
     @Inject
     TradeUploadService tradeUploadService;
+
+    @Inject
+    TradeUploadServiceTransformer tradeUploadServiceTransformer;
 
     private static MockWebServer server = new MockWebServer();
 
@@ -151,6 +163,25 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
 
         MockHttpRequest request = MockHttpRequest.get("/swaps/priceSwapTrades/allBilateralIRS");
         MockHttpResponse response = new MockHttpResponse();
+
+        dispatcher.invoke(request, response);
+
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertThat(response.getContentAsString()).isNotNull();
+    }
+
+    @Test
+    public void tesPricePortfolios() throws URISyntaxException, IOException {
+        tradeUploadServiceTransformer.fromExcel(all.createInputStream());
+
+        setMockMarkitResponse();
+
+        MockHttpRequest request = MockHttpRequest.post("/swaps/priceSwapTrades/portfolio");
+        MockHttpResponse response = new MockHttpResponse();
+
+        request.contentType(MediaType.APPLICATION_JSON);
+        log.info(jsonPortfolioRequest.getContent());
+        request.content(jsonPortfolioRequest.getInputStream());
 
         dispatcher.invoke(request, response);
 
