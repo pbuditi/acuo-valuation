@@ -86,6 +86,8 @@ public class MarkitPricingService implements PricingService {
     public MarkitResults pricePortfolios(List<PortfolioId> portfolioIds)
     {
         List<Trade> tradeList = portfolioIds.stream().map(portfolioId -> tradeService.findByPortfolioId(portfolioId)).flatMap(trades -> StreamSupport.stream(trades.spliterator(), false)).collect(Collectors.toList());
+        if(tradeList == null || tradeList.size() == 0)
+            return null;
         List<com.acuo.common.model.trade.Trade> filtered = tradeList.stream()
                 .map(trade -> tradeService.find(trade.getTradeId(), 2))
                 .filter(trade -> trade instanceof IRS)

@@ -17,14 +17,7 @@ import com.acuo.valuation.providers.acuo.results.MarkitResultPersister;
 import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.providers.acuo.results.ResultProcessor;
-import com.acuo.valuation.providers.acuo.trades.ClarusIMProcessorImpl;
-import com.acuo.valuation.providers.acuo.trades.ClarusPricingProcessor;
-import com.acuo.valuation.providers.acuo.trades.ClarusVMProcessorImpl;
-import com.acuo.valuation.providers.acuo.trades.LocalTradeCacheService;
-import com.acuo.valuation.providers.acuo.trades.MarkitPricingProcessor;
-import com.acuo.valuation.providers.acuo.trades.PortfolioValuationPersister;
-import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
-import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceTransformer;
+import com.acuo.valuation.providers.acuo.trades.*;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginService;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginServiceImpl;
 import com.acuo.valuation.providers.datascope.service.authentication.DataScopeAuthService;
@@ -88,6 +81,7 @@ public class ServicesModule extends AbstractModule {
         bind(ClarusValuationProcessor.class);
         bind(ClarusVMProcessorImpl.class);
         bind(ClarusIMProcessorImpl.class);
+        bind(PortfolioPriceProcessor.class);
 
         // asset valuation
         bind(ReutersService.class).to(ReutersServiceImpl.class);

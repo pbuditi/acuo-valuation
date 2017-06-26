@@ -23,6 +23,7 @@ public class PortfolioPriceProcessor {
     public void process(List<PortfolioId> portfolioIds)
     {
         MarkitResults markitResults = pricingService.pricePortfolios(portfolioIds);
-        markitResultPersister.persist(markitResults);
+        if(markitResults != null)
+            markitResultPersister.persist(markitResults);
     }
 }
