@@ -66,8 +66,8 @@ public class CashAssetPricingProcessor extends AbstractAssetPricingProcessor {
         assetValue.setCoupon(0.0d);
         Currency currency = asset.getCurrency();
         assetValue.setNominalCurrency(currency);
-        Double division = currencyService.getFXValue(currency);
-        assetValue.setUnitValue(division);
+        //Double division = currencyService.getFXValue(currency);
+        assetValue.setUnitValue(1d);
         assetValue.setPriceQuotationType("FX");
         assetValue.setReportCurrency(Currency.USD);
         assetValue.setTimestamp(Instant.now());
