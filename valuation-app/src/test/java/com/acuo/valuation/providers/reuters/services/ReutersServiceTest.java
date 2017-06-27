@@ -48,21 +48,21 @@ public class ReutersServiceTest {
 
     private ReutersService reutersService;
 
-    MockWebServer server = new MockWebServer();
+    private MockWebServer server = new MockWebServer();
 
-    @com.google.inject.Inject
+    @Inject
     @Named("assets")
-    Transformer<Assets> transformer;
+    private Transformer<Assets> transformer = null;
 
-    @com.google.inject.Inject
+    @Inject
     @Named("assetValuation")
-    Transformer<AssetValuation> valuationTransformer;
+    private Transformer<AssetValuation> valuationTransformer = null;
 
     @Inject
-    private AssetService assetService;
+    private AssetService assetService = null;
 
     @Inject
-    private AssetValuationService assetsPersistService;
+    private AssetValuationService assetsPersistService = null;
 
     @Rule
     public ResourceFile response = new ResourceFile("/reuters/response/response.json");
@@ -72,18 +72,14 @@ public class ReutersServiceTest {
         server.start();
 
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
-
-        ReutersEndPointConfig config = new ReutersEndPointConfig("http", server.getHostName(), server.getPort(), "testUpload" ,"key", "secret", "10000", 10000,"false", null);
-
+        ReutersEndPointConfig config = new ReutersEndPointConfig("http", server.getHostName(), server.getPort(), "testUpload", "key", "secret", "10000", 10000, "false", null);
         ClientEndPoint<ReutersEndPointConfig> clientEndPoint = new OkHttpClient<>(httpClient, config);
 
         reutersService = new ReutersServiceImpl(clientEndPoint, transformer, valuationTransformer);
-
     }
 
     @Test
-    public void testSend() throws Exception
-    {
+    public void testSend() throws Exception {
         server.enqueue(new MockResponse().setBody(response.getContent()));
         Assets assets = new Assets();
         List<Assets> assetsList = new ArrayList<>();

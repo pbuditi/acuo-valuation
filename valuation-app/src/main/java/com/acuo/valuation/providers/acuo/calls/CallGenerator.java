@@ -58,13 +58,14 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
         this.portfolioService = portfolioService;
     }
 
-    public List<MarginCall> createCalls(Set<PortfolioId> portfolioSet, LocalDate valuationDate, LocalDate callDate, Types.CallType callType) {
+    public List<String> createCalls(Set<PortfolioId> portfolioSet, LocalDate valuationDate, LocalDate callDate, Types.CallType callType) {
         log.info("generating margin calls for {}", portfolioSet);
-        List<MarginCall> marginCalls = portfolioSet.stream()
+        List<String> marginCalls = portfolioSet.stream()
                 .map(id -> valuationService.getMarginValuationFor(id, callType))
                 .map(valuation -> createcalls(sideSupplier().get(), valuation, valuationDate, callDate, statementStatusSupplier().get()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .map(MarginCall::getItemId)
                 .collect(toList());
         log.info("{} margin calls generated", marginCalls.size());
         return marginCalls;
@@ -125,24 +126,24 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
                                  LocalDate callDate,
                                  Map<Currency, Double> rates,
                                  Long tradeCount) {
-        MarginCall margin;
+        MarginCall marginCall;
         if (callType.equals(Types.CallType.Variation)) {
-            margin = new VariationMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
+            marginCall = new VariationMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
         } else {
-            margin = new InitialMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
+            marginCall = new InitialMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
         }
 
-        final MarginCall toDelete = marginCallService.find(margin.getItemId());
+        final MarginCall toDelete = marginCallService.find(marginCall.getItemId());
         if (toDelete != null) {
-            marginCallService.delete(marginCallService.find(margin.getItemId()));
+            marginCallService.delete(marginCallService.find(marginCall.getItemId()));
         }
 
-        StatementDirection direction = margin.getDirection();
+        StatementDirection direction = marginCall.getDirection();
         MarginStatement marginStatement = marginStatementService.getOrCreateMarginStatement(agreement, callDate, direction);
-        margin.setMarginStatement(marginStatement);
-        margin = marginCallService.save(margin);
-        marginStatementService.setStatus(margin.getItemId(), statementStatus);
-        return margin;
+        marginCall.setMarginStatement(marginStatement);
+        marginCall = marginCallService.save(marginCall);
+        marginCall = marginStatementService.setStatus(marginCall.getItemId(), statementStatus);
+        return marginCall;
 
     }
 }

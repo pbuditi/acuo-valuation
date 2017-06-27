@@ -1,7 +1,6 @@
 package com.acuo.valuation.providers.markit.services;
 
 import com.acuo.common.model.product.SwapHelper;
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
@@ -25,7 +24,7 @@ import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.util.ReportHelper;
-import com.acuo.valuation.utils.SwapTradeBuilder;
+import com.acuo.valuation.builders.TradeBuilder;
 import com.opengamma.strata.collect.result.Result;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
@@ -73,26 +72,26 @@ public class MarkitPricingServiceTest {
     public ResourceFile largeReport = new ResourceFile("/markit/reports/large.xml");
 
     @Inject
-    ReportParser reportParser;
+    private ReportParser reportParser = null;
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private TradeUploadService tradeUploadService = null;
 
     @Inject
-    TradeService<Trade> tradeService;
+    private TradeService<Trade> tradeService = null;
 
     @Mock
-    Sender sender;
+    private Sender sender;
 
     @Mock
-    Retriever retriever;
+    private Retriever retriever;
 
-    MarkitPricingService service;
+    private MarkitPricingService service;
 
-    List<SwapTrade> swaps;
+    private List<com.acuo.common.model.trade.Trade> trades;
 
     @Before
     public void setup() throws IOException {
@@ -102,7 +101,7 @@ public class MarkitPricingServiceTest {
 
         importService.reload();
 
-        swaps = loadTrades(oneIRS);
+        trades = loadTrades(oneIRS);
     }
 
     @Test
@@ -113,7 +112,7 @@ public class MarkitPricingServiceTest {
         markitResults.setResults(Collections.EMPTY_LIST);
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(markitResults);
 
-        MarkitResults results = service.priceSwapTrades(swaps);
+        MarkitResults results = service.priceSwapTrades(trades);
 
         assertThat(results).isNotNull();
     }
@@ -123,7 +122,7 @@ public class MarkitPricingServiceTest {
         when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(ReportHelper.report());
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
 
-        MarkitResults results = service.priceSwapTrades(swaps);
+        MarkitResults results = service.priceSwapTrades(trades);
 
         assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
@@ -170,7 +169,7 @@ public class MarkitPricingServiceTest {
         markitValue.setPv(1.0d);
 
         MarkitResults expectedResults = new MarkitResults();
-        expectedResults.setResults(asList(Result.success(new MarkitValuation(markitValue))));
+        expectedResults.setResults(Collections.singletonList(Result.success(new MarkitValuation(markitValue))));
         return expectedResults;
     }
 
@@ -180,7 +179,7 @@ public class MarkitPricingServiceTest {
         when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(reportParser.parse(largeReport.getContent()));
         when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
 
-        List<SwapTrade> all = loadTrades(this.all);
+        List<com.acuo.common.model.trade.Trade> all = loadTrades(this.all);
 
         MarkitResults results = service.priceSwapTradesByBulk(all);
 
@@ -188,12 +187,12 @@ public class MarkitPricingServiceTest {
 
     }
 
-    private List<SwapTrade> loadTrades(ResourceFile file) {
+    private List<com.acuo.common.model.trade.Trade> loadTrades(ResourceFile file) {
         final List<String> tradeIds = tradeUploadService.fromExcel(file.createInputStream());
 
         return tradeIds.stream()
                 .map(id -> tradeService.find(TradeId.fromString(id)))
-                .map(irs -> SwapTradeBuilder.buildTrade(irs))
+                .map(TradeBuilder::buildTrade)
                 .collect(toList());
     }
 }

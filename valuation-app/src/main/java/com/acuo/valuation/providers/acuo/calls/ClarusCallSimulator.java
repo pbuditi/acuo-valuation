@@ -2,7 +2,6 @@ package com.acuo.valuation.providers.acuo.calls;
 
 import com.acuo.common.model.margin.Types;
 import com.acuo.common.util.LocalDateUtils;
-import com.acuo.common.util.SimulationHelper;
 import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.enums.Side;
@@ -30,7 +29,7 @@ import java.util.function.Supplier;
 public class ClarusCallSimulator extends ClarusCallGenerator {
 
     private final MarginCallService marginCallService;
-    private final SimulationHelper simulationHelper = new SimulationHelper();
+    private final Simulator simulationHelper;
 
     @Inject
     public ClarusCallSimulator(ValuationService valuationService,
@@ -38,7 +37,8 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
                                AgreementService agreementService,
                                CurrencyService currencyService,
                                MarginCallService marginCallService,
-                               PortfolioService portfolioService) {
+                               PortfolioService portfolioService,
+                               Simulator simulationHelper) {
         super(valuationService,
                 marginStatementService,
                 marginCallService,
@@ -46,6 +46,7 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
                 agreementService,
                 portfolioService);
         this.marginCallService = marginCallService;
+        this.simulationHelper = simulationHelper;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
         final Types.CallType callType = processorItem.getResults().getMarginType();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
-        List<MarginCall> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
+        List<String> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
         processorItem.setSimulated(marginCalls);
         if (next != null)
             return next.process(processorItem);
@@ -64,7 +65,7 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
     }
 
     protected Supplier<StatementStatus> statementStatusSupplier() {
-        return () -> StatementStatus.Unrecon;
+        return () -> StatementStatus.Received;
     }
 
     protected Supplier<Side> sideSupplier() {

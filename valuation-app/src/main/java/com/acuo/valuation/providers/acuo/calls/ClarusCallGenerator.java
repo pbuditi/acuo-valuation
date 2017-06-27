@@ -46,7 +46,7 @@ public class ClarusCallGenerator extends CallGenerator<MarginResults> {
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
         Types.CallType callType = processorItem.getResults().getMarginType();
         Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
-        List<MarginCall> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
+        List<String> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
         processorItem.setExpected(marginCalls);
         if (next != null)
             return next.process(processorItem);
