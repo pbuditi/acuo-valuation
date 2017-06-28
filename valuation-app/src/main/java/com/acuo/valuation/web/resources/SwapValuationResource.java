@@ -137,7 +137,7 @@ public class SwapValuationResource {
     @Timed
     public Response pricePortfolio(PortfolioIds portfolioIds) throws Exception {
         log.info("Pricing all trades under the portfolios {}", portfolioIds);
-        portfolioPriceProcessor.process(portfolioIds.getIds().stream().map(s -> PortfolioId.fromString(s)).collect(toList()));
+        portfolioPriceProcessor.process(portfolioIds.getIds().stream().map(PortfolioId::fromString).collect(toList()));
         return Response.ok().build();
     }
 

@@ -2,6 +2,7 @@ package com.acuo.valuation.web.resources;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.InstanceTestClassListener;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
 import com.acuo.persist.core.ImportService;
@@ -16,6 +17,7 @@ import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceTransformer;
 import com.acuo.valuation.services.TradeUploadService;
+import com.acuo.valuation.util.MockServiceModule;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockResponse;
@@ -23,9 +25,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +45,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({
         ConfigurationTestModule.class,
+        MockServiceModule.class,
         MappingModule.class,
         EncryptionModule.class,
         Neo4jPersistModule.class,
@@ -55,7 +56,7 @@ import static org.junit.Assert.assertEquals;
         EndPointModule.class,
         ServicesModule.class})
 @Slf4j
-public class SwapValuationResourceTest implements WithResteasyFixtures {
+public class SwapValuationResourceTest implements WithResteasyFixtures, InstanceTestClassListener {
 
     @Rule
     public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");
@@ -87,40 +88,31 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
     @Rule
     public ResourceFile clarusResponse = new ResourceFile("/clarus/response/clarus-lch.json");
 
-    @Inject
-    TradeUploadService tradeUploadService;
+    @Rule
+    public ResourceFile generateResponse = new ResourceFile("/json/calls/calls-all-response.json");
 
     @Inject
-    TradeUploadServiceTransformer tradeUploadServiceTransformer;
+    private TradeUploadService tradeUploadService = null;
 
-    private static MockWebServer server = new MockWebServer();
+    @Inject
+    private TradeUploadServiceTransformer tradeUploadServiceTransformer = null;
+
+    @Inject
+    private MockWebServer server = null;
 
     private Dispatcher dispatcher;
 
     @Inject
-    SwapValuationResource resource;
+    private SwapValuationResource resource = null;
 
     @Inject
-    ImportService importService;
-
-    @BeforeClass
-    public static void startServer() throws IOException {
-        server.start(8282);
-    }
+    private ImportService importService = null;
 
     @Before
     public void setup() throws IOException {
         dispatcher = createDispatcher(JacksonObjectMapperProvider.class);
         dispatcher.getRegistry().addSingletonResource(resource);
         importService.reload();
-    }
-
-    private void setMockMarkitResponse() throws IOException {
-        server.enqueue(new MockResponse().setBody("key"));
-        server.enqueue(new MockResponse().setBody(largeReport.getContent()));
-        server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
-        server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
-        server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
     }
 
     @Test
@@ -159,7 +151,11 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
     public void testValuationAll() throws URISyntaxException, IOException {
         tradeUploadService.fromExcel(one.createInputStream());
 
-        setMockMarkitResponse();
+        server.enqueue(new MockResponse().setBody("key"));
+        server.enqueue(new MockResponse().setBody(largeReport.getContent()));
+        server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
+        server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
+        server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
 
         MockHttpRequest request = MockHttpRequest.get("/swaps/priceSwapTrades/allBilateralIRS");
         MockHttpResponse response = new MockHttpResponse();
@@ -167,14 +163,18 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
         dispatcher.invoke(request, response);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertThat(response.getContentAsString()).isNotNull();
+        final String json = response.getContentAsString();
+        assertThat(json).isNotNull();
+        assertThatJson(json).isEqualTo(generateResponse.getContent());
     }
 
     @Test
     public void tesPricePortfolios() throws URISyntaxException, IOException {
         tradeUploadServiceTransformer.fromExcel(all.createInputStream());
 
-        setMockMarkitResponse();
+        server.enqueue(new MockResponse().setBody("key"));
+        server.enqueue(new MockResponse().setBody(largeReport.getContent()));
+        server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
 
         MockHttpRequest request = MockHttpRequest.post("/swaps/priceSwapTrades/portfolio");
         MockHttpResponse response = new MockHttpResponse();
@@ -186,14 +186,12 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
         dispatcher.invoke(request, response);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertThat(response.getContentAsString()).isNotNull();
     }
 
     @Test
     public void testStress() {
         IntStream.range(1, 10).forEach (x -> {
             try {
-                setMockMarkitResponse();
                 testValuationAll();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -201,8 +199,17 @@ public class SwapValuationResourceTest implements WithResteasyFixtures {
         });
     }
 
-    @AfterClass
-    public static void tearDown() throws IOException {
-        server.shutdown();
+    @Override
+    public void beforeClassSetup() {
+
+    }
+
+    @Override
+    public void afterClassSetup() {
+        try {
+            server.shutdown();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

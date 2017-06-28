@@ -2,25 +2,34 @@ package com.acuo.valuation.web.resources;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.InstanceTestClassListener;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.modules.*;
+import com.acuo.persist.modules.DataImporterModule;
+import com.acuo.persist.modules.DataLoaderModule;
+import com.acuo.persist.modules.ImportServiceModule;
+import com.acuo.persist.modules.Neo4jPersistModule;
+import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.valuation.modules.ConfigurationTestModule;
-import com.acuo.valuation.modules.*;
-import com.acuo.valuation.providers.clarus.services.ClarusEndPointConfig;
-import com.acuo.valuation.providers.markit.services.MarkitEndPointConfig;
+import com.acuo.valuation.modules.EndPointModule;
+import com.acuo.valuation.modules.MappingModule;
+import com.acuo.valuation.modules.ResourcesModule;
+import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.services.TradeCacheService;
 import com.acuo.valuation.services.TradeUploadService;
+import com.acuo.valuation.util.MockServiceModule;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
-import com.google.inject.AbstractModule;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.parboiled.common.ImmutableList;
 
@@ -37,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({
         ConfigurationTestModule.class,
-        MarginCallResourceTest.MockServiceModule.class,
+        MockServiceModule.class,
         EncryptionModule.class,
         Neo4jPersistModule.class,
         DataImporterModule.class,
@@ -49,9 +58,8 @@ import static org.junit.Assert.assertEquals;
         ServicesModule.class,
         ResourcesModule.class})
 @Slf4j
-public class MarginCallResourceTest implements WithResteasyFixtures {
+public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTestClassListener{
 
-    private static MockWebServer server;
     private Dispatcher dispatcher;
 
     @Rule
@@ -69,29 +77,20 @@ public class MarginCallResourceTest implements WithResteasyFixtures {
     @Rule
     public ResourceFile generateResponse = new ResourceFile("/json/calls/calls-response.json");
 
-    public static class MockServiceModule extends AbstractModule {
-        @Override
-        protected void configure() {
-            server = new MockWebServer();
-            MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/"), "", "",
-                    "username", "password", "0", "10000", "false");
-            ClarusEndPointConfig clarusEndPointConfig = new ClarusEndPointConfig("host", "key", "api", "10000", "false", null);
-            bind(MarkitEndPointConfig.class).toInstance(markitEndPointConfig);
-            bind(ClarusEndPointConfig.class).toInstance(clarusEndPointConfig);
-        }
-    }
+    @Inject
+    private MockWebServer server = null;
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    MarginCallResource resource;
+    private MarginCallResource resource = null;
 
     @Inject
-    TradeUploadService tradeUploadService;
+    private TradeUploadService tradeUploadService = null;
 
     @Inject
-    TradeCacheService cacheService;
+    private TradeCacheService cacheService = null;
 
     @Before
     public void setup() throws IOException {
@@ -124,8 +123,17 @@ public class MarginCallResourceTest implements WithResteasyFixtures {
         assertThatJson(json).isEqualTo(generateResponse.getContent());
     }
 
-    @AfterClass
-    public static void tearDown() throws IOException {
-        server.shutdown();
+    @Override
+    public void beforeClassSetup() {
+
+    }
+
+    @Override
+    public void afterClassSetup() {
+        try {
+            server.shutdown();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
