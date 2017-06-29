@@ -12,6 +12,7 @@ import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.jackson.PortfolioIds;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.providers.acuo.calls.MarkitCallGenerator;
+import com.acuo.valuation.providers.acuo.calls.MarkitCallSimulator;
 import com.acuo.valuation.providers.acuo.trades.PortfolioPriceProcessor;
 import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
 import com.acuo.valuation.services.PricingService;
@@ -50,6 +51,7 @@ public class SwapValuationResource {
     private final VelocityEngine velocityEngine;
     private final PortfolioPriceProcessor portfolioPriceProcessor;
     private final MarkitCallGenerator markitCallGenerator;
+    private final MarkitCallSimulator markitCallSimulator;
 
     @Inject
     public SwapValuationResource(PricingService pricingService,
@@ -57,13 +59,15 @@ public class SwapValuationResource {
                                  TradePricingProcessor tradePricingProcessor,
                                  VelocityEngine velocityEngine,
                                  PortfolioPriceProcessor portfolioPriceProcessor,
-                                 MarkitCallGenerator markitCallGenerator) {
+                                 MarkitCallGenerator markitCallGenerator,
+                                 MarkitCallSimulator markitCallSimulator) {
         this.pricingService = pricingService;
         this.tradeService = tradeService;
         this.tradePricingProcessor = tradePricingProcessor;
         this.velocityEngine = velocityEngine;
         this.portfolioPriceProcessor = portfolioPriceProcessor;
         this.markitCallGenerator = markitCallGenerator;
+        this.markitCallSimulator = markitCallSimulator;
     }
 
     @GET
@@ -149,7 +153,9 @@ public class SwapValuationResource {
     public Response generateMarginCallForPortfolio(PortfolioIds portfolioIds) throws Exception
     {
         log.info("generate margin calls the portfolios {}", portfolioIds);
-        List<MarginCall> marginCalls = markitCallGenerator.generateForPortfolios(portfolioIds.getIds().stream().map(s -> PortfolioId.fromString(s)).collect(toList()));
+        List<PortfolioId> portfolioIdList = portfolioIds.getIds().stream().map(s -> PortfolioId.fromString(s)).collect(toList());
+        List<MarginCall> marginCalls = markitCallGenerator.generateForPortfolios(portfolioIdList);
+        marginCalls.addAll(markitCallSimulator.generateForPortfolios(portfolioIdList));
         return Response.status(CREATED).entity(MarginCallResponse.of(marginCalls)).build();
     }
 

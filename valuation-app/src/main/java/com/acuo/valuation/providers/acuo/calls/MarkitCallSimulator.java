@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class MarkitCallSimulator extends MarkitCallGenerator {
@@ -61,6 +62,14 @@ public class MarkitCallSimulator extends MarkitCallGenerator {
             return next.process(processorItem);
         else
             return processorItem;
+    }
+
+    public List<MarginCall> generateForPortfolios(List<PortfolioId> portfolioIds)
+    {
+        LocalDate valuationDate = LocalDate.now();
+        LocalDate callDate = valuationDate;
+        List<String> marginCalls = createCalls(portfolioIds.stream().collect(Collectors.toSet()), valuationDate, callDate, Types.CallType.Variation);
+        return marginCalls.stream().map(s -> marginCallService.find(s, 2)).collect(Collectors.toList());
     }
 
     protected Supplier<StatementStatus> statementStatusSupplier() {

@@ -62,7 +62,7 @@ public class MarkitCallGenerator extends CallGenerator<MarkitResults> {
     public List<MarginCall> generateForPortfolios(List<PortfolioId> portfolioIds)
     {
         LocalDate valuationDate = LocalDate.now();
-        LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
+        LocalDate callDate = valuationDate;
         List<String> marginCalls = createCalls(portfolioIds.stream().collect(Collectors.toSet()), valuationDate, callDate, Types.CallType.Variation);
         return marginCalls.stream().map(s -> marginCallService.find(s, 2)).collect(Collectors.toList());
     }
