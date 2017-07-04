@@ -7,7 +7,9 @@ import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
+import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
+import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.jackson.PortfolioIds;
 import com.acuo.valuation.protocol.results.MarkitResults;
@@ -34,6 +36,7 @@ import javax.ws.rs.core.Response;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -52,6 +55,8 @@ public class SwapValuationResource {
     private final PortfolioPriceProcessor portfolioPriceProcessor;
     private final MarkitCallGenerator markitCallGenerator;
     private final MarkitCallSimulator markitCallSimulator;
+    private final PortfolioService portfolioService;
+    private final ValuationService valuationService;
 
     @Inject
     public SwapValuationResource(PricingService pricingService,
@@ -60,7 +65,9 @@ public class SwapValuationResource {
                                  VelocityEngine velocityEngine,
                                  PortfolioPriceProcessor portfolioPriceProcessor,
                                  MarkitCallGenerator markitCallGenerator,
-                                 MarkitCallSimulator markitCallSimulator) {
+                                 MarkitCallSimulator markitCallSimulator,
+                                 PortfolioService portfolioService,
+                                 ValuationService valuationService) {
         this.pricingService = pricingService;
         this.tradeService = tradeService;
         this.tradePricingProcessor = tradePricingProcessor;
@@ -68,6 +75,8 @@ public class SwapValuationResource {
         this.portfolioPriceProcessor = portfolioPriceProcessor;
         this.markitCallGenerator = markitCallGenerator;
         this.markitCallSimulator = markitCallSimulator;
+        this.portfolioService = portfolioService;
+        this.valuationService = valuationService;
     }
 
     @GET
@@ -138,11 +147,13 @@ public class SwapValuationResource {
     @POST
     @Path("/priceSwapTrades/portfolio")
     @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Timed
     public Response pricePortfolio(PortfolioIds portfolioIds) throws Exception {
         log.info("Pricing all trades under the portfolios {}", portfolioIds);
         portfolioPriceProcessor.process(portfolioIds.getIds().stream().map(PortfolioId::fromString).collect(toList()));
-        return Response.ok().build();
+        final MarginCallResponse  response = MarginCallResponse.ofPortfolio(portfolioIds.getIds().stream().map(PortfolioId::fromString).map(id -> portfolioService.find(id, 2)).collect(Collectors.toList()), tradeService, valuationService);
+        return Response.status(CREATED).entity(response).build();
     }
 
     @POST

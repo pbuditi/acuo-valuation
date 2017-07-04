@@ -84,7 +84,9 @@ public class UploadResource {
         Set<PortfolioId> portfolios = new HashSet<>();
         while(trades.hasNext())
         {
-            portfolios.add(trades.next().getPortfolio().getPortfolioId());
+            Trade trade = trades.next();
+            if(trade != null && trade.getPortfolio() != null)
+                portfolios.add(trade.getPortfolio().getPortfolioId());
         }
         List<TradeValuation> tradeValuations = transformer.deserialise(IOUtils.toByteArray(fis));
         PortfolioResults results = new PortfolioResults();
