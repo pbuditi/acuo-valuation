@@ -61,6 +61,7 @@ public class MarginCallResult {
         Agreement agreement = portfolio.getAgreement();
         marginCallResult.marginagreement = agreement.getAgreementId();
         marginCallResult.currency = portfolio.getCurrency();
+        marginCallResult.referenceidentifier = portfolio.getPortfolioId().toString();
 
         ClientSignsRelation r = agreement.getClientSignsRelation();
         CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();

@@ -14,6 +14,7 @@ import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.TradeService;
+import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -75,6 +76,9 @@ public class MarkitPricingServiceTest {
     private ReportParser reportParser = null;
 
     @Inject
+    private ValuationService valuationService;
+
+    @Inject
     private ImportService importService = null;
 
     @Inject
@@ -97,7 +101,7 @@ public class MarkitPricingServiceTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
 
-        service = new MarkitPricingService(sender, retriever, tradeService);
+        service = new MarkitPricingService(sender, retriever, tradeService, valuationService);
 
         importService.reload();
 

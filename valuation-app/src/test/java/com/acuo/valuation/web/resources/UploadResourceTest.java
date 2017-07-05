@@ -82,11 +82,32 @@ public class UploadResourceTest implements WithResteasyFixtures {
         testFileUpload(excel);
     }
 
+    @Test
+    public void testUploadBigFileNew() throws URISyntaxException, IOException {
+        testFileUploadNew(excel);
+    }
 
     @Test
     public void testUploadSmallFileMultipleTimes() throws URISyntaxException, IOException {
         testFileUpload(one);
         testFileUpload(one);
+    }
+
+    private void testFileUploadNew(ResourceFile resourceFile) throws IOException, URISyntaxException {
+
+        Map parts = new HashMap();
+        String charSet = "ISO-8859-1";
+        parts.put("file", resourceFile.getContent(charSet));
+        MockHttpRequest request = multipartRequest("/upload/v1", parts, charSet);
+
+        MockHttpResponse response = new MockHttpResponse();
+
+        dispatcher.invoke(request, response);
+
+        assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
+        assertThat(response.getContentAsString())
+                .isNotNull();
+        log.info(response.getContentAsString());
     }
 
     private void testFileUpload(ResourceFile resourceFile) throws IOException, URISyntaxException {

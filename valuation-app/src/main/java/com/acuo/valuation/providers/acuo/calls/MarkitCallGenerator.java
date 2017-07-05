@@ -20,6 +20,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class MarkitCallGenerator extends CallGenerator<MarkitResults> {
@@ -55,5 +57,13 @@ public class MarkitCallGenerator extends CallGenerator<MarkitResults> {
 
     protected Predicate<MarginValue> pricingSourcePredicate() {
         return value -> "Markit".equals(value.getSource());
+    }
+
+    public List<MarginCall> generateForPortfolios(List<PortfolioId> portfolioIds)
+    {
+        LocalDate valuationDate = LocalDate.now();
+        LocalDate callDate = valuationDate;
+        List<String> marginCalls = createCalls(portfolioIds.stream().collect(Collectors.toSet()), valuationDate, callDate, Types.CallType.Variation);
+        return marginCalls.stream().map(s -> marginCallService.find(s, 2)).collect(Collectors.toList());
     }
 }
