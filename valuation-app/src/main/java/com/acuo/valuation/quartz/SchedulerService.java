@@ -75,10 +75,22 @@ public class SchedulerService extends AbstractService {
                         .withSchedule(simpleSchedule().withRepeatCount(0))
                         .build();
 
+                JobDetail settlementDateJob = JobBuilder
+                        .newJob(SettlementDateJob.class)
+                        .withIdentity("SettlementDateJob", "reutersgroup")
+                        .build();
+
+                Trigger settlementDateTrigger = TriggerBuilder
+                        .newTrigger()
+                        .withIdentity("SettlementDateJob", "reutersgroup")
+                        .withSchedule(cronSchedule("0 0/5 * * * ?"))
+                        .build();
+
                 scheduler.scheduleJob(jobDetail, trigger);
                 scheduler.scheduleJob(assetjob, assetTrigger);
                 scheduler.scheduleJob(fxIntradayJob, fxTrigger);
                 scheduler.scheduleJob(fxScheduledJob, once);
+                scheduler.scheduleJob(settlementDateJob,settlementDateTrigger);
 
                 scheduler.start();
                 notifyStarted();

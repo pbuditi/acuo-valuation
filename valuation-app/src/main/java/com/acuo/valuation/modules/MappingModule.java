@@ -11,6 +11,7 @@ import com.acuo.common.marshal.jaxb.MoxyJaxbContextFactory;
 import com.acuo.common.marshal.json.JsonContextFactory;
 import com.acuo.common.marshal.json.MoxyJsonContextFactory;
 import com.acuo.common.model.assets.Assets;
+import com.acuo.common.model.results.AssetSettlementDate;
 import com.acuo.common.model.results.AssetValuation;
 import com.acuo.common.model.results.TradeValuation;
 import com.acuo.common.model.trade.SwapTrade;
@@ -45,6 +46,8 @@ public class MappingModule extends AbstractModule {
         ReutersTransformer<AssetValuation> assetValuationReutersTransformer = new ReutersTransformer<>();
         PortfolioImportTransformer<com.acuo.common.model.trade.Trade> portfolioImportTransformer = new PortfolioImportTransformer<>(new Mapper());
         TradeValuationTransformer<TradeValuation> tradeValuationTransformer = new TradeValuationTransformer<>(new Mapper());
+        SettlementDateTransformer<Assets> settlementDateTransformer = new SettlementDateTransformer<>();
+        SettlementDateTransformer<AssetSettlementDate> settlementDateSettlementDateTransformer = new SettlementDateTransformer<>();
 
         bind(new TypeLiteral<Transformer<com.acuo.common.model.trade.Trade>>() {}).annotatedWith(Names.named("clarus")).toInstance(clarusTransformer);
         bind(new TypeLiteral<Transformer<com.acuo.common.model.trade.Trade>>() {}).annotatedWith(Names.named("markit")).toInstance(markitTransformer);
@@ -52,6 +55,8 @@ public class MappingModule extends AbstractModule {
         bind(new TypeLiteral<Transformer<AssetValuation>>() {}).annotatedWith(Names.named("assetValuation")).toInstance(assetValuationReutersTransformer);
         bind(new TypeLiteral<Transformer<com.acuo.common.model.trade.Trade>>() {}).annotatedWith(Names.named("portfolio")).toInstance(portfolioImportTransformer);
         bind(new TypeLiteral<Transformer<TradeValuation>>() {}).annotatedWith(Names.named("tradeValuation")).toInstance(tradeValuationTransformer);
+        bind(new TypeLiteral<Transformer<Assets>>() {}).annotatedWith(Names.named("settlementDateTo")).toInstance(settlementDateTransformer);
+        bind(new TypeLiteral<Transformer<AssetSettlementDate>>() {}).annotatedWith(Names.named("settlementDateFrom")).toInstance(settlementDateSettlementDateTransformer);
     }
 
     @Provides
