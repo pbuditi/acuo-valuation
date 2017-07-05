@@ -7,6 +7,7 @@ import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
+import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
@@ -57,6 +58,7 @@ public class SwapValuationResource {
     private final MarkitCallSimulator markitCallSimulator;
     private final PortfolioService portfolioService;
     private final ValuationService valuationService;
+    private final MarginCallService marginCallService;
 
     @Inject
     public SwapValuationResource(PricingService pricingService,
@@ -67,7 +69,8 @@ public class SwapValuationResource {
                                  MarkitCallGenerator markitCallGenerator,
                                  MarkitCallSimulator markitCallSimulator,
                                  PortfolioService portfolioService,
-                                 ValuationService valuationService) {
+                                 ValuationService valuationService,
+                                 MarginCallService marginCallService) {
         this.pricingService = pricingService;
         this.tradeService = tradeService;
         this.tradePricingProcessor = tradePricingProcessor;
@@ -77,6 +80,7 @@ public class SwapValuationResource {
         this.markitCallSimulator = markitCallSimulator;
         this.portfolioService = portfolioService;
         this.valuationService = valuationService;
+        this.marginCallService = marginCallService;
     }
 
     @GET
@@ -167,6 +171,7 @@ public class SwapValuationResource {
         List<PortfolioId> portfolioIdList = portfolioIds.getIds().stream().map(s -> PortfolioId.fromString(s)).collect(toList());
         List<MarginCall> marginCalls = markitCallGenerator.generateForPortfolios(portfolioIdList);
         marginCalls.addAll(markitCallSimulator.generateForPortfolios(portfolioIdList));
+        marginCalls = marginCalls.stream().map(marginCall -> marginCallService.find(marginCall.getItemId(), 4)).collect(toList());
         return Response.status(CREATED).entity(MarginCallResponse.of(marginCalls)).build();
     }
 
