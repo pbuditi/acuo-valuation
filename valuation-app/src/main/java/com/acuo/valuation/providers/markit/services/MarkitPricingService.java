@@ -96,7 +96,10 @@ public class MarkitPricingService implements PricingService {
                 .filter(irs -> !isTradeValuated(irs))
                 .map(TradeBuilder::buildTrade)
                 .collect(toList());
-        return priceSwapTrades(filtered);
+        if(filtered.size() > 0)
+            return priceSwapTrades(filtered);
+        else
+            return null;
     }
 
     boolean isTradeValuated(IRS irs)
