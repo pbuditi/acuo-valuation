@@ -1,6 +1,7 @@
 package com.acuo.valuation.jackson;
 
 import com.acuo.common.json.DoubleSerializer;
+import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.*;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
@@ -11,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import static com.acuo.common.model.margin.Types.MarginType.Initial;
 import static com.acuo.common.model.margin.Types.MarginType.Variation;
@@ -111,6 +114,25 @@ public class MarginCallResult {
                             totalPV += value.getPv();
                             break;
                         }
+                    }
+                }
+            }
+        }
+
+        //check for Clarus valuation, if there is today margin valuation on the portfolio, we can assume the trades are valuated
+        List<MarginValuation> marginValuations = new ArrayList<>();
+        marginValuations.add(valuationService.getMarginValuationFor(portfolio.getPortfolioId(), Types.CallType.Initial));
+        marginValuations.add(valuationService.getMarginValuationFor(portfolio.getPortfolioId(), Types.CallType.Variation));
+        for(MarginValuation marginValuation : marginValuations)
+        {
+            if(marginValuation != null && marginValuation.getValues() != null)
+            {
+                for (MarginValue marginValue : marginValuation.getValues())
+                {
+                    if(marginValue.getValuationDate().equals(LocalDate.now().minusDays(1)))
+                    {
+                        valudatedCount = totalCount;
+                        break;
                     }
                 }
             }
