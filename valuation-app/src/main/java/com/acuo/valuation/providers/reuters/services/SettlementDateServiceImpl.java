@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class SettlementDateServiceImpl implements SettlementDateService {
         if(assets.isEmpty())
             return Collections.emptyList();
         TransformerContext context = new TransformerContext();
+        context.setValueDate(LocalDate.now());
         String json = transformer.serialise(assets, context);
         if (log.isDebugEnabled()) {
             log.debug(json);
