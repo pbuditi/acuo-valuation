@@ -55,12 +55,30 @@ public class SettlementDateProcessor {
             if(root.getSettlementDates() == null)
                 root.setSettlementDates(new HashSet<>());
 
-            SettlementDate child = new SettlementDate();
-            child.setQueryDateTime(LocalDateTime.now());
-            child.setSettlementDateId(root.getSettlementDateId() + root.getSettlementDates().size());
-            child.setSettlementDate(assetSettlementDate.getSettlementDate());
-            root.getSettlementDates().add(child);
-            service.save(root);
+            boolean found = false;
+            for(SettlementDate settlementDate : root.getSettlementDates())
+            {
+                if(settlementDate.getSettlementDate().equals(assetSettlementDate.getSettlementDate()))
+                {
+                    settlementDate.setQueryDateTime(LocalDateTime.now());
+                    service.save(settlementDate);
+                    found = true;
+                    log.info("duplicate settlementDate");
+                    break;
+                }
+            }
+            if(!found)
+            {
+                log.info("new settlementDate");
+                SettlementDate child = new SettlementDate();
+                child.setQueryDateTime(LocalDateTime.now());
+                child.setSettlementDateId(root.getSettlementDateId() + root.getSettlementDates().size());
+                child.setSettlementDate(assetSettlementDate.getSettlementDate());
+                root.getSettlementDates().add(child);
+                service.save(root);
+            }
+
+
         }
 
 
