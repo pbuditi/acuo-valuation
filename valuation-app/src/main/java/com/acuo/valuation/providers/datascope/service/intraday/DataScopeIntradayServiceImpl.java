@@ -28,10 +28,10 @@ public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
     private final ObjectMapper objectMapper;
 
     @Inject
-    public DataScopeIntradayServiceImpl(FXRateService fxRateService,
-                                        DataScopeAuthService dataScopeAuthService,
-                                        ClientEndPoint<DataScopeEndPointConfig> clientEndPoint,
-                                        ObjectMapper objectMapper) {
+    DataScopeIntradayServiceImpl(FXRateService fxRateService,
+                                 DataScopeAuthService dataScopeAuthService,
+                                 ClientEndPoint<DataScopeEndPointConfig> clientEndPoint,
+                                 ObjectMapper objectMapper) {
         this.fxRateService = fxRateService;
         this.dataScopeAuthService = dataScopeAuthService;
         this.clientEndPoint = clientEndPoint;
@@ -48,7 +48,7 @@ public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
                 .create()
                 .send();
         ExtractionResponse extraction = response(response);
-        List<ExtractionResponse.Content> contents = extraction.getContents();
+        List<ExtractionResponse.Content> contents = extraction != null ? extraction.getContents() : null;
         if (contents != null) {
             log.info("saving {} rates", contents.size());
             contents.stream()
@@ -81,10 +81,12 @@ public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
         final Currency base = fxRate.getPair().getBase();
         final Currency counter = fxRate.getPair().getCounter();
         FXRate fx = fxRateService.getOrCreate(base, counter);
-        // workaround reuters wrong rate for JPYUSD=R
-        double value = 0.0d;
+        // workaround reuters wrong rate for JPYUSD=R and for USDKRW=R
+        double value;
         if (CurrencyPair.of(Currency.USD, Currency.JPY).equals(fxRate.getPair()))
             value = fxRate.fxRate(fxRate.getPair()) / 100;
+        else if (CurrencyPair.of(Currency.USD, Currency.KRW).equals(fxRate.getPair()))
+            value = fxRate.fxRate(fxRate.getPair()) / 1000;
         else
             value = fxRate.fxRate(fxRate.getPair());
         fxRateService.addValue(fx, value, lastUpdate);

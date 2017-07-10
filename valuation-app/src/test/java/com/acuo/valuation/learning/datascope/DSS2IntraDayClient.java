@@ -31,6 +31,7 @@ public class DSS2IntraDayClient {
     private String urlHost = "https://hosted.datascopeapi.reuters.com/RestApi/v1";
     private String sessionToken = "";
     private CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+    private static final int TIME_TO_WAIT_IN_SECONDS = 30;
 
     public static void main(String[] args) throws Exception {
 
@@ -115,7 +116,7 @@ public class DSS2IntraDayClient {
                         .put("@odata.type", "#ThomsonReuters.Dss.Api.Extractions.ExtractionRequests.InstrumentIdentifierList")
                         .put("InstrumentIdentifiers", new JSONArray()
                             .put(new JSONObject()
-                                .put("Identifier", "USDEUR=R")
+                                .put("Identifier", "KRWUSD=R")
                                 .put("IdentifierType", "Ric")))
                         .put("ValidationOptions", JSONObject.NULL)
                         .put("UseUserPreferencesForValidationOptions", false))
@@ -156,7 +157,8 @@ public class DSS2IntraDayClient {
                     }
                 }
 
-                wait(30);
+                
+                wait(TIME_TO_WAIT_IN_SECONDS);
 
                 HttpGet requestGet = new HttpGet(pollURL);
                 requestGet.addHeader("Authorization", "Token "+sessionToken);
@@ -168,7 +170,7 @@ public class DSS2IntraDayClient {
 
                 // Poll the location URL until the extraction is completed:
                 while (respStatusCode == 202) {
-                    wait(30);
+                    wait(TIME_TO_WAIT_IN_SECONDS);
                     responseGet = httpclient.execute(requestGet);
                     respStatusCode = responseGet.getStatusLine().getStatusCode();
                     System.out.println("\nHTTP status: " + respStatusCode);
