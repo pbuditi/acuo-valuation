@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class SettlementDateProcessor {
         log.info("assets to send :" + assets.toString());
         List<AssetSettlementDate> assetSettlementDates = settlementDateService.send(assets);
         log.info("settlementDate received :" + assetSettlementDates);
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         for(AssetSettlementDate assetSettlementDate : assetSettlementDates)
         {
             Asset asset = assetService.find(assetSettlementDate.getAssetId());
@@ -75,6 +77,8 @@ public class SettlementDateProcessor {
                 child.setSettlementDateId(root.getSettlementDateId() + root.getSettlementDates().size());
                 child.setSettlementDate(assetSettlementDate.getSettlementDate());
                 root.getSettlementDates().add(child);
+                asset.setSettlementTime(df.format(assetSettlementDate.getSettlementDate()));
+                assetService.save(asset);
                 service.save(root);
             }
 

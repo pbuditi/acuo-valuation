@@ -108,7 +108,7 @@ public class MarginCallResult {
 
                     for(TradeValue value : tradeValuation.getValues())
                     {
-                        if(LocalDate.now().minusDays(2).isBefore(value.getValuationDate()))
+                        if(LocalDate.now().minusDays(4).isBefore(value.getValuationDate()))
                         {
                             valudatedCount++;
                             totalPV += value.getPv();
