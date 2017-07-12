@@ -2,7 +2,7 @@ package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.valuation.protocol.results.MarkitResults;
-import com.acuo.valuation.providers.acuo.results.MarkitResultPersister;
+import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.services.PricingService;
 
 import javax.inject.Inject;
@@ -11,19 +11,17 @@ import java.util.List;
 public class PortfolioPriceProcessor {
 
     private final PricingService pricingService;
-    private final MarkitResultPersister markitResultPersister;
+    private final ResultPersister<MarkitResults> resultPersister;
 
     @Inject
-    public PortfolioPriceProcessor(PricingService pricingService, MarkitResultPersister markitResultPersister)
-    {
+    public PortfolioPriceProcessor(PricingService pricingService, ResultPersister<MarkitResults> resultPersister) {
         this.pricingService = pricingService;
-        this.markitResultPersister = markitResultPersister;
+        this.resultPersister = resultPersister;
     }
 
-    public void process(List<PortfolioId> portfolioIds)
-    {
+    public void process(List<PortfolioId> portfolioIds) {
         MarkitResults markitResults = pricingService.pricePortfolios(portfolioIds);
-        if(markitResults != null)
-            markitResultPersister.persist(markitResults);
+        if (markitResults != null)
+            resultPersister.persist(markitResults);
     }
 }
