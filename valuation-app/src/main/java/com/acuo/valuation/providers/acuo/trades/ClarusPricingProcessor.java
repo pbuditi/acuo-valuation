@@ -5,7 +5,7 @@ import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.entity.Trade;
 import com.acuo.valuation.protocol.results.MarginResults;
-import com.acuo.valuation.providers.acuo.results.ClarusValuationProcessor;
+import com.acuo.valuation.providers.acuo.ClarusValuationProcessor;
 import com.acuo.valuation.builders.TradeBuilder;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;

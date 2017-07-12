@@ -1,0 +1,47 @@
+{
+  "uploadMarginCallDetails" : [ {
+    "currency" : "KRW",
+    "exposure" : "11180.30",
+    "legalEntity" : "ACUO US LLC",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B4",
+    "marginAgreement" : "a29",
+    "valuationDate" : "${json-unit.ignore}",
+    "callDate" : "${json-unit.ignore}",
+    "callType" : "Variation",
+    "totalCallAmount" : "11500.00",
+    "referenceIdentifier" : "${json-unit.ignore}",
+    "collateralValue" : "0.00",
+    "pendingCollateral" : "0.00",
+    "agreementDetails" : {
+      "rounding" : "500.00",
+      "tradeCount" : 1,
+      "tradeValue" : 1,
+      "pricingSource" : "Markit",
+      "minTransfer" : "500000.00",
+      "netRequired" : "11500.00",
+      "rate" : "1118.03"
+    }
+  }, {
+    "currency" : "GBP",
+    "exposure" : "0.00",
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Goldman Sachs",
+    "cptyEntity" : "Goldman Sachs & Co.",
+    "marginAgreement" : "a31",
+    "valuationDate" : "${json-unit.ignore}",
+    "callDate" : "${json-unit.ignore}",
+    "callType" : "Variation",
+    "totalCallAmount" : "0.00",
+    "referenceIdentifier" : "${json-unit.ignore}",
+    "collateralValue" : "0.00",
+    "pendingCollateral" : "0.00",
+    "agreementDetails" : {
+      "tradeCount" : 1,
+      "tradeValue" : 1,
+      "pricingSource" : "Clarus",
+      "netRequired" : "0.00",
+      "rate" : "0.78"
+    }
+  } ]
+}

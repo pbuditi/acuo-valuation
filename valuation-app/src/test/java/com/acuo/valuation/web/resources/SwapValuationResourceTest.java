@@ -19,6 +19,7 @@ import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceTransformer;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.util.MockServiceModule;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
+import com.google.inject.Injector;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -99,7 +100,9 @@ public class SwapValuationResourceTest implements WithResteasyFixtures, Instance
     private TradeUploadServiceTransformer tradeUploadServiceTransformer = null;
 
     @Inject
-    private MockWebServer server = null;
+    private Injector injector = null;
+
+    private static MockWebServer server;
 
     private Dispatcher dispatcher;
 
@@ -158,7 +161,7 @@ public class SwapValuationResourceTest implements WithResteasyFixtures, Instance
         server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
         server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
 
-        MockHttpRequest request = MockHttpRequest.get("/swaps/priceSwapTrades/allBilateralIRS");
+        MockHttpRequest request = MockHttpRequest.get("/swaps/price/allBilateralIRS");
         MockHttpResponse response = new MockHttpResponse();
 
         dispatcher.invoke(request, response);
@@ -170,23 +173,23 @@ public class SwapValuationResourceTest implements WithResteasyFixtures, Instance
     }
 
     @Test
-    public void tesPricePortfolios() throws URISyntaxException, IOException {
+    public void testPricePortfolios() throws URISyntaxException, IOException {
         tradeUploadServiceTransformer.fromExcel(all.createInputStream());
 
         server.enqueue(new MockResponse().setBody("key"));
         server.enqueue(new MockResponse().setBody(largeReport.getContent()));
         server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
 
-        MockHttpRequest request = MockHttpRequest.post("/swaps/priceSwapTrades/portfolio");
+        MockHttpRequest request = MockHttpRequest.post("/swaps/price/portfolios");
         MockHttpResponse response = new MockHttpResponse();
 
         request.contentType(MediaType.APPLICATION_JSON);
-        log.info(jsonPortfolioRequest.getContent());
         request.content(jsonPortfolioRequest.getInputStream());
 
         dispatcher.invoke(request, response);
 
-        assertNotNull(response.getContentAsString());
+        String res = response.getContentAsString();
+        assertNotNull(res);
     }
 
     @Test
@@ -202,7 +205,7 @@ public class SwapValuationResourceTest implements WithResteasyFixtures, Instance
 
     @Override
     public void beforeClassSetup() {
-
+        server = injector.getInstance(MockWebServer.class);
     }
 
     @Override

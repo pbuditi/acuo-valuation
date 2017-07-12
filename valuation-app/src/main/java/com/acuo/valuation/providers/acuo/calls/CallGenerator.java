@@ -18,7 +18,6 @@ import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.providers.acuo.results.AbstractResultProcessor;
 import com.acuo.valuation.services.CallService;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +34,11 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implements CallService {
+public abstract class CallGenerator extends AbstractCallGeneratorProcessor implements CallService {
 
     private final ValuationService valuationService;
     private final MarginStatementService marginStatementService;
-    protected final MarginCallService marginCallService;
+    final MarginCallService marginCallService;
     private final AgreementService agreementService;
     private final CurrencyService currencyService;
     private final PortfolioService portfolioService;
@@ -62,6 +61,7 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
         log.info("generating margin calls for {}", portfolioSet);
         List<String> marginCalls = portfolioSet.stream()
                 .map(id -> valuationService.getMarginValuationFor(id, callType))
+                .filter(Objects::nonNull)
                 .map(valuation -> createcalls(sideSupplier().get(), valuation, valuationDate, callDate, statementStatusSupplier().get()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)

@@ -13,8 +13,6 @@ import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.protocol.results.MarginResults;
-import com.acuo.valuation.providers.acuo.results.ProcessorItem;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,18 +48,18 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
     }
 
     @Override
-    public ProcessorItem process(ProcessorItem<MarginResults> processorItem) {
+    public CallProcessorItem process(CallProcessorItem callProcessorItem) {
         log.info("processing markit valuation items to generate expected calls");
-        LocalDate valuationDate = processorItem.getResults().getValuationDate();
-        final Types.CallType callType = processorItem.getResults().getMarginType();
+        LocalDate valuationDate = callProcessorItem.getValuationDate();
+        final Types.CallType callType = callProcessorItem.getCallType();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
-        Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
+        Set<PortfolioId> portfolioIds = callProcessorItem.getPortfolioIds();
         List<String> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
-        processorItem.setSimulated(marginCalls);
+        callProcessorItem.setSimulated(marginCalls);
         if (next != null)
-            return next.process(processorItem);
+            return next.process(callProcessorItem);
         else
-            return processorItem;
+            return callProcessorItem;
     }
 
     protected Supplier<StatementStatus> statementStatusSupplier() {

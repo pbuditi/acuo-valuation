@@ -2,7 +2,6 @@ package com.acuo.valuation.providers.acuo.calls;
 
 import com.acuo.common.model.margin.Types;
 import com.acuo.common.util.LocalDateUtils;
-import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
@@ -11,8 +10,6 @@ import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.protocol.results.MarginResults;
-import com.acuo.valuation.providers.acuo.results.ProcessorItem;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -22,7 +19,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 @Slf4j
-public class ClarusCallGenerator extends CallGenerator<MarginResults> {
+public class ClarusCallGenerator extends CallGenerator {
 
     @Inject
     ClarusCallGenerator(ValuationService valuationService,
@@ -40,18 +37,18 @@ public class ClarusCallGenerator extends CallGenerator<MarginResults> {
     }
 
     @Override
-    public ProcessorItem process(ProcessorItem<MarginResults> processorItem) {
+    public CallProcessorItem process(CallProcessorItem callProcessorItem) {
         log.info("processing markit valuation items to generate expected calls");
-        LocalDate valuationDate = processorItem.getResults().getValuationDate();
+        LocalDate valuationDate = callProcessorItem.getValuationDate();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
-        Types.CallType callType = processorItem.getResults().getMarginType();
-        Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
+        Types.CallType callType = callProcessorItem.getCallType();
+        Set<PortfolioId> portfolioIds = callProcessorItem.getPortfolioIds();
         List<String> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
-        processorItem.setExpected(marginCalls);
+        callProcessorItem.setExpected(marginCalls);
         if (next != null)
-            return next.process(processorItem);
+            return next.process(callProcessorItem);
         else
-            return processorItem;
+            return callProcessorItem;
     }
 
     protected Predicate<MarginValue> pricingSourcePredicate() {

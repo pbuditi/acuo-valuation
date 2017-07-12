@@ -2,7 +2,7 @@ package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.common.model.trade.Trade;
 import com.acuo.valuation.protocol.results.MarginResults;
-import com.acuo.valuation.providers.acuo.results.ClarusValuationProcessor;
+import com.acuo.valuation.providers.acuo.ClarusValuationProcessor;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginService;
 
 import javax.inject.Inject;

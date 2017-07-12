@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.acuo;
+package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.common.model.results.TradeValuation;
 import com.acuo.common.security.EncryptionModule;

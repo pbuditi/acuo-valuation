@@ -65,13 +65,13 @@ public class SettlementDateProcessor {
                     settlementDate.setQueryDateTime(LocalDateTime.now());
                     service.save(settlementDate);
                     found = true;
-                    log.info("duplicate settlementDate");
+                    log.debug("duplicate settlementDate");
                     break;
                 }
             }
             if(!found)
             {
-                log.info("new settlementDate");
+                log.debug("new settlementDate");
                 SettlementDate child = new SettlementDate();
                 child.setQueryDateTime(LocalDateTime.now());
                 child.setSettlementDateId(root.getSettlementDateId() + root.getSettlementDates().size());

@@ -5,10 +5,10 @@ import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.entity.Trade;
-import com.acuo.valuation.protocol.results.MarkitResults;
-import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
-import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.builders.TradeBuilder;
+import com.acuo.valuation.protocol.results.MarkitResults;
+import com.acuo.valuation.providers.acuo.MarkitValuationProcessor;
+import com.acuo.valuation.services.PricingService;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +27,7 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
 
     private final PricingService pricingService;
     private final MarkitValuationProcessor resultProcessor;
-    private final boolean useBulkPricing = false;
+    private static final boolean USE_BULK_PRICING = false;
 
     private static final Predicate<Trade> predicate = trade -> {
         final PricingSource pricingSource = trade.getPricingSource();
@@ -35,7 +35,8 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
     };
 
     @Inject
-    public MarkitPricingProcessor(PricingService pricingService, MarkitValuationProcessor resultProcessor) {
+    public MarkitPricingProcessor(PricingService pricingService,
+                                  MarkitValuationProcessor resultProcessor) {
         this.pricingService = pricingService;
         this.resultProcessor = resultProcessor;
     }
@@ -62,7 +63,7 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
                 .collect(toList());
         if (Iterables.isEmpty(trades))
             return new ArrayList<>();
-        MarkitResults results = (useBulkPricing) ?
+        MarkitResults results = (USE_BULK_PRICING) ?
                 pricingService.priceSwapTradesByBulk(trades) :
                 pricingService.priceSwapTrades(trades);
         return resultProcessor.process(results);

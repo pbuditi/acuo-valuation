@@ -1,21 +1,16 @@
 package com.acuo.valuation.web.resources;
 
 import com.acuo.common.model.trade.SwapTrade;
-import com.acuo.persist.entity.*;
+import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
-import com.acuo.persist.services.MarginCallService;
-import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
-import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.builders.TradeBuilder;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.jackson.PortfolioIds;
 import com.acuo.valuation.protocol.results.MarkitResults;
-import com.acuo.valuation.providers.acuo.calls.MarkitCallGenerator;
-import com.acuo.valuation.providers.acuo.calls.MarkitCallSimulator;
-import com.acuo.valuation.providers.acuo.trades.PortfolioPriceProcessor;
 import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
 import com.acuo.valuation.services.PricingService;
 import com.codahale.metrics.annotation.Timed;
@@ -32,17 +27,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.StringWriter;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.Response.Status.CREATED;
 
 @Slf4j
 @Path("/swaps")
@@ -54,34 +45,18 @@ public class SwapValuationResource {
     private final TradeService<Trade> tradeService;
     private final TradePricingProcessor tradePricingProcessor;
     private final VelocityEngine velocityEngine;
-    private final PortfolioPriceProcessor portfolioPriceProcessor;
-    private final MarkitCallGenerator markitCallGenerator;
-    private final MarkitCallSimulator markitCallSimulator;
-    private final PortfolioService portfolioService;
-    private final ValuationService valuationService;
-    private final MarginCallService marginCallService;
+
 
     @Inject
     public SwapValuationResource(PricingService pricingService,
                                  TradeService<Trade> tradeService,
                                  TradePricingProcessor tradePricingProcessor,
-                                 VelocityEngine velocityEngine,
-                                 PortfolioPriceProcessor portfolioPriceProcessor,
-                                 MarkitCallGenerator markitCallGenerator,
-                                 MarkitCallSimulator markitCallSimulator,
-                                 PortfolioService portfolioService,
-                                 ValuationService valuationService,
-                                 MarginCallService marginCallService) {
+                                 VelocityEngine velocityEngine) {
         this.pricingService = pricingService;
         this.tradeService = tradeService;
         this.tradePricingProcessor = tradePricingProcessor;
         this.velocityEngine = velocityEngine;
-        this.portfolioPriceProcessor = portfolioPriceProcessor;
-        this.markitCallGenerator = markitCallGenerator;
-        this.markitCallSimulator = markitCallSimulator;
-        this.portfolioService = portfolioService;
-        this.valuationService = valuationService;
-        this.marginCallService = marginCallService;
+
     }
 
     @GET
@@ -105,7 +80,7 @@ public class SwapValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/priceSwapTrades/swapid/{id}")
+    @Path("/price/swapid/{id}")
     @Timed
     public MarginCallResponse priceBySwapId(@PathParam("id") String id) throws Exception {
         log.info("Pricing the trade {}", id);
@@ -118,20 +93,35 @@ public class SwapValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/priceSwapTrades/portfolioid/{id}")
+    @Path("/price/portfolio/id/{id}")
     @Timed
     public MarginCallResponse priceByPortfolio(@PathParam("id") PortfolioId portfolioId) throws Exception {
         log.info("Pricing all trades under the portfolio {}", portfolioId);
-        List<Trade> swaps = ImmutableList.of(portfolioId).stream()
-                .map(tradeId -> (IRS) tradeService.findByPortfolioId(portfolioId))
+        Iterable<Trade> iterable = tradeService.findByPortfolioId(portfolioId);
+        List<Trade> trades = StreamSupport.stream(iterable.spliterator(), false).collect(toList());
+        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
+        return MarginCallResponse.of(marginCalls);
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/price/portfolios")
+    @Timed
+    public MarginCallResponse priceByPortfolios(PortfolioIds portfolioIds) throws Exception {
+        log.info("price all trades of portfolios {}", portfolioIds);
+        List<PortfolioId> ids = portfolioIds.getIds().stream()
+                .map(PortfolioId::fromString)
                 .collect(toList());
-        Collection<MarginCall> marginCalls = tradePricingProcessor.process(swaps);
+        Iterable<Trade> iterable = tradeService.findByPortfolioId(ids.toArray(new PortfolioId[ids.size()]));
+        List<Trade> trades = StreamSupport.stream(iterable.spliterator(), false).collect(toList());
+        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
         return MarginCallResponse.of(marginCalls);
     }
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/priceSwapTrades/clientid/{id}")
+    @Path("/price/clientid/{id}")
     @Timed
     public MarkitResults getPv(@PathParam("id") ClientId clientId) throws Exception {
         log.info("Pricing all trades of client {}", clientId);
@@ -140,68 +130,12 @@ public class SwapValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/priceSwapTrades/allBilateralIRS")
+    @Path("/price/allBilateralIRS")
     @Timed
-    public MarginCallResponse priceallBilateralIRS() throws Exception {
+    public MarginCallResponse priceAllBilateralIRS() throws Exception {
         log.info("Pricing all bilateral trades");
         Iterable<IRS> allIRS = tradeService.findAllIRS();
         Collection<MarginCall> marginCalls = tradePricingProcessor.process(allIRS);
         return MarginCallResponse.of(marginCalls);
     }
-
-    @POST
-    @Path("/priceSwapTrades/portfolio")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    @Timed
-    public Response pricePortfolio(PortfolioIds portfolioIds) throws Exception {
-        log.info("Pricing all trades under the portfolios {}", portfolioIds);
-//        portfolioPriceProcessor.process(portfolioIds.getIds().stream().map(PortfolioId::fromString).collect(toList()));
-//        final MarginCallResponse  response = MarginCallResponse.ofPortfolio(portfolioIds.getIds().stream().map(PortfolioId::fromString).map(id -> portfolioService.find(id, 2)).collect(Collectors.toList()), tradeService, valuationService);
-//        return Response.status(CREATED).entity(response).build();
-        List<Trade> tradeList = portfolioIds.getIds().stream().map(PortfolioId::fromString).map(portfolioId -> tradeService.findByPortfolioId(portfolioId)).flatMap(trades -> StreamSupport.stream(trades.spliterator(), false)).collect(Collectors.toList());
-        if(tradeList == null || tradeList.size() == 0)
-            return null;
-        List<Trade> filtered = tradeList.stream()
-                .map(trade -> tradeService.find(trade.getTradeId(), 2))
-                .filter(trade -> trade instanceof IRS)
-                .map(trade -> (IRS) trade)
-                .filter(irs -> !isTradeValuated(irs))
-                .collect(toList());
-        tradePricingProcessor.process(filtered);
-        final MarginCallResponse  response = MarginCallResponse.ofPortfolio(portfolioIds.getIds().stream().map(PortfolioId::fromString).map(id -> portfolioService.find(id, 2)).collect(Collectors.toList()), tradeService, valuationService);
-        return Response.status(CREATED).entity(response).build();
-    }
-
-    boolean isTradeValuated(IRS irs)
-    {
-        TradeValuation tradeValuation = valuationService.getTradeValuationFor(irs.getTradeId());
-        if(tradeValuation != null && tradeValuation.getValues() != null)
-        {
-            for(TradeValue tradeValue : tradeValuation.getValues())
-            {
-                if(tradeValue.getValuationDate().equals(LocalDate.now()))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    @POST
-    @Path("/priceSwapTrades/generatemc")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    @Timed
-    public Response generateMarginCallForPortfolio(PortfolioIds portfolioIds) throws Exception
-    {
-        log.info("generate margin calls the portfolios {}", portfolioIds);
-        List<PortfolioId> portfolioIdList = portfolioIds.getIds().stream().map(s -> PortfolioId.fromString(s)).collect(toList());
-        List<MarginCall> marginCalls = markitCallGenerator.generateForPortfolios(portfolioIdList);
-        marginCalls.addAll(markitCallSimulator.generateForPortfolios(portfolioIdList));
-        marginCalls = marginCalls.stream().map(marginCall -> marginCallService.find(marginCall.getItemId(), 4)).collect(toList());
-        return Response.status(CREATED).entity(MarginCallResponse.of(marginCalls)).build();
-    }
-
 }

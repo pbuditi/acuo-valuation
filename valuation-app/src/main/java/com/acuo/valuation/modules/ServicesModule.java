@@ -6,17 +6,17 @@ import com.acuo.valuation.protocol.results.PortfolioResults;
 import com.acuo.valuation.providers.acuo.assets.AssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.assets.CashAssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.assets.ReutersAssetPricingProcessor;
+import com.acuo.valuation.providers.acuo.calls.CallGeneratorProcessor;
 import com.acuo.valuation.providers.acuo.calls.ClarusCallGenerator;
 import com.acuo.valuation.providers.acuo.calls.ClarusCallSimulator;
 import com.acuo.valuation.providers.acuo.calls.MarkitCallGenerator;
 import com.acuo.valuation.providers.acuo.calls.MarkitCallSimulator;
 import com.acuo.valuation.providers.acuo.calls.Simulator;
-import com.acuo.valuation.providers.acuo.results.ClarusValuationProcessor;
+import com.acuo.valuation.providers.acuo.ClarusValuationProcessor;
 import com.acuo.valuation.providers.acuo.results.MarginResultPersister;
 import com.acuo.valuation.providers.acuo.results.MarkitResultPersister;
-import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
+import com.acuo.valuation.providers.acuo.MarkitValuationProcessor;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
-import com.acuo.valuation.providers.acuo.results.ResultProcessor;
 import com.acuo.valuation.providers.acuo.trades.*;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginService;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginServiceImpl;
@@ -49,6 +49,7 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 public class ServicesModule extends AbstractModule {
@@ -64,15 +65,14 @@ public class ServicesModule extends AbstractModule {
         bind(Sender.class).to(PortfolioValuationsSender.class);
         bind(Retriever.class).to(PortfolioValuationsRetriever.class);
         bind(PricingService.class).to(MarkitPricingService.class);
-        bind(new TypeLiteral<ResultPersister<MarkitResults>>(){}).to(MarkitResultPersister.class);
         bind(Simulator.class);
-        bind(MarkitResultPersister.class);
+        bind(new TypeLiteral<ResultPersister<MarkitResults>>(){}).to(MarkitResultPersister.class);
+        bind(new TypeLiteral<ResultPersister<MarginResults>>(){}).to(MarginResultPersister.class);
+        bind(new TypeLiteral<ResultPersister<PortfolioResults>>(){}).to(PortfolioValuationPersister.class);
         bind(MarkitCallGenerator.class);
         bind(MarkitCallSimulator.class);
         bind(MarkitValuationProcessor.class);
-        bind(MarkitResultPersister.class);
         bind(MarkitPricingProcessor.class);
-        bind(new TypeLiteral<ResultPersister<PortfolioResults>>(){}).to(PortfolioValuationPersister.class);
 
         // clarus portfolio valuation and margin call generation
         bind(ClarusMarginService.class).to(ClarusMarginServiceImpl.class);
@@ -103,24 +103,37 @@ public class ServicesModule extends AbstractModule {
 
     @Provides
     @Singleton
-    ResultProcessor<MarkitResults> markitResultProcessor(Injector injector) {
-        MarkitResultPersister resultPersister = injector.getInstance(MarkitResultPersister.class);
+    @Named("markit")
+    CallGeneratorProcessor markitCallGeneratorProcessor(Injector injector) {
         MarkitCallGenerator markitProcessor = injector.getInstance(MarkitCallGenerator.class);
         MarkitCallSimulator simulator = injector.getInstance(MarkitCallSimulator.class);
-        resultPersister.setNext(markitProcessor);
         markitProcessor.setNext(simulator);
-        return resultPersister;
+        return markitProcessor;
     }
 
     @Provides
     @Singleton
-    ResultProcessor<MarginResults> clarusResultProcessor(Injector injector) {
-        MarginResultPersister resultPersister = injector.getInstance(MarginResultPersister.class);
+    @Named("clarus")
+    CallGeneratorProcessor clarusCallGeneratorProcessor(Injector injector) {
         ClarusCallGenerator clarusProcessor = injector.getInstance(ClarusCallGenerator.class);
         ClarusCallSimulator simulator = injector.getInstance(ClarusCallSimulator.class);
-        resultPersister.setNext(clarusProcessor);
         clarusProcessor.setNext(simulator);
-        return resultPersister;
+        return clarusProcessor;
+    }
+
+    @Provides
+    @Singleton
+    @Named("portfolio")
+    CallGeneratorProcessor portfolioCallGeneratorProcessor(Injector injector) {
+        MarkitCallGenerator markitProcessor = injector.getInstance(MarkitCallGenerator.class);
+        MarkitCallSimulator markitSimulator = injector.getInstance(MarkitCallSimulator.class);
+        ClarusCallGenerator clarusProcessor = injector.getInstance(ClarusCallGenerator.class);
+        ClarusCallSimulator clarussimulator = injector.getInstance(ClarusCallSimulator.class);
+
+        markitProcessor.setNext(markitSimulator);
+        markitSimulator.setNext(clarusProcessor);
+        clarusProcessor.setNext(clarussimulator);
+        return markitProcessor;
     }
 
     @Provides

@@ -2,7 +2,17 @@ package com.acuo.valuation.jackson;
 
 import com.acuo.common.json.DoubleSerializer;
 import com.acuo.common.model.margin.Types;
-import com.acuo.persist.entity.*;
+import com.acuo.persist.entity.Agreement;
+import com.acuo.persist.entity.ClientSignsRelation;
+import com.acuo.persist.entity.CounterpartSignsRelation;
+import com.acuo.persist.entity.LegalEntity;
+import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.entity.MarginValuation;
+import com.acuo.persist.entity.MarginValue;
+import com.acuo.persist.entity.Portfolio;
+import com.acuo.persist.entity.Trade;
+import com.acuo.persist.entity.TradeValuation;
+import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -10,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -138,8 +147,8 @@ public class MarginCallResult {
             }
         }
 
-        marginCallResult.agreementdetails.setTradeCount(Long.valueOf(totalCount));
-        marginCallResult.agreementdetails.setTradeValue(Long.valueOf(valudatedCount));
+        marginCallResult.agreementdetails.setTradeCount((long) totalCount);
+        marginCallResult.agreementdetails.setTradeValue((long) valudatedCount);
         marginCallResult.setExposure(totalPV);
 
 
