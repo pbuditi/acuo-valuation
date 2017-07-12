@@ -26,6 +26,7 @@ import com.acuo.valuation.services.TradeCacheService;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.util.MockServiceModule;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
+import com.google.inject.Injector;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import com.opengamma.strata.collect.result.ValueWithFailures;
@@ -105,7 +106,7 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
     public ResourceFile clarusResponse = new ResourceFile("/clarus/response/clarus-lch.json");
 
     @Inject
-    private MockWebServer server = null;
+    private Injector injector = null;
 
     @Inject
     private ImportService importService = null;
@@ -130,6 +131,8 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
 
     @Mock
     private MarginResults marginResults;
+
+    private static MockWebServer server;
 
     @Before
     public void setup() throws IOException {
@@ -211,7 +214,7 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
 
     @Override
     public void beforeClassSetup() {
-
+        server = injector.getInstance(MockWebServer.class);
     }
 
     @Override
