@@ -3,6 +3,7 @@ package com.acuo.valuation.modules;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.PortfolioResults;
+import com.acuo.valuation.providers.acuo.PortfolioValuationProcessor;
 import com.acuo.valuation.providers.acuo.assets.AssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.assets.CashAssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.assets.ReutersAssetPricingProcessor;
@@ -84,6 +85,9 @@ public class ServicesModule extends AbstractModule {
         bind(ClarusVMProcessorImpl.class);
         bind(ClarusIMProcessorImpl.class);
         bind(PortfolioPriceProcessor.class);
+
+        //portfolio generation
+        bind(PortfolioValuationProcessor.class);
 
         // asset valuation
         bind(ReutersService.class).to(ReutersServiceImpl.class);
