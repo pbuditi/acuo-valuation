@@ -165,14 +165,6 @@ public class MarginCallResult {
 
             }
 
-
-            String type = agreement.getType();
-            if ("bilateral".equals(type) || "legacy".equals(type)) {
-                marginCallResult.agreementdetails.setPricingSource("Markit");
-            } else {
-                marginCallResult.agreementdetails.setPricingSource("Clarus");
-            }
-
             return marginCallResult;
         }
     }
@@ -186,6 +178,27 @@ public class MarginCallResult {
         public MarginCallResult build() {
             MarginCallResult marginCallResult = super.build();
             marginCallResult.agreementdetails.setPricingSource("Markit");
+
+            double totalPV = 0.0d;
+            LocalDate valuationDate = LocalDate.now().minusDays(1);
+            marginCallResult.setValuationdate(valuationDate);
+            Long totalTradeCount = valuationService.tradeCount(portfolioId);
+            Long valuatedTradeCount = valuationService.tradeValuedCount(portfolioId, valuationDate);
+
+            MarginValuation marginValuation = valuationService.getMarginValuationFor(portfolioId, Types.CallType.Variation);
+            if (marginValuation != null && marginValuation.getValues() != null) {
+                for (MarginValue marginValue : marginValuation.getValues()) {
+                    if (marginValue.getValuationDate().equals(valuationDate)) {
+                        totalPV = marginValue.getAmount();
+                        break;
+                    }
+                }
+            }
+
+            marginCallResult.agreementdetails.setTradeCount(totalTradeCount);
+            marginCallResult.agreementdetails.setTradeValue(valuatedTradeCount);
+            marginCallResult.setExposure(totalPV);
+
             return marginCallResult;
         }
 
