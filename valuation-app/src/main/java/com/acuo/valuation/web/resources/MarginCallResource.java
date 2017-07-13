@@ -154,7 +154,7 @@ public class MarginCallResource {
                 .collect(toList());
         tradePricingProcessor.process(filtered);
         List<Portfolio> portfolios = portfolioIds.getIds().stream().map(PortfolioId::fromString).map(id -> portfolioService.find(id, 2)).collect(Collectors.toList());
-        final MarginCallResponse response = MarginCallResponse.ofPortfolio(portfolios, tradeService, valuationService);
+        final MarginCallResponse response = MarginCallResponse.ofPortfolio(portfolios, valuationService);
         return Response.status(CREATED).entity(response).build();
     }
 

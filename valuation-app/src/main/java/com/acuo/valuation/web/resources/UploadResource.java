@@ -2,6 +2,7 @@ package com.acuo.valuation.web.resources;
 
 import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.model.results.TradeValuation;
+import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
@@ -94,7 +95,8 @@ public class UploadResource {
         results.setCurrency(Currency.USD);
         results.setValuationDate(LocalDate.now());
         persister.persist(results);
-        final MarginCallResponse  response = MarginCallResponse.ofPortfolio(portfolios.stream().map(id -> portfolioService.find(id, 2)).collect(Collectors.toList()), tradeService, valuationService);
+        List<Portfolio> list = portfolios.stream().map(id -> portfolioService.find(id, 2)).collect(Collectors.toList());
+        final MarginCallResponse  response = MarginCallResponse.ofPortfolio(list, valuationService);
         return Response.status(CREATED).entity(response).build();
     }
 
