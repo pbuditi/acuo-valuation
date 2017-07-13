@@ -107,6 +107,7 @@ public class MarginCallResult {
         marginCallResult.agreementdetails.setFxRate(marginCall.getFxRate());
         marginCallResult.agreementdetails.setTradeCount(marginCall.getTradeCount());
         marginCallResult.agreementdetails.setTradeValue(marginCall.getTradeCount());
+        marginCallResult.setExposure(marginCall.getExposure());
 
         String type = agreement.getType();
         if ("bilateral".equals(type) || "legacy".equals(type)) {
@@ -180,7 +181,7 @@ public class MarginCallResult {
             marginCallResult.agreementdetails.setPricingSource("Markit");
 
             double totalPV = 0.0d;
-            LocalDate valuationDate = LocalDate.now().minusDays(1);
+            LocalDate valuationDate = LocalDate.now();
             marginCallResult.setValuationdate(valuationDate);
             Long totalTradeCount = valuationService.tradeCount(portfolioId);
             Long valuatedTradeCount = valuationService.tradeValuedCount(portfolioId, valuationDate);
@@ -219,7 +220,7 @@ public class MarginCallResult {
             double totalPV = 0.0d;
             Long valuatedTradeCount = 0L;
             Long totalTradeCount = valuationService.tradeCount(portfolioId);
-            LocalDate valuationDate = LocalDate.now().minusDays(1);
+            LocalDate valuationDate = LocalDate.now();
             marginCallResult.setValuationdate(valuationDate);
 
             //check for Clarus valuation, if there is today margin valuation on the portfolio, we can assume the trades are valuated
