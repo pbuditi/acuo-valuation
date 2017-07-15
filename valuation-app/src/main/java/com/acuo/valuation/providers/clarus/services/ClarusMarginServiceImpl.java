@@ -56,7 +56,7 @@ public class ClarusMarginServiceImpl implements ClarusMarginService {
 
     String makeRequest(List<com.acuo.common.model.trade.Trade> trades, DataModel model) {
         TransformerContext context = new TransformerContext();
-        context.setValueDate(LocalDate.now());
+        context.setValueDate(LocalDateUtils.minus(LocalDate.now(), 1));
         String portfolios = transformer.serialise(trades, context);
         String request = RequestBuilder
                 .create(objectMapper, portfolios)

@@ -4,6 +4,7 @@ import com.acuo.common.model.margin.Types;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.InstanceTestClassListener;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
 import com.acuo.persist.core.ImportService;
@@ -130,7 +131,10 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
     private MarkitResults markitResults;
 
     @Mock
-    private MarginResults marginResults;
+    private MarginResults vmResults;
+
+    @Mock
+    private MarginResults imResults;
 
     private static MockWebServer server;
 
@@ -147,7 +151,8 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
         mockConditions();
 
         markitPersister.persist(markitResults);
-        marginPersister.persist(marginResults);
+        marginPersister.persist(vmResults);
+        marginPersister.persist(imResults);
     }
 
     private void setMockMarkitResponse() throws IOException {
@@ -195,6 +200,9 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
     @Test
     public void testSplitPortfolios() throws URISyntaxException, IOException {
 
+        server.enqueue(new MockResponse().setBody("key"));
+        server.enqueue(new MockResponse().setBody(largeReport.getContent()));
+        server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
         server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
         server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
 
@@ -227,20 +235,31 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
     }
 
     private void mockConditions() {
-        MarginValuation marginValuation = new MarginValuation("test",
+        MarginValuation vmValuation = new MarginValuation("test",
                 10.0d,
                 10.0d,
                 10.0d,
                 Types.CallType.Variation,
                 "p31");
-        when(marginResults.getResults()).thenReturn(com.google.common.collect.ImmutableList.of(Result.success(marginValuation)));
-        when(marginResults.getMarginType()).thenReturn(Types.CallType.Variation);
-        when(marginResults.getValuationDate()).thenReturn(LocalDate.now());
-        when(marginResults.getCurrency()).thenReturn(Currency.USD.getCode());
+        when(vmResults.getResults()).thenReturn(com.google.common.collect.ImmutableList.of(Result.success(vmValuation)));
+        when(vmResults.getMarginType()).thenReturn(Types.CallType.Variation);
+        when(vmResults.getValuationDate()).thenReturn(LocalDateUtils.minus(LocalDate.now(), 1));
+        when(vmResults.getCurrency()).thenReturn(Currency.USD.getCode());
+
+        MarginValuation imValuation = new MarginValuation("test",
+                100.0d,
+                100.0d,
+                100.0d,
+                Types.CallType.Initial,
+                "p31");
+        when(imResults.getResults()).thenReturn(com.google.common.collect.ImmutableList.of(Result.success(imValuation)));
+        when(imResults.getMarginType()).thenReturn(Types.CallType.Initial);
+        when(imResults.getValuationDate()).thenReturn(LocalDateUtils.minus(LocalDate.now(), 1));
+        when(imResults.getCurrency()).thenReturn(Currency.USD.getCode());
 
         MarkitValuation markitValuation = new MarkitValuation("455820", ValueWithFailures.of(10.0d));
         when(markitResults.getResults()).thenReturn(com.google.common.collect.ImmutableList.of(Result.success(markitValuation)));
-        when(markitResults.getValuationDate()).thenReturn(LocalDate.now());
+        when(markitResults.getValuationDate()).thenReturn(LocalDateUtils.minus(LocalDate.now(), 1));
         when(markitResults.getCurrency()).thenReturn(Currency.USD);
     }
 }

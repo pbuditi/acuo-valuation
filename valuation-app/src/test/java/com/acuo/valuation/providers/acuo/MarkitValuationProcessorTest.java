@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.MarginCall;
@@ -110,7 +111,7 @@ public class MarkitValuationProcessorTest {
 
     private void mockConditions() {
         when(results.getResults()).thenReturn(ImmutableList.of(Result.success(valuation)));
-        when(results.getValuationDate()).thenReturn(LocalDate.now());
+        when(results.getValuationDate()).thenReturn(LocalDateUtils.minus(LocalDate.now(), 1));
         when(results.getCurrency()).thenReturn(Currency.USD);
         when(valuation.getTradeId()).thenReturn("455820");
         when(valuation.getValue()).thenReturn(ValueWithFailures.of(10.0d));

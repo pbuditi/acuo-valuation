@@ -2,6 +2,7 @@ package com.acuo.valuation.jackson;
 
 import com.acuo.common.json.DoubleSerializer;
 import com.acuo.common.model.margin.Types;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.ClientSignsRelation;
 import com.acuo.persist.entity.CounterpartSignsRelation;
@@ -178,10 +179,11 @@ public class MarginCallResult {
 
         public MarginCallResult build() {
             MarginCallResult marginCallResult = super.build();
+            marginCallResult.setCalltype(Types.CallType.Variation.name());
             marginCallResult.agreementdetails.setPricingSource("Markit");
 
             double totalPV = 0.0d;
-            LocalDate valuationDate = LocalDate.now().minusDays(1);
+            LocalDate valuationDate = LocalDateUtils.minus(LocalDate.now(), 1);
             marginCallResult.setValuationdate(valuationDate);
             Long totalTradeCount = valuationService.tradeCount(portfolioId);
             Long valuatedTradeCount = valuationService.tradeValuedCount(portfolioId, valuationDate);
@@ -220,7 +222,7 @@ public class MarginCallResult {
             double totalPV = 0.0d;
             Long valuatedTradeCount = 0L;
             Long totalTradeCount = valuationService.tradeCount(portfolioId);
-            LocalDate valuationDate = LocalDate.now().minusDays(1);
+            LocalDate valuationDate = LocalDateUtils.minus(LocalDate.now(), 1);
             marginCallResult.setValuationdate(valuationDate);
 
             //check for Clarus valuation, if there is today margin valuation on the portfolio, we can assume the trades are valuated
@@ -258,6 +260,7 @@ public class MarginCallResult {
 
         public MarginCallResult build() {
             MarginCallResult marginCallResult = super.build();
+            marginCallResult.setCalltype(Types.CallType.Variation.name());
             marginCallResult.agreementdetails.setPricingSource("Clarus");
             return marginCallResult;
         }
@@ -278,6 +281,7 @@ public class MarginCallResult {
 
         public MarginCallResult build() {
             MarginCallResult marginCallResult = super.build();
+            marginCallResult.setCalltype(Types.CallType.Initial.name());
             marginCallResult.agreementdetails.setPricingSource("Clarus");
             return marginCallResult;
         }

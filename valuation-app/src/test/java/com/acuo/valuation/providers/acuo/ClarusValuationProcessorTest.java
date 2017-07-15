@@ -3,6 +3,7 @@ package com.acuo.valuation.providers.acuo;
 import com.acuo.common.model.margin.Types;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.enums.StatementStatus;
@@ -105,7 +106,7 @@ public class ClarusValuationProcessorTest {
                 "p31");
         when(results.getResults()).thenReturn(ImmutableList.of(Result.success(valuation)));
         when(results.getMarginType()).thenReturn(Types.CallType.Variation);
-        when(results.getValuationDate()).thenReturn(LocalDate.now());
+        when(results.getValuationDate()).thenReturn(LocalDateUtils.minus(LocalDate.now(), 1));
         when(results.getCurrency()).thenReturn(Currency.USD.getCode());
     }
 

@@ -1,5 +1,6 @@
 package com.acuo.valuation.web.resources;
 
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Portfolio;
@@ -148,8 +149,6 @@ public class MarginCallResource {
             return null;
         List<Trade> filtered = tradeList.stream()
                 .map(trade -> tradeService.find(trade.getTradeId(), 2))
-                .filter(trade -> trade instanceof IRS)
-                .map(trade -> (IRS) trade)
                 .filter(irs -> !isTradeValuated(irs))
                 .collect(toList());
         tradePricingProcessor.process(filtered);
@@ -171,11 +170,11 @@ public class MarginCallResource {
         return Response.status(CREATED).entity(MarginCallResponse.of(marginCalls)).build();
     }
 
-    private boolean isTradeValuated(IRS irs) {
-        TradeValuation tradeValuation = valuationService.getTradeValuationFor(irs.getTradeId());
+    private boolean isTradeValuated(Trade trade) {
+        TradeValuation tradeValuation = valuationService.getTradeValuationFor(trade.getTradeId());
         if (tradeValuation != null && tradeValuation.getValues() != null) {
             for (TradeValue tradeValue : tradeValuation.getValues()) {
-                if (tradeValue.getValuationDate().equals(LocalDate.now())) {
+                if (tradeValue.getValuationDate().equals(LocalDateUtils.minus(LocalDate.now(), 1))) {
                     return true;
                 }
             }

@@ -1,6 +1,7 @@
 package com.acuo.valuation.providers.acuo;
 
 import com.acuo.common.model.margin.Types;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.MarginCallService;
@@ -39,7 +40,7 @@ public class PortfolioValuationProcessor {
 
     public List<MarginCall> process(Set<PortfolioId> portfolioIds) {
         log.info("starting portfolio valuation processing");
-        LocalDate valuationDate = LocalDate.now();
+        LocalDate valuationDate = LocalDateUtils.minus(LocalDate.now(), 1);
         List<MarginCall> result = callTypes.stream()
                 .map(callType -> {
                     CallProcessorItem item = new CallProcessorItem(valuationDate, callType, portfolioIds);

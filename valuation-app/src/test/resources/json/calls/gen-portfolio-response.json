@@ -43,5 +43,26 @@
       "netRequired" : "0.00",
       "rate" : "0.78"
     }
+  }, {
+    "currency" : "GBP",
+    "exposure" : "-78.00",
+    "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Goldman Sachs",
+    "cptyEntity" : "Goldman Sachs & Co.",
+    "marginAgreement" : "a31",
+    "valuationDate" : "${json-unit.ignore}",
+    "callDate" : "${json-unit.ignore}",
+    "callType" : "Initial",
+    "totalCallAmount" : "78.00",
+    "referenceIdentifier" : "${json-unit.ignore}",
+    "collateralValue" : "0.00",
+    "pendingCollateral" : "0.00",
+    "agreementDetails" : {
+      "tradeCount" : 1,
+      "tradeValue" : 1,
+      "pricingSource" : "Clarus",
+      "netRequired" : "78.00",
+      "rate" : "0.78"
+    }
   } ]
 }
