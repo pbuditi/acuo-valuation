@@ -38,7 +38,7 @@ public class ResponseInput {
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
         LocalDate date;
 
-        @XmlPath("valuationDate/text()")
+        @XmlPath("valuationdate/text()")
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
         LocalDate valuationDate;
 

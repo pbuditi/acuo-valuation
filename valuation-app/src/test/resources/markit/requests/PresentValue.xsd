@@ -4,7 +4,7 @@
 
 		   The top level element is "present-value".  This should have child elements:
 			* "timezone" - a timezone close, used when asking for today's close data
-		valuationDatedate" - When to evaluate the Present Value for, and
+		valuationdate" - When to evaluate the Present Value for, and
 			* "data" - Containing one or more "trade" elements
 		   The valuation date is restricted to past 7 calendar days, excluding today, or
 		   month end for past 3 months.
