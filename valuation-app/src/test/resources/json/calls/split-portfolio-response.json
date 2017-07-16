@@ -1,40 +1,40 @@
 {
   "uploadMarginCallDetails" : [ {
-    "exposure" : "-162470.14",
     "legalEntity" : "ACUO US LLC",
     "cptyEntity" : "Counterpart B4",
     "marginAgreement" : "a29",
-    "valuationDate" : "${json-unit.ignore}",
     "callType" : "Variation",
     "referenceIdentifier" : "p29",
+    "valuationDate" : "${json-unit.ignore}",
+    "exposure" : "10.00",
     "agreementDetails" : {
-      "rounding" : "500.00",
       "tradeCount" : 1,
       "tradeValue" : 1,
       "pricingSource" : "Markit",
-      "minTransfer" : "500000.00"
+      "minTransfer" : "500000.00",
+      "rounding" : "500.00"
     }
   }, {
-    "exposure" : "-63475.94",
     "legalEntity" : "ACUO SG Pte Ltd",
     "cptyEntity" : "Goldman Sachs & Co.",
     "marginAgreement" : "a31",
-    "valuationDate" : "${json-unit.ignore}",
     "callType" : "Variation",
     "referenceIdentifier" : "p31",
+    "valuationDate" : "${json-unit.ignore}",
+    "exposure" : "10.00",
     "agreementDetails" : {
       "tradeCount" : 1,
       "tradeValue" : 1,
       "pricingSource" : "Clarus"
     }
   }, {
-    "exposure" : "63475.94",
     "legalEntity" : "ACUO SG Pte Ltd",
     "cptyEntity" : "Goldman Sachs & Co.",
     "marginAgreement" : "a31",
-    "valuationDate" : "${json-unit.ignore}",
     "callType" : "Initial",
     "referenceIdentifier" : "p31",
+    "valuationDate" : "${json-unit.ignore}",
+    "exposure" : "-100.00",
     "agreementDetails" : {
       "tradeCount" : 1,
       "tradeValue" : 1,

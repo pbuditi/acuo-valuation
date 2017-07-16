@@ -63,10 +63,10 @@ public class PortfolioManagerImpl implements PortfolioManager {
                     Agreement agreement = portfolio.getAgreement();
                     String type = agreement.getType();
                     if ("bilateral".equals(type) || "legacy".equals(type)) {
-                        return isTradeValuated(trade, valuationDate);
+                        return !isTradeValuated(trade, valuationDate);
                     } else {
-                        return isPortfolioValuated(portfolio, valuationDate, Variation) &&
-                                isPortfolioValuated(portfolio, valuationDate, Initial);
+                        return !isPortfolioValuated(portfolio, valuationDate, Variation) ||
+                                !isPortfolioValuated(portfolio, valuationDate, Initial);
                     }
                 })
                 .collect(toList());
