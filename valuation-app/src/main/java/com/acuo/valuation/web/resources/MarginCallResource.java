@@ -5,18 +5,15 @@ import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.entity.TradeValuation;
-import com.acuo.persist.entity.TradeValue;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.MarginCallService;
-import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
-import com.acuo.persist.services.ValuationService;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.jackson.PortfolioIds;
 import com.acuo.valuation.providers.acuo.PortfolioValuationProcessor;
 import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
+import com.acuo.valuation.services.PortfolioManager;
 import com.acuo.valuation.services.TradeCacheService;
 import com.codahale.metrics.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -58,27 +53,24 @@ public class MarginCallResource {
     private final TradePricingProcessor tradePricingProcessor;
     private final TradeService<Trade> tradeService;
 
-    private final PortfolioService portfolioService;
-    private final ValuationService valuationService;
     private final MarginCallService marginCallService;
 
     private final PortfolioValuationProcessor portfolioValuationProcessor;
+    private final PortfolioManager portfolioManager;
 
     @Inject
     public MarginCallResource(TradeCacheService cacheService,
                               TradePricingProcessor tradePricingProcessor,
                               TradeService<Trade> tradeService,
-                              PortfolioService portfolioService,
-                              ValuationService valuationService,
                               MarginCallService marginCallService,
-                              PortfolioValuationProcessor portfolioValuationProcessor) {
+                              PortfolioValuationProcessor portfolioValuationProcessor,
+                              PortfolioManager portfolioManager) {
         this.cacheService = cacheService;
         this.tradePricingProcessor = tradePricingProcessor;
         this.tradeService = tradeService;
-        this.portfolioService = portfolioService;
-        this.valuationService = valuationService;
         this.marginCallService = marginCallService;
         this.portfolioValuationProcessor = portfolioValuationProcessor;
+        this.portfolioManager = portfolioManager;
     }
 
     @GET
@@ -144,16 +136,9 @@ public class MarginCallResource {
     @Timed
     public Response splitMarginCallByPortfolios(PortfolioIds portfolioIds) throws Exception {
         log.info("Pricing all trades under the portfolios {}", portfolioIds);
-        List<Trade> tradeList = portfolioIds.getIds().stream().map(PortfolioId::fromString).map(tradeService::findByPortfolioId).flatMap(trades -> StreamSupport.stream(trades.spliterator(), false)).collect(Collectors.toList());
-        if (tradeList == null || tradeList.size() == 0)
-            return null;
-        List<Trade> filtered = tradeList.stream()
-                .map(trade -> tradeService.find(trade.getTradeId(), 2))
-                .filter(irs -> !isTradeValuated(irs))
-                .collect(toList());
-        tradePricingProcessor.process(filtered);
-        List<Portfolio> portfolios = portfolioIds.getIds().stream().map(PortfolioId::fromString).map(id -> portfolioService.find(id, 2)).collect(Collectors.toList());
-        final MarginCallResponse response = MarginCallResponse.ofPortfolio(portfolios, valuationService);
+        LocalDate valuationDate = LocalDateUtils.valuationDate();
+        List<Portfolio> portfolios = portfolioManager.valueMissing(portfolioIds.getIds(), valuationDate);
+        final MarginCallResponse response = portfolioManager.split(portfolios, valuationDate);
         return Response.status(CREATED).entity(response).build();
     }
 
@@ -168,17 +153,5 @@ public class MarginCallResource {
         List<MarginCall> marginCalls = portfolioValuationProcessor.process(portfolios);
         marginCalls = marginCalls.stream().map(marginCall -> marginCallService.find(marginCall.getItemId(), 4)).collect(toList());
         return Response.status(CREATED).entity(MarginCallResponse.of(marginCalls)).build();
-    }
-
-    private boolean isTradeValuated(Trade trade) {
-        TradeValuation tradeValuation = valuationService.getTradeValuationFor(trade.getTradeId());
-        if (tradeValuation != null && tradeValuation.getValues() != null) {
-            for (TradeValue tradeValue : tradeValuation.getValues()) {
-                if (tradeValue.getValuationDate().equals(LocalDateUtils.minus(LocalDate.now(), 1))) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

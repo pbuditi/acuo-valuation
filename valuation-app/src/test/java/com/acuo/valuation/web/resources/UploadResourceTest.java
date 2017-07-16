@@ -88,6 +88,11 @@ public class UploadResourceTest implements WithResteasyFixtures {
     }
 
     @Test
+    public void testUploadSmallFileNew() throws URISyntaxException, IOException {
+        testFileUploadNew(one);
+    }
+
+    @Test
     public void testUploadSmallFileMultipleTimes() throws URISyntaxException, IOException {
         testFileUpload(one);
         testFileUpload(one);

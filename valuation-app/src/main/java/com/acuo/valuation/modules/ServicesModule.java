@@ -14,6 +14,7 @@ import com.acuo.valuation.providers.acuo.calls.MarkitCallGenerator;
 import com.acuo.valuation.providers.acuo.calls.MarkitCallSimulator;
 import com.acuo.valuation.providers.acuo.calls.Simulator;
 import com.acuo.valuation.providers.acuo.ClarusValuationProcessor;
+import com.acuo.valuation.providers.acuo.portfolios.PortfolioManagerImpl;
 import com.acuo.valuation.providers.acuo.results.MarginResultPersister;
 import com.acuo.valuation.providers.acuo.results.MarkitResultPersister;
 import com.acuo.valuation.providers.acuo.MarkitValuationProcessor;
@@ -42,6 +43,7 @@ import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.providers.reuters.services.ReutersServiceImpl;
 import com.acuo.valuation.providers.reuters.services.SettlementDateService;
 import com.acuo.valuation.providers.reuters.services.SettlementDateServiceImpl;
+import com.acuo.valuation.services.PortfolioManager;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeCacheService;
 import com.acuo.valuation.services.TradeUploadService;
@@ -87,6 +89,7 @@ public class ServicesModule extends AbstractModule {
         bind(PortfolioPriceProcessor.class);
 
         //portfolio generation
+        bind(PortfolioManager.class).to(PortfolioManagerImpl.class);
         bind(PortfolioValuationProcessor.class);
 
         // asset valuation

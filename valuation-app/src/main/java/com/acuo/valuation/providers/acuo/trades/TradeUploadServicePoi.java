@@ -3,6 +3,7 @@ package com.acuo.valuation.providers.acuo.trades;
 import com.acuo.common.type.TypedString;
 import com.acuo.persist.entity.FRA;
 import com.acuo.persist.entity.IRS;
+import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
@@ -83,6 +84,11 @@ public class TradeUploadServicePoi extends TradeUploadServiceAbstract {
         }
 
         return tradeIdList.stream().map(Trade::getTradeId).map(TypedString::toString).collect(toList());
+    }
+
+    @Override
+    public List<Portfolio> fromExcelWithValues(InputStream fis) {
+        throw new UnsupportedOperationException("not implemented");
     }
 
     private Trade handleIRSRow(Row row) {
