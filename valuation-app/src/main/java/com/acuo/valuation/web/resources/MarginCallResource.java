@@ -79,11 +79,11 @@ public class MarginCallResource {
     @Path("/generate/{tnxId}")
     public Response generate(@PathParam("tnxId") String tnxId) {
         log.info("Generating margin calls for transaction {}", tnxId);
-        List<String> trades = cacheService.remove(tnxId);
-        List<Trade> swaps = trades.stream()
-                .map(tradeId -> (IRS) tradeService.find(TradeId.fromString(tradeId)))
+        List<String> ids = cacheService.remove(tnxId);
+        List<Trade> trades = ids.stream()
+                .map(tradeId ->  tradeService.find(TradeId.fromString(tradeId)))
                 .collect(toList());
-        Collection<MarginCall> marginCalls = tradePricingProcessor.process(swaps);
+        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
         return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
     }
 

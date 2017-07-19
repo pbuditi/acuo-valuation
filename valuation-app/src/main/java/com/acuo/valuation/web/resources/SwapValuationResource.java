@@ -80,14 +80,14 @@ public class SwapValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/swapid/{id}")
+    @Path("/price/trade/{id}")
     @Timed
     public MarginCallResponse priceBySwapId(@PathParam("id") String id) throws Exception {
         log.info("Pricing the trade {}", id);
-        List<Trade> swaps = ImmutableList.of(id).stream()
-                .map(tradeId -> (IRS) tradeService.find(TradeId.fromString(tradeId)))
+        List<Trade> trades = ImmutableList.of(id).stream()
+                .map(tradeId -> tradeService.find(TradeId.fromString(tradeId)))
                 .collect(toList());
-        Collection<MarginCall> marginCalls = tradePricingProcessor.process(swaps);
+        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
         return MarginCallResponse.of(marginCalls);
     }
 

@@ -1,7 +1,6 @@
 package com.acuo.valuation.providers.acuo.trades;
 
 
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.entity.Trade;
@@ -43,9 +42,9 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
 
     @Override
     public <T extends Trade> Collection<MarginCall> process(Iterable<T> trades) {
-        log.info("processing {} trades", Iterables.size(trades));
+        log.info("processing {} markit trades", Iterables.size(trades));
         Collection<MarginCall> results = internal(trades);
-        log.info("generated {} results", results.size());
+        log.info("generated {} markit results", results.size());
         if (next != null) {
             results.addAll(next.process(trades));
         }
@@ -57,8 +56,6 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
             return new ArrayList<>();
         final List<com.acuo.common.model.trade.Trade> trades = StreamSupport.stream(entities.spliterator(), false)
                 .filter(predicate)
-                .filter(trade -> trade instanceof IRS)
-                .map(trade -> (IRS) trade)
                 .map(TradeBuilder::buildTrade)
                 .collect(toList());
         if (Iterables.isEmpty(trades))

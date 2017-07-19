@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -32,8 +31,7 @@ public class PortfolioValuationProcessor {
     private final Set<Types.CallType> callTypes = ImmutableSet.of(Variation, Initial);
 
     @Inject
-    public PortfolioValuationProcessor(@Named("portfolio") CallGeneratorProcessor callGeneratorProcessor,
-                                    MarginCallService marginCallService) {
+    public PortfolioValuationProcessor(CallGeneratorProcessor callGeneratorProcessor, MarginCallService marginCallService) {
         this.callGeneratorProcessor = callGeneratorProcessor;
         this.marginCallService = marginCallService;
     }

@@ -10,7 +10,6 @@ import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +26,7 @@ public class ClarusValuationProcessor {
 
     @Inject
     public ClarusValuationProcessor(ResultPersister<MarginResults> resultPersister,
-                                    @Named("clarus") CallGeneratorProcessor callGeneratorProcessor,
+                                    CallGeneratorProcessor callGeneratorProcessor,
                                     MarginCallService marginCallService) {
         this.resultPersister = resultPersister;
         this.callGeneratorProcessor = callGeneratorProcessor;

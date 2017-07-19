@@ -4,7 +4,6 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.TradeId;
@@ -82,7 +81,7 @@ public class ClarusPricingProcessorTest {
         importService.reload();
         List<String> tradeIds = tradeUploadService.fromExcel(oneIRS.createInputStream());
         swaps = tradeIds.stream()
-                .map(id -> (IRS) tradeService.find(TradeId.fromString(id)))
+                .map(id -> tradeService.find(TradeId.fromString(id)))
                 .collect(toList());
     }
 

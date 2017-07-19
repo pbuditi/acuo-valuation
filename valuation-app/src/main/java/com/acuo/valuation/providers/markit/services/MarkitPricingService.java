@@ -5,15 +5,16 @@ import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
+import com.acuo.persist.entity.enums.PricingProvider;
 import com.acuo.persist.ids.ClientId;
 import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
+import com.acuo.valuation.builders.TradeBuilder;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.services.PricingService;
-import com.acuo.valuation.builders.TradeBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -40,7 +41,7 @@ public class MarkitPricingService implements PricingService {
     private final ValuationService valuationService;
 
     @Inject
-    MarkitPricingService(Sender sender, Retriever retriever, TradeService<Trade> tradeService,ValuationService valuationService) {
+    MarkitPricingService(Sender sender, Retriever retriever, TradeService<Trade> tradeService, ValuationService valuationService) {
         this.sender = sender;
         this.retriever = retriever;
         this.tradeService = tradeService;
@@ -52,8 +53,6 @@ public class MarkitPricingService implements PricingService {
         List<com.acuo.common.model.trade.Trade> trades = swapIds.stream()
                 .map(id -> tradeService.find(TradeId.fromString(id)))
                 .filter(Objects::nonNull)
-                .filter(trade -> trade instanceof IRS)
-                .map(trade -> (IRS) trade)
                 .map(TradeBuilder::buildTrade)
                 .collect(toList());
         return priceSwapTrades(trades);
@@ -62,11 +61,10 @@ public class MarkitPricingService implements PricingService {
     @Override
     public MarkitResults priceTradesOf(ClientId clientId) {
         Iterable<Trade> trades = tradeService.findBilateralTradesByClientId(clientId);
-        List<com.acuo.common.model.trade.Trade> swapTrades = StreamSupport.stream(trades.spliterator(), false)
-                .filter(trade -> trade instanceof IRS)
-                .map(trade -> TradeBuilder.buildTrade(trade))
+        List<com.acuo.common.model.trade.Trade> t = StreamSupport.stream(trades.spliterator(), false)
+                .map(TradeBuilder::buildTrade)
                 .collect(toList());
-        return priceSwapTrades(swapTrades);
+        return priceSwapTrades(t);
     }
 
     @Override
@@ -74,43 +72,36 @@ public class MarkitPricingService implements PricingService {
         Iterable<Trade> all = tradeService.findByPortfolioId(portfolioId);
         List<com.acuo.common.model.trade.Trade> filtered = StreamSupport.stream(all.spliterator(), false)
                 .map(trade -> tradeService.find(trade.getTradeId(), 2))
-                .filter(trade -> trade instanceof IRS)
-                .map(trade -> (IRS) trade)
-                .filter(irs -> "Bilateral".equalsIgnoreCase(irs.getTradeType()))
+                .filter(trade -> PricingProvider.Markit.equals(trade.getPricingSource().getName()))
                 .map(TradeBuilder::buildTrade)
                 .collect(toList());
         return priceSwapTrades(filtered);
     }
 
     @Override
-    public MarkitResults pricePortfolios(List<PortfolioId> portfolioIds)
-    {
-        List<Trade> tradeList = portfolioIds.stream().map(portfolioId -> tradeService.findByPortfolioId(portfolioId)).flatMap(trades -> StreamSupport.stream(trades.spliterator(), false)).collect(Collectors.toList());
-        if(tradeList == null || tradeList.size() == 0)
+    public MarkitResults pricePortfolios(List<PortfolioId> portfolioIds) {
+        List<Trade> tradeList = portfolioIds.stream().map(tradeService::findByPortfolioId)
+                .flatMap(trades -> StreamSupport.stream(trades.spliterator(), false))
+                .collect(Collectors.toList());
+        if (tradeList == null || tradeList.size() == 0)
             return null;
         List<com.acuo.common.model.trade.Trade> filtered = tradeList.stream()
                 .map(trade -> tradeService.find(trade.getTradeId(), 2))
-                .filter(trade -> trade instanceof IRS)
-                .map(trade -> (IRS) trade)
-                .filter(irs -> "Bilateral".equalsIgnoreCase(irs.getTradeType()))
-                .filter(irs -> !isTradeValuated(irs))
+                .filter(trade -> PricingProvider.Markit.equals(trade.getPricingSource().getName()))
+                .filter(trade -> !isTradeValuated(trade))
                 .map(TradeBuilder::buildTrade)
                 .collect(toList());
-        if(filtered.size() > 0)
+        if (filtered.size() > 0)
             return priceSwapTrades(filtered);
         else
             return null;
     }
 
-    boolean isTradeValuated(IRS irs)
-    {
-        TradeValuation tradeValuation = valuationService.getTradeValuationFor(irs.getTradeId());
-        if(tradeValuation != null && tradeValuation.getValues() != null)
-        {
-            for(TradeValue tradeValue : tradeValuation.getValues())
-            {
-                if(tradeValue.getValuationDate().equals(LocalDate.now()))
-                {
+    private boolean isTradeValuated(Trade trade) {
+        TradeValuation tradeValuation = valuationService.getTradeValuationFor(trade.getTradeId());
+        if (tradeValuation != null && tradeValuation.getValues() != null) {
+            for (TradeValue tradeValue : tradeValuation.getValues()) {
+                if (tradeValue.getValuationDate().equals(LocalDate.now())) {
                     return true;
                 }
             }

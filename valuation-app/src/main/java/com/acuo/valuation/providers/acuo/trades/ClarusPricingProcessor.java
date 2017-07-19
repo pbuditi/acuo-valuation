@@ -1,12 +1,11 @@
 package com.acuo.valuation.providers.acuo.trades;
 
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.entity.Trade;
+import com.acuo.valuation.builders.TradeBuilder;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.acuo.ClarusValuationProcessor;
-import com.acuo.valuation.builders.TradeBuilder;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,9 +34,9 @@ public abstract class ClarusPricingProcessor extends AbstractTradePricingProcess
 
     @Override
     public <T extends Trade> Collection<MarginCall> process(Iterable<T> trades) {
-        log.info("processing {} trades", Iterables.size(trades));
+        log.info("processing {} clarus trades", Iterables.size(trades));
         Collection<MarginCall> results = internal(trades);
-        log.info("generated {} results", results.size());
+        log.info("generated {} clarus results", results.size());
         if (next != null) {
             results.addAll(next.process(trades));
         }
@@ -52,8 +51,6 @@ public abstract class ClarusPricingProcessor extends AbstractTradePricingProcess
                 return new ArrayList<>();
             final List<com.acuo.common.model.trade.Trade> trades = StreamSupport.stream(entities.spliterator(), false)
                     .filter(predicate)
-                    .filter(trade -> trade instanceof IRS)
-                    .map(trade -> (IRS) trade)
                     .map(TradeBuilder::buildTrade)
                     .collect(toList());
             if (Iterables.isEmpty(trades))

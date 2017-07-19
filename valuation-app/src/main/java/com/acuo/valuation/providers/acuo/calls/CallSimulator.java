@@ -24,19 +24,19 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @Slf4j
-public class ClarusCallSimulator extends ClarusCallGenerator {
+public class CallSimulator extends CallGenerator {
 
     private final MarginCallService marginCallService;
     private final Simulator simulationHelper;
 
     @Inject
-    public ClarusCallSimulator(ValuationService valuationService,
-                               MarginStatementService marginStatementService,
-                               AgreementService agreementService,
-                               CurrencyService currencyService,
-                               MarginCallService marginCallService,
-                               PortfolioService portfolioService,
-                               Simulator simulationHelper) {
+    public CallSimulator(ValuationService valuationService,
+                         MarginStatementService marginStatementService,
+                         AgreementService agreementService,
+                         CurrencyService currencyService,
+                         MarginCallService marginCallService,
+                         PortfolioService portfolioService,
+                         Simulator simulationHelper) {
         super(valuationService,
                 marginStatementService,
                 marginCallService,
@@ -48,18 +48,19 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
     }
 
     @Override
-    public CallProcessorItem process(CallProcessorItem callProcessorItem) {
-        log.info("processing markit valuation items to generate expected calls");
-        LocalDate valuationDate = callProcessorItem.getValuationDate();
-        final Types.CallType callType = callProcessorItem.getCallType();
+    public CallProcessorItem process(CallProcessorItem item) {
+        log.info("processing {}", item);
+        LocalDate valuationDate = item.getValuationDate();
+        final Types.CallType callType = item.getCallType();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
-        Set<PortfolioId> portfolioIds = callProcessorItem.getPortfolioIds();
+        Set<PortfolioId> portfolioIds = item.getPortfolioIds();
         List<String> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
-        callProcessorItem.setSimulated(marginCalls);
+        log.info("simulated {} received calls", marginCalls.size());
+        item.setSimulated(marginCalls);
         if (next != null)
-            return next.process(callProcessorItem);
+            return next.process(item);
         else
-            return callProcessorItem;
+            return item;
     }
 
     protected Supplier<StatementStatus> statementStatusSupplier() {
