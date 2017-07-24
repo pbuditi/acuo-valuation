@@ -29,6 +29,7 @@ public class MarginCallResult {
     public String callType;
     public String currency;
     public String referenceIdentifier;
+    public String portfolioId;
     public String mgnCallUploadId;
 
     @JsonFormat(shape = STRING, pattern = "yyyy/MM/dd")
@@ -73,6 +74,7 @@ public class MarginCallResult {
         private final String currency;
         private final Double totalPV;
         private final String referenceIdentifier;
+        private final String portfolioId;
         private final String callType;
 
         private final Long totalTradeCount;
@@ -92,6 +94,7 @@ public class MarginCallResult {
             this.currency = marginCall.getCurrency().getCode();
             this.totalPV = marginCall.getExposure();
             this.referenceIdentifier = marginCall.getItemId();
+            this.portfolioId = null;
             this.callType = marginCall.getMarginType().name();
 
             this.totalTradeCount = marginCall.getTradeCount();
@@ -130,7 +133,8 @@ public class MarginCallResult {
             this.valuationDate = valuationDate;
             this.currency = portfolio.getCurrency();
             this.totalPV = totalPV;
-            this.referenceIdentifier = portfolio.getPortfolioId().toString();
+            this.referenceIdentifier = null;
+            this.portfolioId = portfolio.getPortfolioId().toString();
             this.callType = callType;
 
             this.totalTradeCount = totalTradeCount;
@@ -153,6 +157,7 @@ public class MarginCallResult {
             marginCallResult.currency = this.currency;
             marginCallResult.exposure = this.totalPV;
             marginCallResult.referenceIdentifier = this.referenceIdentifier;
+            marginCallResult.portfolioId = this.portfolioId;
             marginCallResult.callType = this.callType;
 
             marginCallResult.callDate = this.callDate;

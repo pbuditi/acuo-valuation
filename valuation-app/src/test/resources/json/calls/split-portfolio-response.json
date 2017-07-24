@@ -4,7 +4,7 @@
     "cptyEntity" : "Counterpart B4",
     "marginAgreement" : "a29",
     "callType" : "Variation",
-    "referenceIdentifier" : "p29",
+    "portfolioId" : "p29",
     "valuationDate" : "${json-unit.ignore}",
     "exposure" : "10.00",
     "agreementDetails" : {
@@ -19,7 +19,7 @@
     "cptyEntity" : "Goldman Sachs & Co.",
     "marginAgreement" : "a31",
     "callType" : "Variation",
-    "referenceIdentifier" : "p31",
+    "portfolioId" : "p31",
     "valuationDate" : "${json-unit.ignore}",
     "exposure" : "10.00",
     "agreementDetails" : {
@@ -32,7 +32,7 @@
     "cptyEntity" : "Goldman Sachs & Co.",
     "marginAgreement" : "a31",
     "callType" : "Initial",
-    "referenceIdentifier" : "p31",
+    "portfolioId" : "p31",
     "valuationDate" : "${json-unit.ignore}",
     "exposure" : "-100.00",
     "agreementDetails" : {
