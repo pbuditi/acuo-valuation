@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
         RepositoryModule.class,
         EndPointModule.class,
         ServicesModule.class})
-public class PortfolioValuationProcessorTest {
+public class PortfolioProcessorTest {
 
     @Inject
     private ImportService importService = null;
@@ -67,7 +67,7 @@ public class PortfolioValuationProcessorTest {
     private ResultPersister<MarginResults> marginPersister = null;
 
     @Inject
-    private PortfolioValuationProcessor processor = null;
+    private PortfolioProcessor processor = null;
 
     @Inject
     private TradeUploadService tradeUploadService = null;

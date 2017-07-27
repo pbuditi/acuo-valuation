@@ -11,8 +11,8 @@ import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.jackson.PortfolioIds;
-import com.acuo.valuation.providers.acuo.PortfolioValuationProcessor;
-import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
+import com.acuo.valuation.providers.acuo.PortfolioProcessor;
+import com.acuo.valuation.providers.acuo.TradeProcessor;
 import com.acuo.valuation.services.PortfolioManager;
 import com.acuo.valuation.services.TradeCacheService;
 import com.codahale.metrics.annotation.Timed;
@@ -50,26 +50,26 @@ public class MarginCallResource {
     private final static Map<String, AsyncResponse> waiters = new ConcurrentHashMap<>();
 
     private final TradeCacheService cacheService;
-    private final TradePricingProcessor tradePricingProcessor;
+    private final TradeProcessor tradeProcessor;
     private final TradeService<Trade> tradeService;
 
     private final MarginCallService marginCallService;
 
-    private final PortfolioValuationProcessor portfolioValuationProcessor;
+    private final PortfolioProcessor portfolioProcessor;
     private final PortfolioManager portfolioManager;
 
     @Inject
     public MarginCallResource(TradeCacheService cacheService,
-                              TradePricingProcessor tradePricingProcessor,
+                              TradeProcessor tradeProcessor,
                               TradeService<Trade> tradeService,
                               MarginCallService marginCallService,
-                              PortfolioValuationProcessor portfolioValuationProcessor,
+                              PortfolioProcessor portfolioProcessor,
                               PortfolioManager portfolioManager) {
         this.cacheService = cacheService;
-        this.tradePricingProcessor = tradePricingProcessor;
+        this.tradeProcessor = tradeProcessor;
         this.tradeService = tradeService;
         this.marginCallService = marginCallService;
-        this.portfolioValuationProcessor = portfolioValuationProcessor;
+        this.portfolioProcessor = portfolioProcessor;
         this.portfolioManager = portfolioManager;
     }
 
@@ -83,7 +83,7 @@ public class MarginCallResource {
         List<Trade> trades = ids.stream()
                 .map(tradeId ->  tradeService.find(TradeId.fromString(tradeId)))
                 .collect(toList());
-        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
+        Collection<MarginCall> marginCalls = tradeProcessor.process(trades);
         return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
     }
 
@@ -101,7 +101,7 @@ public class MarginCallResource {
                         .map(tradeId -> tradeService.find(TradeId.fromString(tradeId)))
                         .filter(trade -> trade instanceof IRS)
                         .collect(toList());
-                return tradePricingProcessor.process(swaps);
+                return tradeProcessor.process(swaps);
             })
                     .thenApply((result) -> {
                         final AsyncResponse asyncResponse = waiters.get(tnxId);
@@ -125,7 +125,7 @@ public class MarginCallResource {
     public Response generateFromSwaps() {
         log.info("Generating margin calls from all swaps");
         Iterable<Trade> trades = tradeService.findAll(2);
-        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
+        Collection<MarginCall> marginCalls = tradeProcessor.process(trades);
         return Response.status(OK).entity(MarginCallResponse.of(marginCalls)).build();
     }
 
@@ -150,7 +150,7 @@ public class MarginCallResource {
     public Response generateMarginCallForPortfolio(PortfolioIds portfolioIds) throws Exception {
         log.info("generate margin calls the portfolios {}", portfolioIds);
         Set<PortfolioId> portfolios = portfolioIds.getIds().stream().map(PortfolioId::fromString).collect(toSet());
-        List<MarginCall> marginCalls = portfolioValuationProcessor.process(portfolios);
+        List<MarginCall> marginCalls = portfolioProcessor.process(portfolios);
         marginCalls = marginCalls.stream().map(marginCall -> marginCallService.find(marginCall.getItemId(), 4)).collect(toList());
         return Response.status(CREATED).entity(MarginCallResponse.of(marginCalls)).build();
     }

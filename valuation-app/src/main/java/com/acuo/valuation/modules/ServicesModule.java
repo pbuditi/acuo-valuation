@@ -3,9 +3,8 @@ package com.acuo.valuation.modules;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.protocol.results.PortfolioResults;
-import com.acuo.valuation.providers.acuo.ClarusValuationProcessor;
-import com.acuo.valuation.providers.acuo.MarkitValuationProcessor;
-import com.acuo.valuation.providers.acuo.PortfolioValuationProcessor;
+import com.acuo.valuation.providers.acuo.PortfolioProcessor;
+import com.acuo.valuation.providers.acuo.TradeProcessor;
 import com.acuo.valuation.providers.acuo.assets.AssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.assets.CashAssetPricingProcessor;
 import com.acuo.valuation.providers.acuo.assets.ReutersAssetPricingProcessor;
@@ -79,7 +78,6 @@ public class ServicesModule extends AbstractModule {
         bind(new TypeLiteral<ResultPersister<PortfolioResults>>(){}).to(PortfolioValuationPersister.class);
         bind(CallGenerator.class);
         bind(CallSimulator.class);
-        bind(MarkitValuationProcessor.class);
         bind(MarkitPricingProcessor.class);
 
         // clarus portfolio valuation and margin call generation
@@ -87,14 +85,14 @@ public class ServicesModule extends AbstractModule {
         bind(new TypeLiteral<ResultPersister<MarginResults>>(){}).to(MarginResultPersister.class);
         bind(MarginResultPersister.class);
         bind(CallSimulator.class);
-        bind(ClarusValuationProcessor.class);
+        bind(TradeProcessor.class);
         bind(ClarusVMProcessorImpl.class);
         bind(ClarusIMProcessorImpl.class);
         bind(PortfolioPriceProcessor.class);
 
         //portfolio generation
         bind(PortfolioManager.class).to(PortfolioManagerImpl.class);
-        bind(PortfolioValuationProcessor.class);
+        bind(PortfolioProcessor.class);
 
         // asset valuation
         bind(ReutersService.class).to(ReutersServiceImpl.class);

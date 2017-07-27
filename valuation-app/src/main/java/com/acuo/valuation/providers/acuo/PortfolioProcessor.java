@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Singleton
-public class PortfolioValuationProcessor {
+public class PortfolioProcessor {
 
     private final CallGeneratorProcessor callGeneratorProcessor;
     private final MarginCallService marginCallService;
@@ -31,14 +31,14 @@ public class PortfolioValuationProcessor {
     private final Set<Types.CallType> callTypes = ImmutableSet.of(Variation, Initial);
 
     @Inject
-    public PortfolioValuationProcessor(CallGeneratorProcessor callGeneratorProcessor, MarginCallService marginCallService) {
+    public PortfolioProcessor(CallGeneratorProcessor callGeneratorProcessor, MarginCallService marginCallService) {
         this.callGeneratorProcessor = callGeneratorProcessor;
         this.marginCallService = marginCallService;
     }
 
     public List<MarginCall> process(Set<PortfolioId> portfolioIds) {
         log.info("starting portfolio valuation processing");
-        LocalDate valuationDate = LocalDateUtils.minus(LocalDate.now(), 1);
+        LocalDate valuationDate = LocalDateUtils.valuationDate();
         List<MarginCall> result = callTypes.stream()
                 .map(callType -> {
                     CallProcessorItem item = new CallProcessorItem(valuationDate, callType, portfolioIds);

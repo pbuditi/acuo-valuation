@@ -39,7 +39,7 @@ public class CallGenerator extends AbstractCallGeneratorProcessor implements Cal
 
     private final ValuationService valuationService;
     private final MarginStatementService marginStatementService;
-    final MarginCallService marginCallService;
+    private final MarginCallService marginCallService;
     private final AgreementService agreementService;
     private final CurrencyService currencyService;
     private final PortfolioService portfolioService;
@@ -78,7 +78,7 @@ public class CallGenerator extends AbstractCallGeneratorProcessor implements Cal
     public List<String> createCalls(Set<PortfolioId> portfolioSet, LocalDate valuationDate, LocalDate callDate, Types.CallType callType) {
         log.info("generating margin calls: portfolios {}, valuation date [{}], call date [{}] and call type [{}]",
                 portfolioSet, valuationDate, callDate, callType);
-        List<String> marginCalls = portfolioSet.stream()
+        return portfolioSet.stream()
                 .map(id -> valuationService.getMarginValuationFor(id, callType))
                 .filter(Objects::nonNull)
                 .map(valuation -> createcalls(sideSupplier().get(), valuation, valuationDate, callDate, statementStatusSupplier().get()))
@@ -86,7 +86,6 @@ public class CallGenerator extends AbstractCallGeneratorProcessor implements Cal
                 .map(Optional::get)
                 .map(MarginCall::getItemId)
                 .collect(toList());
-        return marginCalls;
     }
 
     private Optional<MarginCall> createcalls(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus) {
@@ -108,8 +107,7 @@ public class CallGenerator extends AbstractCallGeneratorProcessor implements Cal
         Types.CallType callType = valuation.getCallType();
         Optional<Double> amount = currents.map(this::sum);
         Long tradeCount = portfolioService.tradeCount(valuation.getPortfolio().getPortfolioId());
-        return amount.map(aDouble -> process(callType, side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount))
-                .filter(Objects::nonNull);
+        return amount.map(aDouble -> process(callType, side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount));
     }
 
     private Optional<List<MarginValue>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {
