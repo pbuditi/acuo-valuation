@@ -4,8 +4,8 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Trade;
+import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
@@ -90,11 +90,11 @@ public class ClarusPricingProcessorTest {
         server.enqueue(new MockResponse().setBody(response.getContent()));
         server.enqueue(new MockResponse().setBody(response.getContent()));
 
-        Collection<MarginCall> margins = vmProcessor.process(swaps);
-        assertThat(margins).isNotNull().hasSize(1);
+        Collection<PortfolioId> ids = vmProcessor.process(swaps);
+        assertThat(ids).isNotNull().hasSize(1);
 
-        margins = imProcessor.process(swaps);
-        assertThat(margins).isNotNull().hasSize(1);
+        ids = imProcessor.process(swaps);
+        assertThat(ids).isNotNull().hasSize(1);
     }
 
     @After

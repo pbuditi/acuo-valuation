@@ -3,7 +3,6 @@ package com.acuo.valuation.web.resources;
 import com.acuo.common.model.margin.Types;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
-import com.acuo.common.util.InstanceTestClassListener;
 import com.acuo.common.util.LocalDateUtils;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
@@ -25,15 +24,14 @@ import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.services.TradeCacheService;
 import com.acuo.valuation.services.TradeUploadService;
-import com.acuo.valuation.util.MockServiceModule;
+import com.acuo.valuation.util.AbstractMockServerTest;
+import com.acuo.valuation.util.MockQueueServerModule;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
-import com.google.inject.Injector;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.collect.result.Result;
 import com.opengamma.strata.collect.result.ValueWithFailures;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
@@ -63,7 +61,7 @@ import static org.mockito.Mockito.when;
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({
         ConfigurationTestModule.class,
-        MockServiceModule.class,
+        MockQueueServerModule.class,
         EncryptionModule.class,
         Neo4jPersistModule.class,
         DataImporterModule.class,
@@ -75,7 +73,7 @@ import static org.mockito.Mockito.when;
         ServicesModule.class,
         ResourcesModule.class})
 @Slf4j
-public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTestClassListener{
+public class MarginCallResourceTest extends AbstractMockServerTest implements WithResteasyFixtures {
 
     private Dispatcher dispatcher;
 
@@ -107,9 +105,6 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
     public ResourceFile clarusResponse = new ResourceFile("/clarus/response/clarus-lch.json");
 
     @Inject
-    private Injector injector = null;
-
-    @Inject
     private ImportService importService = null;
 
     @Inject
@@ -135,8 +130,6 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
 
     @Mock
     private MarginResults imResults;
-
-    private static MockWebServer server;
 
     @Before
     public void setup() throws IOException {
@@ -218,20 +211,6 @@ public class MarginCallResourceTest implements WithResteasyFixtures, InstanceTes
         assertNotNull(json);
         Assert.assertThat(json, isJson());
         assertThatJson(json).isEqualTo(jsonSplitPortfolioResponse.getContent());
-    }
-
-    @Override
-    public void beforeClassSetup() {
-        server = injector.getInstance(MockWebServer.class);
-    }
-
-    @Override
-    public void afterClassSetup() {
-        try {
-            server.shutdown();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void mockConditions() {

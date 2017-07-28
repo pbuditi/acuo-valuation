@@ -4,8 +4,8 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Trade;
+import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
@@ -89,8 +89,8 @@ public class MarkitPricingProcessorTest {
     public void process() throws Exception {
         setMockMarkitResponse();
 
-        Collection<MarginCall> margins = pricingProcessor.process(swaps);
-        assertThat(margins).isNotNull().hasSize(1);
+        Collection<PortfolioId> ids = pricingProcessor.process(swaps);
+        assertThat(ids).isNotNull().hasSize(1);
     }
 
     @After

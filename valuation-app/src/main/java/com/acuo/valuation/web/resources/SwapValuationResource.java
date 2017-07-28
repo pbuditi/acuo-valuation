@@ -11,7 +11,7 @@ import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.jackson.MarginCallResponse;
 import com.acuo.valuation.jackson.PortfolioIds;
 import com.acuo.valuation.protocol.results.MarkitResults;
-import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
+import com.acuo.valuation.providers.acuo.TradeProcessor;
 import com.acuo.valuation.services.PricingService;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
@@ -43,18 +43,18 @@ public class SwapValuationResource {
 
     private final PricingService pricingService;
     private final TradeService<Trade> tradeService;
-    private final TradePricingProcessor tradePricingProcessor;
+    private final TradeProcessor tradeProcessor;
     private final VelocityEngine velocityEngine;
 
 
     @Inject
     public SwapValuationResource(PricingService pricingService,
                                  TradeService<Trade> tradeService,
-                                 TradePricingProcessor tradePricingProcessor,
+                                 TradeProcessor tradeProcessor,
                                  VelocityEngine velocityEngine) {
         this.pricingService = pricingService;
         this.tradeService = tradeService;
-        this.tradePricingProcessor = tradePricingProcessor;
+        this.tradeProcessor = tradeProcessor;
         this.velocityEngine = velocityEngine;
 
     }
@@ -87,7 +87,7 @@ public class SwapValuationResource {
         List<Trade> trades = ImmutableList.of(id).stream()
                 .map(tradeId -> tradeService.find(TradeId.fromString(tradeId)))
                 .collect(toList());
-        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
+        Collection<MarginCall> marginCalls = tradeProcessor.process(trades);
         return MarginCallResponse.of(marginCalls);
     }
 
@@ -99,7 +99,7 @@ public class SwapValuationResource {
         log.info("Pricing all trades under the portfolio {}", portfolioId);
         Iterable<Trade> iterable = tradeService.findByPortfolioId(portfolioId);
         List<Trade> trades = StreamSupport.stream(iterable.spliterator(), false).collect(toList());
-        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
+        Collection<MarginCall> marginCalls = tradeProcessor.process(trades);
         return MarginCallResponse.of(marginCalls);
     }
 
@@ -115,7 +115,7 @@ public class SwapValuationResource {
                 .collect(toList());
         Iterable<Trade> iterable = tradeService.findByPortfolioId(ids.toArray(new PortfolioId[ids.size()]));
         List<Trade> trades = StreamSupport.stream(iterable.spliterator(), false).collect(toList());
-        Collection<MarginCall> marginCalls = tradePricingProcessor.process(trades);
+        Collection<MarginCall> marginCalls = tradeProcessor.process(trades);
         return MarginCallResponse.of(marginCalls);
     }
 
@@ -135,7 +135,7 @@ public class SwapValuationResource {
     public MarginCallResponse priceAllBilateralIRS() throws Exception {
         log.info("Pricing all bilateral trades");
         Iterable<IRS> allIRS = tradeService.findAllIRS();
-        Collection<MarginCall> marginCalls = tradePricingProcessor.process(allIRS);
+        Collection<MarginCall> marginCalls = tradeProcessor.process(allIRS);
         return MarginCallResponse.of(marginCalls);
     }
 }

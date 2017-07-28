@@ -19,7 +19,7 @@ public class MockServer implements Runnable {
     private final MockWebServer mockWebServer;
     private final CountDownLatch latch;
 
-    private final Dispatcher dispatcher = new Dispatcher() {
+    static final Dispatcher dispatcher = new Dispatcher() {
 
         @Override
         public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
@@ -63,7 +63,7 @@ public class MockServer implements Runnable {
         }
     }
 
-    public void stop() {
+    void stop() {
         try {
             mockWebServer.shutdown();
         } catch (IOException e) {
@@ -73,20 +73,20 @@ public class MockServer implements Runnable {
         }
     }
 
-    public HttpUrl getHttpUrl() {
+    HttpUrl getHttpUrl() {
         return mockWebServer.url("/");
     }
 
-    private String file(String resourceName) {
+    private static String file(String resourceName) {
         try {
-            Path path = Paths.get(getClass().getResource(resourceName).toURI());
+            Path path = Paths.get(MockServer.class.getResource(resourceName).toURI());
             return new String(Files.readAllBytes(path));
         } catch (URISyntaxException | IOException e) {
             return "";
         }
     }
 
-    private String removeLineBreaks(String file) {
+    private static String removeLineBreaks(String file) {
         return file.replace("\n", "").replace("\r", "");
     }
 

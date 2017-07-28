@@ -2,7 +2,7 @@ package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.common.model.trade.Trade;
 import com.acuo.valuation.protocol.results.MarginResults;
-import com.acuo.valuation.providers.acuo.ClarusValuationProcessor;
+import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.providers.clarus.services.ClarusMarginService;
 
 import javax.inject.Inject;
@@ -16,7 +16,7 @@ public class ClarusVMProcessorImpl extends ClarusPricingProcessor {
     private final ClarusMarginService clarusMarginService;
 
     @Inject
-    public ClarusVMProcessorImpl(ClarusValuationProcessor resultProcessor,
+    public ClarusVMProcessorImpl(ResultPersister<MarginResults> resultProcessor,
                                  ClarusMarginService clarusMarginService) {
         super(resultProcessor);
         this.clarusMarginService = clarusMarginService;
