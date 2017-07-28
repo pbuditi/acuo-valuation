@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.datascope.service;
 
 import com.acuo.common.http.client.EndPointConfig;
 import lombok.Data;
+import lombok.ToString;
 import okhttp3.HttpUrl;
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import static com.acuo.valuation.utils.PropertiesHelper.*;
 
 @Data
+@ToString(exclude = "password")
 @Singleton
 public class DataScopeEndPointConfig implements EndPointConfig {
 
