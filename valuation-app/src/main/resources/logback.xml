@@ -2,23 +2,23 @@
 <configuration>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<layout class="ch.qos.logback.classic.PatternLayout">
+		<encoder>
 			<Pattern>%d %5p %40.40c:%4L - %m%n</Pattern>
-		</layout>
+		</encoder>
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
 		<file>valuation-app.log</file>
-		<layout class="ch.qos.logback.classic.PatternLayout">
+		<encoder>
 			<Pattern>%d %5p %40.40c:%4L - %m%n</Pattern>
-		</layout>
+		</encoder>
 	</appender>
 
 	<appender name="METRICS" class="ch.qos.logback.core.FileAppender">
 		<file>metrics.log</file>
-		<layout class="ch.qos.logback.classic.PatternLayout">
+		<encoder>
 			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
-		</layout>
+		</encoder>
 	</appender>
 	
 	<logger name="com.acuo" level="info"/>
