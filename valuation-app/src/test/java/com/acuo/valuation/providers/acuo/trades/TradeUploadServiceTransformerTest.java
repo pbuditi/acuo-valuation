@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.acuo;
+package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
@@ -10,14 +10,11 @@ import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
-import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
-import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
-import com.acuo.valuation.providers.acuo.trades.TradeUploadServicePoi;
 import com.acuo.valuation.services.TradeUploadService;
 import com.googlecode.junittoolbox.MultithreadingTester;
 import lombok.extern.slf4j.Slf4j;
@@ -45,15 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
         EndPointModule.class,
         ServicesModule.class})
 @Slf4j
-public class TradeUploadServicePoiTest {
-
-    private TradeUploadService service;
+public class TradeUploadServiceTransformerTest {
 
     @Inject
-    private TradingAccountService accountService = null;
-
-    @Inject
-    private PortfolioService portfolioService = null;
+    private TradeUploadService service = null;
 
     @Inject
     private ImportService importService = null;
@@ -62,15 +54,17 @@ public class TradeUploadServicePoiTest {
     private TradeService<Trade> tradeService = null;
 
     @Rule
-    public ResourceFile oneIRS = new ResourceFile("/excel/legacy/OneIRS.xlsx");
+    public ResourceFile oneIRS = new ResourceFile("/excel/OneIRS.xlsx");
 
     @Rule
-    public ResourceFile all = new ResourceFile("/excel/legacy/TradePortfolio.xlsx");
+    public ResourceFile all = new ResourceFile("/excel/TradePortfolio.xlsx");
+
+    @Rule
+    public ResourceFile legacy = new ResourceFile("/excel/legacy/TradePortfolio.xlsx");
 
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        service = new TradeUploadServicePoi(accountService, portfolioService, tradeService);
         importService.reload();
     }
 

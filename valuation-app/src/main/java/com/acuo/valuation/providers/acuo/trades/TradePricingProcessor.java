@@ -1,13 +1,13 @@
 package com.acuo.valuation.providers.acuo.trades;
 
-import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Trade;
+import com.acuo.persist.ids.PortfolioId;
 
-import java.util.Collection;
+import java.util.Set;
 
 public interface TradePricingProcessor {
 
-    <T extends Trade> Collection<MarginCall> process(Iterable<T> trades);
+    <T extends Trade> Set<PortfolioId> process(Iterable<T> trades);
 
     void setNext(TradePricingProcessor next);
 }

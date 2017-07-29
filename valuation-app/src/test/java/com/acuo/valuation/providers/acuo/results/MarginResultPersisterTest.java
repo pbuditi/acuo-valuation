@@ -1,4 +1,4 @@
-package com.acuo.valuation.providers.acuo;
+package com.acuo.valuation.providers.acuo.results;
 
 import com.acuo.common.model.margin.Types;
 import com.acuo.common.security.EncryptionModule;

@@ -21,7 +21,7 @@ abstract class TradeUploadServiceAbstract implements TradeUploadService {
     static final ReentrantLock lock = new ReentrantLock();
 
     private final TradingAccountService accountService;
-    private final PortfolioService portfolioService;
+    protected final PortfolioService portfolioService;
     private final CacheManager cacheManager;
     private final int expireTime = 1;
     private final TimeUnit expireUnit = TimeUnit.MINUTES;

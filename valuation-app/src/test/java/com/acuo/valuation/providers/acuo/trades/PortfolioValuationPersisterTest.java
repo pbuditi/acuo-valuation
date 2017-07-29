@@ -1,8 +1,9 @@
-package com.acuo.valuation.providers.acuo;
+package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.common.model.results.TradeValuation;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.TradeValue;
@@ -103,7 +104,7 @@ public class PortfolioValuationPersisterTest {
         com.acuo.common.model.results.TradeValuation markitValue = new com.acuo.common.model.results.TradeValuation();
         markitValue.setTradeId(tradeId);
         markitValue.setMarketValue(-30017690.0d);
-        markitValue.setValuationDate(LocalDate.now());
+        markitValue.setValuationDate(LocalDateUtils.minus(LocalDate.now(), 1));
         Result<TradeValuation> result = Result.success(markitValue);
         results.add(result);
         PortfolioResults markitResults = new PortfolioResults();

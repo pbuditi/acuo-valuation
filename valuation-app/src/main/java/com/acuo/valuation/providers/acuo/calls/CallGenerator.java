@@ -1,6 +1,7 @@
 package com.acuo.valuation.providers.acuo.calls;
 
 import com.acuo.common.model.margin.Types;
+import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.InitialMargin;
 import com.acuo.persist.entity.MarginCall;
@@ -18,32 +19,32 @@ import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.providers.acuo.results.AbstractResultProcessor;
 import com.acuo.valuation.services.CallService;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implements CallService {
+public class CallGenerator extends AbstractCallGeneratorProcessor implements CallService {
 
     private final ValuationService valuationService;
     private final MarginStatementService marginStatementService;
-    protected final MarginCallService marginCallService;
+    private final MarginCallService marginCallService;
     private final AgreementService agreementService;
     private final CurrencyService currencyService;
     private final PortfolioService portfolioService;
 
+    @Inject
     CallGenerator(ValuationService valuationService,
                   MarginStatementService marginStatementService,
                   MarginCallService marginCallService,
@@ -58,17 +59,33 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
         this.portfolioService = portfolioService;
     }
 
+    @Override
+    public CallProcessorItem process(CallProcessorItem item) {
+        log.info("processing {}", item);
+        LocalDate valuationDate = item.getValuationDate();
+        LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
+        Types.CallType callType = item.getCallType();
+        Set<PortfolioId> portfolioIds = item.getPortfolioIds();
+        List<String> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
+        log.info("generated {} expected calls", marginCalls.size());
+        item.setExpected(marginCalls);
+        if (next != null)
+            return next.process(item);
+        else
+            return item;
+    }
+
     public List<String> createCalls(Set<PortfolioId> portfolioSet, LocalDate valuationDate, LocalDate callDate, Types.CallType callType) {
-        log.info("generating margin calls for {}", portfolioSet);
-        List<String> marginCalls = portfolioSet.stream()
+        log.info("generating margin calls: portfolios {}, valuation date [{}], call date [{}] and call type [{}]",
+                portfolioSet, valuationDate, callDate, callType);
+        return portfolioSet.stream()
                 .map(id -> valuationService.getMarginValuationFor(id, callType))
+                .filter(Objects::nonNull)
                 .map(valuation -> createcalls(sideSupplier().get(), valuation, valuationDate, callDate, statementStatusSupplier().get()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(MarginCall::getItemId)
                 .collect(toList());
-        log.info("{} margin calls generated", marginCalls.size());
-        return marginCalls;
     }
 
     private Optional<MarginCall> createcalls(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus) {
@@ -85,15 +102,12 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
         return () -> Side.Client;
     }
 
-    protected abstract Predicate<MarginValue> pricingSourcePredicate();
-
     private Optional<MarginCall> convert(Side side, MarginValuation valuation, LocalDate valuationDate, LocalDate callDate, StatementStatus statementStatus, Agreement agreement, Map<Currency, Double> rates) {
         Optional<List<MarginValue>> currents = marginValueRelation(valuation, valuationDate);
         Types.CallType callType = valuation.getCallType();
         Optional<Double> amount = currents.map(this::sum);
         Long tradeCount = portfolioService.tradeCount(valuation.getPortfolio().getPortfolioId());
-        return amount.map(aDouble -> process(callType, side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount))
-                .filter(Objects::nonNull);
+        return amount.map(aDouble -> process(callType, side, aDouble, Currency.USD, statementStatus, agreement, valuationDate, callDate, rates, tradeCount));
     }
 
     private Optional<List<MarginValue>> marginValueRelation(MarginValuation valuation, LocalDate valuationDate) {
@@ -111,7 +125,6 @@ public abstract class CallGenerator<R> extends AbstractResultProcessor<R> implem
 
     private Double sum(List<MarginValue> values) {
         return values.stream()
-                .filter(pricingSourcePredicate())
                 .mapToDouble(MarginValue::getAmount)
                 .sum();
     }

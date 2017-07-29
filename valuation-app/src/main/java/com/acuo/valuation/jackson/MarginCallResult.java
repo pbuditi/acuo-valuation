@@ -1,191 +1,202 @@
 package com.acuo.valuation.jackson;
 
 import com.acuo.common.json.DoubleSerializer;
-import com.acuo.persist.entity.*;
-import com.acuo.persist.services.TradeService;
-import com.acuo.persist.services.ValuationService;
+import com.acuo.persist.entity.Agreement;
+import com.acuo.persist.entity.ClientSignsRelation;
+import com.acuo.persist.entity.CounterpartSignsRelation;
+import com.acuo.persist.entity.LegalEntity;
+import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.entity.Portfolio;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
-import java.util.Iterator;
 
 import static com.acuo.common.model.margin.Types.MarginType.Initial;
 import static com.acuo.common.model.margin.Types.MarginType.Variation;
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
-@lombok.Data
+@Data
 @Slf4j
 public class MarginCallResult {
 
-    @JsonProperty("legalEntity")
-    private String legalentity;
-    @JsonProperty("cptyOrg")
-    private String cptyorg;
-    @JsonProperty("cptyEntity")
-    private String cptyentity;
-    @JsonProperty("marginAgreement")
-    private String marginagreement;
-    @JsonProperty("valuationDate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
-    private LocalDate valuationdate;
-    @JsonProperty("callDate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
-    private LocalDate calldate;
-    @JsonProperty("callType")
-    private String calltype;
-    private String currency;
-    @JsonProperty("totalCallAmount")
+    public String legalEntity;
+    public String cptyOrg;
+    public String cptyEntity;
+    public String marginAgreement;
+    public String callType;
+    public String currency;
+    public String referenceIdentifier;
+    public String portfolioId;
+    public String mgnCallUploadId;
+
+    @JsonFormat(shape = STRING, pattern = "yyyy/MM/dd")
+    public LocalDate valuationDate;
+
+    @JsonFormat(shape = STRING, pattern = "yyyy/MM/dd")
+    public LocalDate callDate;
+
     @JsonSerialize(using = DoubleSerializer.class)
-    private Double totalcallamount;
-    @JsonProperty("referenceIdentifier")
-    private String referenceidentifier;
+    public Double totalCallAmount;
+
     @JsonSerialize(using = DoubleSerializer.class)
-    private Double exposure;
-    @JsonProperty("collateralValue")
+    public Double exposure;
+
     @JsonSerialize(using = DoubleSerializer.class)
-    private Double collateralvalue;
-    @JsonProperty("pendingCollateral")
+    public Double collateralValue;
+
     @JsonSerialize(using = DoubleSerializer.class)
-    private Double pendingcollateral;
-    @JsonProperty("mgnCallUploadId")
-    private String mgncalluploadid;
-    @JsonProperty("agreementDetails")
-    private Agreementdetails agreementdetails;
+    public Double pendingCollateral;
 
-    public static MarginCallResult of(Portfolio portfolio, TradeService tradeService, ValuationService valuationService)
-    {
-        MarginCallResult marginCallResult = new MarginCallResult();
-        Agreement agreement = portfolio.getAgreement();
-        marginCallResult.marginagreement = agreement.getAgreementId();
-        marginCallResult.currency = portfolio.getCurrency();
-        marginCallResult.referenceidentifier = portfolio.getPortfolioId().toString();
-
-        ClientSignsRelation r = agreement.getClientSignsRelation();
-        CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
-        if (counterpartSignsRelation != null) {
-            LegalEntity legalEntity = counterpartSignsRelation.getLegalEntity();
-            marginCallResult.cptyentity = legalEntity.getName();
-            if (legalEntity.getFirm() != null) {
-                marginCallResult.cptyorg = legalEntity.getFirm().getName();
-            } else {
-                log.debug("agreement[{}] le[{}] has firm set to null", agreement.getAgreementId(), legalEntity);
-            }
-        }
-        if (r != null) {
-            marginCallResult.legalentity = r.getLegalEntity().getName();
-        }
-
-        marginCallResult.agreementdetails = new Agreementdetails();
-        marginCallResult.agreementdetails.setThreshold(agreement.getThreshold());
-        if (r != null) {
-            marginCallResult.agreementdetails.setMintransfer(r.getMTA());
-            marginCallResult.agreementdetails.setRounding(r.getRounding());
-            marginCallResult.agreementdetails.setThreshold(r.getThreshold());
-
-        }
-
-        double totalPV = 0;
-        int totalCount = 0;
-        int valudatedCount = 0;
-
-        Iterable<Trade> iterable = tradeService.findByPortfolioId(portfolio.getPortfolioId());
-        if(iterable !=  null)
-        {
-            Iterator<Trade> trades = iterable.iterator();
-            while(trades.hasNext())
-            {
-                Trade trade = trades.next();
-                totalCount++;
-                TradeValuation tradeValuation = valuationService.getTradeValuationFor(trade.getTradeId());
-                if(tradeValuation != null)
-                {
-
-                    for(TradeValue value : tradeValuation.getValues())
-                    {
-                        if(LocalDate.now().minusDays(2).isBefore(value.getValuationDate()))
-                        {
-                            valudatedCount++;
-                            totalPV += value.getPv();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        marginCallResult.agreementdetails.setTradeCount(Long.valueOf(totalCount));
-        marginCallResult.agreementdetails.setTradeValue(Long.valueOf(valudatedCount));
-        marginCallResult.setExposure(totalPV);
-
-
-
-        String type = agreement.getType();
-        if ("bilateral".equals(type) || "legacy".equals(type)) {
-            marginCallResult.agreementdetails.setPricingSource("Markit");
-        } else {
-            marginCallResult.agreementdetails.setPricingSource("Clarus");
-        }
-
-        return marginCallResult;
-    }
+    public AgreementDetails agreementDetails;
 
     public static MarginCallResult of(MarginCall marginCall) {
-        MarginCallResult marginCallResult = new MarginCallResult();
-        Agreement agreement = marginCall.getMarginStatement().getAgreement();
-        marginCallResult.marginagreement = agreement.getAgreementId();
-        marginCallResult.valuationdate = marginCall.getValuationDate();
-        marginCallResult.calldate = marginCall.getCallDate();
-        marginCallResult.calltype = marginCall.getMarginType().name();
-        marginCallResult.currency = marginCall.getCurrency().getCode();
-        marginCallResult.totalcallamount = marginCall.getExcessAmount();
-        marginCallResult.referenceidentifier = marginCall.getItemId();
-        marginCallResult.exposure = marginCall.getExposure();
-        marginCallResult.pendingcollateral = marginCall.getPendingCollateral();
-        marginCallResult.totalcallamount = marginCall.getMarginAmount();
-        ClientSignsRelation r = agreement.getClientSignsRelation();
-        if (Variation.equals(marginCall.getMarginType()) && r != null)
-            marginCallResult.collateralvalue = r.getVariationBalance();
-        else if (Initial.equals(marginCall.getMarginType()) && r != null)
-            marginCallResult.collateralvalue = r.getInitialBalance();
+        return new Builder(marginCall).build();
+    }
 
-        CounterpartSignsRelation counterpartSignsRelation = agreement.getCounterpartSignsRelation();
-        if (counterpartSignsRelation != null) {
-            LegalEntity legalEntity = counterpartSignsRelation.getLegalEntity();
-            marginCallResult.cptyentity = legalEntity.getName();
-            if (legalEntity.getFirm() != null) {
-                marginCallResult.cptyorg = legalEntity.getFirm().getName();
+    public static MarginCallResult of(Portfolio portfolio,
+                                      LocalDate valuationDate,
+                                      String callType,
+                                      String pricingSource,
+                                      Long totalTradeCount,
+                                      Long valuatedTradeCount,
+                                      double totalPV) {
+        return new Builder(portfolio, valuationDate, callType, pricingSource, totalTradeCount, valuatedTradeCount, totalPV).build();
+    }
+
+    @Slf4j
+    private static class Builder {
+
+        private final Agreement agreement;
+        private final LocalDate valuationDate;
+        private final String currency;
+        private final Double totalPV;
+        private final String referenceIdentifier;
+        private final String portfolioId;
+        private final String callType;
+
+        private final Long totalTradeCount;
+        private final Long valuatedTradeCount;
+        private final String pricingSource;
+
+        private final LocalDate callDate;
+        private final Double totalCallAmount;
+        private final Double pendingCollateral;
+        private final Double collateralValue;
+        private final Double rate;
+        private final Double netRequired;
+
+        public Builder(MarginCall marginCall) {
+            this.agreement = marginCall.getMarginStatement().getAgreement();
+            this.valuationDate = marginCall.getValuationDate();
+            this.currency = marginCall.getCurrency().getCode();
+            this.totalPV = marginCall.getExposure();
+            this.referenceIdentifier = marginCall.getItemId();
+            this.portfolioId = null;
+            this.callType = marginCall.getMarginType().name();
+
+            this.totalTradeCount = marginCall.getTradeCount();
+            this.valuatedTradeCount = marginCall.getTradeCount();
+            String type = this.agreement.getType();
+            if ("bilateral".equals(type) || "legacy".equals(type)) {
+                this.pricingSource = "Markit";
             } else {
-                log.debug("agreement[{}] le[{}] has firm set to null", agreement.getAgreementId(), legalEntity);
+                this.pricingSource = "Clarus";
             }
-        }
-        if (r != null) {
-            marginCallResult.legalentity = r.getLegalEntity().getName();
-        }
 
-        marginCallResult.agreementdetails = new Agreementdetails();
-        marginCallResult.agreementdetails.setNetrequired(marginCall.getMarginAmount());
-        marginCallResult.agreementdetails.setThreshold(agreement.getThreshold());
-        if (r != null) {
-            marginCallResult.agreementdetails.setMintransfer(r.getMTA());
-            marginCallResult.agreementdetails.setRounding(r.getRounding());
-            marginCallResult.agreementdetails.setThreshold(r.getThreshold());
+            this.callDate = marginCall.getCallDate();
+            this.totalCallAmount = marginCall.getMarginAmount();
+            this.pendingCollateral = marginCall.getPendingCollateral();
 
-        }
+            ClientSignsRelation clientSignsRelation = this.agreement.getClientSignsRelation();
+            if (Variation.equals(marginCall.getMarginType()) && clientSignsRelation != null)
+                this.collateralValue = clientSignsRelation.getVariationBalance();
+            else if (Initial.equals(marginCall.getMarginType()) && clientSignsRelation != null)
+                this.collateralValue = clientSignsRelation.getInitialBalance();
+            else
+                this.collateralValue = null;
 
-        marginCallResult.agreementdetails.setFxRate(marginCall.getFxRate());
-        marginCallResult.agreementdetails.setTradeCount(marginCall.getTradeCount());
-        marginCallResult.agreementdetails.setTradeValue(marginCall.getTradeCount());
-
-        String type = agreement.getType();
-        if ("bilateral".equals(type) || "legacy".equals(type)) {
-            marginCallResult.agreementdetails.setPricingSource("Markit");
-        } else {
-            marginCallResult.agreementdetails.setPricingSource("Clarus");
+            this.rate = marginCall.getFxRate();
+            this.netRequired = totalCallAmount;
         }
 
-        return marginCallResult;
+        public Builder(Portfolio portfolio,
+                LocalDate valuationDate,
+                String callType,
+                String pricingSource,
+                Long totalTradeCount,
+                Long valuatedTradeCount,
+                double totalPV) {
+            this.agreement = portfolio.getAgreement();
+            this.valuationDate = valuationDate;
+            this.currency = portfolio.getCurrency();
+            this.totalPV = totalPV;
+            this.referenceIdentifier = null;
+            this.portfolioId = portfolio.getPortfolioId().toString();
+            this.callType = callType;
+
+            this.totalTradeCount = totalTradeCount;
+            this.valuatedTradeCount = valuatedTradeCount;
+            this.pricingSource = pricingSource;
+
+            this.callDate = null;
+            this.totalCallAmount = null;
+            this.pendingCollateral = null;
+            this.collateralValue = null;
+
+            this.rate = null;
+            this.netRequired = null;
+        }
+
+        public MarginCallResult build() {
+            MarginCallResult marginCallResult = new MarginCallResult();
+            marginCallResult.marginAgreement = this.agreement.getAgreementId();
+            marginCallResult.valuationDate = this.valuationDate;
+            marginCallResult.currency = this.currency;
+            marginCallResult.exposure = this.totalPV;
+            marginCallResult.referenceIdentifier = this.referenceIdentifier;
+            marginCallResult.portfolioId = this.portfolioId;
+            marginCallResult.callType = this.callType;
+
+            marginCallResult.callDate = this.callDate;
+            marginCallResult.totalCallAmount = this.totalCallAmount;
+            marginCallResult.pendingCollateral = this.pendingCollateral;
+            marginCallResult.collateralValue = this.collateralValue;
+
+            ClientSignsRelation clientSignsRelation = this.agreement.getClientSignsRelation();
+            if (clientSignsRelation != null) {
+                marginCallResult.legalEntity = clientSignsRelation.getLegalEntity().getName();
+            }
+
+            CounterpartSignsRelation counterpartSignsRelation = this.agreement.getCounterpartSignsRelation();
+            if (counterpartSignsRelation != null) {
+                LegalEntity legalEntity = counterpartSignsRelation.getLegalEntity();
+                marginCallResult.cptyEntity = legalEntity.getName();
+                if (legalEntity.getFirm() != null) {
+                    marginCallResult.cptyOrg = legalEntity.getFirm().getName();
+                } else {
+                    log.debug("agreement[{}] le[{}] has firm set to null", agreement.getAgreementId(), legalEntity);
+                }
+            }
+
+            marginCallResult.agreementDetails = new AgreementDetails();
+            marginCallResult.agreementDetails.setTradeCount(this.totalTradeCount);
+            marginCallResult.agreementDetails.setTradeValue(this.valuatedTradeCount);
+            marginCallResult.agreementDetails.setPricingSource(this.pricingSource);
+
+            marginCallResult.agreementDetails.setRate(this.rate);
+            marginCallResult.agreementDetails.setNetRequired(this.netRequired);
+
+            marginCallResult.agreementDetails.setThreshold(this.agreement.getThreshold());
+            if (clientSignsRelation != null) {
+                marginCallResult.agreementDetails.setMinTransfer(clientSignsRelation.getMTA());
+                marginCallResult.agreementDetails.setRounding(clientSignsRelation.getRounding());
+                marginCallResult.agreementDetails.setThreshold(clientSignsRelation.getThreshold());
+            }
+
+            return marginCallResult;
+        }
     }
 }

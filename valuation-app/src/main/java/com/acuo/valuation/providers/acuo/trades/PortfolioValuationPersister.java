@@ -51,7 +51,7 @@ public class PortfolioValuationPersister implements ResultPersister<PortfolioRes
         List<Result<TradeValuation>> result = results.getResults();
         List<TradeValue> values = result.stream()
                 .flatMap(Result::stream)
-                .filter(tradeValuation -> tradeValuation.getValuationDate().isAfter(dayRange))
+                //.filter(tradeValuation -> tradeValuation.getValuationDate().isAfter(dayRange))
                 .map(value -> convert(currency, value))
                 .collect(toList());
         valueService.save(values, 1);

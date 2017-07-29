@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
-public class MarginResultPersister  extends AbstractResultProcessor<MarginResults> implements ResultPersister<MarginResults> {
+public class MarginResultPersister implements ResultPersister<MarginResults> {
 
     private final ValuationService valuationService;
     private final ValueService valueService;
@@ -31,18 +31,6 @@ public class MarginResultPersister  extends AbstractResultProcessor<MarginResult
     public MarginResultPersister(ValuationService valuationService, ValueService valueService) {
         this.valuationService = valuationService;
         this.valueService = valueService;
-    }
-
-    @Override
-    public ProcessorItem process(ProcessorItem<MarginResults> processorItem) {
-        log.info("processing markit valuation items");
-        MarginResults results = processorItem.getResults();
-        Set<PortfolioId> portfolioIds = persist(results);
-        processorItem.setPortfolioIds(portfolioIds);
-        if (next != null)
-            return next.process(processorItem);
-        else
-            return processorItem;
     }
 
     @Override

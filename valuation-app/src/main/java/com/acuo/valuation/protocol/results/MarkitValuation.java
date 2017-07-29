@@ -17,7 +17,12 @@ import static java.util.stream.Collectors.toSet;
 public class MarkitValuation {
 
     private final ValueWithFailures<Double> value;
-    private final String tradeId;
+    private final String tradeId ;
+
+    public MarkitValuation(String tradeId, ValueWithFailures<Double> value) {
+        this.tradeId = tradeId;
+        this.value = value;
+    }
 
     public MarkitValuation(List<Value> values) {
         this.tradeId = checkUniqueTradeId(values);

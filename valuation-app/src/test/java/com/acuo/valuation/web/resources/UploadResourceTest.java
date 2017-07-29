@@ -48,7 +48,7 @@ import static org.junit.Assert.assertEquals;
 @Slf4j
 public class UploadResourceTest implements WithResteasyFixtures {
 
-    Dispatcher dispatcher;
+    private Dispatcher dispatcher;
 
     @Rule
     public ResourceFile excel = new ResourceFile("/excel/TradePortfolio.xlsx");
@@ -61,13 +61,13 @@ public class UploadResourceTest implements WithResteasyFixtures {
     public ResourceFile generatedllMC = new ResourceFile("/acuo/margincalls/upload-all-mc.json");
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    UploadResource uploadResource;
+    private UploadResource uploadResource = null;
 
     @Inject
-    SwapValuationResource swapValuationResource;
+    private SwapValuationResource swapValuationResource = null;
 
     @Before
     public void setup() throws IOException {
@@ -88,6 +88,11 @@ public class UploadResourceTest implements WithResteasyFixtures {
     }
 
     @Test
+    public void testUploadSmallFileNew() throws URISyntaxException, IOException {
+        testFileUploadNew(one);
+    }
+
+    @Test
     public void testUploadSmallFileMultipleTimes() throws URISyntaxException, IOException {
         testFileUpload(one);
         testFileUpload(one);
@@ -95,7 +100,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
 
     private void testFileUploadNew(ResourceFile resourceFile) throws IOException, URISyntaxException {
 
-        Map parts = new HashMap();
+        Map<String, Object> parts = new HashMap<>();
         String charSet = "ISO-8859-1";
         parts.put("file", resourceFile.getContent(charSet));
         MockHttpRequest request = multipartRequest("/upload/v1", parts, charSet);
@@ -112,7 +117,7 @@ public class UploadResourceTest implements WithResteasyFixtures {
 
     private void testFileUpload(ResourceFile resourceFile) throws IOException, URISyntaxException {
 
-        Map parts = new HashMap();
+        Map<String, Object> parts = new HashMap<>();
         String charSet = "ISO-8859-1";
         parts.put("file", resourceFile.getContent(charSet));
         MockHttpRequest request = multipartRequest("/upload", parts, charSet);
@@ -132,9 +137,9 @@ public class UploadResourceTest implements WithResteasyFixtures {
      * Return a multipart/form-data MockHttpRequest
      *
      * @param parts Key is the name of the part, value is either a String or a File.
-     * @return
+     * @return request
      */
-    private MockHttpRequest multipartRequest(String uri, Map parts, String charSet) throws URISyntaxException, IOException {
+    private MockHttpRequest multipartRequest(String uri, Map<String, Object> parts, String charSet) throws URISyntaxException, IOException {
         MockHttpRequest req = MockHttpRequest.post(uri);
         String boundary = UUID.randomUUID().toString();
         req.contentType("multipart/form-data; boundary=" + boundary);
@@ -142,11 +147,11 @@ public class UploadResourceTest implements WithResteasyFixtures {
         StringWriter writer = new StringWriter();
         writer.append("--").append(boundary);
 
-        Set<Map.Entry> set = parts.entrySet();
+        Set<Map.Entry<String, Object>> set = parts.entrySet();
         for (Map.Entry entry : set) {
             if (entry.getValue() instanceof String) {
                 writer.append("\n");
-                writer.append("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"").append("\n\n");
+                writer.append("Content-Disposition: form-data; name=\"").append(entry.getKey().toString()).append("\"\n\n");
                 writer.append(entry.getValue().toString()).append("\n");
                 writer.append("--").append(boundary);
             } else if (entry.getValue() instanceof InputStream) {

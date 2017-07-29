@@ -30,7 +30,7 @@ import java.util.Set;
 import static java.util.stream.Collectors.*;
 
 @Slf4j
-public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults> implements ResultPersister<MarkitResults> {
+public class MarkitResultPersister implements ResultPersister<MarkitResults> {
 
     private final ValuationService valuationService;
     private final ValueService valueService;
@@ -39,18 +39,6 @@ public class MarkitResultPersister extends AbstractResultProcessor<MarkitResults
     public MarkitResultPersister(ValuationService valuationService, ValueService valueService) {
         this.valuationService = valuationService;
         this.valueService = valueService;
-    }
-
-    @Override
-    public ProcessorItem process(ProcessorItem<MarkitResults> processorItem) {
-        log.info("processing markit valuation items");
-        MarkitResults results = processorItem.getResults();
-        Set<PortfolioId> portfolioIds = persist(results);
-        processorItem.setPortfolioIds(portfolioIds);
-        if (next != null)
-            return next.process(processorItem);
-        else
-            return processorItem;
     }
 
     public Set<PortfolioId> persist(MarkitResults markitResults) {

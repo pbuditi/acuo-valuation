@@ -2,7 +2,6 @@ package com.acuo.valuation.web.resources;
 
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
-import com.acuo.common.util.InstanceTestClassListener;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.common.util.WithResteasyFixtures;
 import com.acuo.persist.core.ImportService;
@@ -17,11 +16,11 @@ import com.acuo.valuation.modules.MappingModule;
 import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.providers.acuo.trades.TradeUploadServiceTransformer;
 import com.acuo.valuation.services.TradeUploadService;
-import com.acuo.valuation.util.MockServiceModule;
+import com.acuo.valuation.util.AbstractMockServerTest;
+import com.acuo.valuation.util.MockQueueServerModule;
 import com.acuo.valuation.web.JacksonObjectMapperProvider;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
@@ -41,11 +40,12 @@ import java.util.stream.IntStream;
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceJUnitRunner.GuiceModules({
         ConfigurationTestModule.class,
-        MockServiceModule.class,
+        MockQueueServerModule.class,
         MappingModule.class,
         EncryptionModule.class,
         Neo4jPersistModule.class,
@@ -56,7 +56,7 @@ import static org.junit.Assert.assertEquals;
         EndPointModule.class,
         ServicesModule.class})
 @Slf4j
-public class SwapValuationResourceTest implements WithResteasyFixtures, InstanceTestClassListener {
+public class SwapValuationResourceTest extends AbstractMockServerTest implements WithResteasyFixtures {
 
     @Rule
     public ResourceFile one = new ResourceFile("/excel/OneIRS.xlsx");
@@ -96,9 +96,6 @@ public class SwapValuationResourceTest implements WithResteasyFixtures, Instance
 
     @Inject
     private TradeUploadServiceTransformer tradeUploadServiceTransformer = null;
-
-    @Inject
-    private MockWebServer server = null;
 
     private Dispatcher dispatcher;
 
@@ -157,7 +154,7 @@ public class SwapValuationResourceTest implements WithResteasyFixtures, Instance
         server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
         server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
 
-        MockHttpRequest request = MockHttpRequest.get("/swaps/priceSwapTrades/allBilateralIRS");
+        MockHttpRequest request = MockHttpRequest.get("/swaps/price/allBilateralIRS");
         MockHttpResponse response = new MockHttpResponse();
 
         dispatcher.invoke(request, response);
@@ -169,23 +166,23 @@ public class SwapValuationResourceTest implements WithResteasyFixtures, Instance
     }
 
     @Test
-    public void tesPricePortfolios() throws URISyntaxException, IOException {
+    public void testPricePortfolios() throws URISyntaxException, IOException {
         tradeUploadServiceTransformer.fromExcel(all.createInputStream());
 
         server.enqueue(new MockResponse().setBody("key"));
         server.enqueue(new MockResponse().setBody(largeReport.getContent()));
         server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
 
-        MockHttpRequest request = MockHttpRequest.post("/swaps/priceSwapTrades/portfolio");
+        MockHttpRequest request = MockHttpRequest.post("/swaps/price/portfolios");
         MockHttpResponse response = new MockHttpResponse();
 
         request.contentType(MediaType.APPLICATION_JSON);
-        log.info(jsonPortfolioRequest.getContent());
         request.content(jsonPortfolioRequest.getInputStream());
 
         dispatcher.invoke(request, response);
 
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        String res = response.getContentAsString();
+        assertNotNull(res);
     }
 
     @Test
@@ -197,19 +194,5 @@ public class SwapValuationResourceTest implements WithResteasyFixtures, Instance
                 e.printStackTrace();
             }
         });
-    }
-
-    @Override
-    public void beforeClassSetup() {
-
-    }
-
-    @Override
-    public void afterClassSetup() {
-        try {
-            server.shutdown();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

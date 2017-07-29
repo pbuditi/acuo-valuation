@@ -1,21 +1,20 @@
 package com.acuo.valuation.providers.acuo.trades;
 
 
-import com.acuo.persist.entity.IRS;
-import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.entity.Trade;
-import com.acuo.valuation.protocol.results.MarkitResults;
-import com.acuo.valuation.providers.acuo.results.MarkitValuationProcessor;
-import com.acuo.valuation.services.PricingService;
+import com.acuo.persist.ids.PortfolioId;
 import com.acuo.valuation.builders.TradeBuilder;
+import com.acuo.valuation.protocol.results.MarkitResults;
+import com.acuo.valuation.providers.acuo.results.ResultPersister;
+import com.acuo.valuation.services.PricingService;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
@@ -26,8 +25,8 @@ import static java.util.stream.Collectors.toList;
 public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
 
     private final PricingService pricingService;
-    private final MarkitValuationProcessor resultProcessor;
-    private final boolean useBulkPricing = false;
+    private final ResultPersister<MarkitResults> resultProcessor;
+    private static final boolean USE_BULK_PRICING = false;
 
     private static final Predicate<Trade> predicate = trade -> {
         final PricingSource pricingSource = trade.getPricingSource();
@@ -35,36 +34,40 @@ public class MarkitPricingProcessor extends AbstractTradePricingProcessor {
     };
 
     @Inject
-    public MarkitPricingProcessor(PricingService pricingService, MarkitValuationProcessor resultProcessor) {
+    public MarkitPricingProcessor(PricingService pricingService,
+                                  ResultPersister<MarkitResults> resultProcessor) {
         this.pricingService = pricingService;
         this.resultProcessor = resultProcessor;
     }
 
     @Override
-    public <T extends Trade> Collection<MarginCall> process(Iterable<T> trades) {
-        log.info("processing {} trades", Iterables.size(trades));
-        Collection<MarginCall> results = internal(trades);
-        log.info("generated {} results", results.size());
+    public <T extends Trade> Set<PortfolioId> process(Iterable<T> trades) {
+        log.info("processing {} markit trades", Iterables.size(trades));
+        Set<PortfolioId> results = internal(trades);
+        log.info("generated {} markit results", results.size());
         if (next != null) {
             results.addAll(next.process(trades));
         }
         return results;
     }
 
-    private <T extends Trade> Collection<MarginCall> internal(Iterable<T> entities) {
-        if (Iterables.isEmpty(entities))
-            return new ArrayList<>();
-        final List<com.acuo.common.model.trade.Trade> trades = StreamSupport.stream(entities.spliterator(), false)
-                .filter(predicate)
-                .filter(trade -> trade instanceof IRS)
-                .map(trade -> (IRS) trade)
-                .map(TradeBuilder::buildTrade)
-                .collect(toList());
-        if (Iterables.isEmpty(trades))
-            return new ArrayList<>();
-        MarkitResults results = (useBulkPricing) ?
-                pricingService.priceSwapTradesByBulk(trades) :
-                pricingService.priceSwapTrades(trades);
-        return resultProcessor.process(results);
+    private <T extends Trade> Set<PortfolioId> internal(Iterable<T> entities) {
+        try {
+            if (Iterables.isEmpty(entities))
+                return new HashSet<>();
+            final List<com.acuo.common.model.trade.Trade> trades = StreamSupport.stream(entities.spliterator(), false)
+                    .filter(predicate)
+                    .map(TradeBuilder::buildTrade)
+                    .collect(toList());
+            if (Iterables.isEmpty(trades))
+                return new HashSet<>();
+            MarkitResults results = (USE_BULK_PRICING) ?
+                    pricingService.priceSwapTradesByBulk(trades) :
+                    pricingService.priceSwapTrades(trades);
+            return resultProcessor.persist(results);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return new HashSet<>();
+        }
     }
 }

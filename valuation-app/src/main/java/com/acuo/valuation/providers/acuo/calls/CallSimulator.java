@@ -13,8 +13,6 @@ import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.MarginStatementService;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.protocol.results.MarginResults;
-import com.acuo.valuation.providers.acuo.results.ProcessorItem;
 import com.opengamma.strata.basics.currency.Currency;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,19 +24,19 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @Slf4j
-public class ClarusCallSimulator extends ClarusCallGenerator {
+public class CallSimulator extends CallGenerator {
 
     private final MarginCallService marginCallService;
     private final Simulator simulationHelper;
 
     @Inject
-    public ClarusCallSimulator(ValuationService valuationService,
-                               MarginStatementService marginStatementService,
-                               AgreementService agreementService,
-                               CurrencyService currencyService,
-                               MarginCallService marginCallService,
-                               PortfolioService portfolioService,
-                               Simulator simulationHelper) {
+    public CallSimulator(ValuationService valuationService,
+                         MarginStatementService marginStatementService,
+                         AgreementService agreementService,
+                         CurrencyService currencyService,
+                         MarginCallService marginCallService,
+                         PortfolioService portfolioService,
+                         Simulator simulationHelper) {
         super(valuationService,
                 marginStatementService,
                 marginCallService,
@@ -50,18 +48,19 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
     }
 
     @Override
-    public ProcessorItem process(ProcessorItem<MarginResults> processorItem) {
-        log.info("processing markit valuation items to generate expected calls");
-        LocalDate valuationDate = processorItem.getResults().getValuationDate();
-        final Types.CallType callType = processorItem.getResults().getMarginType();
+    public CallProcessorItem process(CallProcessorItem item) {
+        log.info("processing {}", item);
+        LocalDate valuationDate = item.getValuationDate();
+        final Types.CallType callType = item.getCallType();
         LocalDate callDate = LocalDateUtils.add(valuationDate, 1);
-        Set<PortfolioId> portfolioIds = processorItem.getPortfolioIds();
+        Set<PortfolioId> portfolioIds = item.getPortfolioIds();
         List<String> marginCalls = createCalls(portfolioIds, valuationDate, callDate, callType);
-        processorItem.setSimulated(marginCalls);
+        log.info("simulated {} received calls", marginCalls.size());
+        item.setSimulated(marginCalls);
         if (next != null)
-            return next.process(processorItem);
+            return next.process(item);
         else
-            return processorItem;
+            return item;
     }
 
     protected Supplier<StatementStatus> statementStatusSupplier() {
@@ -84,6 +83,7 @@ public class ClarusCallSimulator extends ClarusCallGenerator {
                                  Long tradeCount) {
         if (simulationHelper.getRandomBoolean()) {
             double amount = simulationHelper.getRandomAmount(value);
+            amount = 0-amount;
             MarginCall margin = super.process(callType, side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
             marginCallService.matchToExpected(margin.getItemId());
             return margin;

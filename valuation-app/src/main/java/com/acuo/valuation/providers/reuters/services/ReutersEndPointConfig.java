@@ -2,6 +2,7 @@ package com.acuo.valuation.providers.reuters.services;
 
 import com.acuo.common.http.client.EndPointConfig;
 import lombok.Data;
+import lombok.ToString;
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
 import javax.inject.Inject;
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import static com.acuo.valuation.utils.PropertiesHelper.*;
 
 @Data
+@ToString(exclude = "apikey")
 public class ReutersEndPointConfig implements EndPointConfig {
 
     private final String scheme;

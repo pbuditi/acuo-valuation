@@ -4,6 +4,7 @@ import com.acuo.common.http.client.EndPointConfig;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.utils.PropertiesHelper;
 import lombok.Data;
+import lombok.ToString;
 import okhttp3.HttpUrl;
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import static com.acuo.valuation.utils.PropertiesHelper.*;
 
 @Data
+@ToString(exclude = "password")
 public class MarkitEndPointConfig implements EndPointConfig {
 
     private final String scheme;

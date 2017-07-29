@@ -4,6 +4,7 @@ import com.acuo.common.http.client.EndPointConfig;
 import com.acuo.common.util.ArgChecker;
 import com.acuo.valuation.utils.PropertiesHelper;
 import lombok.Data;
+import lombok.ToString;
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 
 import javax.inject.Inject;
@@ -11,6 +12,7 @@ import javax.inject.Named;
 import java.util.concurrent.TimeUnit;
 
 @Data
+@ToString(exclude = {"key", "secret"})
 public class ClarusEndPointConfig implements EndPointConfig {
 
     private final String host;

@@ -7,7 +7,6 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
@@ -16,6 +15,7 @@ import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.TradeService;
+import com.acuo.valuation.builders.TradeBuilder;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -23,7 +23,6 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.reports.Report;
 import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.services.TradeUploadService;
-import com.acuo.valuation.builders.TradeBuilder;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -105,7 +104,7 @@ public class PortfolioValuationsSenderTest {
         final List<String> tradeIds = tradeUploadService.fromExcel(oneIRS.createInputStream());
 
         trades = tradeIds.stream()
-                .map(id -> (IRS) tradeService.find(TradeId.fromString(id)))
+                .map(id -> tradeService.find(TradeId.fromString(id)))
                 .map(TradeBuilder::buildTrade)
                 .collect(toList());
     }
