@@ -4,6 +4,7 @@ import com.acuo.persist.entity.MarginCall;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -19,6 +20,7 @@ public class MarginCallResponse {
     public static MarginCallResponse of(Iterable<MarginCall> results) {
         final List<MarginCallResult> details = StreamSupport.stream(results.spliterator(), false)
                 .map(MarginCallResult::of)
+                .sorted(Comparator.comparing(MarginCallResult::getMarginAgreement))
                 .collect(toList());
         MarginCallResponse marginCallResponse = new MarginCallResponse();
         marginCallResponse.setUploadmargincalldetails(details);

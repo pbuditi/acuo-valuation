@@ -1,5 +1,28 @@
 {
   "uploadMarginCallDetails" : [ {
+    "legalEntity" : "ACUO US LLC",
+    "cptyOrg" : "Counterpart B",
+    "cptyEntity" : "Counterpart B4",
+    "marginAgreement" : "a29",
+    "callType" : "Variation",
+    "currency" : "KRW",
+    "referenceIdentifier" : "${json-unit.ignore}",
+    "valuationDate" : "${json-unit.ignore}",
+    "callDate" : "${json-unit.ignore}",
+    "totalCallAmount" : "181646500.00",
+    "exposure" : "-181646493.91",
+    "collateralValue" : "0.00",
+    "pendingCollateral" : "0.00",
+    "agreementDetails" : {
+      "tradeCount" : 1,
+      "tradeValue" : 1,
+      "pricingSource" : "Markit",
+      "minTransfer" : "500000.00",
+      "rounding" : "500.00",
+      "netRequired" : "181646500.00",
+      "rate" : "1118.03"
+    }
+  }, {
     "legalEntity" : "ACUO SG Pte Ltd",
     "cptyOrg" : "Goldman Sachs",
     "cptyEntity" : "Goldman Sachs & Co.",
@@ -40,29 +63,6 @@
       "pricingSource" : "Clarus",
       "netRequired" : "49511.24",
       "rate" : "0.78"
-    }
-  }, {
-    "legalEntity" : "ACUO US LLC",
-    "cptyOrg" : "Counterpart B",
-    "cptyEntity" : "Counterpart B4",
-    "marginAgreement" : "a29",
-    "callType" : "Variation",
-    "currency" : "KRW",
-    "referenceIdentifier" : "${json-unit.ignore}",
-    "valuationDate" : "${json-unit.ignore}",
-    "callDate" : "${json-unit.ignore}",
-    "totalCallAmount" : "181646500.00",
-    "exposure" : "-181646493.91",
-    "collateralValue" : "0.00",
-    "pendingCollateral" : "0.00",
-    "agreementDetails" : {
-      "tradeCount" : 1,
-      "tradeValue" : 1,
-      "pricingSource" : "Markit",
-      "minTransfer" : "500000.00",
-      "rounding" : "500.00",
-      "netRequired" : "181646500.00",
-      "rate" : "1118.03"
     }
   } ]
 }
