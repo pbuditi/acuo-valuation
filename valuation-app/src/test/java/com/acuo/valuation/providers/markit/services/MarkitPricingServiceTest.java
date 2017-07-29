@@ -1,13 +1,13 @@
 package com.acuo.valuation.providers.markit.services;
 
+import com.acuo.common.model.ids.ClientId;
+import com.acuo.common.model.ids.TradeId;
 import com.acuo.common.model.product.SwapHelper;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.ids.ClientId;
-import com.acuo.persist.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.ImportServiceModule;
@@ -15,6 +15,7 @@ import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
+import com.acuo.valuation.builders.TradeBuilder;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -25,7 +26,6 @@ import com.acuo.valuation.providers.markit.protocol.reports.ReportParser;
 import com.acuo.valuation.providers.markit.protocol.responses.MarkitValue;
 import com.acuo.valuation.services.TradeUploadService;
 import com.acuo.valuation.util.ReportHelper;
-import com.acuo.valuation.builders.TradeBuilder;
 import com.opengamma.strata.collect.result.Result;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
@@ -41,7 +41,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -76,7 +75,7 @@ public class MarkitPricingServiceTest {
     private ReportParser reportParser = null;
 
     @Inject
-    private ValuationService valuationService;
+    private ValuationService valuationService = null;
 
     @Inject
     private ImportService importService = null;
@@ -110,11 +109,11 @@ public class MarkitPricingServiceTest {
 
     @Test
     public void testPriceSwapWithErrorReport() {
-        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(ReportHelper.reportError());
+        when(sender.send(any(), any(LocalDate.class))).thenReturn(ReportHelper.reportError());
 
         MarkitResults markitResults = new MarkitResults();
-        markitResults.setResults(Collections.EMPTY_LIST);
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(markitResults);
+        markitResults.setResults(Collections.emptyList());
+        when(retriever.retrieve(any(LocalDate.class), any())).thenReturn(markitResults);
 
         MarkitResults results = service.priceSwapTrades(trades);
 
@@ -123,30 +122,30 @@ public class MarkitPricingServiceTest {
 
     @Test
     public void testPriceSwapWithNoErrorReport() {
-        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(ReportHelper.report());
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
+        when(sender.send(any(), any(LocalDate.class))).thenReturn(ReportHelper.report());
+        when(retriever.retrieve(any(LocalDate.class), any())).thenReturn(expectedResults());
 
         MarkitResults results = service.priceSwapTrades(trades);
 
         assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
         Result<MarkitValuation> swapResult = results.getResults().get(0);
-        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getValue().getValue().equals(1.0d), "Swap PV not equal to 1.0d");
+        Condition<MarkitValuation> pvEqualToOne = new Condition<>(s -> s.getValue().getValue().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
     }
 
     @Test
     public void testPriceSwapWithReportFromFile() throws Exception {
-        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(reportParser.parse(test02.getContent()));
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
+        when(sender.send(any(), any(LocalDate.class))).thenReturn(reportParser.parse(test02.getContent()));
+        when(retriever.retrieve(any(LocalDate.class), any())).thenReturn(expectedResults());
 
-        MarkitResults results = service.priceSwapTrades(asList(SwapHelper.createTrade()));
+        MarkitResults results = service.priceSwapTrades(Collections.singletonList(SwapHelper.createTrade()));
 
         assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
         Result<MarkitValuation> swapResult = results.getResults().get(0);
-        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getValue().getValue().equals(1.0d), "Swap PV not equal to 1.0d");
+        Condition<MarkitValuation> pvEqualToOne = new Condition<>(s -> s.getValue().getValue().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
     }
@@ -154,15 +153,15 @@ public class MarkitPricingServiceTest {
     @Test
     public void testPriceSwapFromClientId() throws Exception {
 
-        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(reportParser.parse(test02.getContent()));
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
+        when(sender.send(any(), any(LocalDate.class))).thenReturn(reportParser.parse(test02.getContent()));
+        when(retriever.retrieve(any(LocalDate.class), any())).thenReturn(expectedResults());
 
         MarkitResults results = service.priceTradesOf(ClientId.fromString("c1"));
 
         assertThat(results).isNotNull().isInstanceOf(MarkitResults.class);
 
         Result<MarkitValuation> swapResult = results.getResults().get(0);
-        Condition<MarkitValuation> pvEqualToOne = new Condition<MarkitValuation>(s -> s.getValue().getValue().equals(1.0d), "Swap PV not equal to 1.0d");
+        Condition<MarkitValuation> pvEqualToOne = new Condition<>(s -> s.getValue().getValue().equals(1.0d), "Swap PV not equal to 1.0d");
 
         assertThat(swapResult.getValue()).is(pvEqualToOne);
     }
@@ -180,8 +179,8 @@ public class MarkitPricingServiceTest {
     @Test
     public void testPriceTradesByBulk() throws Exception {
 
-        when(sender.send(any(List.class), any(LocalDate.class))).thenReturn(reportParser.parse(largeReport.getContent()));
-        when(retriever.retrieve(any(LocalDate.class), any(List.class))).thenReturn(expectedResults());
+        when(sender.send(any(), any(LocalDate.class))).thenReturn(reportParser.parse(largeReport.getContent()));
+        when(retriever.retrieve(any(LocalDate.class), any())).thenReturn(expectedResults());
 
         List<com.acuo.common.model.trade.Trade> all = loadTrades(this.all);
 

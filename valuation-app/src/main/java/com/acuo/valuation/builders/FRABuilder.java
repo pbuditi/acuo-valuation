@@ -11,7 +11,7 @@ import com.acuo.persist.entity.Leg;
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.enums.PricingProvider;
-import com.acuo.persist.ids.TradeId;
+import com.acuo.common.model.ids.TradeId;
 import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.date.HolidayCalendarId;
 import com.opengamma.strata.basics.date.Tenor;

@@ -6,7 +6,7 @@ import com.acuo.common.cache.manager.CachedObject;
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.TradingAccount;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.services.TradeUploadService;

@@ -8,7 +8,7 @@ import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.TradeValuation;
 import com.acuo.persist.entity.TradeValue;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;

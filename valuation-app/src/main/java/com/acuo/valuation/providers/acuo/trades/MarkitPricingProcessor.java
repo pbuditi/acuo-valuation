@@ -3,7 +3,7 @@ package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.valuation.builders.TradeBuilder;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;

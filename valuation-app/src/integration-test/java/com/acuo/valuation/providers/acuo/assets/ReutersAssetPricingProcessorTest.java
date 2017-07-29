@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.acuo.assets;
 
+import com.acuo.common.model.ids.AssetId;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.core.ImportService;
@@ -56,7 +57,7 @@ public class ReutersAssetPricingProcessorTest {
     @Test
     @Ignore
     public void process() throws Exception {
-        Asset asset = assetService.find("FR0010482547", 1);
+        Asset asset = assetService.find(AssetId.fromString("FR0010482547"), 1);
         final Collection<AssetValue> results = processor.process(ImmutableList.of(asset));
         assertThat(results).isNotEmpty();
     }

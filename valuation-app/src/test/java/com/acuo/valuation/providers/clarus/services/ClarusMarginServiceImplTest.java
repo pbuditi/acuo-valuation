@@ -9,7 +9,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.ids.TradeId;
+import com.acuo.common.model.ids.TradeId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.ImportServiceModule;

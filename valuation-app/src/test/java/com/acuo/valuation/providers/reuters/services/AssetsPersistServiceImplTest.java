@@ -5,7 +5,7 @@ import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.core.ImportService;
 import com.acuo.persist.entity.Asset;
-import com.acuo.persist.ids.AssetId;
+import com.acuo.common.model.ids.AssetId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.ImportServiceModule;
@@ -79,8 +79,8 @@ public class AssetsPersistServiceImplTest {
         final List<AssetValuation> assetValuations = assetValuations();
         assetValuations.stream().forEach(assetValuation -> {
             assetsPersistService.persist(assetValuation);
-            Asset asset = assetService.find(assetValuation.getAssetId(), 2);
-            final com.acuo.persist.entity.AssetValuation valuation = valuationService.getAssetValuationFor(AssetId.fromString(asset.getAssetId()));
+            Asset asset = assetService.find(AssetId.fromString(assetValuation.getAssetId()), 2);
+            final com.acuo.persist.entity.AssetValuation valuation = valuationService.getAssetValuationFor(asset.getAssetId());
             assertThat(valuation).isNotNull();
             assertThat(valuation.getValues()).hasSize(1);
         });

@@ -30,11 +30,12 @@ public class PortfolioValuationsRetrieverTest {
     public ResourceFile response = new ResourceFile("/markit/responses/markit-sample.xml");
 
     @Inject
-    ResponseParser responseParser;
+    private
+    ResponseParser responseParser = null;
 
-    MockWebServer server = new MockWebServer();
+    private MockWebServer server = new MockWebServer();
 
-    PortfolioValuationsRetriever retriever;
+    private PortfolioValuationsRetriever retriever;
 
     @Before
     public void setUp() throws Exception {
@@ -46,7 +47,7 @@ public class PortfolioValuationsRetrieverTest {
                                                      .build();
         MarkitEndPointConfig markitEndPointConfig = new MarkitEndPointConfig(server.url("/"), "", "", "username", "password", "0", "10000", "false");
 
-        OkHttpClient client = new MarkitClient(httpClient, markitEndPointConfig);
+        OkHttpClient<MarkitEndPointConfig> client = new MarkitClient(httpClient, markitEndPointConfig);
 
         retriever = new PortfolioValuationsRetriever(client, responseParser);
     }

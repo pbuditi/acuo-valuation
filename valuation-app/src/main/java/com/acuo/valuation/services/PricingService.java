@@ -1,8 +1,8 @@
 package com.acuo.valuation.services;
 
 import com.acuo.common.model.trade.Trade;
-import com.acuo.persist.ids.ClientId;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.ClientId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.valuation.protocol.results.MarkitResults;
 
 import java.util.List;

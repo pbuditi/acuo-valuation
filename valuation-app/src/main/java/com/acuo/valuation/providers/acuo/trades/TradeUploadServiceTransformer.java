@@ -5,7 +5,7 @@ import com.acuo.common.model.results.TradeValuation;
 import com.acuo.common.type.TypedString;
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;

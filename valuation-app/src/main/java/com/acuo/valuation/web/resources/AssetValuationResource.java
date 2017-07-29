@@ -1,5 +1,6 @@
 package com.acuo.valuation.web.resources;
 
+import com.acuo.common.model.ids.AssetId;
 import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.AssetValue;
 import com.acuo.persist.services.AssetService;
@@ -38,7 +39,7 @@ public class AssetValuationResource {
     @GET
     @Path("/price/asset/{id}")
     @Timed
-    public Collection<AssetValueResult> priceAssets(@PathParam("id") String assetId) throws Exception {
+    public Collection<AssetValueResult> priceAssets(@PathParam("id") AssetId assetId) throws Exception {
         Asset asset = assetService.find(assetId);
         final Collection<AssetValue> results = assetPricingProcessor.process(ImmutableList.of(asset));
         return results.stream().map(AssetValueResult::new).collect(toList());

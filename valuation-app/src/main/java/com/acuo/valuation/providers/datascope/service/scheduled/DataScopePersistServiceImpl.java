@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.datascope.service.scheduled;
 
+import com.acuo.common.model.ids.AssetId;
 import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.FXRate;
 import com.acuo.persist.services.AssetService;
@@ -64,7 +65,7 @@ public class DataScopePersistServiceImpl implements DataScopePersistService {
             String[] columns = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
             String id = columns[3];
             String parValue = columns[1];
-            Asset asset = assetService.find(id);
+            Asset asset = assetService.find(AssetId.fromString(id));
             if (asset != null && parValue != null && parValue.trim().length() > 0) {
                 parValue = parValue.replaceAll("\"", "");
                 parValue = parValue.replaceAll(",", "");

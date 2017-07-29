@@ -1,7 +1,7 @@
 package com.acuo.valuation.providers.acuo.calls;
 
 import com.acuo.common.model.margin.Types;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import lombok.Data;
 
 import java.time.LocalDate;

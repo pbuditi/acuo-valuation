@@ -1,14 +1,9 @@
 package com.acuo.valuation.jackson;
 
-import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.MarginCall;
-import com.acuo.persist.entity.Portfolio;
-import com.acuo.persist.services.ValuationService;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.ImmutableList;
 import lombok.Data;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.StreamSupport;
 

@@ -3,7 +3,7 @@ package com.acuo.valuation.providers.acuo;
 import com.acuo.common.model.margin.Types;
 import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.MarginCall;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.valuation.providers.acuo.calls.CallGeneratorProcessor;
 import com.acuo.valuation.providers.acuo.calls.CallProcessorItem;
@@ -46,6 +46,7 @@ public class PortfolioProcessor {
                     return callProcessorItem.getExpected();
                 })
                 .flatMap(Collection::stream)
+                .sorted()
                 .map(id -> marginCallService.find(id, 3))
                 .collect(toList());
         log.info("portfolio valuation processing ended");

@@ -3,7 +3,7 @@ package com.acuo.valuation.providers.acuo.assets;
 import com.acuo.persist.entity.Asset;
 import com.acuo.persist.entity.AssetValue;
 import com.acuo.persist.entity.PricingSource;
-import com.acuo.persist.ids.AssetId;
+import com.acuo.common.model.ids.AssetId;
 import com.acuo.persist.services.AssetValuationService;
 import com.acuo.persist.services.CurrencyService;
 import com.google.common.collect.Iterables;
@@ -52,10 +52,7 @@ public class CashAssetPricingProcessor extends AbstractAssetPricingProcessor {
     private Collection<AssetValue> internal(Iterable<Asset> assets) {
         return StreamSupport.stream(assets.spliterator(), false)
                 .filter(cashAssets)
-                .map(asset -> {
-                    final AssetId assetId = AssetId.fromString(asset.getAssetId());
-                    return ImmutablePair.of(assetId, createAssetValue(asset));
-                })
+                .map(asset -> ImmutablePair.of(asset.getAssetId(), createAssetValue(asset)))
                 .map(value -> persistService.persist(value.getLeft(), value.getRight()))
                 .collect(toList());
 
