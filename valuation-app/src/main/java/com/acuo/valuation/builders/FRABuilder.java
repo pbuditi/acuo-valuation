@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 class FRABuilder extends TradeBuilder {
+
     public Trade build(FRATrade fraTrade) {
         FRA fra = fraTrade.getProduct();
         TradeInfo tradeInfo = fraTrade.getInfo();

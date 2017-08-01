@@ -1,6 +1,7 @@
 {
   "uploadMarginCallDetails" : [ {
     "legalEntity" : "ACUO US LLC",
+    "cptyOrg" : "Counterpart B",
     "cptyEntity" : "Counterpart B4",
     "marginAgreement" : "a29",
     "callType" : "Variation",
@@ -16,6 +17,7 @@
     }
   }, {
     "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Goldman Sachs",
     "cptyEntity" : "Goldman Sachs & Co.",
     "marginAgreement" : "a31",
     "callType" : "Variation",
@@ -29,6 +31,7 @@
     }
   }, {
     "legalEntity" : "ACUO SG Pte Ltd",
+    "cptyOrg" : "Goldman Sachs",
     "cptyEntity" : "Goldman Sachs & Co.",
     "marginAgreement" : "a31",
     "callType" : "Initial",

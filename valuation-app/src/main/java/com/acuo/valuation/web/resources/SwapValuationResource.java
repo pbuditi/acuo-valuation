@@ -36,7 +36,7 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-@Path("/swaps")
+@Path("/price")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SwapValuationResource {
@@ -45,7 +45,6 @@ public class SwapValuationResource {
     private final TradeService<Trade> tradeService;
     private final TradeProcessor tradeProcessor;
     private final VelocityEngine velocityEngine;
-
 
     @Inject
     public SwapValuationResource(PricingService pricingService,
@@ -56,7 +55,6 @@ public class SwapValuationResource {
         this.tradeService = tradeService;
         this.tradeProcessor = tradeProcessor;
         this.velocityEngine = velocityEngine;
-
     }
 
     @GET
@@ -64,14 +62,14 @@ public class SwapValuationResource {
     @Path("/")
     public String hello() {
         StringWriter writer = new StringWriter();
-        velocityEngine.mergeTemplate("velocity/swaps.vm", "UTF-8", new VelocityContext(), writer);
+        velocityEngine.mergeTemplate("velocity/price.vm", "UTF-8", new VelocityContext(), writer);
         return writer.toString();
     }
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/value")
+    @Path("/swap")
     @Timed
     public MarkitResults price(SwapTrade swapTrade) throws Exception {
         log.info("Pricing the trade {}", swapTrade);
@@ -80,7 +78,7 @@ public class SwapValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/trade/{id}")
+    @Path("/trade/{id}")
     @Timed
     public MarginCallResponse priceBySwapId(@PathParam("id") String id) throws Exception {
         log.info("Pricing the trade {}", id);
@@ -93,7 +91,7 @@ public class SwapValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/portfolio/id/{id}")
+    @Path("/portfolio/id/{id}")
     @Timed
     public MarginCallResponse priceByPortfolio(@PathParam("id") PortfolioId portfolioId) throws Exception {
         log.info("Pricing all trades under the portfolio {}", portfolioId);
@@ -106,7 +104,7 @@ public class SwapValuationResource {
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/portfolios")
+    @Path("/portfolios")
     @Timed
     public MarginCallResponse priceByPortfolios(PortfolioIds portfolioIds) throws Exception {
         log.info("price all trades of portfolios {}", portfolioIds);
@@ -121,7 +119,7 @@ public class SwapValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/clientid/{id}")
+    @Path("/trades/clientid/{id}")
     @Timed
     public MarkitResults getPv(@PathParam("id") ClientId clientId) throws Exception {
         log.info("Pricing all trades of client {}", clientId);
@@ -130,7 +128,7 @@ public class SwapValuationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("/price/allBilateralIRS")
+    @Path("/trades/allBilateralIRS")
     @Timed
     public MarginCallResponse priceAllBilateralIRS() throws Exception {
         log.info("Pricing all bilateral trades");

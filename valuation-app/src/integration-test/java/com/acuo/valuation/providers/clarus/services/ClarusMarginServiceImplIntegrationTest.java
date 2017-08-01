@@ -12,6 +12,7 @@ import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.TradeService;
+import com.acuo.valuation.builders.TradeConverter;
 import com.acuo.valuation.modules.ConfigurationIntegrationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -19,7 +20,6 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import com.acuo.valuation.services.TradeUploadService;
-import com.acuo.valuation.builders.TradeBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,7 +73,7 @@ public class ClarusMarginServiceImplIntegrationTest {
         List<com.acuo.common.model.trade.Trade> trades = new ArrayList<>();
         Trade entity = irsService.find(TradeId.fromString(id));
         if (entity != null) {
-            com.acuo.common.model.trade.Trade trade = TradeBuilder.buildTrade(entity);
+            com.acuo.common.model.trade.Trade trade = TradeConverter.buildTrade(entity);
             trades.add(trade);
         }
         MarginResults response = service.send(trades, DataModel.LCH, MarginCallType.VM);

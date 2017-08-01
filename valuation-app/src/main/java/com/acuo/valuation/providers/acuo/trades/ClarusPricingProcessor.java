@@ -3,7 +3,7 @@ package com.acuo.valuation.providers.acuo.trades;
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.entity.Trade;
 import com.acuo.common.model.ids.PortfolioId;
-import com.acuo.valuation.builders.TradeBuilder;
+import com.acuo.valuation.builders.TradeConverter;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.google.common.collect.Iterables;
@@ -51,7 +51,7 @@ public abstract class ClarusPricingProcessor extends AbstractTradePricingProcess
                 return new HashSet<>();
             final List<com.acuo.common.model.trade.Trade> trades = StreamSupport.stream(entities.spliterator(), false)
                     .filter(predicate)
-                    .map(TradeBuilder::buildTrade)
+                    .map(TradeConverter::buildTrade)
                     .collect(toList());
             if (Iterables.isEmpty(trades))
                 return new HashSet<>();

@@ -16,6 +16,7 @@ import com.acuo.persist.modules.ImportServiceModule;
 import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.TradeService;
+import com.acuo.valuation.builders.TradeConverter;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -23,7 +24,6 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.protocol.results.MarginResults;
 import com.acuo.valuation.providers.clarus.protocol.Clarus.MarginCallType;
 import com.acuo.valuation.services.TradeUploadService;
-import com.acuo.valuation.builders.TradeBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -103,7 +103,7 @@ public class ClarusMarginServiceImplTest {
         List<com.acuo.common.model.trade.Trade> trades = new ArrayList<>();
         Trade entity = irsService.find(TradeId.fromString(id));
         if (entity != null) {
-            com.acuo.common.model.trade.Trade swapTrade = TradeBuilder.buildTrade(entity);
+            com.acuo.common.model.trade.Trade swapTrade = TradeConverter.buildTrade(entity);
             trades.add(swapTrade);
         }
 
@@ -120,7 +120,7 @@ public class ClarusMarginServiceImplTest {
         List<com.acuo.common.model.trade.Trade> trades = new ArrayList<>();
         Trade entity = irsService.find(TradeId.fromString(id));
         if (entity != null) {
-            com.acuo.common.model.trade.Trade trade = TradeBuilder.buildTrade(entity);
+            com.acuo.common.model.trade.Trade trade = TradeConverter.buildTrade(entity);
             trades.add(trade);
         }
 

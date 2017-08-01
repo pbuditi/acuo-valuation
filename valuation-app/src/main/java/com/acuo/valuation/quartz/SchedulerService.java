@@ -12,7 +12,10 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.spi.JobFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import static com.acuo.valuation.utils.PropertiesHelper.ACUO_SCHEDULER_ENABLED;
+import static com.acuo.valuation.utils.PropertiesHelper.ACUO_SIMULATION_ENABLED;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
@@ -20,18 +23,19 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 public class SchedulerService extends AbstractService {
 
     private final Scheduler scheduler;
-
-    private final static boolean disabled = false;
+    private final boolean enabled;
 
     @Inject
-    public SchedulerService(JobFactory jobFactory) throws SchedulerException {
+    public SchedulerService(JobFactory jobFactory,
+                            @Named(ACUO_SCHEDULER_ENABLED) boolean enabled) throws SchedulerException {
         scheduler = new StdSchedulerFactory().getScheduler();
         scheduler.setJobFactory(jobFactory);
+        this.enabled = enabled;
     }
 
     @Override
     protected void doStart() {
-        if (!disabled) {
+        if (enabled) {
             try {
                 JobDetail jobDetail = JobBuilder
                         .newJob(GenerateCallJob.class)
@@ -103,7 +107,7 @@ public class SchedulerService extends AbstractService {
 
     @Override
     protected void doStop() {
-        if (scheduler != null) {
+        if (enabled && scheduler != null) {
             try {
                 scheduler.shutdown();
                 notifyStopped();

@@ -4,8 +4,8 @@ apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/ja
 apply from: "https://raw.githubusercontent.com/anaxo-io/gradle-plugins/master/java/sonarqube.gradle"
 
 ext.versions += [
-        persist         : '0.11.0',
-        common          : '0.11.0',
+        persist         : '0.11.3',
+        common          : '0.11.1',
         mapping         : '0.11.0'
 ]
 
@@ -24,7 +24,8 @@ dependencies {
             "org.apache.velocity:velocity:1.7",
             "org.modelmapper:modelmapper:0.7.5",
             "org.quartz-scheduler:quartz:2.2.1",
-            "org.quartz-scheduler:quartz-jobs:2.2.1"
+            "org.quartz-scheduler:quartz-jobs:2.2.1",
+            "com.jamonapi:jamon:2.81"
     )
 
     testCompile(

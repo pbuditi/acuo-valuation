@@ -15,7 +15,7 @@ import com.acuo.persist.modules.Neo4jPersistModule;
 import com.acuo.persist.modules.RepositoryModule;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.ValuationService;
-import com.acuo.valuation.builders.TradeBuilder;
+import com.acuo.valuation.builders.TradeConverter;
 import com.acuo.valuation.modules.ConfigurationTestModule;
 import com.acuo.valuation.modules.EndPointModule;
 import com.acuo.valuation.modules.MappingModule;
@@ -195,7 +195,7 @@ public class MarkitPricingServiceTest {
 
         return tradeIds.stream()
                 .map(id -> tradeService.find(TradeId.fromString(id)))
-                .map(TradeBuilder::buildTrade)
+                .map(TradeConverter::buildTrade)
                 .collect(toList());
     }
 }

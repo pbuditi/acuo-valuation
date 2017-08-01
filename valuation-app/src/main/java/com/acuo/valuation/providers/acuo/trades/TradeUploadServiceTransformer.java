@@ -9,7 +9,7 @@ import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
-import com.acuo.valuation.builders.TradeBuilder;
+import com.acuo.valuation.builders.TradeConverter;
 import com.acuo.valuation.protocol.results.PortfolioResults;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.opengamma.strata.basics.currency.Currency;
@@ -91,7 +91,7 @@ public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
     }
 
     private Trade buildTradeNew(com.acuo.common.model.trade.Trade t) {
-        Trade trade = TradeBuilder.build(t);
+        Trade trade = TradeConverter.build(t);
         linkPortfolio(trade, t.getInfo().getPortfolio());
         linkAccount(trade, t.getInfo().getTradingAccountId());
         return trade;

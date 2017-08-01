@@ -115,7 +115,7 @@ public class SwapValuationResourceTest extends AbstractMockServerTest implements
     @Test
     @Ignore
     public void testWelcomPage() throws URISyntaxException {
-        MockHttpRequest request = MockHttpRequest.get("/swaps");
+        MockHttpRequest request = MockHttpRequest.get("/price");
         MockHttpResponse response = new MockHttpResponse();
 
         dispatcher.invoke(request, response);
@@ -130,7 +130,7 @@ public class SwapValuationResourceTest extends AbstractMockServerTest implements
         server.enqueue(new MockResponse().setBody(report.getContent()));
         server.enqueue(new MockResponse().setBody(response.getContent()));
 
-        MockHttpRequest request = MockHttpRequest.post("/swaps/value");
+        MockHttpRequest request = MockHttpRequest.post("/price/swap");
         MockHttpResponse response = new MockHttpResponse();
 
         request.contentType(MediaType.APPLICATION_JSON);
@@ -154,7 +154,7 @@ public class SwapValuationResourceTest extends AbstractMockServerTest implements
         server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
         server.enqueue(new MockResponse().setBody(clarusResponse.getContent()));
 
-        MockHttpRequest request = MockHttpRequest.get("/swaps/price/allBilateralIRS");
+        MockHttpRequest request = MockHttpRequest.get("/price/trades/allBilateralIRS");
         MockHttpResponse response = new MockHttpResponse();
 
         dispatcher.invoke(request, response);
@@ -173,7 +173,7 @@ public class SwapValuationResourceTest extends AbstractMockServerTest implements
         server.enqueue(new MockResponse().setBody(largeReport.getContent()));
         server.enqueue(new MockResponse().setBody(largeResponse.getContent()));
 
-        MockHttpRequest request = MockHttpRequest.post("/swaps/price/portfolios");
+        MockHttpRequest request = MockHttpRequest.post("/price/portfolios");
         MockHttpResponse response = new MockHttpResponse();
 
         request.contentType(MediaType.APPLICATION_JSON);
