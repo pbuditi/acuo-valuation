@@ -83,7 +83,6 @@ public class CallSimulator extends CallGenerator {
                                  Long tradeCount) {
         if (simulationHelper.getRandomBoolean()) {
             double amount = simulationHelper.getRandomAmount(value);
-            amount = 0-amount;
             MarginCall margin = super.process(callType, side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
             marginCallService.matchToExpected(margin.getItemId());
             return margin;
