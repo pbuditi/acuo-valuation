@@ -27,13 +27,13 @@
     "cptyOrg" : "Goldman Sachs",
     "cptyEntity" : "Goldman Sachs & Co.",
     "marginAgreement" : "a31",
-    "callType" : "Initial",
+    "callType" : "Variation",
     "currency" : "GBP",
     "referenceIdentifier" : "${json-unit.ignore}",
     "valuationDate" : "${json-unit.ignore}",
     "callDate" : "${json-unit.ignore}",
     "totalCallAmount" : "49511.24",
-    "exposure" : "49511.24",
+    "exposure" : "-49511.24",
     "collateralValue" : "0.00",
     "pendingCollateral" : "0.00",
     "agreementDetails" : {
@@ -43,18 +43,19 @@
       "netRequired" : "49511.24",
       "rate" : "0.78"
     }
-  }, {
+  }
+  , {
     "legalEntity" : "ACUO SG Pte Ltd",
     "cptyOrg" : "Goldman Sachs",
     "cptyEntity" : "Goldman Sachs & Co.",
     "marginAgreement" : "a31",
-    "callType" : "Variation",
+    "callType" : "Initial",
     "currency" : "GBP",
     "referenceIdentifier" : "${json-unit.ignore}",
     "valuationDate" : "${json-unit.ignore}",
     "callDate" : "${json-unit.ignore}",
     "totalCallAmount" : "49511.24",
-    "exposure" : "-49511.24",
+    "exposure" : "49511.24",
     "collateralValue" : "0.00",
     "pendingCollateral" : "0.00",
     "agreementDetails" : {
