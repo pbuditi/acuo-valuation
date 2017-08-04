@@ -1,14 +1,13 @@
 package com.acuo.valuation.providers.acuo.trades;
 
+import com.acuo.common.model.ids.PortfolioId;
+import com.acuo.common.model.ids.TradeId;
 import com.acuo.common.model.margin.Types;
 import com.acuo.common.model.results.TradeValuation;
 import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.entity.TradeValue;
-import com.acuo.common.model.ids.PortfolioId;
-import com.acuo.common.model.ids.TradeId;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
-import com.acuo.valuation.protocol.results.MarkitValuation;
 import com.acuo.valuation.protocol.results.PortfolioResults;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.opengamma.strata.basics.currency.Currency;
@@ -18,7 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.stream.Collectors.*;
 
@@ -34,8 +37,7 @@ public class PortfolioValuationPersister implements ResultPersister<PortfolioRes
         this.valueService = valueService;
     }
 
-    public Set<PortfolioId> persist(PortfolioResults results)
-    {
+    public Set<PortfolioId> persist(PortfolioResults results) {
         if (results == null || results.getResults().size() == 0) {
             log.warn("PortfolioResults is null");
             return Collections.emptySet();
@@ -43,29 +45,30 @@ public class PortfolioValuationPersister implements ResultPersister<PortfolioRes
 
         log.info("persisting {} markit result of {}", results.getResults().size(), results.getValuationDate());
 
-        LocalDate date = results.getValuationDate();
         Currency currency = results.getCurrency();
-
-        LocalDate dayRange = LocalDate.now().minusDays(2);
 
         List<Result<TradeValuation>> result = results.getResults();
         List<TradeValue> values = result.stream()
                 .flatMap(Result::stream)
-                //.filter(tradeValuation -> tradeValuation.getValuationDate().isAfter(dayRange))
                 .map(value -> convert(currency, value))
                 .collect(toList());
+
+        if (values == null || values.isEmpty()) {
+            log.warn("converted value list is empty");
+            return Collections.emptySet();
+        }
+
         valueService.save(values, 1);
         List<MarginValue> marginValues = generate(values);
         valueService.save(marginValues, 1);
-        Set<PortfolioId> portfolioIds = marginValues.stream()
+        return marginValues.stream()
                 .map(value -> value.getValuation().getPortfolio().getPortfolioId())
                 .collect(toSet());
-        return portfolioIds;
     }
 
     private TradeValue convert(Currency currency, TradeValuation value) {
-        String tradeId = value.getTradeId();
-        com.acuo.persist.entity.TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(TradeId.fromString(tradeId));
+        TradeId tradeId = TradeId.fromString(value.getTradeId());
+        com.acuo.persist.entity.TradeValuation valuation = valuationService.getOrCreateTradeValuationFor(tradeId);
 
         TradeValue newValue = createValue(value.getValuationDate(), currency, value.getMarketValue(), "Portfolio");
         newValue.setValuation(valuation);
@@ -118,7 +121,7 @@ public class PortfolioValuationPersister implements ResultPersister<PortfolioRes
         com.acuo.persist.entity.MarginValuation valuation = valuationService.getOrCreateMarginValuationFor(portfolioId, Types.CallType.Variation);
 
         Set<MarginValue> values = valuation.getValues();
-        if(values != null) {
+        if (values != null) {
             Set<MarginValue> toRemove = values.stream()
                     .filter(relation -> valuationDate.equals(relation.getValuationDate()))
                     .collect(toSet());

@@ -174,7 +174,7 @@ public class MarginCallResourceTest extends AbstractMockServerTest implements Wi
 
     @Test
     public void testGeneratePortfolios() throws URISyntaxException, IOException {
-        //setMockMarkitResponse();
+        setMockMarkitResponse();
 
         MockHttpRequest request = MockHttpRequest.post("/calls/generate/portfolios");
         MockHttpResponse response = new MockHttpResponse();
@@ -187,7 +187,7 @@ public class MarginCallResourceTest extends AbstractMockServerTest implements Wi
         String json = response.getContentAsString();
         assertNotNull(json);
         Assert.assertThat(json, isJson());
-        //assertThatJson(json).isEqualTo(jsonGenPortfolioResponse.getContent());
+        assertThatJson(json).isEqualTo(jsonGenPortfolioResponse.getContent());
     }
 
     @Test
@@ -210,7 +210,7 @@ public class MarginCallResourceTest extends AbstractMockServerTest implements Wi
         String json = response.getContentAsString();
         assertNotNull(json);
         Assert.assertThat(json, isJson());
-//        assertThatJson(json).isEqualTo(jsonSplitPortfolioResponse.getContent());
+        assertThatJson(json).isEqualTo(jsonSplitPortfolioResponse.getContent());
     }
 
     private void mockConditions() {

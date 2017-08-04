@@ -54,7 +54,7 @@ abstract class TradeUploadServiceAbstract implements TradeUploadService {
         if (value == null) {
             lock.lock();
             try {
-                Portfolio portfolio = portfolioService.find(portfolioId);
+                Portfolio portfolio = portfolioService.portfolio(portfolioId);
                 value = new CachedObject(portfolio, portfolioId, expireTime, expireUnit);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

@@ -13,8 +13,8 @@
     <logger name="org.jboss" level="error" />
     <logger name="javax.ws" level="error" />
 
-    <logger name="org.neo4j.ogm.drivers.bolt.request" level="warn"/>
-    <logger name="org.neo4j.ogm.drivers.bolt.response" level="warn"/>
+    <logger name="org.neo4j.ogm.drivers.embedded.request" level="warn"/>
+    <logger name="org.neo4j.ogm.drivers.embedded.response" level="warn"/>
     <logger name="org.neo4j.ogm.context" level="warn"/>
 
     <logger name="com.tracegroup.SYS_DIAG.transformer.PARSE.OK" level="trace"/>

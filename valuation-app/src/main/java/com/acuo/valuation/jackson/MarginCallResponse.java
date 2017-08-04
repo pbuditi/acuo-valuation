@@ -20,7 +20,8 @@ public class MarginCallResponse {
     public static MarginCallResponse of(Iterable<MarginCall> results) {
         final List<MarginCallResult> details = StreamSupport.stream(results.spliterator(), false)
                 .map(MarginCallResult::of)
-                .sorted(Comparator.comparing(MarginCallResult::getMarginAgreement))
+                .sorted(Comparator.comparing(MarginCallResult::getMarginAgreement)
+                        .thenComparing(marginCallResult -> marginCallResult.getAgreementDetails().getPricingSource()))
                 .collect(toList());
         MarginCallResponse marginCallResponse = new MarginCallResponse();
         marginCallResponse.setUploadmargincalldetails(details);
