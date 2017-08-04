@@ -3,9 +3,11 @@ package com.acuo.valuation.providers.acuo.trades;
 import com.acuo.collateral.transform.Transformer;
 import com.acuo.common.model.results.TradeValuation;
 import com.acuo.common.type.TypedString;
+import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
 import com.acuo.common.model.ids.PortfolioId;
+import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
@@ -37,6 +39,7 @@ public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
     private final Transformer<com.acuo.common.model.trade.Trade> portfolioTransformer;
     private final Transformer<TradeValuation> valuationTransformer;
     private final ResultPersister<PortfolioResults> persister;
+    private final AgreementService agreementService;
 
     @Inject
     public TradeUploadServiceTransformer(TradingAccountService accountService,
@@ -44,12 +47,14 @@ public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
                                          TradeService<Trade> tradeService,
                                          @Named("portfolio") Transformer<com.acuo.common.model.trade.Trade> portfolioTransformer,
                                          @Named("tradeValuation") Transformer<TradeValuation> valuationTransformer,
-                                         ResultPersister<PortfolioResults> persister) {
+                                         ResultPersister<PortfolioResults> persister,
+                                         AgreementService agreementService) {
         super(accountService, portfolioService);
         this.tradeService = tradeService;
         this.portfolioTransformer = portfolioTransformer;
         this.valuationTransformer = valuationTransformer;
         this.persister = persister;
+        this.agreementService = agreementService;
     }
 
     public List<String> fromExcel(InputStream fis) {
@@ -67,11 +72,19 @@ public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
             List<Trade> trades = buildTrades(fis);
             Set<PortfolioId> portfolios =trades.stream().map(Trade::getPortfolio).map(Portfolio::getPortfolioId).collect(toSet());
             saveValuations(fis);
-            return portfolios.stream().map(id -> portfolioService.find(id, 2)).collect(Collectors.toList());
+            return portfolios.stream().map(id -> generatePortfolioforReturn(id)).collect(Collectors.toList());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return Collections.emptyList();
         }
+    }
+
+    private Portfolio generatePortfolioforReturn(PortfolioId id)
+    {
+        Portfolio portfolio = portfolioService.find(id);
+        Agreement agreement = agreementService.find(portfolio.getAgreement().getAgreementId());
+        portfolio.setAgreement(agreement);
+        return portfolio;
     }
 
     private List<Trade> buildTrades(InputStream fis) throws IOException {
