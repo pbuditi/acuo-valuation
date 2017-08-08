@@ -14,6 +14,7 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +47,7 @@ import static org.junit.Assert.assertEquals;
         ServicesModule.class,
         ResourcesModule.class})
 @Slf4j
+@Ignore
 public class UploadResourceTest implements WithResteasyFixtures {
 
     private Dispatcher dispatcher;
