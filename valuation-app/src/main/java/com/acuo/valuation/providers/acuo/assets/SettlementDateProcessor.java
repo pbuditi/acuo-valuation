@@ -11,6 +11,7 @@ import com.acuo.valuation.utils.AssetsBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ public class SettlementDateProcessor {
     private final AssetService assetService;
     private final SettlementDateService settlementDateService;
     private final com.acuo.persist.services.SettlementDateService service;
+    private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
     @Inject
@@ -42,7 +44,6 @@ public class SettlementDateProcessor {
         log.info("assets to send :" + assets.toString());
         List<AssetSettlementDate> assetSettlementDates = settlementDateService.send(assets);
         log.info("settlementDate received :" + assetSettlementDates);
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         for (AssetSettlementDate assetSettlementDate : assetSettlementDates) {
             Asset asset = assetService.find(AssetId.fromString(assetSettlementDate.getAssetId()));
             if (asset.getSettlementDate() == null) {
@@ -78,5 +79,19 @@ public class SettlementDateProcessor {
                 service.save(root);
             }
         }
+
+        StreamSupport.stream(assetService.findAll().spliterator(), false)
+                .filter(asset -> asset.getType().equalsIgnoreCase("cash"))
+                .forEach(asset -> setCashSettelementDate(asset));
+    }
+
+    private void setCashSettelementDate(Asset asset)
+    {
+        LocalDate now = LocalDate.now();
+
+        if(now.getDayOfWeek().getValue()>5)
+            now = now.plusDays(8-now.getDayOfWeek().getValue());
+        asset.setSettlementTime(df.format(now));
+        assetService.save(asset);
     }
 }
