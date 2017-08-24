@@ -49,6 +49,7 @@ class FRABuilder extends TradeBuilder {
         //trade.setCurrency(tradeInfo.get);
         entity.setTradeId(TradeId.fromString(tradeInfo.getTradeId()));
         entity.setTradeDate(tradeInfo.getTradeDate());
+        entity.setTradeTime(tradeInfo.getTradeTime() != null ? tradeInfo.getTradeTime().toLocalTime() : null);
         entity.setMaturity(tradeInfo.getMaturityDate());
         entity.setClearingDate(tradeInfo.getClearedTradeDate());
 
