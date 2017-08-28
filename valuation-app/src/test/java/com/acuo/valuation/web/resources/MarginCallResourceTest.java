@@ -35,10 +35,7 @@ import okhttp3.mockwebserver.MockResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -174,7 +171,7 @@ public class MarginCallResourceTest extends AbstractMockServerTest implements Wi
 
     @Test
     public void testGeneratePortfolios() throws URISyntaxException, IOException {
-        //setMockMarkitResponse();
+        setMockMarkitResponse();
 
         MockHttpRequest request = MockHttpRequest.post("/calls/generate/portfolios");
         MockHttpResponse response = new MockHttpResponse();
@@ -187,10 +184,11 @@ public class MarginCallResourceTest extends AbstractMockServerTest implements Wi
         String json = response.getContentAsString();
         assertNotNull(json);
         Assert.assertThat(json, isJson());
-        //assertThatJson(json).isEqualTo(jsonGenPortfolioResponse.getContent());
+        assertThatJson(json).isEqualTo(jsonGenPortfolioResponse.getContent());
     }
 
     @Test
+    @Ignore
     public void testSplitPortfolios() throws URISyntaxException, IOException {
 
         server.enqueue(new MockResponse().setBody("key"));

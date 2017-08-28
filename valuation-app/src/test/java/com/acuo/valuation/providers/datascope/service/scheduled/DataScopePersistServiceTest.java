@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.datascope.service.scheduled;
 
+import com.acuo.common.model.ids.AssetId;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.persist.core.ImportService;
@@ -45,16 +46,16 @@ import static org.assertj.core.api.Java6Assertions.offset;
 public class DataScopePersistServiceTest {
 
     @Inject
-    DataScopePersistService dataScopePersistService;
+    private DataScopePersistService dataScopePersistService = null;
 
     @Inject
-    ImportService importService;
+    private ImportService importService = null;
 
     @Inject
-    CurrencyService currencyService;
+    private CurrencyService currencyService = null;
 
     @Inject
-    AssetService assetService;
+    private AssetService assetService = null;
 
     @Before
     public void setup() throws IOException {
@@ -62,8 +63,7 @@ public class DataScopePersistServiceTest {
     }
 
     @Test
-    public void testPersistFxRate()
-    {
+    public void testPersistFxRate() {
         List<String> lines = new ArrayList<>();
         lines.add("BHDUSD=R,2.65252,04/17/2017 20:52:03");
         lines.add("JPYUSD=R,0.88,04/17/2017 20:52:03");
@@ -83,14 +83,13 @@ public class DataScopePersistServiceTest {
     }
 
     @Test
-    public void testPersistBond()
-    {
+    public void testPersistBond() {
         List<String> lines = new ArrayList<>();
         lines.add("DE114173=RRPS,.01,EUR,DE0001141737,\"GERMANY, FEDERAL REPUBLIC OF (GOVERNMENT)\"");
         lines.add("JP03560042=RRPS,\"50,000\",JPY,JP1023561F93,JAPAN (GOVERNMENT OF)");
         dataScopePersistService.persistBond(lines);
 
-        Asset asset = assetService.find("JP1023561F93");
-        Assert.assertEquals(asset.getParValue().doubleValue(), 50000, 0.1);
+        Asset asset = assetService.find(AssetId.fromString("JP1023561F93"));
+        Assert.assertEquals(asset.getParValue(), 50000, 0.1);
     }
 }

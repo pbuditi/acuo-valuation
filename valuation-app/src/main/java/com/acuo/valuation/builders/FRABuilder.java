@@ -11,7 +11,7 @@ import com.acuo.persist.entity.Leg;
 import com.acuo.persist.entity.PricingSource;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.enums.PricingProvider;
-import com.acuo.persist.ids.TradeId;
+import com.acuo.common.model.ids.TradeId;
 import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.date.HolidayCalendarId;
 import com.opengamma.strata.basics.date.Tenor;
@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 class FRABuilder extends TradeBuilder {
+
     public Trade build(FRATrade fraTrade) {
         FRA fra = fraTrade.getProduct();
         TradeInfo tradeInfo = fraTrade.getInfo();
@@ -48,6 +49,7 @@ class FRABuilder extends TradeBuilder {
         //trade.setCurrency(tradeInfo.get);
         entity.setTradeId(TradeId.fromString(tradeInfo.getTradeId()));
         entity.setTradeDate(tradeInfo.getTradeDate());
+        entity.setTradeTime(tradeInfo.getTradeTime() != null ? tradeInfo.getTradeTime().toLocalTime() : null);
         entity.setMaturity(tradeInfo.getMaturityDate());
         entity.setClearingDate(tradeInfo.getClearedTradeDate());
 

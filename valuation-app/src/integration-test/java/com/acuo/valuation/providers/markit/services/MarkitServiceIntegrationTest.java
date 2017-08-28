@@ -6,7 +6,7 @@ import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.DataImporter;
 import com.acuo.persist.core.DataLoader;
-import com.acuo.persist.ids.ClientId;
+import com.acuo.common.model.ids.ClientId;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
 import com.acuo.persist.modules.Neo4jPersistModule;

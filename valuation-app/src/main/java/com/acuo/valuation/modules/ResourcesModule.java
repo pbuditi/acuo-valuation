@@ -22,6 +22,7 @@ public class ResourcesModule extends AbstractModule {
         bind(MarginCallResource.class);
         bind(AssetValuationResource.class);
         bind(DatascopeResource.class);
+        bind(FXRatesResource.class);
         bind(GenericExceptionMapper.class);
     }
 

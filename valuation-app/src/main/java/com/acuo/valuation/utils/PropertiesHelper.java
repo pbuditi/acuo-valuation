@@ -65,6 +65,8 @@ public class PropertiesHelper extends BasePropertiesHelper {
 
     public static final String ACUO_SIMULATION_ENABLED = "acuo.simulation.enabled";
 
+    public static final String ACUO_SCHEDULER_ENABLED = "acuo.scheduler.enabled";
+
     private PropertiesHelper(Configuration configuration) {
         super(configuration);
     }

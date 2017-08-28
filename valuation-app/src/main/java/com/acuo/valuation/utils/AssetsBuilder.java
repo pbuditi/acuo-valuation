@@ -3,8 +3,6 @@ package com.acuo.valuation.utils;
 import com.acuo.common.model.assets.Assets;
 import com.acuo.persist.entity.Asset;
 
-import java.util.Currency;
-
 public class AssetsBuilder {
 
     public static Assets buildAssets(Asset asset)
@@ -19,7 +17,7 @@ public class AssetsBuilder {
             assets.setOpptCost(asset.getHolds().getOpptCost());
         }
 
-        assets.setAssetId(asset.getAssetId());
+        assets.setAssetId(asset.getAssetId().toString());
         assets.setICADCode(asset.getICADCode());
         assets.setIdType(asset.getIdType());
 

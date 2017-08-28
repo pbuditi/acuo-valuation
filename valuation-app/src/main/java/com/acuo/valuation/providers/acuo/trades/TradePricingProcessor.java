@@ -1,7 +1,7 @@
 package com.acuo.valuation.providers.acuo.trades;
 
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 
 import java.util.Set;
 

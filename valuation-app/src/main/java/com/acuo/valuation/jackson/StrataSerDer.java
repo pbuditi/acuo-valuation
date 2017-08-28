@@ -2,7 +2,6 @@ package com.acuo.valuation.jackson;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -16,6 +15,7 @@ import com.opengamma.strata.basics.index.FloatingRateName;
 import com.opengamma.strata.basics.schedule.Frequency;
 import com.opengamma.strata.collect.result.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.TypeToken;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ public class StrataSerDer {
         strataModule.addDeserializer(FloatingRateName.class, new FloatingRateNameDeserializer(FloatingRateName.class));
         strataModule.addSerializer(new TenorSerializer(Tenor.class));
         strataModule.addDeserializer(Tenor.class, new TenorDeserializer(Tenor.class));
-        strataModule.addSerializer(new ResultSerializer(Result.class));
+        strataModule.addSerializer(new ResultSerializer(new TypeToken<Result<?>>(){}.getRawType()));
     }
 
     public SimpleModule strataModule() {
@@ -191,16 +191,15 @@ public class StrataSerDer {
         }
     }
 
-    private static class ResultSerializer extends StdSerializer<Result> {
+    private static class ResultSerializer extends StdSerializer<Result<?>> {
 
-        private ResultSerializer(Class<Result> t) {
+        private ResultSerializer(Class<Result<?>> t) {
             super(t);
         }
 
         @Override
-        public void serialize(Result value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            value.stream()
-                    .forEach(v -> writeObject(v, gen));
+        public void serialize(Result<?> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            value.stream().forEach(v -> writeObject(v, gen));
         }
 
         private void writeObject(Object value, JsonGenerator gen) {

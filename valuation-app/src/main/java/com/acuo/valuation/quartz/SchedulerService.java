@@ -12,7 +12,9 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.spi.JobFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import static com.acuo.valuation.utils.PropertiesHelper.ACUO_SCHEDULER_ENABLED;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
@@ -20,19 +22,20 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 public class SchedulerService extends AbstractService {
 
     private final Scheduler scheduler;
-
-    private final static boolean disabled = false;
+    private final boolean enabled;
 
     @Inject
-    public SchedulerService(JobFactory jobFactory) throws SchedulerException {
-        scheduler = new StdSchedulerFactory().getScheduler();
-        scheduler.setJobFactory(jobFactory);
+    public SchedulerService(JobFactory jobFactory,
+                            @Named(ACUO_SCHEDULER_ENABLED) boolean enabled) throws SchedulerException {
+        this.scheduler = new StdSchedulerFactory().getScheduler();
+        this.scheduler.setJobFactory(jobFactory);
+        this.enabled = enabled;
     }
 
     @Override
     protected void doStart() {
-        if (!disabled) {
-            try {
+        try {
+            if (enabled) {
                 JobDetail jobDetail = JobBuilder
                         .newJob(GenerateCallJob.class)
                         .withIdentity("GenerateCallJob", "markitgroup")
@@ -90,28 +93,28 @@ public class SchedulerService extends AbstractService {
                 scheduler.scheduleJob(assetjob, assetTrigger);
                 scheduler.scheduleJob(fxIntradayJob, fxTrigger);
                 scheduler.scheduleJob(fxScheduledJob, once);
-                scheduler.scheduleJob(settlementDateJob,settlementDateTrigger);
+                scheduler.scheduleJob(settlementDateJob, settlementDateTrigger);
 
                 scheduler.start();
-                notifyStarted();
-            } catch (Exception e) {
-                log.error("error in Scheduler:" + e.toString());
-                notifyFailed(e);
             }
+            notifyStarted();
+        } catch (Exception e) {
+            log.error("error in Scheduler:" + e.toString());
+            notifyFailed(e);
         }
     }
 
     @Override
     protected void doStop() {
-        if (scheduler != null) {
-            try {
+        try {
+            if (enabled && scheduler != null) {
                 scheduler.shutdown();
-                notifyStopped();
-                log.info("stop scheduler successfully!");
-            } catch (Exception e) {
-                log.error("stop scheduler failed ", e);
-                notifyFailed(e);
             }
+            notifyStopped();
+            log.info("stop scheduler successfully!");
+        } catch (Exception e) {
+            log.error("stop scheduler failed ", e);
+            notifyFailed(e);
         }
     }
 }

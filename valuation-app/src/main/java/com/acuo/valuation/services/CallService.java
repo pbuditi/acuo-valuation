@@ -1,7 +1,7 @@
 package com.acuo.valuation.services;
 
 import com.acuo.common.model.margin.Types;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 
 import java.time.LocalDate;
 import java.util.List;

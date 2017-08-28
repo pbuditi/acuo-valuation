@@ -5,8 +5,8 @@ import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.ids.PortfolioId;
-import com.acuo.persist.ids.TradeId;
+import com.acuo.common.model.ids.PortfolioId;
+import com.acuo.common.model.ids.TradeId;
 import com.acuo.persist.services.MarginCallService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.valuation.jackson.MarginCallResponse;
@@ -151,7 +151,6 @@ public class MarginCallResource {
         log.info("generate margin calls the portfolios {}", portfolioIds);
         Set<PortfolioId> portfolios = portfolioIds.getIds().stream().map(PortfolioId::fromString).collect(toSet());
         List<MarginCall> marginCalls = portfolioProcessor.process(portfolios);
-        marginCalls = marginCalls.stream().map(marginCall -> marginCallService.find(marginCall.getItemId(), 4)).collect(toList());
         return Response.status(CREATED).entity(MarginCallResponse.of(marginCalls)).build();
     }
 }

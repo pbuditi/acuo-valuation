@@ -39,7 +39,7 @@ public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
     }
 
     @Override
-    public void rates() {
+    public String rates() {
         String token = dataScopeAuthService.getToken();
 
         String response = IntradayCall.of(clientEndPoint)
@@ -56,6 +56,7 @@ public class DataScopeIntradayServiceImpl implements DataScopeIntradayService {
                     .filter(Objects::nonNull)
                     .forEach(parser -> saveFxRate(parser.getRate(), parser.getLastUpdate()));
         }
+        return response;
     }
 
     private String request() {

@@ -3,10 +3,7 @@ package com.acuo.valuation.builders;
 import com.acuo.common.cache.manager.CacheManager;
 import com.acuo.common.cache.manager.Cacheable;
 import com.acuo.common.cache.manager.CachedObject;
-import com.acuo.common.model.trade.FRATrade;
-import com.acuo.common.model.trade.SwapTrade;
 import com.acuo.common.model.trade.TradeInfo;
-import com.acuo.persist.entity.IRS;
 import com.acuo.persist.entity.Leg;
 import com.acuo.persist.entity.Trade;
 import com.google.common.collect.ImmutableList;
@@ -19,36 +16,10 @@ import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
 
 @Slf4j
-public class TradeBuilder {
+abstract class TradeBuilder {
 
-    //private static String TRADE_TYPE_CLEARD = "Cleared";
     static String TRADE_TYPE_BILATERAL = "Bilateral";
     private static CacheManager cacheManager = new CacheManager();
-
-    public static Trade build(com.acuo.common.model.trade.Trade trade) {
-        if (trade instanceof SwapTrade) {
-            return new SwapBuilder().build((SwapTrade) trade);
-        }
-
-        if (trade instanceof FRATrade) {
-            return new FRABuilder().build((FRATrade) trade);
-        }
-
-        throw new UnsupportedOperationException("trade " + trade + " not supported");
-    }
-
-    public static com.acuo.common.model.trade.Trade buildTrade(Trade trade) {
-
-        if (trade instanceof com.acuo.persist.entity.FRA) {
-            return new FRABuilder().buildTrade((com.acuo.persist.entity.FRA)trade);
-        }
-
-        if (trade instanceof IRS) {
-            return new SwapBuilder().buildTrade((com.acuo.persist.entity.IRS)trade);
-        }
-
-        throw new UnsupportedOperationException("trade " + trade + " not supported");
-    }
 
     TradeInfo buildTradeInfo(Trade trade) {
         TradeInfo tradeInfo = new TradeInfo();
@@ -75,4 +46,5 @@ public class TradeBuilder {
         }
         return (HolidayCalendarId)value.getObject();
     }
+
 }

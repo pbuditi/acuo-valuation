@@ -5,11 +5,10 @@ import com.acuo.common.model.results.TradeValuation;
 import com.acuo.common.type.TypedString;
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradeService;
 import com.acuo.persist.services.TradingAccountService;
-import com.acuo.valuation.builders.TradeBuilder;
+import com.acuo.valuation.builders.TradeConverter;
 import com.acuo.valuation.protocol.results.PortfolioResults;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.opengamma.strata.basics.currency.Currency;
@@ -22,6 +21,7 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +44,8 @@ public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
                                          TradeService<Trade> tradeService,
                                          @Named("portfolio") Transformer<com.acuo.common.model.trade.Trade> portfolioTransformer,
                                          @Named("tradeValuation") Transformer<TradeValuation> valuationTransformer,
-                                         ResultPersister<PortfolioResults> persister) {
+                                         ResultPersister<PortfolioResults> persister
+    ) {
         super(accountService, portfolioService);
         this.tradeService = tradeService;
         this.portfolioTransformer = portfolioTransformer;
@@ -64,10 +65,12 @@ public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
 
     public List<Portfolio> fromExcelWithValues(InputStream fis) {
         try {
+            fis.mark(Integer.MAX_VALUE);
             List<Trade> trades = buildTrades(fis);
-            Set<PortfolioId> portfolios =trades.stream().map(Trade::getPortfolio).map(Portfolio::getPortfolioId).collect(toSet());
+            Set<Portfolio> portfolios =trades.stream().map(Trade::getPortfolio).collect(toSet());
+            fis.reset();
             saveValuations(fis);
-            return portfolios.stream().map(id -> portfolioService.find(id, 2)).collect(Collectors.toList());
+            return new ArrayList<>(portfolios);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return Collections.emptyList();
@@ -91,7 +94,7 @@ public class TradeUploadServiceTransformer extends TradeUploadServiceAbstract {
     }
 
     private Trade buildTradeNew(com.acuo.common.model.trade.Trade t) {
-        Trade trade = TradeBuilder.build(t);
+        Trade trade = TradeConverter.build(t);
         linkPortfolio(trade, t.getInfo().getPortfolio());
         linkAccount(trade, t.getInfo().getTradingAccountId());
         return trade;

@@ -37,8 +37,7 @@ public class DatascopeResource {
                              DataScopeScheduleService dataScopeScheduleService,
                              DataScopeExtractionService dataScopeExtractionService,
                              DataScopeDownloadService dataScopeDownloadService,
-                             DataScopePersistService dataScopePersistService)
-    {
+                             DataScopePersistService dataScopePersistService) {
         this.dataScopeAuthService = dataScopeAuthService;
         this.dataScopeScheduleService = dataScopeScheduleService;
         this.dataScopeDownloadService = dataScopeDownloadService;
@@ -50,28 +49,23 @@ public class DatascopeResource {
     @GET
     @Path("/getFX")
     @Timed
-    public Response getFx()
-    {
+    public Response getFx() {
         String token = dataScopeAuthService.getToken();
         String scheduleId = dataScopeScheduleService.scheduleFXRateExtraction(token);
         List<String> ids = dataScopeExtractionService.getExtractionFileId(token, scheduleId);
         String csv = dataScopeDownloadService.downloadFile(token, ids.get(1));
         BufferedReader br = new BufferedReader(new StringReader(csv));
         List<String> lines = new ArrayList<>();
-        try
-        {
+        try {
             //skipe the first two line
             br.readLine();
             br.readLine();
             String line = null;
-            while ((line= br.readLine())!=null)
-            {
+            while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error("error in getFx :" + e);
         }
         dataScopePersistService.persistFxRate(lines);
@@ -81,28 +75,23 @@ public class DatascopeResource {
     @GET
     @Path("/getBond")
     @Timed
-    public Response getBond()
-    {
+    public Response getBond() {
         String token = dataScopeAuthService.getToken();
         String scheduleId = dataScopeScheduleService.scheduleBondExtraction(token);
         List<String> ids = dataScopeExtractionService.getExtractionFileId(token, scheduleId);
         String csv = dataScopeDownloadService.downloadFile(token, ids.get(1));
         BufferedReader br = new BufferedReader(new StringReader(csv));
         List<String> lines = new ArrayList<>();
-        try
-        {
+        try {
             //skipe the first two line
             br.readLine();
             br.readLine();
             String line = null;
-            while ((line= br.readLine())!=null)
-            {
+            while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error("error in getFx :" + e);
         }
         dataScopePersistService.persistBond(lines);

@@ -2,7 +2,7 @@ package com.acuo.valuation.providers.acuo.results;
 
 import com.acuo.common.model.margin.Types;
 import com.acuo.persist.entity.MarginValue;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.persist.services.ValuationService;
 import com.acuo.persist.services.ValueService;
 import com.acuo.valuation.protocol.results.MarginResults;

@@ -1,6 +1,6 @@
 package com.acuo.valuation.providers.acuo.results;
 
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 
 import java.util.Set;
 

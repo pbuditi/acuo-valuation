@@ -7,13 +7,12 @@ import org.quartz.JobExecutionException;
 
 import javax.inject.Inject;
 
-public class SettlementDateJob implements Job{
+public class SettlementDateJob implements Job {
 
     private final SettlementDateProcessor settlementDateProcessor;
 
     @Inject
-    public SettlementDateJob(SettlementDateProcessor settlementDateProcessor)
-    {
+    public SettlementDateJob(SettlementDateProcessor settlementDateProcessor) {
         this.settlementDateProcessor = settlementDateProcessor;
     }
 

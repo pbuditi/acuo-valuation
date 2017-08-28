@@ -2,7 +2,7 @@ package com.acuo.valuation.providers.acuo;
 
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.Trade;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.valuation.providers.acuo.trades.TradePricingProcessor;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;

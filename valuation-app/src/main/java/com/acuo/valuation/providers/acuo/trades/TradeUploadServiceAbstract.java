@@ -6,7 +6,7 @@ import com.acuo.common.cache.manager.CachedObject;
 import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.entity.TradingAccount;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.persist.services.PortfolioService;
 import com.acuo.persist.services.TradingAccountService;
 import com.acuo.valuation.services.TradeUploadService;
@@ -54,7 +54,7 @@ abstract class TradeUploadServiceAbstract implements TradeUploadService {
         if (value == null) {
             lock.lock();
             try {
-                Portfolio portfolio = portfolioService.find(portfolioId);
+                Portfolio portfolio = portfolioService.portfolio(portfolioId);
                 value = new CachedObject(portfolio, portfolioId, expireTime, expireUnit);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

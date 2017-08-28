@@ -6,7 +6,7 @@ import com.acuo.persist.entity.Agreement;
 import com.acuo.persist.entity.MarginCall;
 import com.acuo.persist.entity.enums.Side;
 import com.acuo.persist.entity.enums.StatementStatus;
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
@@ -83,7 +83,6 @@ public class CallSimulator extends CallGenerator {
                                  Long tradeCount) {
         if (simulationHelper.getRandomBoolean()) {
             double amount = simulationHelper.getRandomAmount(value);
-            amount = 0-amount;
             MarginCall margin = super.process(callType, side, amount, currency, statementStatus, agreement, valuationDate, callDate, rates, tradeCount);
             marginCallService.matchToExpected(margin.getItemId());
             return margin;

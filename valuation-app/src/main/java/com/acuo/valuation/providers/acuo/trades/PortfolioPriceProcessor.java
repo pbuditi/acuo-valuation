@@ -1,6 +1,6 @@
 package com.acuo.valuation.providers.acuo.trades;
 
-import com.acuo.persist.ids.PortfolioId;
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.valuation.protocol.results.MarkitResults;
 import com.acuo.valuation.providers.acuo.results.ResultPersister;
 import com.acuo.valuation.services.PricingService;

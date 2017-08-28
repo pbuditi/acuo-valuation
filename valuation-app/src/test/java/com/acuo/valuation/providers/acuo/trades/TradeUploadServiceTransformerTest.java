@@ -1,9 +1,14 @@
 package com.acuo.valuation.providers.acuo.trades;
 
+import com.acuo.collateral.transform.Transformer;
+import com.acuo.collateral.transform.services.TradeValuationTransformer;
+import com.acuo.collateral.transform.trace.transformer_valuations.Mapper;
+import com.acuo.common.model.results.TradeValuation;
 import com.acuo.common.security.EncryptionModule;
 import com.acuo.common.util.GuiceJUnitRunner;
 import com.acuo.common.util.ResourceFile;
 import com.acuo.persist.core.ImportService;
+import com.acuo.persist.entity.Portfolio;
 import com.acuo.persist.entity.Trade;
 import com.acuo.persist.modules.DataImporterModule;
 import com.acuo.persist.modules.DataLoaderModule;
@@ -18,6 +23,7 @@ import com.acuo.valuation.modules.ServicesModule;
 import com.acuo.valuation.services.TradeUploadService;
 import com.googlecode.junittoolbox.MultithreadingTester;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,9 +65,6 @@ public class TradeUploadServiceTransformerTest {
     @Rule
     public ResourceFile all = new ResourceFile("/excel/TradePortfolio.xlsx");
 
-    @Rule
-    public ResourceFile legacy = new ResourceFile("/excel/legacy/TradePortfolio.xlsx");
-
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
@@ -95,5 +98,18 @@ public class TradeUploadServiceTransformerTest {
             Thread.sleep(1000);
             return null;
         }).run();
+    }
+
+    @Test
+    public void testFromExcelWithValues() {
+        List<Portfolio> portfolios = service.fromExcelWithValues(all.createInputStream());
+        assertThat(portfolios).isNotEmpty();
+    }
+
+    @Test
+    public void testNPV() throws Exception {
+        Transformer<TradeValuation> transformer = new TradeValuationTransformer<>(new Mapper());
+        List<TradeValuation> valuations = transformer.deserialise(IOUtils.toByteArray(all.getInputStream()));
+        assertThat(valuations).isNotEmpty().hasSize(799);
     }
 }
