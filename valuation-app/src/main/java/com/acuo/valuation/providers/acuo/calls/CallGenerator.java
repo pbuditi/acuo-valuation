@@ -1,5 +1,6 @@
 package com.acuo.valuation.providers.acuo.calls;
 
+import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.common.model.margin.Types;
 import com.acuo.common.util.LocalDateUtils;
 import com.acuo.persist.entity.Agreement;
@@ -10,9 +11,7 @@ import com.acuo.persist.entity.MarginValuation;
 import com.acuo.persist.entity.MarginValue;
 import com.acuo.persist.entity.VariationMargin;
 import com.acuo.persist.entity.enums.Side;
-import com.acuo.persist.entity.enums.StatementDirection;
 import com.acuo.persist.entity.enums.StatementStatus;
-import com.acuo.common.model.ids.PortfolioId;
 import com.acuo.persist.services.AgreementService;
 import com.acuo.persist.services.CurrencyService;
 import com.acuo.persist.services.MarginCallService;
@@ -139,11 +138,12 @@ public class CallGenerator extends AbstractCallGeneratorProcessor implements Cal
                                  LocalDate callDate,
                                  Map<Currency, Double> rates,
                                  Long tradeCount) {
+        MarginStatement marginStatement = marginStatementService.getOrCreateMarginStatement(agreement, callDate);
         MarginCall marginCall;
         if (callType.equals(Types.CallType.Variation)) {
-            marginCall = new VariationMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
+            marginCall = new VariationMargin(side, amount, valuationDate, callDate, currency, agreement, marginStatement, rates, tradeCount);
         } else {
-            marginCall = new InitialMargin(side, amount, valuationDate, callDate, currency, agreement, rates, tradeCount);
+            marginCall = new InitialMargin(side, amount, valuationDate, callDate, currency, agreement, marginStatement, rates, tradeCount);
         }
 
         final MarginCall toDelete = marginCallService.find(marginCall.getItemId());
@@ -151,8 +151,6 @@ public class CallGenerator extends AbstractCallGeneratorProcessor implements Cal
             marginCallService.delete(marginCallService.find(marginCall.getItemId()));
         }
 
-        StatementDirection direction = marginCall.getDirection();
-        MarginStatement marginStatement = marginStatementService.getOrCreateMarginStatement(agreement, callDate, direction);
         marginCall.setMarginStatement(marginStatement);
         marginCall = marginCallService.save(marginCall);
         marginCall = marginStatementService.setStatus(marginCall.getItemId(), statementStatus);

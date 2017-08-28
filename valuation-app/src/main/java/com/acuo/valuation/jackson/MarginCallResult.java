@@ -6,6 +6,7 @@ import com.acuo.persist.entity.ClientSignsRelation;
 import com.acuo.persist.entity.CounterpartSignsRelation;
 import com.acuo.persist.entity.LegalEntity;
 import com.acuo.persist.entity.MarginCall;
+import com.acuo.persist.entity.MarginStatement;
 import com.acuo.persist.entity.Portfolio;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -89,7 +90,8 @@ public class MarginCallResult {
         private final Double netRequired;
 
         public Builder(MarginCall marginCall) {
-            this.agreement = marginCall.getMarginStatement().getAgreement();
+            MarginStatement marginStatement = marginCall.getMarginStatement();
+            this.agreement = marginStatement.getAgreement();
             this.valuationDate = marginCall.getValuationDate();
             this.currency = marginCall.getCurrency().getCode();
             this.totalPV = marginCall.getExposure();
@@ -110,11 +112,10 @@ public class MarginCallResult {
             this.totalCallAmount = marginCall.getMarginAmount();
             this.pendingCollateral = marginCall.getPendingCollateral();
 
-            ClientSignsRelation clientSignsRelation = this.agreement.getClientSignsRelation();
-            if (Variation.equals(marginCall.getMarginType()) && clientSignsRelation != null)
-                this.collateralValue = clientSignsRelation.getVariationBalance();
-            else if (Initial.equals(marginCall.getMarginType()) && clientSignsRelation != null)
-                this.collateralValue = clientSignsRelation.getInitialBalance();
+            if (Variation.equals(marginCall.getMarginType()))
+                this.collateralValue = marginStatement.variationBalance();
+            else if (Initial.equals(marginCall.getMarginType()))
+                this.collateralValue = marginStatement.initialBalance();
             else
                 this.collateralValue = null;
 
