@@ -4,9 +4,12 @@ import com.acuo.common.model.assets.Assets;
 import com.acuo.common.model.ids.AssetId;
 import com.acuo.common.model.results.AssetSettlementDate;
 import com.acuo.persist.entity.Asset;
+import com.acuo.persist.entity.Settlement;
 import com.acuo.persist.entity.SettlementDate;
 import com.acuo.persist.services.AssetService;
-import com.acuo.valuation.providers.reuters.services.SettlementDateService;
+import com.acuo.persist.services.SettlementDateService;
+import com.acuo.persist.services.SettlementService;
+import com.acuo.valuation.providers.reuters.services.SettlementDateExtractorService;
 import com.acuo.valuation.utils.AssetsBuilder;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,52 +19,71 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class SettlementDateProcessor {
 
     private final AssetService assetService;
+    private final SettlementDateExtractorService settlementDateExtractor;
+    private final SettlementService settlementService;
     private final SettlementDateService settlementDateService;
-    private final com.acuo.persist.services.SettlementDateService service;
     private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
 
     @Inject
     public SettlementDateProcessor(AssetService assetService,
-                                   SettlementDateService settlementDateService,
-                                   com.acuo.persist.services.SettlementDateService service) {
+                                   SettlementDateExtractorService settlementDateExtractor,
+                                   SettlementService settlementService,
+                                   SettlementDateService settlementDateService) {
         this.assetService = assetService;
+        this.settlementDateExtractor = settlementDateExtractor;
+        this.settlementService = settlementService;
         this.settlementDateService = settlementDateService;
-        this.service = service;
     }
 
     public void process() {
-        List<Assets> assets = StreamSupport.stream(assetService.findAll().spliterator(), false)
+        Iterable<Asset> all = assetService.findAll();
+        handleBond(all);
+        handleCash(all);
+    }
+
+    private void handleCash(Iterable<Asset> all) {
+        log.info("handling settlement dates for cash ...");
+        List<Asset> cash = StreamSupport.stream(all.spliterator(), false)
+                .filter(asset -> asset.getType().equalsIgnoreCase("cash"))
+                .peek(asset -> {
+                    LocalDate now = LocalDate.now();
+                    if (now.getDayOfWeek().getValue() > 5)
+                        now = now.plusDays(8 - now.getDayOfWeek().getValue());
+                    asset.setSettlementTime(df.format(now));
+                })
+                .collect(toList());
+        log.info("saving settlement dates for {} cash assets", cash.size());
+        assetService.save(cash);
+        log.info("handling settlement dates for cash done");
+    }
+
+    private void handleBond(Iterable<Asset> all) {
+        log.info("handling settlement dates for bond ...");
+        List<Assets> assets = StreamSupport.stream(all.spliterator(), false)
                 .filter(asset -> asset.getType().equalsIgnoreCase("bond"))
-                .map(AssetsBuilder::buildAssets).collect(Collectors.toList());
-        log.info("assets to send :" + assets.toString());
-        List<AssetSettlementDate> assetSettlementDates = settlementDateService.send(assets);
-        log.info("settlementDate received :" + assetSettlementDates);
+                .map(AssetsBuilder::buildAssets).collect(toList());
+        log.info("sending {} assets for settlement date extraction", assets.size());
+        List<AssetSettlementDate> assetSettlementDates = settlementDateExtractor.send(assets);
+        log.info("received {} settlement dates", assetSettlementDates.size());
         for (AssetSettlementDate assetSettlementDate : assetSettlementDates) {
-            Asset asset = assetService.find(AssetId.fromString(assetSettlementDate.getAssetId()));
-            if (asset.getSettlementDate() == null) {
-                SettlementDate root = new SettlementDate();
-                root.setSettlementDateId(asset.getAssetId() + "sd");
-                asset.setSettlementDate(root);
-                assetService.save(asset);
-            }
-            asset = assetService.find(AssetId.fromString(assetSettlementDate.getAssetId()));
-            SettlementDate root = service.find(asset.getSettlementDate().getSettlementDateId());
-            if (root.getSettlementDates() == null)
-                root.setSettlementDates(new HashSet<>());
+            AssetId assetId = AssetId.fromString(assetSettlementDate.getAssetId());
+            Settlement settlement = settlementService.getOrCreateSettlementFor(assetId);
+            if (settlement.getSettlementDates() == null)
+                settlement.setSettlementDates(new HashSet<>());
 
             boolean found = false;
-            for (SettlementDate settlementDate : root.getSettlementDates()) {
+            for (SettlementDate settlementDate : settlement.getSettlementDates()) {
                 if (settlementDate.getSettlementDate().equals(assetSettlementDate.getSettlementDate())) {
                     settlementDate.setQueryDateTime(LocalDateTime.now());
-                    service.save(settlementDate);
+                    settlementDateService.save(settlementDate);
                     found = true;
                     log.debug("duplicate settlementDate");
                     break;
@@ -71,27 +93,15 @@ public class SettlementDateProcessor {
                 log.debug("new settlementDate");
                 SettlementDate child = new SettlementDate();
                 child.setQueryDateTime(LocalDateTime.now());
-                child.setSettlementDateId(root.getSettlementDateId() + root.getSettlementDates().size());
+                child.setSettlementDateId(settlement.getSettlementId() + settlement.getSettlementDates().size());
                 child.setSettlementDate(assetSettlementDate.getSettlementDate());
-                root.getSettlementDates().add(child);
+                settlement.getSettlementDates().add(child);
+                Asset asset = settlement.getAsset();
                 asset.setSettlementTime(df.format(assetSettlementDate.getSettlementDate()));
                 assetService.save(asset);
-                service.save(root);
+                settlementService.save(settlement);
             }
         }
-
-        StreamSupport.stream(assetService.findAll().spliterator(), false)
-                .filter(asset -> asset.getType().equalsIgnoreCase("cash"))
-                .forEach(asset -> setCashSettelementDate(asset));
-    }
-
-    private void setCashSettelementDate(Asset asset)
-    {
-        LocalDate now = LocalDate.now();
-
-        if(now.getDayOfWeek().getValue()>5)
-            now = now.plusDays(8-now.getDayOfWeek().getValue());
-        asset.setSettlementTime(df.format(now));
-        assetService.save(asset);
+        log.info("handling settlement dates for bond done");
     }
 }

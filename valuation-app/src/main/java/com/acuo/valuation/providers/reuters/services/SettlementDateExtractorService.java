@@ -5,7 +5,7 @@ import com.acuo.common.model.results.AssetSettlementDate;
 
 import java.util.List;
 
-public interface SettlementDateService {
+public interface SettlementDateExtractorService {
 
     List<AssetSettlementDate> send(List<Assets> assets);
 }

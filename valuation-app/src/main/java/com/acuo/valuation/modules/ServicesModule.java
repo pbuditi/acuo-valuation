@@ -46,8 +46,8 @@ import com.acuo.valuation.providers.markit.services.Retriever;
 import com.acuo.valuation.providers.markit.services.Sender;
 import com.acuo.valuation.providers.reuters.services.ReutersService;
 import com.acuo.valuation.providers.reuters.services.ReutersServiceImpl;
-import com.acuo.valuation.providers.reuters.services.SettlementDateService;
-import com.acuo.valuation.providers.reuters.services.SettlementDateServiceImpl;
+import com.acuo.valuation.providers.reuters.services.SettlementDateExtractorService;
+import com.acuo.valuation.providers.reuters.services.SettlementDateExtractorServiceImpl;
 import com.acuo.valuation.services.PortfolioManager;
 import com.acuo.valuation.services.PricingService;
 import com.acuo.valuation.services.TradeCacheService;
@@ -96,7 +96,7 @@ public class ServicesModule extends AbstractModule {
 
         // asset valuation
         bind(ReutersService.class).to(ReutersServiceImpl.class);
-        bind(SettlementDateService.class).to(SettlementDateServiceImpl.class);
+        bind(SettlementDateExtractorService.class).to(SettlementDateExtractorServiceImpl.class);
         bind(ReutersAssetPricingProcessor.class);
         bind(CashAssetPricingProcessor.class);
 

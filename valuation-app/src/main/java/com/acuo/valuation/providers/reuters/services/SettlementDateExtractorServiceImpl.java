@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-public class SettlementDateServiceImpl implements SettlementDateService {
+public class SettlementDateExtractorServiceImpl implements SettlementDateExtractorService {
 
     private final ClientEndPoint<ReutersEndPointConfig> client;
     private final Transformer<Assets> transformer;
@@ -22,18 +22,16 @@ public class SettlementDateServiceImpl implements SettlementDateService {
 
 
     @Inject
-    public SettlementDateServiceImpl(ClientEndPoint<ReutersEndPointConfig> client,
-                                     @Named("settlementDateTo") Transformer<Assets> transformer,
-                                     @Named("settlementDateFrom") Transformer<AssetSettlementDate> resultTransformer)
-    {
+    public SettlementDateExtractorServiceImpl(ClientEndPoint<ReutersEndPointConfig> client,
+                                              @Named("settlementDateTo") Transformer<Assets> transformer,
+                                              @Named("settlementDateFrom") Transformer<AssetSettlementDate> resultTransformer) {
         this.client = client;
         this.transformer = transformer;
         this.resultTransformer = resultTransformer;
     }
 
-    public List<AssetSettlementDate> send(List<Assets> assets)
-    {
-        if(assets.isEmpty())
+    public List<AssetSettlementDate> send(List<Assets> assets) {
+        if (assets.isEmpty())
             return Collections.emptyList();
         TransformerContext context = new TransformerContext();
         context.setValueDate(LocalDate.now());
@@ -45,6 +43,9 @@ public class SettlementDateServiceImpl implements SettlementDateService {
         if (log.isDebugEnabled()) {
             log.debug(response);
         }
-        return resultTransformer.deserialiseToList(response.substring(1));
+        List<AssetSettlementDate> assetSettlementDates = resultTransformer.deserialiseToList(response.substring(1));
+        if (assetSettlementDates == null)
+            return Collections.emptyList();
+        return assetSettlementDates;
     }
 }
