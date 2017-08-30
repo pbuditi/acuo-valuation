@@ -76,6 +76,7 @@ public class SettlementDateProcessor {
         for (AssetSettlementDate assetSettlementDate : assetSettlementDates) {
             AssetId assetId = AssetId.fromString(assetSettlementDate.getAssetId());
             Settlement settlement = settlementService.getOrCreateSettlementFor(assetId);
+            settlement = settlementService.find(settlement.getSettlementId());
             if (settlement.getSettlementDates() == null)
                 settlement.setSettlementDates(new HashSet<>());
 
@@ -96,7 +97,7 @@ public class SettlementDateProcessor {
                 child.setSettlementDateId(settlement.getSettlementId() + settlement.getSettlementDates().size());
                 child.setSettlementDate(assetSettlementDate.getSettlementDate());
                 settlement.getSettlementDates().add(child);
-                Asset asset = settlement.getAsset();
+                Asset asset = assetService.find(assetId);
                 asset.setSettlementTime(df.format(assetSettlementDate.getSettlementDate()));
                 assetService.save(asset);
                 settlementService.save(settlement);
