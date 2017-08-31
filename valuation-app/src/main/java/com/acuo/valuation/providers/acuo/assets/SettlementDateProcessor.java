@@ -76,11 +76,11 @@ public class SettlementDateProcessor {
         for (AssetSettlementDate assetSettlementDate : assetSettlementDates) {
             AssetId assetId = AssetId.fromString(assetSettlementDate.getAssetId());
             Settlement settlement = settlementService.getOrCreateSettlementFor(assetId);
-            settlement = settlementService.find(settlement.getSettlementId());
             if (settlement.getSettlementDates() == null)
                 settlement.setSettlementDates(new HashSet<>());
 
             boolean found = false;
+            assetSettlementDate.setSettlementDate(assetSettlementDate.getSettlementDate().plusDays(1));
             for (SettlementDate settlementDate : settlement.getSettlementDates()) {
                 if (settlementDate.getSettlementDate().equals(assetSettlementDate.getSettlementDate())) {
                     settlementDate.setQueryDateTime(LocalDateTime.now());
