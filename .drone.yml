@@ -9,8 +9,8 @@ pipeline:
   build:
     image: java:8
     commands:
-      - echo ${AWS_ACCESS_KEY_ID}
-      - echo ${AWS_SECRET_ACCESS_KEY}
+      - echo $AWS_ACCESS_KEY_ID
+      - echo $AWS_SECRET_ACCESS_KEY
       - ./gradlew snapshot dockerPushImage -Pprofile=docker  -x test -x integrationTest
 
   
