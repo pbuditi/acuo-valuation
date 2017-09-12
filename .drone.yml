@@ -13,3 +13,4 @@ pipeline:
       - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - ./gradlew snapshot dockerPushImage -Pprofile=docker  -x test -x integrationTest
 
+  
