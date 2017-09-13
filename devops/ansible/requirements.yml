@@ -1,0 +1,3 @@
+- name: acuo-compose
+  src: https://github.com/pbuditi-ansible-roles/ansible-acuo-compose
+  version: master

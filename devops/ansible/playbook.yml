@@ -1,0 +1,7 @@
+---
+# test roles
+
+- name: deploy acuo docker compose
+  hosts: all
+  roles:
+    - acuo-compose
