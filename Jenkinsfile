@@ -27,7 +27,7 @@ pipeline {
         stage("Deploy-Dev") {
             steps {
                 sh 'cd devops/ansible && ls -l'
-                sh 'ansible-galaxy install -r requirements.yml -p roles/'
+                sh 'ansible-galaxy install -r ./requirements.yml -p roles/'
                 ansiblePlaybook credentialsId: '	pradeep-cloud-user', inventory: 'devops/ansible/palo-dev', playbook: 'devops/ansible/playbook.yml', sudoUser: null
             }  
         }
