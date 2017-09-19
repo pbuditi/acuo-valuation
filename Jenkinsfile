@@ -28,7 +28,7 @@ pipeline {
             steps {
                 sh 'ansible-galaxy install -r devops/ansible/requirements.yml -p devops/ansible/roles/'
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'acuo_aws_dev', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    ansiblePlaybook credentialsId: '	pradeep-cloud-user', extras: "-e app_name=valuation", inventory: 'devops/ansible/inventory/palo-dev', playbook: 'devops/ansible/playbook.yml', sudoUser: null
+                    ansiblePlaybook credentialsId: '	pradeep-cloud-user', extras: "-e app_name=valuation -e app_branch=$BRANCH_NAME", inventory: 'devops/ansible/inventory/palo-dev', playbook: 'devops/ansible/playbook.yml', sudoUser: null
                 }
             }  
         }
